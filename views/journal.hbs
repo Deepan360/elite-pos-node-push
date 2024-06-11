@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ {{>header}}
+     <style>
+        #manufacturerform {
+                  display: block;
+                  position: fixed;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
+                  background-color: #8f8f8f; /* White background for the form */
+                  padding: 20px;
+                  z-index: 1000; /* Ensure it's above other elements */
+                  border-radius: 10px;
+              }
+            .editForm {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #8f8f8f;
+            padding: 20px;
+            z-index: 1000;
+            border-radius: 10px;
+        }
+           
+          </style>
+    <style>
+        .container{
+            margin-left: 20%;
+        }
+        .updateManufacturer{
+             background-color: rgba(50, 141, 168) !important;
+            color: white !important;
+             border: none !important;
+                border-radius: 3px !important;
+                width: 80px !important;
+            height: 30px;
+        }
+        .closeForm{
+             background-color: rgba(50, 141, 168) !important;
+            color: white !important;
+             border: none !important;
+                border-radius: 3px !important;
+                width: 80px !important;
+            height: 30px;
+        }
+  button{
+    margin: 1px;
+  }
+      #message {
+             display: none;
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              background-color: #ffffff; /* White background for the form */
+              color: black;
+              padding: 20px;
+              z-index: 1000; /* Ensure it's above other elements */
+              size: 200px;
+              font-weight: 700;
+              justify-content: space-between;
+              align-content: space-between;
+              align-items: center;
+              font-size: 14px;
+              box-shadow: 0px 0px 12px  rgba(0, 0, 0, 0.3) !important; /* Add a subtle box shadow */
+              border-radius: 8px; /* Optional: Add border-radius for rounded corners */
+              overflow: hidden; 
+        }
+    form input,select{
+        margin: 2px;
+    }
+        form button{
+           width: 100px !important;
+            padding: 5px;
+            margin: 5px;  
+        }
+      .col input{
+        width: 100%;
+      }
+      input[type=checkbox]{
+        width: 100px;
+        color: #8f8f8f !important;
+      }
+      table thead th{
+        text-align: center;
+      }
+      .align-right-top {
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 10px; /* Optional: Add margin for spacing */
+        }
+      #dr,
+#cr {
+    min-width: 150px; /* Adjust the width as needed */
+}
+       label>select{
+            margin: 2px !important; 
+        }
+            </style> 
+</head>
+<body class="g-sidenav-show   bg-gray-100">
+ {{>sidebar}}
+  <main class="main-content position-relative border-radius-lg ">
+      {{>navbar}}
+    <div class="table-responsive container-fluid py-4  ">
+        <div class=" form-control card ">
+            <h3>Journal</h3>
+          <div class=" align-right-top">
+        <div id="filterDateDiv" class="mb-3">
+    <label for="fromDate">From Date:</label>
+   <input type="text" id="fromDate">
+    <label for="toDate">To Date:</label>
+   <input type="text" id="toDate">
+    <button class="btn btn-primary" id="filter-button">Filter</button>
+</div>        
+    </div>
+           <form action="/auth/manufacturer" method="get">
+             <table id="customerTable" class="table-responsive justify-content-between align-items-end" style="width:100% !important">
+                <thead>
+                    <tr>
+                        <th>Journal Id</th>
+                        <th>Journal Date</th>
+                        <th>Particulars</th>
+                        <th>Amount(Dr)</th>
+                        <th>Amount(Cr)</th>
+                        <th>Bill No</th>
+                        <th>Remarks</th>
+                        <th class="action">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+             <button type="button" value="button" class="btn btn-primary" id="addmanufacturer" >add</button>
+            </form>
+            </div>
+        </div>
+    </div>
+   </div>
+{{>footer}}
+  </main>
+  {{>color}}
+<script>
+    document.getElementById("filter-button").addEventListener("click", function() {
+        var fromDate = new Date(document.getElementById("fromDate").value);
+        var toDate = new Date(document.getElementById("toDate").value);
+        var table = document.getElementById("customerTable");
+        var rows = table.getElementsByTagName("tr");
+        var hasData = false;
+
+        console.log('From Date:', fromDate);
+        console.log('To Date:', toDate);
+
+        for (var i = 1; i < rows.length; i++) {
+            var cell = rows[i].getElementsByTagName("td")[1]; // Assuming "journal Date" is the second column
+            if (cell) {
+                var cellContent = cell.innerText.trim();
+
+                // Try to extract a valid date using moment.js
+                var cellDate = moment(cellContent, "DD-MM-YYYY");
+
+                // Skip rows with invalid or non-date content
+                if (!cellDate.isValid()) {
+                    console.log('Skipping row with invalid or non-date content:', cellContent);
+                    continue;
+                }
+
+                console.log('Cell Content:', cellContent);
+                console.log('Parsed Date:', cellDate.format("YYYY-MM-DD"));
+
+                if (cellDate.isSameOrAfter(fromDate) && cellDate.isSameOrBefore(toDate)) {
+                    rows[i].style.display = "";
+                    hasData = true;
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+
+        // Check if noDataRow is defined before accessing it
+        var noDataRow = document.getElementById("noDataRow");
+        if (noDataRow) {
+            if (!hasData) {
+                noDataRow.style.display = "block";
+            } else {
+                noDataRow.style.display = "none";
+            }
+        }
+    });
+</script>
+
+
+    <script>
+        // Add form button click event
+        $(document).on('click', '#addmanufacturer', function() {
+        $("#manufacturerform").show();
+        $("#id").val('');
+    });
+     var table = $("#customerTable").DataTable({
+    ajax: {
+        url: 'http://localhost:5000/auth/journal',
+        dataType: 'json',
+        dataSrc: 'data',
+        type: 'GET',
+    },
+    columns: [
+        { data: 'id' },
+        { data: 'journaldate',
+         render: function (data) {
+                            const formattedDate = moment(data).format("DD-MM-YYYY");
+                            return formattedDate;
+                        } },
+        { data: 'particulars' },
+        { data: 'amount(dr)' },
+         { data: 'amount(cr)' },
+        { data: 'billno' },
+        { data: 'remarks' },
+        {
+            data: 'id',
+            render: function (data) {
+                return '<i class="fa-regular fa-pen-to-square editBtn" type="button" data-id="' + data + '"></i>' +
+                    ' <i class="fa-solid fa-trash deleteBtn" type="button" data-id="' + data + '"></i>';
+            }
+        }
+    ],
+    dom: 'Bfrtip',
+    buttons: ['copy', 'excel', 'pdf', 'csv'],
+    paging: false,
+    scrollY: '400px',
+    scrollCollapse: true,
+    scrollX: '50px',
+    responsive: true,
+});
+function formatDate(dateObject) {
+    const date = new Date(dateObject);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${day}-${month}`;
+}
+
+        if (table.rows().count() === 0) {
+            $("#emptyMessage").show();
+        }
+    </script>
+<script>
+// Handle click event for the "Edit" button
+$(document).on('click', '.editBtn', function() {
+    // Get the data associated with the clicked row
+    var data = table.row($(this).parents('tr')).data();
+
+    console.log('Data:', data);
+
+    // Check if the data is valid and an object
+    if (data && typeof data === 'object' && !Array.isArray(data)) {
+        // Populate the edit form fields with the data
+        $(".editForm #id").val(data.id);
+        $(".editForm #journaldate").val(formatDate(data.journaldate));
+        $(".editForm #particulars").val(data.particulars);
+        $(".editForm #dr").val(data['amount(dr)']);
+         $(".editForm #cr").val(data['amount(cr)']);
+        $(".editForm #billno").val(data.billno);
+        $(".editForm #remarks").val(data.remarks);
+
+        // Check if 'active' property is true and set the checkbox accordingly
+        if (data.active) {
+            $(".editForm #active").prop('checked', true);
+        } else {
+            $(".editForm #active").prop('checked', false);
+        }
+
+        // Show the edit form
+        $(".editForm").show();
+    } else {
+        console.error('Invalid or undefined data:', data);
+    }
+});
+
+// Function to format date objects to "YYYY-MM-DD" strings
+function formatDate(dateObject) {
+    const date = new Date(dateObject);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${day}-${month}`;
+}
+
+// Handle form submission for the edit form
+$(document).on('submit', '.editForm', function(event) {
+    event.preventDefault();
+
+    var formData = $(this).serialize();
+    var manufacturerId = $(".editForm #id").val();
+
+    console.log('Form Data:', formData);
+console.log('Manufacturer ID:', manufacturerId);
+
+    $.ajax({
+        type: 'PUT',
+        url: 'http://localhost:5000/auth/journaledit/' + manufacturerId,
+        data: formData,
+        success: function(response) {
+            console.log(response);
+
+            if (response.success) {
+                // Update the table row with the new data
+                var tableRow = table.row('#' + manufacturerId); // Assuming each row has a unique ID
+                tableRow.data(response.updatedCustomerData); // Use the actual key from the response
+
+                // Optionally, you can hide the form after a successful update
+                $(".editForm").hide();
+                alert('manufacturer Updated Successfully 🖋');
+               table.ajax.reload();
+            } else {
+                alert('Failed to update manufacturer');
+            }
+        },
+        error: function(error) {
+            console.error('Error:', error);
+
+            if (error.status === 0) {
+                alert('Failed to connect to the server. Check your server and network connection.');
+            } else {
+                alert('Failed to update manufacturer. Check the console for more details.');
+            }
+        }
+    });
+});
+
+// Handle form close button for the edit form
+$(document).on('click', '.editForm #closeForm', function() {
+    $(".editForm").hide();
+});
+    // Handle form close button for the add form
+    $(document).on('click', '#closeForm', function() {
+        $("#manufacturerform").hide();
+    });
+</script>
+<script>
+// Handle form close button
+$('#closeForm').click(function() {
+    // Hide the form when the close button is clicked
+    $("#manufacturerform").hide();
+});
+
+$('#customerTable').on('click', '.deleteBtn', function() {
+    var data = table.row($(this).parents('tr')).data();
+    var deleteButton = $(this);  // Store the reference to 'this' for later use
+
+    if (data && data.id) {
+        var deleteUrl = 'http://localhost:5000/auth/journaldelete/' + data.id;
+        console.log('Data:', data);
+
+        $.ajax({
+            type: 'DELETE',
+            url: deleteUrl,
+            success: function(response) {
+                console.log(response);
+                if (response.success) {
+                    alert('Successfully Deleted 🗑');
+                  table.ajax.reload();
+                } else {
+                    alert("Failed to delete customer: " + response.error);
+                }
+            },
+            error: function(error) {
+                console.error('Error deleting customer:', error);
+                alert("Failed to delete customer. Check console for details.");
+            }
+        });
+    } else {
+        console.error('Invalid or undefined data:', data);
+    }
+});
+</script>
+<script>
+
+
+// Fetch options for particulars
+$.ajax({
+    url: 'http://localhost:5000/auth/journal/particulars',
+    method: 'GET',
+    success: function (response) {
+        console.log('Received response for  particulars:', response);
+        var options = response.data;
+        if (options && options.length) {
+            options.forEach(function (option) {
+                $('.dropdown[name="particulars"]').append($('<option>', {
+                    value: option.ledgername,
+                    text: option.ledgername
+                }));
+            });
+        } else {
+            console.error('No options found for particulars');
+        }
+    },
+    error: function (xhr, status, error) {
+        console.error('Error fetching options for particulars:', error);
+    }
+});
+
+
+</script>
+
+</body>
+</html>
+
+<form id="manufacturerform" style="display: none;" method="post" action="/auth/journal">
+    <div class="row">
+        <div class="col">
+           <!-- Your form fields -->
+      <label for="journal Date" class="h6">journal Date:</label>
+      <input type="date"  name="journaldate" id="journaldate" value="">
+      <!-- Inside your form -->
+      <label class="h6" for="Particulars">Particulars:</label>
+      <select id="particulars" class="dropdown" name="particulars"></select>
+            <input type="text" placeholder="Amount(dr)" name="dr" id="dr">
+             <input type="text" placeholder="Amount(cr)" name="cr" id="cr">
+          <input type="text" placeholder="Bill No" name="billno" id="billno">
+            <input type="text" placeholder="Remarks" name="remarks" id="remarks">
+        </div>
+    </div>
+    <button type="submit" value="submit" class="btn btn-primary" id="saveManufacturer">Save</button>
+    <button type="button" class="btn btn-primary" id="closeForm">Close</button>
+</form>
+
+<form class="editForm" method="put" action="/auth/journaledit/:id">
+  <div class="row">
+        <div class="col">
+            <input type="hidden" id="id">
+             <!-- Your form fields -->
+      <label for="journal Date" class="h6">journal Date:</label>
+      <input type="date"  name="journaldate" id="journaldate" value="">
+      <!-- Inside your form -->
+      <label class="h6" for="Particulars">Particulars:</label>
+      <select id="particulars" class="dropdown" name="particulars"></select>
+            <input type="text" placeholder="Amount(dr)" name="dr" id="dr">
+             <input type="text" placeholder="Amount(cr)" name="cr" id="cr">
+          <input type="text" placeholder="Bill No" name="billno" id="billno">
+            <input type="text" placeholder="Remarks" name="remarks" id="remarks">
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+    <button type="button" class="btn btn-primary" id="closeEditForm">Close</button>
+</form>
+
+
+ <script>
+  $( function() {
+    $( "#fromDate" ).datepicker();
+  } );
+  </script>
+ <script>
+  $( function() {
+    $( "#toDate" ).datepicker();
+  } );
+  </script>
+
+<script>
+    
+// Handle form close button for the edit form
+$(document).on('click', '.editForm #closeEditForm', function() {
+    $(".editForm").hide();
+});
+</script>

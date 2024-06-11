@@ -1,0 +1,466 @@
+/* Generated using nucleoapp.com */
+/* --------------------------------
+
+Icon colors
+
+-------------------------------- */
+
+.icon {
+  display: inline-block;
+  /* icon primary color */
+  color: #111111;
+  height: 1em;
+  width: 1em;
+}
+
+.icon use {
+  /* icon secondary color - fill */
+  fill: #7ea6f6;
+}
+
+.icon.icon-outline use {
+  /* icon secondary color - stroke */
+  stroke: #7ea6f6;
+}
+/* --------------------------------
+
+Change icon size
+
+-------------------------------- */
+.icon-xs {
+  height: 0.5em;
+  width: 0.5em;
+}
+.icon-sm {
+  height: 0.8em;
+  width: 0.8em;
+}
+.icon-lg {
+  height: 1.6em;
+  width: 1.6em;
+}
+.icon-xl {
+  height: 2em;
+  width: 2em;
+}
+/* -------------------------------- 
+
+Align icon and text 
+
+-------------------------------- */
+.icon-text-aligner {
+  /* add this class to parent element that contains icon + text */
+  display: flex;
+  align-items: center;
+}
+.icon-text-aligner .icon {
+  color: inherit;
+  margin-right: 0.4em;
+}
+.icon-text-aligner .icon use {
+  color: inherit;
+  fill: currentColor;
+}
+.icon-text-aligner .icon.icon-outline use {
+  stroke: currentColor;
+}
+/* -------------------------------- 
+
+Icon reset values - used to enable color customizations
+
+-------------------------------- */
+.icon {
+  fill: currentColor;
+  stroke: none;
+}
+.icon.icon-outline {
+  fill: none;
+  stroke: currentColor;
+}
+.icon use {
+  stroke: none;
+}
+.icon.icon-outline use {
+  fill: none;
+}
+/* -------------------------------- 
+
+Stroke effects - Nucleo outline icons
+
+- 16px icons -> up to 1px stroke (16px outline icons do not support stroke changes)
+- 24px, 32px icons -> up to 2px stroke
+- 48px, 64px icons -> up to 4px stroke
+
+-------------------------------- */
+
+.icon-outline.icon-stroke-1 {
+  stroke-width: 1px;
+}
+.icon-outline.icon-stroke-2 {
+  stroke-width: 2px;
+}
+.icon-outline.icon-stroke-3 {
+  stroke-width: 3px;
+}
+.icon-outline.icon-stroke-4 {
+  stroke-width: 4px;
+}
+.icon-outline.icon-stroke-1 use,
+.icon-outline.icon-stroke-3 use {
+  -webkit-transform: translateX(0.5px) translateY(0.5px);
+  -moz-transform: translateX(0.5px) translateY(0.5px);
+  -ms-transform: translateX(0.5px) translateY(0.5px);
+  -o-transform: translateX(0.5px) translateY(0.5px);
+  transform: translateX(0.5px) translateY(0.5px);
+}
+/* Style the individual buttons */
+.buttons-copy ,.buttons-excel,.buttons-pdf,.buttons-csv{
+  background-color: #5e72e4 !important;
+  border-color: #5e72e4 !important;
+  font-family: 'Open Sans' !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: white !important;
+  margin: 5px !important;
+  padding: 5px !important;
+  cursor: pointer !important;
+  border-radius: 5px !important;
+  width: 100px !important;
+  cursor: pointer;
+  transition: all 0.60s ease;
+}
+.fa-file-circle-plus{
+  color: #5e72e4 !important;
+  border-color: #e2e2e2 !important;
+}
+.buttons-copy:hover ,.buttons-excel:hover,.buttons-pdf:hover,.buttons-csv:hover{
+  transform: rotateY(2deg) rotateX(1deg) translateY(-2px);
+
+}
+.table-responsive  .row .col-date{
+  float: inline-end !important;
+  font-size: 14px !important;
+}
+input,select{
+  border-radius: 5px;
+  border: 1px solid gray;
+  font-size: 14px;
+}
+.datebar{
+  align-items: center !important;
+  justify-content: end !important;
+  float: right !important;
+  position: absolute;
+  place-content: end;
+  width: 100%;
+  right: 0;
+  top: 0;
+  padding: 5px !important;
+  margin: 5px !important;
+  text-align: end !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  align-content: end;
+  justify-items: end;
+}
+.datebar label {
+  font-size: 14px !important;
+  font-weight: 700;
+  display: block; 
+  margin-top: 5px;
+}
+aside .sidebar{
+  height: 100vh !important;
+  border-color: #111111 1px solid !important;
+}
+.min-height-300 .bg-primary {
+    min-height: 100px !important;
+    background-color: #767885  !important;
+}
+.container-fluid .card{
+  box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.5); /* Add a box shadow */
+  border-radius: 10px;
+}
+ .cards{
+  transition:  all  0.3s; /* Corrected timing function and added 's' for seconds */
+  /* Add other styling properties for your .card class */
+}
+.cards:hover {
+  transform:  scale(1.05);
+  /* You can also add other styles for the hover state */
+}
+ .sidenav{
+  box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.5); /* Add a box shadow */
+  background-color: #111111;
+}
+#fnav{
+  background: none !important;
+  color: #111111 !important;
+}
+ #navbar span{
+  color: #8f8686 !important;
+  }
+  #navbar .fa {
+    color: #8f8686 !important;
+  }
+  #navbar span{
+    color: #8f8686 !important;
+    top: 0% !important;
+    margin: 0%;
+    padding: 0%;
+  }
+  #sidenav-main{
+    box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.5); /* Add a box shadow */
+
+  }
+.nav-item .fa{
+  color: #8f8686 !important;  
+}
+.nav-item span{
+  color: #8f8686 !important;
+}
+ #iconNavbarSidenav .sidenav-toggler-line{
+  color: #8f8686 !important;
+  background-color:#8f8686 !important ;
+}
+
+/* Add a transition for smoother animation */
+.navbar-brand-img {
+    transition: all 0.3s ease !important; /* Adjust the duration and easing as needed */
+}
+/* On hover, increase width and show a pop-up effect */
+.navbar-brand-img:hover {
+    transform: translateX(-10%) scaleX(1.3) !important; /* Increase size slightly for a pop-up effect */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important; /* Add a subtle box shadow */
+}
+.navbar-brand-img:hover::before {
+    content: url("/assets/img/Untitled\ design\ \(11\)-modified.png"); /* Unicode star character; replace with your desired icon */
+    color: #fff;
+    background-color: #111111;
+    position: absolute !important;
+    left: -25px !important; /* Adjust the position as needed */
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+}
+.card-plain{
+  box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.5); /* Add a box shadow */
+}
+table thead tr th{
+  text-wrap: nowrap !important;
+}
+table tbody tr td{
+ text-align: center !important;
+}
+.editBtn {
+  color: #800080; /* Purple color for edit */
+}
+
+.deleteBtn {
+  color: #ff8800; /* Warning color for delete */
+}
+table thead th{
+  text-align: center;
+}
+th, td {
+  border: 0px solid #dddddd;
+  text-align: center;
+  padding: 5px;
+}
+table tbody tr td{
+  text-wrap: nowrap !important;
+}
+#filter-button{
+  width: 100px !important;
+}
+
+/* Style for even rows */
+table tbody tr.even {
+  background-color: #ffffff !important;
+}
+
+/* Style for odd rows */
+table tbody tr.odd {
+  background-color: #dadada !important; /* You can set a different background color for odd rows */
+}
+
+/* Additional styling for all rows */
+table tbody tr {
+  border: 1px solid #ffffff !important;
+  box-sizing: border-box !important;
+  padding: 10px !important;
+}
+
+.align-right-top label {
+  display: inline !important; /* Each label on a new line */
+  font-size: 16px !important; /* Adjust the font size as needed */
+}
+
+
+.dark-version .sidenav.bg-white {
+  background-color: #051139 !important;
+}
+input {
+  font-size: 16px;
+  border: 1px solid #ccc;
+  position: relative;
+  padding: 2px; /* Adjust the padding value */
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
+  line-height: 0.3; /* Adjust line-height to slightly lower the text */
+}
+
+input::placeholder {
+  color: gray;
+  position: absolute;
+  transition: color 0.3s ease-out, transform 0.3s ease-out;
+  transform-origin: right center; /* Set the transform origin to the left center */
+}
+
+input:focus::placeholder,
+input:not(:placeholder-shown)::placeholder {
+  color: #3498db;
+  transform: translateY(-100%) translateY(5px); /* Move up and adjust for 1px border */
+}
+
+input:not(:placeholder-shown)::placeholder {
+  transform: translateY(-100%) translateY(5px); /* Move up and adjust for 1px border */
+}
+
+input::placeholder  {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  transition: transform 0.3s, font-size 0.3s, color 0.3s;
+  font-size: 16px;
+  color: grey;
+  pointer-events: none;
+}
+
+input:focus::placeholder {
+  transform: translateY(-70%) scale(0.8);
+  position: fixed;
+  display: block;
+  top: 0%;
+  margin-top: 10px;
+  font-size: 16px;
+  color: #000000;
+  border: 1px solid black;
+  padding: 0px;
+  background-color: white;
+  opacity: 1;
+  overflow: auto;
+}
+
+ 
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.col {
+  flex: 1;
+  padding: 5px;
+}
+.custom-input-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.custom-input-container label {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  pointer-events: none;
+  transition: 0.3s;
+  color: #555; /* Adjust label color as needed */
+  background-color: #fff;
+  transform: translateY(-50%);
+  font-size: 14px;
+}
+
+.custom-input-container input {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ddd; /* Adjust border color as needed */
+  border-radius: 4px;
+  outline: none;
+  font-size: 14px;
+}
+
+.custom-input-container input:focus + label,
+.custom-input-container input:not(:placeholder-shown) + label {
+  top: 0;
+  font-size: 12px;
+  color: #ffffff; /* Adjust label color on focus */
+}
+
+
+.dark-version .card{
+  color: white !important;
+}
+
+.dark-version .custom-input-container input{
+  background-color: #051139 !important;
+  color: rgba(253, 253, 253, 0.8) !important;
+}
+.dark-version label {
+  color: rgba(253, 253, 253, 0.8) !important;
+ 
+}
+.dark-version .custom-input-container label{
+  color: rgba(255, 255, 255, 0.8) !important;
+  background-color: #051139 !important;
+ 
+} 
+.dark-version .custom-input-container input:focus + label,
+.dark-version .custom-input-container input:not(:placeholder-shown) + label {
+  top: 0;
+  font-size: 10px !important;
+  color: #ffffff !important;
+}
+ 
+.dark-version .form-control{
+  background-color: #051139;
+  color: white;
+}
+
+
+/* Style for even rows */
+.dark-version  table tbody tr.even {
+  background-color: #051139!important;
+}
+
+/* Style for odd rows */
+.dark-version table tbody tr.odd {
+  background-color:#202e5c !important; /* You can set a different background color for odd rows */
+}
+
+.dark-version .btn {
+  background-color: #202e5c;
+  border: 1px solid #202e5c!important;
+}
+
+.dark-version .buttons-copy,
+.dark-version .buttons-excel,
+.dark-version .buttons-pdf,
+.dark-version .buttons-csv {
+  background-color: #202e5c !important;
+  border: 1px solid #202e5c!important;
+  color: #fff !important;
+}
+.dark-version .ps .fixed-plugin {
+  color: #fff !important;
+  background-color: #202e5c !important;
+}
+.dark-version #manufacturerform{
+  background-color: #3f4761;
+}
+.dark-version .dataTables_info{
+  color: white !important;
+}
+
+.dark-version #sidenav-main {
+  background-color:#111C44 !important;
+  background: #111C44!important;
+}

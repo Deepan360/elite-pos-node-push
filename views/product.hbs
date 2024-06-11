@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ {{>header}}
+     <style>
+        #manufacturerform {
+                  display: block;
+                  position: fixed;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
+                  background-color: #8f8f8f; /* White background for the form */
+                  padding: 20px;
+                  z-index: 1000; /* Ensure it's above other elements */
+                  border-radius: 10px;
+              }
+            .editForm {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #8f8f8f;
+            padding: 20px;
+            z-index: 1000;
+            border-radius: 10px;
+        }
+           
+          </style>
+    <style>
+        .container{
+            margin-left: 20%;
+        }
+        .updateManufacturer{
+             background-color: rgba(50, 141, 168) !important;
+            color: white !important;
+             border: none !important;
+                border-radius: 3px !important;
+                width: 80px !important;
+            height: 30px;
+  
+        }
+        .closeForm{
+             background-color: rgba(50, 141, 168) !important;
+            color: white !important;
+             border: none !important;
+                border-radius: 3px !important;
+                width: 80px !important;
+            height: 30px;
+  
+        }
+  button{
+    margin: 1px;
+  }
+      #message {
+             display: none;
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              background-color: #ffffff; /* White background for the form */
+              color: black;
+              padding: 20px;
+              z-index: 1000; /* Ensure it's above other elements */
+              size: 200px;
+              font-weight: 700;
+              justify-content: space-between;
+              align-content: space-between;
+              align-items: center;
+              font-size: 14px;
+              box-shadow: 0px 0px 12px  rgba(0, 0, 0, 0.3) !important; /* Add a subtle box shadow */
+              border-radius: 8px; /* Optional: Add border-radius for rounded corners */
+              overflow: hidden; 
+        }
+    form input{
+        
+        margin: 2px;
+    }
+        form button{
+           width: 100px !important;
+            padding: 5px;
+            margin: 5px;  
+        }
+      .col input{
+        width: 100%;
+
+      }
+      input[type=checkbox]{
+        width: 100px;
+        color: #8f8f8f !important;
+      }
+      
+            </style> 
+</head>
+<body class="g-sidenav-show   bg-gray-100">
+ {{>sidebar}}
+  <main class="main-content position-relative border-radius-lg ">
+      {{>navbar}}
+
+    <div class="table-responsive container-fluid py-4  ">
+        <div class=" form-control card ">
+            <h3>List Of Product</h3>
+        
+           <form action="/auth/product" method="get">
+             <table id="customerTable" class="table-responsive justify-content-between align-items-end" style="width:100% !important">
+         
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Code</th>
+                        <th>Product Name</th>
+                        <th>Description</th>
+                        <th>HSN Code</th>
+                        <th>product Category</th>
+                        <th>Product Type</th>
+                        <th>Measurement</th>
+                        <th>UOM</th>
+                        <th>Tax(%)</th>
+                        <th>Active</th>
+                        <th class="action">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                   
+                </tbody>
+               
+            </table>
+             <button type="button" value="button" class="btn btn-primary" id="addmanufacturer" >add</button>
+            </form>
+            
+
+            </div>
+             
+        </div>
+        
+    </div>
+   
+    
+   </div>
+
+ 
+{{>footer}}
+  
+  </main>
+ 
+  {{>color}}
+  
+ 
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    // Wait for the DOM to be fully loaded
+    var messageElement = document.getElementById('message');
+
+    if (messageElement) {
+        // If the message element exists
+        setTimeout(function () {
+            // Set a timeout to hide the message after 2 seconds
+            messageElement.style.display = 'none';
+        }, 1000); // 2000 milliseconds = 2 seconds
+    }
+});
+  </script>
+    <script>
+        // Add form button click event
+        $(document).on('click', '#addmanufacturer', function() {
+        $("#manufacturerform").show();
+        $("#id").val('');
+    });
+       var table = $("#customerTable").DataTable({
+         debug: true,
+    ajax: {
+        'url': 'http://localhost:5000/auth/product',
+        'dataType': 'json',
+        'dataSrc': 'data',
+         type: 'GET', // Adjust 'rows' based on your server response structure
+    },
+    columns: [
+        { data: 'id' },
+        { data: 'code' },
+        { data: 'productname' },
+        { data: 'description' },
+        { data: 'hsnCode' }, 
+        { data: 'category' },
+        { data: 'productType' },
+        { data: 'measurement' },
+        { data: 'uom' },
+        { data: 'tax' },
+        { data: 'active', render: function (data, type, row) {
+                // Render a checkbox based on the 'active' property value
+                return data ? '<input type="checkbox" checked>' : '<input type="checkbox">';
+            } },
+        {
+            data: 'id',
+            render: function (data) {
+                return '<i class="fa-regular fa-pen-to-square editBtn" type="button" data-id="' + data + '"></i>' +
+                    ' <i class="fa-solid fa-trash deleteBtn" type="button" data-id="' + data + '"></i>';
+            }
+        }
+    ],
+    dom: 'Bfrtip',
+    buttons: ['copy', 'excel', 'pdf', 'csv'],
+    paging: false,
+    scrollY: '350px',
+    scrollX: '100px',
+    scrollCollapse: true,
+    responsive: true,
+     "bInfo": true, // Show information (records, etc.)
+    "bBorders": true, // Show borders
+});
+
+        if (table.rows().count() === 0) {
+            $("#emptyMessage").show();
+        }
+    </script>
+<script>
+   // Handle click event for the "Edit" button
+$(document).on('click', '.editBtn', function() {
+    // Get the data associated with the clicked row
+    var data = table.row($(this).parents('tr')).data();
+
+    console.log('Data:', data);
+
+    // Check if the data is valid and an object
+    if (data && typeof data === 'object' && !Array.isArray(data)) {
+        // Populate the edit form fields with the data
+        $(".editForm #id").val(data.id);
+        $(".editForm #code").val(data.code);
+        $(".editForm #productname").val(data.productname);
+        $(".editForm #description").val(data.description);
+        $(".editForm #hsnCode").val(data.hsnCode);
+        $(".editForm #category").val(data.category);
+        $(".editForm #productType").val(data.productType);
+        $(".editForm #measurement").val(data.measurement);
+        $(".editForm #uom").val(data.uom);
+        $(".editForm #tax").val(data.tax);
+       
+       
+        // Check if 'active' property is true and set the checkbox accordingly
+        if (data.active) {
+            $(".editForm #active").prop('checked', true);
+        } else {
+            $(".editForm #active").prop('checked', false);
+        }
+
+        // Show the edit form
+        $(".editForm").show();
+    } else {
+        console.error('Invalid or undefined data:', data);
+    }
+});
+
+// Handle form submission for the edit form
+$(document).on('submit', '.editForm', function(event) {
+    event.preventDefault();
+
+    var formData = $(this).serialize();
+    var customerId = $(".editForm #id").val();
+
+    console.log('Form Data:', formData);
+
+    $.ajax({
+        type: 'PUT',
+        url: 'http://localhost:5000/auth/productedit/' + customerId,
+        data: formData,
+        success: function(response) {
+            console.log(response);
+
+            if (response.success) {
+                // Update the table row with the new data
+                var tableRow = table.row('#' + customerId); // Assuming each row has a unique ID
+                tableRow.data(response.updatedCustomerData); // Use the actual key from the response
+
+                // Optionally, you can hide the form after a successful update
+                $(".editForm").hide();
+                alert('Customer Updated Successfully 🖋');
+                table.ajax.reload();
+            } else {
+                alert('Failed to update customer');
+            }
+        },
+        error: function(error) {
+            console.error('Error:', error);
+
+            if (error.status === 0) {
+                alert('Failed to connect to the server. Check your server and network connection.');
+            } else {
+                alert('Failed to update customer. Check the console for more details.');
+            }
+        }
+    });
+});
+
+// Handle form close button for the edit form
+$(document).on('click', '.editForm #closeForm', function() {
+    $(".editForm").hide();
+});
+
+
+    // Handle form close button for the add form
+    $(document).on('click', '#closeForm', function() {
+        $("#manufacturerform").hide();
+    });
+</script>
+<script>
+// Handle form close button
+$('#closeForm').click(function() {
+    // Hide the form when the close button is clicked
+    $("#manufacturerform").hide();
+});
+
+$('#customerTable').on('click', '.deleteBtn', function() {
+    var data = table.row($(this).parents('tr')).data();
+    var deleteButton = $(this);  // Store the reference to 'this' for later use
+
+    if (data && data.id) {
+        var deleteUrl = 'http://localhost:5000/auth/productdelete/' + data.id;
+        console.log('Data:', data);
+
+        $.ajax({
+            type: 'DELETE',
+            url: deleteUrl,
+            success: function(response) {
+                console.log(response);
+                if (response.success) {
+                    alert('Successfully Deleted 🗑');
+                    table.ajax.reload();
+                } else {
+                    alert("Failed to delete customer: " + response.error);
+                }
+            },
+            error: function(error) {
+                console.error('Error deleting customer:', error);
+                alert("Failed to delete customer. Check console for details.");
+            }
+        });
+    } else {
+        console.error('Invalid or undefined data:', data);
+    }
+});
+</script>
+<script>
+// Fetch options for cash/bank Ledger(dr)
+// Fetch options for cash/bank Ledger(dr)
+$.ajax({
+    url: 'http://localhost:5000/auth/productcategory/category',
+    method: 'GET',
+    success: function (response) {
+        console.log('Received response for category:', response);
+        var options = response.data;
+        if (options && options.length) {
+            options.forEach(function (option) {
+                $('.dropdown[name="category"]').append($('<option>', {
+                 
+                      value: option.Product_Category,
+                    text: option.Product_Category
+                }));
+            });
+        } else {
+            console.error('No options found for category');
+        }
+    },
+    error: function (xhr, status, error) {
+        console.error('Error fetching options for cash/bank Ledger(cr):', error);
+    }
+});
+
+// Fetch options for customer Ledger(cr)
+$.ajax({
+    url: 'http://localhost:5000/auth/producttype/type',
+    method: 'GET',
+    success: function (response) {
+        console.log('Received response fortype:', response);
+        var options = response.data;
+        if (options && options.length) {
+            options.forEach(function (option) {
+                $('.dropdown[name="productType"]').append($('<option>', {
+                    value: option.producttype,
+                    text: option.producttype
+                }));
+            });
+        } else {
+            console.error('No options found for Supplier Ledger(dr)');
+        }
+    },
+    error: function (xhr, status, error) {
+        console.error('Error fetching options for Supplier Ledger(dr):', error);
+    }
+});
+
+// Fetch options for customer Ledger(cr)
+$.ajax({
+    url: 'http://localhost:5000/auth/uom/getuom',
+    method: 'GET',
+    success: function (response) {
+        console.log('Received response fortype:', response);
+        var options = response.data;
+        if (options && options.length) {
+            options.forEach(function (option) {
+                $('.dropdown[name="uom"]').append($('<option>', {
+                    value: option.shortname,
+                    text: option.shortname
+                }));
+            });
+        } else {
+            console.error('No options found for Supplier Ledger(dr)');
+        }
+    },
+    error: function (xhr, status, error) {
+        console.error('Error fetching options for Supplier Ledger(dr):', error);
+    }
+});
+
+   {{!-- // Convert date objects to strings in the "YYYY-MM-DD" format
+        $(".editForm #reciptdate").val(formatDate(data.reciptdate));
+        $(".editForm #billdate").val(formatDate(data.billdate));
+
+        $(".editForm #dr").val(data['cash/bankLedger(dr)']);
+        $(".editForm #cr").val(data['customerLedger(cr)']);
+function formatDate(dateObject) {
+    const date = new Date(dateObject);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${day}-${month}`;
+} --}}
+</script>
+
+</body>
+</html>
+ 
+   
+<form id="manufacturerform" style="display: none;" method="post" action="/auth/product">
+    <div class="row">
+        <div class="col">
+            <!-- First Column -->
+            <input type="hidden" placeholder="Id" name="id" id="id">
+            <input type="text" placeholder="Code No" name="code" id="code">
+            <input type="text" placeholder="Product name" name="productname" id="productname">
+            <input type="text" placeholder="Description" name="description" id="description">
+            <input type="text" placeholder="HSNCode" name="hsnCode" id="hsnCode">
+               <!-- Inside your form -->
+      <label class="h6" for="Category">Category:</label>
+      <select id="category" name="category"class="dropdown"  ></select>
+      <label class="h6" for="ProductType">ProductType:</label>
+      <select id="productType" class="dropdown" name="productType"></select>
+            <input type="text" placeholder="Measurement" name="measurement" id="measurement">
+            <label class="h6" for="UOM">UOM:</label>
+      <select id="uom" class="dropdown" name="uom"></select>
+       
+            <input type="text" placeholder="Tax" name="tax" id="tax">
+            <label for="active" style="font-size: 14px;">Active<input type="checkbox" id="active" value="1" name="active" ></label>
+            
+        </div>
+    </div>
+    <button type="submit" value="submit" class="btn btn-primary" id="saveManufacturer">Save</button>
+    <button type="button" class="btn btn-primary" id="closeForm">Close</button>
+</form>
+  
+<form class="editForm" method="put" action="/auth/productedit/:id">
+    <div class="row">
+        <div class="col">
+            <!-- First Column -->
+            <input type="hidden" placeholder="Id" name="id" id="id">
+            <input type="text" placeholder="Code No" name="code" id="code">
+            <input type="text" placeholder="Product name" name="productname" id="productname">
+            <input type="text" placeholder="Description" name="description" id="description">
+            <input type="text" placeholder="HSNCode" name="hsnCode" id="hsnCode">
+               <!-- Inside your form -->
+      <label class="h6" for="Category">Category:</label>
+      <select id="category" name="category"class="dropdown"  ></select>
+      <label class="h6" for="ProductType">ProductType:</label>
+      <select id="productType" class="dropdown" name="productType"></select>
+            <input type="text" placeholder="Measurement" name="measurement" id="measurement">
+             <label class="h6" for="UOM">UOM:</label>
+      <select id="uom" class="dropdown" name="uom"></select>
+            <input type="text" placeholder="Tax" name="tax" id="tax">
+            <label for="active" style="font-size: 14px;">Active<input type="checkbox" id="active" value="1" name="active" ></label>
+            
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+    <button type="button" class="btn btn-primary  " id="closeForm">Close</button>
+</form>
+
+    <script>
+          $("#closeForm").click(function() {
+            $(".editForm").hide();
+        });
+    </script>

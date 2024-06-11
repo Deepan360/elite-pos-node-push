@@ -1,0 +1,290 @@
+
+
+<head>
+ {{>header}}
+
+  <style>
+    #contraForm {
+
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #8f8f8f;
+      /* White background for the form */
+      padding: 20px;
+      z-index: 1000;
+      /* Ensure it's above other elements */
+      border-radius: 10px;
+      justify-content: space-between;
+      align-content: space-between;
+      align-items: center;
+    }
+
+    #contraForm input {
+      margin: 2px;
+      padding: 2px;
+    }
+
+    #contraForm select {
+      margin: 2px;
+      padding: 2px;
+    }
+
+    #contraForm button {
+      width: fit-content;
+      margin: 2px;
+    }
+
+    .dt-button {
+      margin-bottom: 2px;
+      /* Adjust margin as needed */
+      background-color: aqua;
+    }
+
+    .editBtn {
+      width: fit-content;
+      color: rgb(141, 64, 214);
+      margin: 2px;
+      padding: 2px;
+      align-items: center;
+
+    }
+
+    .deleteBtn {
+      width: fit-content;
+      color: rgb(224, 47, 47);
+      margin: 2px;
+      padding: 2px;
+      align-items: center;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    .btn {
+      margin: 5px;
+      justify-content: space-around;
+      width: 100px;
+      padding: 5px;
+      align-content: center;
+    }
+
+    th,
+    td {
+      border: 0px solid #dddddd;
+      text-align: center;
+      padding: 5px;
+    }
+ 
+    input {
+      width: 100%;
+      /* Make the input box take 100% width of its container */
+      box-sizing: border-box;
+      /* Include padding and border in the width */
+      vertical-align: middle;
+      /* Align the input vertically in the middle */
+      text-align: center !important;
+    }
+       table tbody tr td {
+    text-wrap:wrap  !important; 
+}
+
+table tbody tr td {
+    text-align: left !important; 
+}
+  </style>
+ 
+</head>
+
+<body class="g-sidenav-show   bg-gray-100">
+ {{>sidebar}}
+  <main class="main-content position-relative border-radius-lg ">
+ {{>navbar}}
+    <div class="table-responsive container-fluid py-4  ">
+      <div class="form-control card   " style="width: 100%;">
+<form action="/auth/accountconfiguration" method="post">
+        <h3>Account Configuration</h3>
+            <table class="table-responsive justify-content-between align-items-end" >
+        
+            <tr>
+                <td> <label for="Wholesale Ledger">Wholesale Ledger</label>
+                    <input type="text" id="WholesaleLedger" name="WholesaleLedger" required></td>
+                <td> <label for="CGST Ledger">CGST Ledger:</label>
+                    <input type="text" id="CGSTLedger" name="CGSTLedger" required></td>
+                    <td> <label for="SGST Ledger">SGST Ledger:</label>
+                        <input type="text" id="SGSTLedger" name="SGSTLedger" required>
+                </td>
+                
+            </tr>
+       
+        <tr>
+            <td>  <label for="IGST Ledger">IGST Ledger:</label>
+                <input type="text" id="IGSTLedger" name="IGSTLedger" required></td>
+            <td>   <label for="Round 0ff Ledger">Round 0ff Ledger:</label>
+                <input type="text" id="Round0ffLedger" name="Round0ffLedger" required>
+            </td>
+        <td><label for="Freight Ledger">Freight Ledger:</label>
+            <input type="text" id="FreightLedger" name="FreightLedger" required></td>
+           
+    </tr>
+    
+        <tr>
+            <td> <label for="Other Charges Ledger">Other Charges Ledger:</label>
+                <input type="text" id="OtherChargesLedger" name="OtherChargesLedger"></td>
+        <td>  <label for="Discount Ledger">Discount Ledger:</label>
+            <input type="text" id="DiscountLedger" name="DiscountLedger"></td>
+            <td> <label for="Purchase Ledger">Purchase Ledger:</label>
+                <input type="text" id="PurchaseLedger" name="PurchaseLedger">
+        </td>
+       
+    </tr>
+    
+        <tr>
+            <td>   <label for="Sales Ledger">Sales Ledger:</label>
+                <input type="text" id="SalesLedger" name="SalesLedger"></td>
+                <td> <label for="Customer Ledger">Customer Ledger:</label>
+                    <input type="text" id="CustomerLedger" name="CustomerLedger" required></td>
+          
+           
+       
+    
+    </tr>
+ 
+
+
+</table>
+        <input type="submit" class="btn btn-primary" value="Submit">
+        </form>
+      </div>
+    </div>
+  {{>footer}}
+
+
+  </main>
+
+ {{>color}}
+
+<!-- Add this script in your HTML file -->
+<script>
+  // Assume you have a form with the id "myForm"
+  const form = document.getElementById('myForm');
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(form);
+    const response = await fetch('/your-api-endpoint', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert(result.message); // Show a success message
+    } else {
+      alert(result.error); // Show an error message
+    }
+  });
+</script>
+
+
+  <script>
+    var id = ''; // Initialize the id variable
+    var table = $('#contraTable').DataTable({
+      dom: 'Bfrtip',
+      buttons: ['copy', 'excel', 'pdf', 'csv'],
+      scrollY: '400px',
+      scrollX: '300px',
+      paging: false,
+      scrollCollapse: true,
+    });
+
+    // Add form button click event
+    $("#addmulticontra").click(function () {
+      $("#contraForm").show();
+      $("#contraid").val('');
+    });
+
+    // Save product button click event
+    $("#saveproduct").click(function () {
+      var propertyid = $("#propertyid").val();
+      var propertytype = $("#propertytype").val();
+      var rentLease = $("#rentLease").val();
+      var address = $("#address").val();
+      var areaSq = $("#areaSq").val();
+      var areaLocality = $("#areaLocality").val();
+      var tenet = $("#tenet").val();
+      var due = $("#due").val();
+      var totalAmount = $("#totalAmount").val();
+      if (id === '') {
+        // Create a new row in the table
+        var newRow = [
+          propertyid, propertytype, rentLease, address, areaSq, areaLocality, tenet, due, totalAmount,
+          '<i class="fa-solid fa-pen-to-square editBtn"></i> <i class="fa-solid fa-trash deleteBtn"></i>'
+        ];
+
+        // Add the new row to the table
+        table.row.add(newRow).draw();
+      }
+      else {
+        // Update an existing row in the table
+        var rowData = [
+          propertyid, propertytype, rentLease, address, areaSq, areaLocality, tenet, due, totalAmount,
+          '<i class="fa-solid fa-pen-to-square editBtn"></i> <i class="fa-solid fa-trash deleteBtn"></i>'
+        ];
+        var row = table.row(function (idx, data, node) {
+          return data[0] === id;
+        });
+        row.data(rowData).draw();
+      }
+
+      // Clear the form inputs and hide the form
+      $("#contraForm input").val('');
+      $("#contraForm").hide();
+      id = ''; // Reset id after saving
+    });
+
+    // Close form button click event
+    $("#closeForm").click(function () {
+      $("#contraForm").hide();
+      id = ''; // Reset id when closing the form
+    });
+
+    // Edit button click event
+    $('#contraTable').on('click', '.editBtn', function () {
+      var data = table.row($(this).parents('tr')).data();
+      var rowData = data.slice(0, -1); // Exclude the "Actions" column
+      $("#propertyid").val(data[0]);
+      $("#propertytype ").val(rowData[1]);
+      $("#rentLease").val(rowData[2]);
+      $("#address").val(rowData[3]);
+      $("#areaSq").val(rowData[4]);
+      $("#areaLocality").val(rowData[5]);
+      $("#tenet").val(rowData[6]);
+      $("#due").val(rowData[7]);
+      $("#totalAmount").val(rowData[8]);
+      $("#contraForm").show();
+      id = data[0]; // Set the id when editing
+    });
+
+    // Delete button click event
+    $('#contraTable').on('click', '.deleteBtn', function () {
+      table.row($(this).parents('tr')).remove().draw();
+      if (table.rows().count() === 0) {
+        // Show empty message if the table is empty
+        $("#emptyMessage").show();
+      }
+    });
+
+
+  </script>
+
+
+</body>
+
+</html>

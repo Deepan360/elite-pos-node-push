@@ -1,0 +1,121 @@
+<head>
+    <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="apple-touch-icon" sizes="76x76" href="./assets/img/apple-icon.png">  
+  <link rel="icon" type="image/png" href="./assets/img/Untitled design (11)-modified.png">
+  <title>
+    elite POS
+  </title>
+ <!--     Fonts and icons     -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+  <!-- Nucleo Icons -->
+  <link href="/assets/css/nucleo-icons.css" rel="stylesheet" />
+  <link href="/assets/css/nucleo-svg.css" rel="stylesheet" />
+  <!-- Font Awesome Icons -->
+  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+  <link href="/assets/css/nucleo-svg.css" rel="stylesheet" />
+  <!-- CSS Files -->
+  <link id="pagestyle" href="/assets/css/argon-dashboard.css?v=2.0.4" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+   <style>
+    .active{
+      background-color:#c3c5cc !important;
+      background-attachment: fixed;
+      color: rgb(0, 0, 0);
+    }
+     .a :hover{
+      background-color: black;
+      color: white;
+    }
+    .nav-item {
+            position: relative;
+        }
+
+        .sub-menu {
+            display: none;
+            position:absolute;
+            top: 100%;
+            right: 0%;
+            font-weight: 300;
+            align-items: center;
+            align-self: auto;
+            z-index: 1;
+            margin-left: 0%;
+            background-color: #aeafb8;
+            color: rgb(0, 0, 0);
+            
+        }
+
+        .nav-item:hover .sub-menu {
+            display: block;
+            
+        }
+        
+        .sidenav .sub-menu a:hover {
+            color: #f1f1f1;
+            border-radius: 10px;
+            background-color: black;
+        }
+        .navbar-vertical.navbar-expand-xs .navbar-collapse {
+    
+    
+    height: calc(100vh - 100px);
+}
+h5{
+  margin-left: 5px;
+  padding: 2px;
+}
+  </style>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+  <link rel="stylesheet"type="text/html" href="https://cdn.datatables.net/buttons/2.0.2/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" type="text/html" href="assets/vendors/fontawesome/all.min.css"/>
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script type="text/html" src="https://cdn.datatables.net/buttons/2.0.2/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script  type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" type="text/html" href="https://cdn.datatables.net/buttons/2.0.2/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+  <link rel="stylesheet" type="text/html" href="/resources/demos/style.css">
+  <script type="text/javascript" src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+</head>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var currentPageUrl = window.location.href;
+
+    // Get all navigation links
+    var navLinks = document.querySelectorAll('.navbar-nav .nav-link, .sub-menu .nav-link');
+
+    // Loop through each link
+    navLinks.forEach(function(link) {
+        var linkUrl = link.getAttribute('href');
+
+        // Check if the current page URL ends with the link URL
+        if (currentPageUrl.endsWith(linkUrl)) {
+            // Add the 'active' class to the parent 'li' element
+            link.closest('li').classList.add('active');
+        }
+    });
+});
+
+</script>
+
+
+
+ 
+ 

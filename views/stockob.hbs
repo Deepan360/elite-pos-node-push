@@ -73,7 +73,6 @@
               overflow: hidden; 
         }
     form input{
-        
         margin: 2px;
     }
         form button{
@@ -106,14 +105,14 @@
          
                 <thead>
                     <tr>
-                        <th>Id</th>
                         <th>Product Name</th>
                         <th>Batch No</th>
-                        <th>Batch Expiry</th>
-                        <th>pruc Rate</th>
-                        <th>MRP</th>
+                        <th>Tax</th>
+                        <th>UOM</th>
+                        <th>Purc.Rate</th>
+                         <th>Quantity</th>
                         <th>Op.Qty</th>
-                        <th class="action">Action</th>
+                        {{!-- <th class="action">Action</th> --}}
                     </tr>
                 </thead>
                 <tbody>
@@ -121,7 +120,7 @@
                 </tbody>
                
             </table>
-             <button type="button" value="button" class="btn btn-primary" id="addmanufacturer" >add</button>
+             {{!-- <button type="button" value="button" class="btn btn-primary" id="addmanufacturer" >add</button> --}}
             </form>
             
 
@@ -166,35 +165,24 @@
        var table = $("#customerTable").DataTable({
          debug: true,
     ajax: {
-        'url': 'http://localhost:5000/auth/stockob',
+        'url': '/auth/stockob',
         'dataType': 'json',
         'dataSrc': 'data',
          type: 'GET', // Adjust 'rows' based on your server response structure
     },
     columns: [
-        { data: 'id' },
-        { data: 'productname' },
-        { data: 'batchno' },
-        { data: 'batchexpiry',
-         render: function (data) {
-                            const formattedDate = moment(data).format("DD-MM-YYYY");
-                            return formattedDate;
-                        } }, 
-        { data: 'purcrate' },
-        { data: 'mrp' },
-        { data: 'optQty' },
-        {
-            data: 'id',
-            render: function (data) {
-                return '<i class="fa-regular fa-pen-to-square editBtn" type="button" data-id="' + data + '"></i>' +
-                    ' <i class="fa-solid fa-trash deleteBtn" type="button" data-id="' + data + '"></i>';
-            }
-        }
-    ],
+  { data: 'productname' },
+  { data: 'batchNo' },
+  { data: 'tax' },
+  { data: 'uom' },
+  { data: 'rate' },
+  { data: 'quantity' },
+  { data: 'op_quantity' }, // Adjusted to 'op.quantity'
+],
     dom: 'Bfrtip',
     buttons: ['copy', 'excel', 'pdf', 'csv'],
     paging: false,
-    scrollY: '350px',
+    scrollY: '450px',
     scrollX: '100px',
     scrollCollapse: true,
     responsive: true,
@@ -262,7 +250,7 @@ $(document).on('submit', '.editForm', function(event) {
 
     $.ajax({
         type: 'PUT',
-        url: 'http://localhost:5000/auth/stockobedit/' + customerId,
+        url: '/auth/stockobedit/' + customerId,
         data: formData,
         success: function(response) {
             console.log(response);
@@ -315,7 +303,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
     var deleteButton = $(this);  // Store the reference to 'this' for later use
 
     if (data && data.id) {
-        var deleteUrl = 'http://localhost:5000/auth/stockobdelete/' + data.id;
+        var deleteUrl = '/auth/stockobdelete/' + data.id;
         console.log('Data:', data);
 
         $.ajax({
@@ -340,7 +328,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
     }
 });
 $.ajax({
-    url: 'http://localhost:5000/auth/product/getproduct',
+    url: '/auth/product/getproduct',
     method: 'GET',
     success: function (response) {
         console.log('Received response fortype:', response);

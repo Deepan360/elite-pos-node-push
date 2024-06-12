@@ -220,7 +220,7 @@
     });
      var table = $("#customerTable").DataTable({
     ajax: {
-        url: 'http://localhost:5000/auth/payment',
+        url: '/auth/payment',
         dataType: 'json',
         dataSrc: 'data',
         type: 'GET',
@@ -326,7 +326,7 @@ console.log('Manufacturer ID:', manufacturerId);
 
     $.ajax({
         type: 'PUT',
-        url: 'http://localhost:5000/auth/paymentedit/' + manufacturerId,
+        url: '/auth/paymentedit/' + manufacturerId,
         data: formData,
         success: function(response) {
             console.log(response);
@@ -377,7 +377,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
     var deleteButton = $(this);  // Store the reference to 'this' for later use
 
     if (data && data.id) {
-        var deleteUrl = 'http://localhost:5000/auth/paymentdelete/' + data.id;
+        var deleteUrl = '/auth/paymentdelete/' + data.id;
         console.log('Data:', data);
 
         $.ajax({
@@ -406,31 +406,37 @@ $('#customerTable').on('click', '.deleteBtn', function() {
 // Fetch options for cash/bank Ledger(dr)
 // Fetch options for cash/bank Ledger(dr)
 $.ajax({
-    url: 'http://localhost:5000/auth/payment/cr',
+    url: '/auth/recipt/cr',
     method: 'GET',
     success: function (response) {
-        console.log('Received response for cash/bank Ledger(cr):', response);
+        console.log('Received response for cash/bank Ledger(dr):', response);
         var options = response.data;
         if (options && options.length) {
+            // Append options to the dropdown
             options.forEach(function (option) {
                 $('.dropdown[name="cr"]').append($('<option>', {
-                 
-                      value: option.ledgername,
+                    value: option.ledgername,
                     text: option.ledgername
                 }));
             });
         } else {
-            console.error('No options found for cash/bank Ledger(cr)');
+            console.error('No options found for cash/bank Ledger(dr)');
         }
+
+        // Manually append "cash" to the dropdown
+        $('.dropdown[name="cr"]').append($('<option>', {
+            value: 'cash',
+            text: 'cash'
+        }));
     },
     error: function (xhr, status, error) {
-        console.error('Error fetching options for cash/bank Ledger(cr):', error);
+        console.error('Error fetching options for cash/bank Ledger(dr):', error);
     }
 });
 
 // Fetch options for customer Ledger(cr)
 $.ajax({
-    url: 'http://localhost:5000/auth/payment/dr',
+    url: '/auth/payment/dr',
     method: 'GET',
     success: function (response) {
         console.log('Received response for  Ledger(dr):', response);

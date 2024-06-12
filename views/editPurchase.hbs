@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{>header}}
+
+    <style>
+   #purchaseFormContainer {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #8f8f8f;
+    padding: 20px;
+    z-index: 1001; /* Ensure the popup is above the blurred background */
+    border-radius: 10px;
+}
+.new-row {
+        display: none;
+    }
+.input-field.product-name {
+    width: 200px; /* Adjust the width as needed */
+    padding: 5px; ;
+}
+        .editForm {
+              display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #8f8f8f;
+    padding: 20px;
+    z-index: 1001; /* Ensure the popup is above the blurred background */
+    border-radius: 10px;
+        }
+
+        .container {
+            margin-left: 20%;
+        }
+
+        .updateManufacturer {
+            background-color: rgba(50, 141, 168) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 3px !important;
+            width: 80px !important;
+            height: 30px;
+        }
+
+        .closeForm {
+            background-color: rgba(50, 141, 168) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 3px !important;
+            width: 80px !important;
+            height: 30px;
+        }
+
+        button {
+            margin: 1px;
+        }
+
+        #message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            color: black;
+            padding: 20px;
+            z-index: 1000;
+            size: 200px;
+            font-weight: 700;
+            justify-content: space-between;
+            align-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.3) !important;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        form input {
+            margin: 2px;
+        }
+
+        form button {
+            width: 100px !important;
+            padding: 5px;
+            margin: 5px;
+        }
+
+        .col input {
+            width: 100%;
+        }
+
+        input[type=checkbox] {
+            width: 100px;
+            color: #8f8f8f !important;
+        }
+        #submitButton {
+    display: none;
+} 
+    </style>
+    <style>
+        .align-right-top {
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 10px;
+        }
+
+    </style>
+</head>
+<body class="g-sidenav-show bg-gray-100">
+{{>sidebar}}
+<main class="main-content position-relative border-radius-lg">
+    {{>navbar}}
+    <div class="table-responsive container-fluid py-4">
+        <div class="form-control card">
+            <div style="display: flex;justify-content: space-between;">
+<h3>Purchase </h3>
+<div class="div" style="align-items: end;">
+    <button type="button" class="btn btn-success" id="new">New</button>
+    <button class="btn btn-info editmasbtn">Edit</button>
+    <button type="button" class="btn btn-danger deletemasBtn">Delete</button>
+</div>
+            </div>
+             
+<form id="purchaseDetails" class="form-control" style="display: block; align-item: start;" method="post">
+    <div class="row">
+        <div class="col">
+    <div class="custom-input-container">
+    <select name="Id" class="dropdown" id="Id" >
+        <option selected>view details</option>
+    </select>
+    <label for="purchaseId">Purchase Id</label>
+</div>
+            <div class="custom-input-container">
+                <input type="date" placeholder=" " name="purchasedate" id="purchasedate">
+                <label for="purchasedate">Purchase Date</label>
+            </div>
+   
+            <div class="custom-input-container">
+                <input type="text" placeholder=" " name="paymentmode" id="paymentmode">
+                <label for="paymentmode">Payment Mode</label>
+            </div>
+        </div>
+        <div class="col">
+            <div class="custom-input-container">
+                <input type="date" placeholder=" " name="supplierinvoicedate" id="supplierinvoicedate">
+                <label for="supplierinvoicedate">Supplier Invoice Date</label>
+            </div>
+
+            <div class="custom-input-container">
+                <input type="text" placeholder=" " name="modeoftransport" id="modeoftransport">
+                <label for="modeoftransport">Mode Of Transport</label>
+            </div>
+    
+            <div class="custom-input-container">
+                <input type="text" placeholder=" " name="transportno" id="transportno">
+                <label for="transportno">Transport No</label>
+            </div>
+        </div>
+        <div class="col">
+            <div class="custom-input-container">
+                <input type="text" name="supplierinvoiceamount" id="supplierinvoiceamount">
+                <label for="supplierinvoiceamount">Supp.Invoice Amount</label>
+            </div>
+
+            <div class="custom-input-container">
+                <input type="text" placeholder=" " name="supplierinvoiceno" id="supplierinvoiceno">
+                <label for="supplierinvoiceno">Supplier Invoice No</label>
+            </div>
+
+            <div class="custom-input-container">
+                <select id="supplierSelect" class="dropdown" name="suppliername">
+                    <option selected="disabled">Select Supplier</option>
+                </select>
+                <label for="suppliername">Supplier Name</label>
+            </div>
+        </div>
+    </div>
+  <div style="display: none;">
+         <input type="hidden" id="pamount_" name="pamount" value="0.00">
+          <input type="hidden" id="pigst_" name="pigts" value="0.00">
+           <input type="hidden" id="pcgst_" name="pcgst" value="0.00">
+           <input type="hidden" id="psgst_" name="psgst" value="0.00">
+           <input type="hidden" id="psubTotal_" name="psubTotal" value="0.00">
+            <input type="hidden" id="pcess_" name="pcess" value="0.00">
+             <input type="hidden" id="ptcs_" name="ptcs" value="0.00">
+             <input type="hidden" id="proundOff_" name="proundOff" value="0.00">
+             <input type="hidden" id="pnetAmount_" name="pnetAmount" value="0.00">
+    </div> 
+</form>
+
+<div class="custom-input-container">
+    <a class="opener" id="openPurchaseForm"><i class="fa-solid fa-folder-plus fa-2x"></i></a>
+</div>
+                <table id="customerTable"
+                       class="table-responsive justify-content-between align-items-end" style="width:100% !important">
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Product Name</th>
+                        <th>Batch No</th>
+                        <th>Tax(%)</th>
+                        <th>Quantity</th>
+                        <th>UOM</th>
+                        <th>Rate</th>
+                        <th>Disc.Mode</th>
+                        <th>Disc</th>
+                        <th>Amount</th>
+                        <th>CGST</th>
+                        <th>SGST</th>
+                        <th>IGST</th>
+                        <th>Total Amount</th>
+                        <th class="action ">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                                
+                </table>
+<div class="row">
+    <div class="col-2 custom">
+        <div class="custom-input-container">
+            <select id="pdiscMode" class="dropdown" name="pdiscMode">
+                <option selected="disabled">Select Discount Mode</option>
+            </select>
+            <label for="discMode">discMode</label>
+        </div>
+    </div>
+    <div class="col-2 custom">
+        <div class="custom-input-container">
+            <input type="text" placeholder=" " name="pdiscount" id="pdiscount">
+            <label for="pdiscount">discount</label>
+        </div>
+    </div>
+<div class="col d-flex justify-content-end ms-auto">
+    <div class="div">
+    <button type="submit"   class="btn btn-info updateBtn">Update</button>
+    <button type="button" class="btn btn-info " id="draftBtn">Draft<input type="hidden" name="is_Draft" id="is_Draft"></button>
+    </div>
+    <button type="button" id="submitFormBtn" class="btn btn-primary custom-btn add">Submit</button>
+    <button type="button" class="btn btn-primary custom-btn add" id="draftButton">Is_Draft<input type="hidden" name="is_Draft" id="is_Draft"></button>
+</div>
+
+
+</div>
+        
+<form id="purchaseDetails" class="form-control" style="display: block; align-item: start;" action="auth/purchase" method="post">
+    <div class="row">
+    <div class="labels">
+        <div class="col">
+ <div class="custom">
+            <label for="pamount">Amount:</label>
+            <span id="pamount" name="pamount">0.00</span>
+        </div>
+
+        <div class="custom">
+            <label for="pigst">IGST:</label>
+            <span id="pigst" name="pigts">0.00</span>
+        </div>
+        </div>
+       
+<div class="col">
+   <div class="custom">
+            <label for="pcgst">CGST:</label>
+            <span id="pcgst" name="pcgst">0.00</span>
+        </div>
+
+        <div class="custom">
+            <label for="psgst">SGST:</label>
+            <span id="psgst" name="psgst">0.00</span>
+        </div>
+</div>
+     <div class="col">
+   <div class="custom">
+            <label for="psubTotal">Sub Total:</label>
+            <span id="psubTotal" name="psubTotal">0.00</span>
+        </div>
+
+        <div class="custom">
+            <label for="pcess">CESS:</label>
+            <span id="pcess" name="pcess">0.00</span>
+        </div>
+     </div>
+
+     <div class="col">
+        <div class="custom">
+            <label for="ptcs">TCS:</label>
+            <span id="ptcs" name="ptcs">0.00</span>
+        </div>
+        <div class="custom">
+            <label for="proundOff">Round Off:</label>
+            <span id="proundOff" name="proundOff">0.00</span>
+        </div>
+     </div>
+<div class="col">
+ <div class="custom">
+   <label for="pnetAmount">Net Amount:</label>
+   <span id="pnetAmount" name="pnetAmount">0.00</span>
+</div>
+
+</div>
+ </div>
+ </div>
+</form>
+
+
+
+        </div>
+          <div id="selectedRowDetails"></div>
+        {{>footer}}
+    </div>
+</main>
+{{>color}}
+
+
+<script>
+function generateUniqueId() {
+    // Generate a random number and convert it to a hexadecimal string
+    return '_' + Math.random().toString(36).substr(2, 9);
+}
+
+
+
+$(document).on('click', '.updateBtn', function() {
+    let formData = $('#purchaseDetails').serializeArray();
+    var id = getSelectedPurchaseId();
+    console.log("hiii");
+    var updateUrl = 'http://localhost:5000/auth/editPurchase/purchaseEdit/' + id;
+ 
+    $.ajax({
+        type: 'PUT',
+        url: updateUrl,
+        data: formData,
+        success: function(response) {
+            console.log(response);
+            if (response.success) {
+                alert('Successfully updated');
+                window.location.href = "/purchase";
+            } else {
+                alert("Failed to update purchase: " + response.error);
+            }
+        },
+        error: function(error) {
+            console.error('Error updating purchase:', error);
+            alert("Failed to update purchase. Check console for details.");
+        }
+    });
+     function getSelectedPurchaseId() {
+        var selectedOption = $('.dropdown[name="Id"] option:selected');
+        if (!selectedOption || !selectedOption.val()) {
+            console.error('No purchase option selected');
+            return null;
+        }
+        try {
+            var rowDetails = JSON.parse(selectedOption.val());
+            return rowDetails.id;
+        } catch (error) {
+            console.error('Error parsing JSON:', error);
+            return null;
+        }
+    }
+});
+
+
+
+$(document).ready(function() {
+    $(document).on('click', '.deletemasBtn', function() {
+        var id = getSelectedPurchaseId();
+        var deleteUrl = 'http://localhost:5000/auth/purchasedelete/' + id;
+        
+        $.ajax({
+            type: 'DELETE',
+            url: deleteUrl,
+            success: function(response) {
+                console.log(response);
+                if (response.success) {
+                    alert('Successfully Deleted 🗑');
+                   window.location.href = "/purchase";
+                } else {
+                    alert("Failed to delete purchase: " + response.error);
+                }
+            },
+            error: function(error) {
+                console.error('Error deleting purchase:', error);
+                alert("Failed to delete purchase. Check console for details.");
+            }
+        });
+    });
+    
+    function getSelectedPurchaseId() {
+        var selectedOption = $('.dropdown[name="Id"] option:selected');
+        if (!selectedOption || !selectedOption.val()) {
+            console.error('No purchase option selected');
+            return null;
+        }
+        try {
+            var rowDetails = JSON.parse(selectedOption.val());
+            return rowDetails.id;
+        } catch (error) {
+            console.error('Error parsing JSON:', error);
+            return null;
+        }
+    }
+});
+
+$(document).ready(function () {
+    $('.div').hide();
+    $('.add').show();
+    $('.dropdown[name="Id"]').change(function () {
+        var selectedOption = $(this).find('option:selected');
+
+        if (selectedOption.val() && selectedOption.val() !== 'view details') {
+            $('.div').show();
+            $('.add').hide();
+        } else {
+            $('.div').hide();
+            $('.add').show();
+        }
+    });
+});
+
+</script>
+
+    <script>
+        
+        $(document).on('click', '#addmanufacturer', function() {
+        $("#manufacturerform").show();
+        $("#id").val('');
+    });
+    let uniqueId = generateUniqueId(); 
+
+var table = $("#customerTable").DataTable({
+    searching: false,
+    paging: false,
+    scrollY: '200px',
+    scrollX: true,
+    columns: [
+        { data: 'Id' },
+        { data: 'product' },
+        { data: 'batchNo' },
+        { data: 'tax' },
+        { data: 'quantity' },
+        { data: 'uom' },  
+        { data: 'rate' },
+        { data: 'discMode' },
+        { data: 'discount' },
+        { data: 'amount' },
+        { data: 'cgst' },
+        { data: 'sgst' },
+        { data: 'igst' },
+        { data: 'totalAmount' },
+        {
+            data: 'Id',
+            render: function (data) {
+                return '<i class="fa-regular fa-pen-to-square editBtn" type="button" data-id="' + data + '"></i>' +
+                    ' <i class="fa-solid fa-trash deleteRowBtn " type="button" data-id="' + data + '"></i>';
+            }
+        }
+    ],
+    scrollCollapse: false,
+    responsive: true,
+    bInfo: true,
+    bBorders: true,
+    fixedColumns: {
+        left: 1,
+    },
+    columnDefs: [
+        {
+            targets: [1, 7], // Apply to columns with index 1 and 7 (Product name and Disc Mode)
+            render: function (data, type, row, meta) {
+                var uniqueId = 'unique_' + meta.row + '_' + meta.col;
+                if (meta.col === 1) { // Product name dropdown
+                    return '<select name="productname" class="input-field product-name dropdown" id="productname_' + uniqueId + '" placeholder="Product Name"><option selected disabled>' + data + '</option></select>';
+                } else if (meta.col === 7) { // Disc Mode dropdown
+                    return '<select name="discMode" class="input-field disc-mode dropdown" id="discMode_' + uniqueId + '" placeholder="Disc.Mode"><option selected disabled>' + data + '</option></select>';
+                }
+            }
+        },
+        {
+            targets: "_all", // Apply to all other columns
+            render: function (data, type, row, meta) {
+                var uniqueId = 'unique_' + meta.row + '_' + meta.col;
+                switch (meta.col) {
+                    case 0: // Purchase ID
+                        return '<input type="hidden" name="purchaseId" class="input-field purchase-id" value="' + data + '">';
+                    default: // Other fields as input fields
+                        return '<input type="text" class="input-field" value="' + data + '">';
+                }
+            }
+        }
+    ]
+});
+
+// Function to fetch dropdown options for product name
+function fetchProductOptions() {
+    $.ajax({
+        url: 'http://localhost:5000/auth/editPurchase/productname',
+        method: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            console.log('Received response for product:', response);
+            var options = response.data;
+
+            if (options && options.length) {
+                options.forEach(function (option) {
+                    $('#productname_' + option.id).append($('<option>', {
+                        value: option.id,
+                        text: option.productname
+                    }));
+                });
+            } else {
+                console.error('No options found for product name');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Error fetching options for product name:', error);
+        }
+    });
+}
+
+// Function to fetch dropdown options for disc mode
+function fetchDiscModeOptions() {
+    $.ajax({
+        url: 'http://localhost:5000/auth/editPurchase/discmode',
+        method: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            console.log('Received response for disc mode options:', response);
+            var options = response.data;
+
+            if (options && options.length) {
+                options.forEach(function (option) {
+                    $('#discMode_' + option.id).append($('<option>', {
+                        value: option.id,
+                        text: option.discMode
+                    }));
+                });
+            } else {
+                console.error('No options found for disc mode');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Error fetching disc mode options:', error);
+        }
+    });
+}
+
+// Call the functions to fetch dropdown options when the document is ready
+$(document).ready(function () {
+    fetchProductOptions();
+    fetchDiscModeOptions();
+});
+
+
+    $('#purchaseId').on('change', function () {
+        var selectedPurchaseId = $(this).val();
+
+       
+        table.ajax.url('http://localhost:5000/auth/purchase/productid?purchaseId=' + selectedPurchaseId).load();
+    });
+
+
+if (table.data().count() === 0) {
+   
+    console.log("No data available in table");
+}
+        if (table.rows().count() === 0) {
+            $("#emptyMessage").show();
+        }
+$(document).ready(function () {
+    var companyState;
+    var totalAmount = 0;
+
+    $('#customerTable tbody').on('input', 'input[name^="rate"], input[name^="quantity"], select[name^="discMode"], input[name^="discount"]', function () {
+       
+        var row = $(this).closest('tr');
+        var rate = parseInt(row.find('input[name^="rate"]').val()) || 0;
+        var quantity = parseInt(row.find('input[name^="quantity"]').val()) || 0;
+        var discMode = row.find('select[name^="discMode"]').val();
+        var discountInput = row.find('input[name^="discount"]');
+
+        if (discMode === '3') {
+            discountInput.val('0');
+        }
+
+        var discount = parseInt(discountInput.val()) || 0;
+        var amount = calculateAmount(rate, quantity, discMode, discount);
+
+        row.find('input[name^="amount"]').val(amount.toFixed(2));
+
+        var selectedSupplierState = $('#supplierSelect').find(':selected').data('state');
+        calculateTax(row, selectedSupplierState, companyState);
+         calculateTotals();
+        calculateTotalAmount(); 
+    });
+
+function calculateTotalAmount() {
+   
+    $('#customerTable tbody tr').each(function () {
+        var row = $(this);
+        var amount = parseInt(row.find('input[name^="amount"]').val()) || 0;
+        var cgst = parseInt(row.find('input[name^="cgst"]').val()) || 0;
+        var sgst = parseInt(row.find('input[name^="sgst"]').val()) || 0;
+        var igst = parseInt(row.find('input[name^="igst"]').val()) || 0;
+
+      
+        var totalTax = cgst + sgst + igst; 
+        var rowTotalAmount = amount + totalTax;   
+        row.find('input[name^="totalAmount"]').val(rowTotalAmount.toFixed(2));
+    });
+}
+
+
+
+    function calculateAmount(rate, quantity, discMode, discount) {
+        console.log('Calculating Amount - Inputs:', { rate, quantity, discMode, discount });
+
+        var calculatedAmount = 0;
+
+        if (discMode === 'N/A' || discMode === '3') {
+            discount = 0;
+            calculatedAmount = rate * quantity - discount;
+            console.log('Calculating Amount - N/A or 3:', calculatedAmount);
+        } else if (discMode === 'percentage' || discMode === '1') {
+            calculatedAmount = rate * quantity * (1 - discount / 100);
+            console.log('Calculating Amount - Percentage:', calculatedAmount);
+        } else {
+            calculatedAmount = rate * quantity - discount;
+            console.log('Calculating Amount - Value:', calculatedAmount);
+        }
+
+        return calculatedAmount;
+    }
+
+    function calculateTax(row, supplierState, companyState) {
+        var amount = parseInt(row.find('input[name^="amount"]').val()) || 0;
+        var taxRate = parseInt(row.find('input[name^="tax"]').val()) || 0;
+
+        var isLocalSupply = supplierState && companyState && supplierState.toLowerCase() === companyState.toLowerCase();
+
+        var cgst, sgst, igst;
+
+        if (isLocalSupply) {
+            cgst = (amount * taxRate / 200).toFixed(2);
+            sgst = cgst;
+            igst = 0;
+        } else {
+            cgst = 0;
+            sgst = 0;
+            igst = (amount * taxRate / 100).toFixed(2);
+        }
+
+        var totalTax = (parseInt(cgst) + parseInt(sgst) + parseInt(igst)).toFixed(2);
+
+        row.find('input[name^="cgst"]').val(cgst);
+        row.find('input[name^="sgst"]').val(sgst);
+        row.find('input[name^="igst"]').val(igst);
+        row.find('input[name^="totalTax"]').val(totalTax);
+
+       
+        taxCalculationsCompleted = true;
+
+        
+        if (taxCalculationsCompleted) {
+            calculateTotalAmount();
+        }
+    }
+
+  
+    $('.dropdown[name="suppliername"]').on('change', function () {
+        var selectedSupplierId = $(this).val();
+        var selectedSupplierState = $(this).find(':selected').data('state');
+
+        initiateFetchCompanyState(selectedSupplierState);
+    });
+
+
+    function fetchSupplierNames() {
+        $.ajax({
+            url: 'http://localhost:5000/auth/purchase/suppliername',
+            method: 'GET',
+            success: function (response) {
+                console.log('Received response for Supplier Ledger(dr):', response);
+                var options = response.data;
+                if (options && options.length) {
+                    options.forEach(function (option) {
+                        $('.dropdown[name="suppliername"]').append($('<option>', {
+                            value: option.id,
+                            text: option.ledgername,
+                            'data-state': option.state
+                        }));
+                    });
+                } else {
+                    console.error('No options found for Supplier Ledger(dr)');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching options for Supplier Ledger(dr):', error);
+            }
+        });
+    }
+
+
+    function performTaxCalculation(supplierState, companyState) {
+        console.log('Performing tax calculation with supplier state:', supplierState, 'and company state:', companyState);
+
+        $('#customerTable tbody tr').each(function () {
+            var row = $(this);
+            calculateTax(row, supplierState, companyState);
+        });
+    }
+
+
+    $(document).ready(function () {
+        fetchSupplierNames();
+        calculateTotalAmount();
+        // ... (other setup code)
+    });
+
+
+    function initiateFetchCompanyState(supplierState) {
+        fetchCompanyStateAndCalculateTax(supplierState, performTaxCalculation);
+    }
+
+
+    function fetchCompanyStateAndCalculateTax(supplierState, callback) {
+        $.ajax({
+            url: 'http://localhost:5000/auth/purchase/companystate',
+            method: 'GET',
+            success: function (response) {
+                console.log('Received response for Company State:', response);
+                companyState = response.data[0].state;
+                console.log('Company State:', companyState);
+                callback(supplierState, companyState);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching Company State:', error);
+            }
+        });
+    }
+
+});
+
+function calculateTotals() {
+    let totalAmount = 0;
+    let totalCGST = 0;
+    let totalSGST = 0;
+    let totalIGST = 0;
+    let totalnetAmount=0;
+
+    $('#customerTable tbody tr').each(function () {
+        totalAmount += parseInt($(this).find('input[name="amount"]').val()) || 0;
+        totalCGST += parseInt($(this).find('input[name="cgst"]').val()) || 0;
+        totalSGST += parseInt($(this).find('input[name="sgst"]').val()) || 0;
+        totalIGST += parseInt($(this).find('input[name="igst"]').val()) || 0;
+        totalnetAmount +=parseInt($(this).find('input[name="totalAmount"]').val()) || 0;
+    });
+
+    
+    $('#pamount').text(totalAmount.toFixed(2));
+    $('#pcgst').text(totalCGST.toFixed(2));
+    $('#psgst').text(totalSGST.toFixed(2));
+    $('#pigst').text(totalIGST.toFixed(2));
+    $('#pnetAmount').text(totalnetAmount.toFixed(2));
+
+    let subTotal = totalAmount + totalCGST + totalSGST + totalIGST;
+    $('#psubTotal').text(subTotal.toFixed(2));
+    
+     $('#pamount_').val(totalAmount.toFixed(2));
+    $('#pcgst_').val(totalCGST.toFixed(2));
+    $('#psgst_').val(totalSGST.toFixed(2));
+    $('#pigst_').val(totalIGST.toFixed(2));
+    $('#pnetAmount_').val(totalnetAmount.toFixed(2));
+
+   let subTotals = totalAmount + totalCGST + totalSGST + totalIGST;
+    $('#psubTotal_').val(subTotals.toFixed(2));
+
+   
+}
+
+
+
+
+$(document).ready(function () {
+    var rowDetails;
+    $.ajax({
+        url: 'http://localhost:5000/auth/purchase/purchaseids',
+        method: 'GET',
+        data: { view: 'purchaseids' },
+        success: function (response) {
+            console.log('Received response for Purchase IDs:', response);
+
+            var options = response.data;
+            console.log('Options:', options);
+
+            if (options && options.length) {
+                options.forEach(function (row) {
+                    // Check if the option contains a valid ID
+                    if (row.id !== undefined && row.id !== null && !isNaN(row.id)) {
+                        var formattedPurchaseDate = formatDate(row.purchasedate);
+                        var formattedSupplierInvoiceDate = formatDate(row.supplierinvoicedate);
+
+                        var optionHtml =
+                            '<option value=\'' +
+                            JSON.stringify(row) +
+                            '\'>' +
+                            '<strong>ID: </strong>' + row.id +
+                            ',<strong> Purchase Date:</strong> ' + formattedPurchaseDate +
+                            ',<strong> Supplier Invoice Date: </strong>' + formattedSupplierInvoiceDate +
+                            ',<strong> Supplier Name: </strong>' + row.suppliername +
+                            '</option>';
+
+                        $('.dropdown[name="Id"]').append(optionHtml);
+                    } else {
+                        console.warn('Skipping option with invalid ID:', row);
+                    }
+                });
+            } else {
+                console.error('No options found for purchase IDs');
+            }
+
+            var urlParams = new URLSearchParams(window.location.search);
+            var purchaseIdParam = urlParams.get('id');
+            console.log('Purchase ID from URL:', purchaseIdParam); 
+
+            if (purchaseIdParam) {
+                var purchaseIdInt = parseInt(purchaseIdParam);
+
+                $('.dropdown[name="Id"] option').each(function() {
+                    var optionValue = $(this).val();
+                    if (optionValue !== 'view details') {
+                        var optionRow = JSON.parse(optionValue);
+                        if (optionRow.id === purchaseIdInt) {
+                            $(this).prop('selected', true);
+                        }
+                    }
+                });
+
+                $('.dropdown[name="Id"]').change();
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Error fetching options for purchase IDs:', error);
+        }
+    });
+
+    $('.dropdown[name="Id"]').change(function () {
+        var selectedOption = $(this).find('option:selected');
+
+        if (!selectedOption || !selectedOption.val()) {
+            return;
+        }
+
+        try {
+            var rowDetails = JSON.parse(selectedOption.val());
+
+            $('#purchasedate').val(formatDate(rowDetails.purchasedate));
+            $('#paymentmode').val(rowDetails.paymentmode);
+            $('#supplierinvoicedate').val(formatDate(rowDetails.supplierinvoicedate));
+            $('#modeoftransport').val(rowDetails.modeoftransport);
+            $('#transportno').val(rowDetails.transportno);
+            $('#supplierinvoiceamount').val(rowDetails.supplierinvoiceamount);
+            $('#supplierinvoiceno').val(rowDetails.supplierinvoiceno);
+            $('#supplierSelect').val(rowDetails.suppliername);
+            $('#pnetAmount').text(!isNaN(rowDetails.netAmount) ? parseFloat(rowDetails.netAmount).toFixed(2) : 'Invalid Net Amount');
+            $('#pamount').text(!isNaN(rowDetails.amount) ? parseFloat(rowDetails.amount).toFixed(2) : 'Invalid Amount');
+            $('#pigst').text(!isNaN(rowDetails.igst) ? parseFloat(rowDetails.igst).toFixed(2) : 'Invalid IGST');
+            $('#pcgst').text(!isNaN(rowDetails.cgst) ? parseFloat(rowDetails.cgst).toFixed(2) : 'Invalid CGST');
+            $('#psgst').text(!isNaN(rowDetails.sgst) ? parseFloat(rowDetails.sgst).toFixed(2) : 'Invalid SGST');
+            $('#psubTotal').text(!isNaN(rowDetails.subTotal) ? parseFloat(rowDetails.subTotal).toFixed(2) : 'Invalid Sub Total');
+            $('#ptcs').text(!isNaN(rowDetails.tcs) ? parseFloat(rowDetails.tcs).toFixed(2) : 'Invalid TCS');
+            $('#proundOff').text(!isNaN(rowDetails.roundOff) ? parseFloat(rowDetails.roundOff).toFixed(2) : 'Invalid Round Off');
+            $('#pdiscount').text(!isNaN(rowDetails.discount) ? parseFloat(rowDetails.discount).toFixed(2) : 'Invalid Discount');
+            $('#pdiscMode').text(!isNaN(rowDetails.discMode) ? parseFloat(rowDetails.discMode).toFixed(2) : 'Invalid Disc Mode');
+
+            selectedOption.prop('selected', true);
+
+            console.log('rowDetails.id:', rowDetails.id);
+            console.log('Dropdown Options:', $(this).val());
+
+            var purchaseId = parseInt(rowDetails.id);
+
+            if (isNaN(purchaseId)) {
+                console.error('Invalid purchaseId:', purchaseId);
+                return;
+            }
+
+            $.ajax({
+                url: 'http://localhost:5000/auth/purchase/productid',
+                method: 'GET',
+                data: { purchaseId: purchaseId },
+                success: function (response) {
+                    console.log('Received response for ProductId:', response);
+                    updateCustomerTable(response.data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching ProductId data:', error);
+                }
+            });
+        } catch (error) {
+            console.error('Error parsing JSON:', error);
+        }
+    });
+});
+
+
+function updateCustomerTable(data) {
+    var table = $('#customerTable').DataTable();
+    table.clear().rows.add(data).draw();
+}
+
+
+function formatDate(dateObject) {
+    const date = new Date(dateObject);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');  
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+
+$(document).ready(function() {
+    $('#new').click(function() {
+       window.location.href = '/purchase'
+    });
+});
+
+
+
+</script>

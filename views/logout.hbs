@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   {{>header}}
+    <style>
+body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100vh;
+   
+}
+
+.loginscreen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 900px; /* Adjust width as needed */
+    max-width: 100%; /* Ensure the div does not exceed the viewport width */
+    margin: auto; /* Center horizontally */
+ 
+}
+
+.loginButtonContainer {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.foot{
+    display: flex;
+    justify-content: center; /* Horizontally center the content */
+    text-align: center; /* Center the text inside the footer */
+    align-items: center; /* Vertically center the content */
+    align-content: center; /* Align content along the cross-axis (vertical axis) */
+    text-wrap: nowrap;
+}
+.heading h1 {
+    font-size: 90px; /* Adjust font size as needed */
+    font-weight: bold; /* Make the text bold */
+    color: rgba(0, 0, 0, 0.2); /* Set text color with opacity */
+    animation: moveDown 1s ease forwards; /* Apply animation */
+}
+
+@keyframes moveDown {
+    0% {
+        transform: translateY(-50px); /* Initial position: move up */
+        opacity: 0; /* Initial opacity: invisible */
+    }
+    100% {
+        transform: translateY(0); /* Final position: move down */
+        opacity: 1; /* Final opacity: fully visible */
+    }
+}
+
+    </style>
+</head>
+<body>
+    <div class="heading">
+<h1>Logged Out</h1>
+    </div>
+    
+    <div class="loginscreen">
+        <img src="/assets/img/illustrations/Outerspace.gif" class="image-with-shadow" alt="gif">
+    </div>
+    
+    <div class="loginButtonContainer">
+        <button type="button" class="btn btn-primary" onclick="redirectToLoginPage()">Login</button>
+    </div>
+
+
+  
+    <div class="foot">
+ {{>footer}}
+    </div>
+
+    <script>
+        function redirectToLoginPage() {
+            // Redirect to the login page
+            window.location.href = "/"; // Replace "/" with the actual URL of your login page
+        }
+    </script>
+</body>
+</html>

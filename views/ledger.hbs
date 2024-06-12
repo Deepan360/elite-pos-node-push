@@ -202,7 +202,7 @@
     });
        var table = $("#customerTable").DataTable({
     ajax: {
-        'url': 'http://localhost:5000/auth/ledger',
+        'url': '/auth/ledger',
         'dataType': 'json',
         'dataSrc': 'data',
          type: 'GET', // Adjust 'rows' based on your server response structure
@@ -299,7 +299,7 @@ $(document).on('submit', '.editForm', function(event) {
 
     $.ajax({
         type: 'PUT',
-        url: 'http://localhost:5000/auth/ledgeredit/' + customerId,
+        url: '/auth/ledgeredit/' + customerId,
         data: formData,
         success: function(response) {
             console.log(response);
@@ -352,7 +352,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
     var deleteButton = $(this);  // Store the reference to 'this' for later use
 
     if (data && data.id) {
-        var deleteUrl = 'http://localhost:5000/auth/ledgerdelete/' + data.id;
+        var deleteUrl = '/auth/ledgerdelete/' + data.id;
         console.log('Data:', data);
 
         $.ajax({

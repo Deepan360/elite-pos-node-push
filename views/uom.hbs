@@ -150,7 +150,7 @@
        var table = $("#customerTable").DataTable({
          debug: true,
     ajax: {
-        'url': 'http://localhost:5000/auth/uom',
+        'url': '/auth/uom',
         'dataType': 'json',
         'dataSrc': 'data',
          type: 'GET', // Adjust 'rows' based on your server response structure
@@ -204,10 +204,8 @@ $(document).on('click', '.editBtn', function() {
         $(".editForm #shortname").val(data.shortname);
       $(".editForm #baseunit").val(data.baseunit);
         $(".editForm #baseqty").val(data.baseqty);
-       
-       
         // Check if 'active' property is true and set the checkbox accordingly
-        if (data.active) {
+        if (data.complexunit) {
             $(".editForm #complexunit").prop('checked', true);
         } else {
             $(".editForm #complexunit").prop('checked', false);
@@ -231,7 +229,7 @@ $(document).on('submit', '.editForm', function(event) {
 
     $.ajax({
         type: 'PUT',
-        url: 'http://localhost:5000/auth/uomedit/' + customerId,
+        url: '/auth/uomedit/' + customerId,
         data: formData,
         success: function(response) {
             console.log(response);
@@ -284,7 +282,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
     var deleteButton = $(this);  // Store the reference to 'this' for later use
 
     if (data && data.id) {
-        var deleteUrl = 'http://localhost:5000/auth/uomdelete/' + data.id;
+        var deleteUrl = '/auth/uomdelete/' + data.id;
         console.log('Data:', data);
 
         $.ajax({
@@ -322,7 +320,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
             <input type="text" placeholder="Short Name" name="shortname" id="shortname">
             <input type="text" placeholder="Base Unit" name="baseunit" id="baseunit">
             <input type="text" placeholder="Base Qty" name="baseqty" id="baseqty">
-                    <label for="complexunit" style="font-size: 14px;">Complex Unit<input type="checkbox" id="complexunit" value="1" name="complexunit" ></label>
+                    <label for="complexunit" style="font-size: 14px;">Complex Unit<input type="checkbox" id="complexunit" value="true" name="complexunit"  ></label>
 
             
         </div>
@@ -340,7 +338,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
             <input type="text" placeholder="Short Name" name="shortname" id="shortname">
             <input type="text" placeholder="Base Unit" name="baseunit" id="baseunit">
             <input type="text" placeholder="Base Qty" name="baseqty" id="baseqty">
-                    <label for="complexunit" style="font-size: 14px;">Complex Unit<input type="checkbox" id="complexunit" value="1" name="complexunit" ></label>
+                    <label for="complexunit" style="font-size: 14px;">Complex Unit<input type="checkbox" id="complexunit"  value="true" name="complexunit" ></label>
 
             
         </div>

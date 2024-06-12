@@ -113,7 +113,6 @@
                         <th>HSN Code</th>
                         <th>product Category</th>
                         <th>Product Type</th>
-                        <th>Measurement</th>
                         <th>UOM</th>
                         <th>Tax(%)</th>
                         <th>Active</th>
@@ -139,11 +138,11 @@
    </div>
 
  
-{{>footer}}
-  
-  </main>
- 
   {{>color}}
+
+   {{>footer}}
+  </main>
+
   
  
 
@@ -171,7 +170,7 @@
        var table = $("#customerTable").DataTable({
          debug: true,
     ajax: {
-        'url': 'http://localhost:5000/auth/product',
+        'url': '/auth/product',
         'dataType': 'json',
         'dataSrc': 'data',
          type: 'GET', // Adjust 'rows' based on your server response structure
@@ -184,10 +183,9 @@
         { data: 'hsnCode' }, 
         { data: 'category' },
         { data: 'productType' },
-        { data: 'measurement' },
         { data: 'uom' },
         { data: 'tax' },
-        { data: 'active', render: function (data, type, row) {
+ { data: 'active', render: function (data, type, row) {
                 // Render a checkbox based on the 'active' property value
                 return data ? '<input type="checkbox" checked>' : '<input type="checkbox">';
             } },
@@ -209,6 +207,7 @@
      "bInfo": true, // Show information (records, etc.)
     "bBorders": true, // Show borders
 });
+
 
         if (table.rows().count() === 0) {
             $("#emptyMessage").show();
@@ -232,7 +231,6 @@ $(document).on('click', '.editBtn', function() {
         $(".editForm #hsnCode").val(data.hsnCode);
         $(".editForm #category").val(data.category);
         $(".editForm #productType").val(data.productType);
-        $(".editForm #measurement").val(data.measurement);
         $(".editForm #uom").val(data.uom);
         $(".editForm #tax").val(data.tax);
        
@@ -262,7 +260,7 @@ $(document).on('submit', '.editForm', function(event) {
 
     $.ajax({
         type: 'PUT',
-        url: 'http://localhost:5000/auth/productedit/' + customerId,
+        url: '/auth/productedit/' + customerId,
         data: formData,
         success: function(response) {
             console.log(response);
@@ -315,7 +313,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
     var deleteButton = $(this);  // Store the reference to 'this' for later use
 
     if (data && data.id) {
-        var deleteUrl = 'http://localhost:5000/auth/productdelete/' + data.id;
+        var deleteUrl = '/auth/productdelete/' + data.id;
         console.log('Data:', data);
 
         $.ajax({
@@ -344,7 +342,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
 // Fetch options for cash/bank Ledger(dr)
 // Fetch options for cash/bank Ledger(dr)
 $.ajax({
-    url: 'http://localhost:5000/auth/productcategory/category',
+    url: '/auth/productcategory/category',
     method: 'GET',
     success: function (response) {
         console.log('Received response for category:', response);
@@ -368,7 +366,7 @@ $.ajax({
 
 // Fetch options for customer Ledger(cr)
 $.ajax({
-    url: 'http://localhost:5000/auth/producttype/type',
+    url: '/auth/producttype/type',
     method: 'GET',
     success: function (response) {
         console.log('Received response fortype:', response);
@@ -391,7 +389,7 @@ $.ajax({
 
 // Fetch options for customer Ledger(cr)
 $.ajax({
-    url: 'http://localhost:5000/auth/uom/getuom',
+    url: '/auth/uom/getuom',
     method: 'GET',
     success: function (response) {
         console.log('Received response fortype:', response);
@@ -437,15 +435,19 @@ function formatDate(dateObject) {
             <!-- First Column -->
             <input type="hidden" placeholder="Id" name="id" id="id">
             <input type="text" placeholder="Code No" name="code" id="code">
-            <input type="text" placeholder="Product name" name="productname" id="productname">
+            <input type="text" placeholder="Product name" name="productname" id="productname" required>
             <input type="text" placeholder="Description" name="description" id="description">
             <input type="text" placeholder="HSNCode" name="hsnCode" id="hsnCode">
                <!-- Inside your form -->
       <label class="h6" for="Category">Category:</label>
-      <select id="category" name="category"class="dropdown"  ></select>
+      <select id="category" name="category"class="dropdown"  >
+        <option value="Disabled Select">Category</option>
+      </select>
       <label class="h6" for="ProductType">ProductType:</label>
-      <select id="productType" class="dropdown" name="productType"></select>
-            <input type="text" placeholder="Measurement" name="measurement" id="measurement">
+      <select id="productType" class="dropdown" name="productType">
+        <option value="Disabled Select">Select Product Type</option>
+      </select>
+            {{!-- <input type="text" placeholder="Measurement" name="measurement" id="measurement"> --}}
             <label class="h6" for="UOM">UOM:</label>
       <select id="uom" class="dropdown" name="uom"></select>
        
@@ -464,7 +466,7 @@ function formatDate(dateObject) {
             <!-- First Column -->
             <input type="hidden" placeholder="Id" name="id" id="id">
             <input type="text" placeholder="Code No" name="code" id="code">
-            <input type="text" placeholder="Product name" name="productname" id="productname">
+            <input type="text" placeholder="Product name" name="productname" id="productname" required>
             <input type="text" placeholder="Description" name="description" id="description">
             <input type="text" placeholder="HSNCode" name="hsnCode" id="hsnCode">
                <!-- Inside your form -->
@@ -472,7 +474,7 @@ function formatDate(dateObject) {
       <select id="category" name="category"class="dropdown"  ></select>
       <label class="h6" for="ProductType">ProductType:</label>
       <select id="productType" class="dropdown" name="productType"></select>
-            <input type="text" placeholder="Measurement" name="measurement" id="measurement">
+            {{!-- <input type="text" placeholder="Measurement" name="measurement" id="measurement"> --}}
              <label class="h6" for="UOM">UOM:</label>
       <select id="uom" class="dropdown" name="uom"></select>
             <input type="text" placeholder="Tax" name="tax" id="tax">

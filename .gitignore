@@ -1,1 +1,9 @@
+# Node.js dependencies
+node_modules/
+
+# Optional: Add other files and directories to ignore
 .DS_Store
+.env
+dist/
+build/
+coverage/

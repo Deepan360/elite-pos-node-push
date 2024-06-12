@@ -1,8 +1,12 @@
 const express=require("express");
+const { route } = require("./auth");
 const router=express.Router();
 
 router.get("/",(req,res)=>{
     res.render("login"); 
+});
+router.get("/logout",(req,res)=>{
+  res.render("logout"); 
 });
 router.get('/registration', (req, res) => {
     res.render('registration'); 
@@ -202,17 +206,52 @@ router.put("/purchaseregister", (req, res) => {
 router.get("/purchaseregister", (req, res) => {
   res.render("purchaseregisterdelete", { id: req.params.id });
 });
+
+
+router.get('/Purchasereturnregister', (req, res) => {
+  res.render('Purchasereturnregister'); 
+}); 
+router.post("/Purchasereturnregister",(req,res)=>{
+  res.render("Purchasereturnregister");
+});
+router.put("/Purchasereturnregister", (req, res) => {
+  res.render("Purchasereturnregisteredit", { id: req.params.id });
+});
+router.get("/Purchasereturnregister", (req, res) => {
+  res.render("Purchasereturnregisterdelete", { id: req.params.id });
+});
+router.get('/purchasedraftregister', (req, res) => {
+  res.render('purchasedraftregister'); 
+}); 
+router.post("/purchasedraftregister",(req,res)=>{
+  res.render("purchasedraftregister");
+});
+router.put("/purchasedraftregister", (req, res) => {
+  res.render("purchasedraftregisteredit", { id: req.params.id });
+});
+router.get("/purchasedraftregister", (req, res) => {
+  res.render("purchasedraftregisterdelete", { id: req.params.id });
+});
 router.get('/purchase', (req, res) => {
   res.render('purchase'); 
 });
-router.post("/purchase",(req,res)=>{
-  res.render("purchase");
+router.post("/purchase", (req, res) => {
+  res.render("purchaseadd");
 });
 router.put("/purchase", (req, res) => {
-  res.render("purchaseedit", { id: req.params.id });
+  res.render("purchaseEdit", { id: req.params.id });
+});
+router.get("/editPurchase", (req, res) => {
+  res.render("editPurchase", { id: req.params.id });
+});
+router.get("/editPurchase/purchaseEdit", (req, res) => {
+  res.render("purchaseEdit", { id: req.params.id });
 });
 router.get("/purchase", (req, res) => {
   res.render("purchasedelete", { id: req.params.id });
+});
+router.get("/purchase", (req, res) => {
+  res.render("purchasetransdelete", { id: req.params.id });         
 });
 router.get('/multireceipt', (req, res) => {
   res.render('multireceipt');
@@ -248,7 +287,6 @@ router.get("/multipayment", (req, res) => {
 router.get('/multipayment/dr', (req, res) => {
   res.render('getPaymentDr'); 
 });
-
 router.get('/multipayment/cr', (req, res) => {
   res.render('getPaymentCr'); 
 });
@@ -286,7 +324,6 @@ router.get("/payment", (req, res) => {
 router.get('/payment/dr', (req, res) => {
   res.render('paymentDr'); 
 });
-
 router.get('/payment/cr', (req, res) => {
   res.render('paymentCr'); 
 });
@@ -296,7 +333,6 @@ router.get('/ledgerob', (req, res) => {
 router.get('/ledgerob', (req, res) => {
   res.render('ledgerData');
 });
-
 router.get('/journal', (req, res) => {
   res.render('journal'); 
 });
@@ -341,13 +377,231 @@ router.get("/contra", (req, res) => {
 });
 router.get('/contra/dr', (req, res) => {
   res.render('contraDr'); 
-});
-
+});  
 router.get('/contra/cr', (req, res) => {
   res.render('contraCr'); 
 });
 router.put('/color',(req,res)=>{
   res.render('color', { id: req.params.id });
 });
+router.post('/purchase',(req,res)=>{
+  res.render('purchaseadd');
+});
+router.post('/purchase',(req,res)=>{
+  res.render('purchaseEdit');
+});
+router.get('/purchase',(req,res)=>{
+  res.render('purchase');
+});
+router.get('/purchase/suppliername', (req, res) => {
+  res.render('suppliername'); 
+});
+router.get('/purchase/productname',(req,res)=>{
+  res.render('productname');
+});
+router.get('/purchase/selectedsupplier',(req,res)=>{
+  res.render('selectedsupplier'); 
+});
+router.get('/purchase/PurchaseId',(req,res)=>{
+  res.render('PurchaseId');
+});
+router.get('/purchase/productid',(req,res)=>{
+  res.render('productid');
+});
+router.get('/Purchasereturn/PurchasereturnId',(req,res)=>{
+  res.render('PurchasereturnId');
+});
+router.get('/Purchasereturn/productreturnid',(req,res)=>{
+  res.render('productreturnid');
+});
+router.get('/purchase', (req, res) => {
+  const viewName = req.query.view || 'purchase'; 
+  res.render(viewName);
+});
+router.get('purchase/purchaseDetails',(req,res)=>{
+res.render('purchaseDetails');
+});
+router.get('/city',(req,res)=>{
+res.render('city')
+})
+router.get('/company/getcity',(req,res)=>{
+  res.render('getcity')
+})
+router.get('/manufacturer/getcity',(req,res)=>{
+  res.render('getcity')
+})
+router.get('/supplier/getcity',(req,res)=>{
+  res.render('getcity')
+})
+router.get('/company/getcompany',(req,res)=>{
+  res.render('getcompany')
+})
+router.get('/company/updatecompany',(req,res)=>{
+  res.render('updatecompany')
+})
 
-module.exports=router;
+router.get('/purchasereturn', (req, res) => {
+  res.render('purchasereturn'); 
+});
+router.post("/purchasereturn", (req, res) => {
+  res.render("purchasereturnadd");
+});
+router.put("/purchasereturn", (req, res) => {
+  res.render("purchasereturnEdit", { id: req.params.id });
+});
+router.get("/editpurchasereturn", (req, res) => {
+  res.render("editpurchasereturn", { id: req.params.id });
+});
+router.get("/editpurchasereturn/purchasereturnEdit", (req, res) => {
+  res.render("purchasereturnEdit", { id: req.params.id });
+});
+router.get("/purchasereturn", (req, res) => {
+  res.render("purchasereturndelete", { id: req.params.id });
+});
+router.get("/purchasereturn", (req, res) => {
+  res.render("purchasereturntransdelete", { id: req.params.id });         
+});
+
+router.get('/sales', (req, res) => {
+  res.render('sales'); 
+});
+router.post("/sales", (req, res) => {
+  res.render("salesadd");
+});
+router.put("/sales", (req, res) => {
+  res.render("salesEdit", { id: req.params.id });
+});
+router.get("/editsales", (req, res) => {
+  res.render("editsales", { id: req.params.id });
+});
+router.get("/editsales/salesEdit", (req, res) => {
+  res.render("salesEdit", { id: req.params.id });
+});
+router.get("/sales", (req, res) => {
+  res.render("salesdelete", { id: req.params.id });
+});
+router.get("/sales", (req, res) => {
+  res.render("salestransdelete", { id: req.params.id });         
+});
+router.get('/salesregister', (req, res) => {
+  res.render('salesregister'); 
+});
+router.get('/sales', (req, res) => {
+  res.render('batchDetails', { id:  req.body }); 
+});
+router.get('/salesReturn', (req, res) => {
+  res.render('salesReturn'); 
+});
+router.post("/salesReturn", (req, res) => {
+  res.render("salesReturnadd");
+});
+router.put("/salesReturn", (req, res) => {
+  res.render("salesReturnEdit", { id: req.params.id });
+});
+router.get("/editsalesReturn", (req, res) => {
+  res.render("editsalesReturn", { id: req.params.id });
+});
+router.get("/editsalesReturn/salesReturnEdit", (req, res) => {
+  res.render("salesReturnEdit", { id: req.params.id });
+});
+router.get("/salesReturn", (req, res) => {
+  res.render("salesReturndelete", { id: req.params.id });
+});
+router.get("/salesReturn", (req, res) => {
+  res.render("salesReturntransdelete", { id: req.params.id });         
+});
+router.get('/salesReturnregister', (req, res) => {
+  res.render('salesReturnregister'); 
+});
+router.get('/salesReturn', (req, res) => {
+  res.render('batchDetails', { id:  req.body }); 
+});
+router.get('/header', (req, res) => {
+  res.render('companyTitle'); 
+});
+router.get('/gstpurchase',(req,res) => {
+  res.render('gstpurchase');
+});
+router.get('/gstsales',(req,res) => {
+  res.render('gstsales');
+});
+router.get('/hsnpurchase',(req,res) => {
+  res.render('hsnpurchase');
+});
+router.get('/hsnsales',(req,res) => { 
+  res.render('hsnsales'); 
+  });
+router.get('/balancesheet',(req,res) => {
+  res.render('balancesheet'); 
+});
+router.get('/profitandloss',(req,res)=>{
+  res.render('profitandloss');
+});
+router.get('/trailbalance',(req,res)=>{
+res.render('trailbalance');
+});
+router.get('/creditbook',(req,res)=>{
+res.render('creditbook');
+  });
+  router.get('/journalbook',(req,res)=>{
+    res.render('journalbook');
+      });
+router.get('/daybook',(req,res)=>{
+  res.render('daybook');
+});
+router.get('/cashbook',(req,res)=>{
+  res.render('cashbook');
+});
+router.get('/bankbook',(req,res)=>{
+  res.render('bankbook');
+});
+router.get('/ledgerbook',(req,res)=>{
+  res.render('ledgerbook');
+});
+router.get('/billwise',(req,res)=>{
+  res.render('billwise');
+});
+router.get('/salesoutstanding',(req,res)=>{
+  res.render('salesoutstanding');
+});
+router.get('/purchaseoutstanding',(req,res)=>{
+  res.render('purchaseoutstanding');
+});
+router.get('/productwisepurcsale',(req,res)=>{
+  res.render('productwisepurcsale');
+});
+router.get('/productwisepurcsale',(req,res)=>{
+  res.render('productwisepurcsale');
+});
+router.get('/productwisepurcsale',(req,res)=>{
+  res.render('productwisepurcsale');
+});
+router.get('/productwisepurcsale',(req,res)=>{
+  res.render('productwisepurcsale');
+});
+router.get('/productwisepurcsale',(req,res)=>{
+  res.render('productwisepurcsale');
+});
+router.get('/currentstock',(req,res)=>{
+  res.render('currentstock');
+});
+router.get('/stocksummary',(req,res)=>{
+  res.render('stocksummary');
+}); 
+router.get('/batchsummary',(req,res)=>{
+  res.render('batchsummary');
+});
+router.get('/stockanalysis',(req,res)=>{
+  res.render('stockanalysis');
+});
+router.get('/purchaseprintpage',(req,res)=>{
+    res.render('purchaseprintpage');
+});
+router.get('/salesprintpage',(req,res)=>{
+  res.render('salesprintpage');
+});
+router.get('/menuaccesscontrol',(req,res)=>{
+  res.render('menuaccesscontrol');
+});
+
+module.exports=router;     

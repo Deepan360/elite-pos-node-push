@@ -220,7 +220,7 @@
     });
      var table = $("#customerTable").DataTable({
     ajax: {
-        url: 'http://localhost:5000/auth/contra',
+        url: '/auth/contra',
         dataType: 'json',
         dataSrc: 'data',
         type: 'GET',
@@ -326,7 +326,7 @@ console.log('Manufacturer ID:', manufacturerId);
 
     $.ajax({
         type: 'PUT',
-        url: 'http://localhost:5000/auth/contraedit/' + manufacturerId,
+        url: '/auth/contraedit/' + manufacturerId,
         data: formData,
         success: function(response) {
             console.log(response);
@@ -377,7 +377,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
     var deleteButton = $(this);  // Store the reference to 'this' for later use
 
     if (data && data.id) {
-        var deleteUrl = 'http://localhost:5000/auth/contradelete/' + data.id;
+        var deleteUrl = '/auth/contradelete/' + data.id;
         console.log('Data:', data);
 
         $.ajax({
@@ -406,7 +406,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
 // Fetch options for cash/bank Ledger(dr)
 // Fetch options for cash/bank Ledger(dr)
 $.ajax({
-    url: 'http://localhost:5000/auth/contra/cr',
+    url: '/auth/contra/cr',
     method: 'GET',
     success: function (response) {
         console.log('Received response for cash/bank Ledger(cr):', response);
@@ -430,7 +430,7 @@ $.ajax({
 
 // Fetch options for customer Ledger(cr)
 $.ajax({
-    url: 'http://localhost:5000/auth/contra/dr',
+    url: '/auth/contra/dr',
     method: 'GET',
     success: function (response) {
         console.log('Received response for  Ledger(dr):', response);

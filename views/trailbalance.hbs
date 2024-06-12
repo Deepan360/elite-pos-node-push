@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ {{>header}}
+
+    <style>
+   #purchaseFormContainer {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #8f8f8f;
+    padding: 20px;
+    z-index: 1001; /* Ensure the popup is above the blurred background */
+    border-radius: 10px;
+}
+.new-row {
+        display: none;
+    }
+.input-field.product-name {
+    width: 200px; /* Adjust the width as needed */
+    padding: 5px; ;
+}
+
+.input-field.disc-mode {
+    width: 200px; /* Adjust the width as needed */
+    padding: 5px; ;
+}
+        .editForm {
+              display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #8f8f8f;
+    padding: 20px;
+    z-index: 1001; /* Ensure the popup is above the blurred background */
+    border-radius: 10px;
+        }
+
+        .container {
+            margin-left: 20%;
+        }
+
+        .updateManufacturer {
+            background-color: rgba(50, 141, 168) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 3px !important;
+            width: 80px !important;
+            height: 30px;
+        }
+
+        .closeForm {
+            background-color: rgba(50, 141, 168) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 3px !important;
+            width: 80px !important;
+            height: 30px;
+        }
+        button {
+            margin: 1px;
+        }
+        #message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            color: black;
+            padding: 20px;
+            z-index: 1000;
+            size: 200px;
+            font-weight: 700;
+            justify-content: space-between;
+            align-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.3) !important;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        form input {
+            margin: 2px;
+        }
+        form button {
+            width: 100px !important;
+            padding: 5px;
+            margin: 5px;
+        }
+        .col input {
+            width: 100%;
+        }
+        input[type=checkbox] {
+            width: 100px;
+            color: #8f8f8f !important;
+        }
+        #submitButton {
+    display: none;
+} 
+    </style>
+    <style>
+        .align-right-top {
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body class="g-sidenav-show   bg-gray-100">
+{{>sidebar}}
+  <main class="main-content position-relative border-radius-lg ">
+{{>navbar}}
+        <div class="table-responsive container-fluid py-4">
+            <div class="form-control card">
+                <h3>Trail Balance</h3>
+                <div class="align-right-top">
+                    <div id="filterDateDiv" class="mb-3">
+                        <label for="fromDate">From Date:</label>
+                        <input type="text" id="fromDate">
+                        <label for="toDate">To Date:</label>
+                        <input type="text" id="toDate">
+                        <button class="btn btn-primary" id="filter-button">Filter</button>
+                        <button class="btn btn-primary" id="clear-button">Clear</button>
+                    </div>
+                </div>
+                <form action="/auth/customer" method="get">
+                    <table id="customerTable" class="table-responsive justify-content-between align-items-end" style="width:100% !important">
+                        <thead>
+                    <tr>
+                        <th>Sale Id</th>
+                        <th>Sale Date</th>
+                        <th>Retail Name</th>
+                        <th>Purc Amount</th>
+                        <th>Sale Amount</th>
+                        <th>Profit Amount</th>
+                    </tr>
+                </thead>
+                <tbody >
+                    <!-- Add your data rows here -->
+                </tbody>
+                    </table>
+                </form>
+            </div>
+        </div>
+  {{>footer}}
+  </main>
+  {{>color}}
+   <script>
+      var table = $("#customerTable").DataTable({
+         debug: true,
+     ajax: {
+        'url': '/auth/billwise',
+        'dataType': 'json',
+        'dataSrc': 'data',  
+         type: 'GET', 
+    },
+    columns: [
+        { data: 'salesId' },
+          { data: 'saledate', render: function (data) {
+                            const formattedDate = moment(data).format("DD-MM-YYYY");
+                            return formattedDate;
+                        } },
+        { data: 'customer' },
+        { data: 'totalPurcRate' },
+        { data: 'sumRate' },
+ { data: 'profitAmount'},
+    ], 
+    dom: 'Bfrtip',
+    buttons: ['copy', 'excel', 'pdf', 'csv'],
+    paging: false,
+    scrollY: '550px',
+    scrollX: '100px',
+    scrollCollapse: true,
+    responsive: true,
+     "bInfo": true, // Show information (records, etc.)
+    "bBorders": true, // Show borders
+});
+    </script>
+      <script>
+        document.getElementById("filter-button").addEventListener("click", function() {
+            var fromDate = new Date(document.getElementById("fromDate").value);
+            var toDate = new Date(document.getElementById("toDate").value);
+            var table = document.getElementById("productTable");
+            var rows = table.getElementsByTagName("tr");
+
+            for (var i = 1; i < rows.length; i++) {
+                var cell = rows[i].getElementsByTagName("td")[0];
+                if (cell) {
+                    var cellDate = new Date(cell.innerText);
+                    if (cellDate >= fromDate && cellDate <= toDate) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        });
+    </script>
+
+      <script>
+        document.getElementById("filter-button").addEventListener("click", function() {
+            var fromDate = new Date(document.getElementById("fromDate").value);
+            var toDate = new Date(document.getElementById("toDate").value);
+            var table = document.getElementById("contraTable");
+            var rows = table.getElementsByTagName("tr");
+
+            for (var i = 1; i < rows.length; i++) {
+                var cell = rows[i].getElementsByTagName("td")[0];
+                if (cell) {
+                    var cellDate = new Date(cell.innerText);
+                    if (cellDate >= fromDate && cellDate <= toDate) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+            if (!hasData) {
+                noDataRow.style.display = "block";
+            } else {
+                noDataRow.style.display = "none";
+            }
+        });
+        
+    </script>
+ <script>
+  $( function() {
+    $( "#fromDate" ).datepicker();
+  } );
+  </script>
+ <script>
+  $( function() {
+    $( "#toDate" ).datepicker();
+  } );
+  </script>
+<script>
+
+ document.getElementById("clear-button").addEventListener("click", function () {
+        clearFilters();
+    });
+
+  function clearFilters() {
+        var table = document.getElementById("customerTable");
+        var rows = table.getElementsByTagName("tr");
+
+        for (var i = 1; i < rows.length; i++) {
+            rows[i].style.display = "";
+        }
+
+        // Check if noDataRow is defined before accessing it
+        var noDataRow = document.getElementById("noDataRow");
+        if (noDataRow) {
+            noDataRow.style.display = "none";
+        }
+
+        // Clear the values of the input fields
+        document.getElementById("fromDate").value = "";
+        document.getElementById("toDate").value = "";
+    }
+
+    document.getElementById("filter-button").addEventListener("click", function() {
+        var fromDate = new Date(document.getElementById("fromDate").value);
+        var toDate = new Date(document.getElementById("toDate").value);
+        var table = document.getElementById("customerTable");
+        var rows = table.getElementsByTagName("tr");
+        var hasData = false;
+
+        console.log('From Date:', fromDate);
+        console.log('To Date:', toDate);
+
+        for (var i = 1; i < rows.length; i++) {
+            var cell = rows[i].getElementsByTagName("td")[1]; // Assuming "Recipt Date" is the second column
+            if (cell) {
+                var cellContent = cell.innerText.trim();
+
+                // Try to extract a valid date using moment.js
+                var cellDate = moment(cellContent, "DD-MM-YYYY");
+
+                // Skip rows with invalid or non-date content
+                if (!cellDate.isValid()) {
+                    console.log('Skipping row with invalid or non-date content:', cellContent);
+                    continue;
+                }
+
+                console.log('Cell Content:', cellContent);
+                console.log('Parsed Date:', cellDate.format("YYYY-MM-DD"));
+
+                if (cellDate.isSameOrAfter(fromDate) && cellDate.isSameOrBefore(toDate)) {
+                    rows[i].style.display = "";
+                    hasData = true;
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+
+        // Check if noDataRow is defined before accessing it
+        var noDataRow = document.getElementById("noDataRow");
+        if (noDataRow) {
+            if (!hasData) {
+                noDataRow.style.display = "block";
+            } else {
+                noDataRow.style.display = "none";
+            }
+        }
+    });
+</script>
+</body>
+
+</html> 

@@ -3,38 +3,25 @@ const express = require("express");
 const dotenv = require("dotenv");
 const path = require("path");
 const hbs = require("hbs");
-const bodyParsher = require("body-parser");
 const bodyParser = require('body-parser');
-const exhbs = require("express-handlebars");
 const cors = require('cors');
 const methodOverride = require('method-override');
-const bcryptjs = require("bcrypt");
+const session = require('express-session');
 
 const app = express();
-
-app.use(cors());
-
-dotenv.config({
-    path: './.env',
-});
-
-require('dotenv').config();
+dotenv.config({ path: './.env' });
 
 const config = {
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     server: process.env.DB_SERVER,
-    port: parseInt(process.env.DB_PORT, 10), // Parse the port as an integer
+    port: parseInt(process.env.DB_PORT, 10), 
     database: process.env.DB_DATABASE,
     options: {
         encrypt: false,
         enableArithAbort: true, 
-    },
+    }
 };
-
-app.use(bodyParser.urlencoded({ extended: true }));
-
-module.exports = config;
 
 const pool = new sql.ConnectionPool(config);
 const poolConnect = pool.connect();
@@ -47,33 +34,54 @@ poolConnect
         console.error('Error connecting to SQL Server:', err);
     });
 
-app.use(express.urlencoded({ extended: false }));
-
 app.use(cors());
-
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(methodOverride('_method'));
 
-app.use(bodyParsher.urlencoded({ extended: false }));
-app.use(bodyParsher.json());
-
-console.log(__dirname);
-const location = path.join(__dirname, "./public",);
+const location = path.join(__dirname, "./public");
 app.use(express.static(location));
-
 app.set("view engine", "hbs");
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { maxAge: 10 * 60 * 1000 } 
+}));
 
 const partialspath = path.join(__dirname, "./views/partials");
 hbs.registerPartials(partialspath);
 
+app.use((req, res, next) => {
+    if (req.session.user) {             
+        req.session._garbage = Date(); 
+        req.session.touch();
+    }
+    next();                   
+});   
+
 app.use("/", require("./routes/pages"));
 app.use("/auth", require("./routes/auth"));
 
+
+ app.get('/api/user/role', (req, res) => {
+    res.json({ role: 'userRoleFromDatabase' });
+});
+
+app.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.json({ success: false, message: 'Logout failed' });
+        }
+        res.clearCookie('connect.sid');
+        res.json({ success: true, message: 'Logged out successfully' });
+    });
+});
+
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).send('Something went wrong!');
+    res.status(500).json({ error: 'Something went wrong!' });
 });
 
 app.listen(5000, () => {

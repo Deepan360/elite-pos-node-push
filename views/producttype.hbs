@@ -162,7 +162,7 @@
        var table = $("#customerTable").DataTable({
          debug: true,
     ajax: {
-        'url': 'http://localhost:5000/auth/producttype',
+        'url': '/auth/producttype',
         'dataType': 'json',
         'dataSrc': 'data',
          type: 'GET', // Adjust 'rows' based on your server response structure
@@ -236,7 +236,7 @@ $(document).on('submit', '.editForm', function(event) {
 
     $.ajax({
         type: 'PUT',
-        url: 'http://localhost:5000/auth/producttypeedit/' + customerId,
+        url: '/auth/producttypeedit/' + customerId,
         data: formData,
         success: function(response) {
             console.log(response);
@@ -289,7 +289,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
     var deleteButton = $(this);  // Store the reference to 'this' for later use
 
     if (data && data.id) {
-        var deleteUrl = 'http://localhost:5000/auth/producttypedelete/' + data.id;
+        var deleteUrl = '/auth/producttypedelete/' + data.id;
         console.log('Data:', data);
 
         $.ajax({

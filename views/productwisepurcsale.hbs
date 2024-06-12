@@ -1,0 +1,459 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ {{>header}}
+  <style>
+   
+    #productForm {
+              
+              display: none;
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              background-color: #8f8f8f; /* White background for the form */
+              padding: 20px;
+              z-index: 1000; /* Ensure it's above other elements */
+              border-radius: 10px;
+              justify-content: space-between;
+              align-content: space-between;
+              align-items: center;
+          }
+          #productForm input {
+            margin:2px;
+            padding: 2px;
+            width: 100%;
+          }
+          #productForm select{
+            margin:2px;
+            padding: 2px;
+          }
+          #productForm button{
+            width: fit-content;
+            margin: 2px;
+          }
+          .dt-button  {
+      margin-bottom: 2px; /* Adjust margin as needed */
+      background-color: aqua;
+   }
+  .editBtn {
+    width: fit-content;
+    color: rgb(141, 64, 214);
+    margin: 2px;
+    padding: 2px;
+    align-items: center;
+    
+  }
+  
+  .deleteBtn {
+    width: fit-content;
+    color: rgb(224, 47, 47);
+    margin: 2px;
+    padding: 2px;
+    align-items: center;
+  }
+  .btn{
+     margin: 5px;
+      justify-content:space-around;
+      width: 100px;
+      padding: 5px;
+      align-content: center;
+  }
+      </style>
+  <style>
+    .nav-linkactive{
+      background-color:#1e1e1f !important;
+      background-attachment: fixed;
+      color: white;
+    }
+  </style>
+       <style>
+        .active{
+          background-color:#c3c5cc !important;
+          background-attachment: fixed;
+          color: rgb(0, 0, 0);
+        }
+         .a :hover{
+          background-color: black;
+          color: white;
+        }
+        .nav-item {
+                position: relative;
+            }
+    
+            .sub-menu {
+                display: none;
+                position:absolute;
+                top: 100%;
+                right: 0%;
+                font-weight: 300;
+                align-items: center;
+                align-self: auto;
+                z-index: 1;
+                margin-left: 0%;
+                background-color: #aeafb8;
+                color: rgb(0, 0, 0);
+                
+            }
+    
+            .nav-item:hover .sub-menu {
+                display: block;
+                
+            }
+            
+            .sidenav .sub-menu a:hover {
+                color: #f1f1f1;
+                border-radius: 10px;
+                background-color: black;
+            }
+            .navbar-vertical.navbar-expand-xs .navbar-collapse {
+        
+        
+        height: calc(100vh - 100px);
+    }
+    thead th{
+        text-wrap: nowrap;
+    }
+    h5{
+      margin-left: 5px;
+      padding: 2px;
+    }
+            .align-right-top {
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 10px;
+        }
+      </style>
+
+</head>
+
+<body class="g-sidenav-show   bg-gray-100">
+{{>sidebar}}
+  <main class="main-content position-relative border-radius-lg ">
+    <!-- Navbar -->
+    <!-- End Navbar -->
+    <!--   -->
+    <div class="table-responsive container-fluid py-4  ">
+        
+        <div class=" form-control card ">
+      
+        
+            <h3>Product Wise </h3>
+        <h4>Purchase</h4>
+        
+           
+            <table id="productTable" class="table-responsive justify-content-between align-items-end display">
+                <div class="align-right-top">
+                    <div id="filterDateDiv" class="mb-3">
+                        <label for="fromDate">From Date:</label>
+                        <input type="text" id="fromDate">
+                        <label for="toDate">To Date:</label>
+                        <input type="text" id="toDate">
+                        <button class="btn btn-primary" id="filter-button">Filter</button>
+                        <button class="btn btn-primary" id="clear-button">Clear</button>
+                    </div>
+                </div>
+                <thead class="bg-transparent thead-responsive " >
+                    <tr>
+                        <th>Purc Id	 </th>
+                        <th>Purc Date</th>
+                        <th>Supp Inv No</th>
+                        <th>Sup Inv Date</th>
+                        <th>Supplier Name</th>
+                        <th>Product</th>
+                        <th>Kgs</th>
+                        <th>Amount</th>
+                        <th>Disc Mode</th>
+                        <th>Disc.</th>
+                        <th>Net Amount</th>
+                    </tr>
+
+
+                </thead>
+                <tbody >
+                    <!-- Add your data rows here -->
+                </tbody>
+            </table>
+            <!-- <button id="addproduct" class=" btn btn-primary">Add</button> -->
+           
+            </div>
+    
+   
+    
+   </div>
+  <div class="table-responsive container-fluid py-4">
+    <div class="form-control card">
+        <h4>Sales</h4>
+
+                <table id="productsTable" class="table-responsive justify-content-between align-items-end display">
+                
+                    <!-- <div class="row" style="padding: 0%;margin: 0%;">
+                        <div  class="datebar" style="display: flex; align-items: flex-end;">
+                           
+                                <label for="fromDate">From Date:</label>
+                                <input type="date" id="fromDate">
+                                <label for="toDate">To Date:</label>
+                                <input type="date" id="toDate">
+                                <button class="addBtn btn btn-primary" id="filter-button">Show</button>
+                         
+                        </div>
+                    </div> -->
+                        <thead class="bg-transparent thead-responsive " >
+                            <tr>
+                                <th>Sale Id	 </th>
+                                <th>Sale Date</th>
+                                <th>purchase</th>
+                                <th>Customer Name</th>
+                                <th>Product</th>
+                                <th>Kgs</th>
+                                <th>Amount</th>
+                                <th>Disc Mode</th>
+                                <th>Disc.</th>
+                                <th>Net Amount</th>
+                            </tr>
+        
+        
+                        </thead>
+                        <tbody >
+                            <!-- Add your data rows here -->
+                        </tbody>
+                    </table>
+            </div>
+        </div>
+    </div>
+  </div>
+
+     <!-- Add Form (Initially Hidden) -->
+     <form id="productForm" style="display: none;">
+        <input type="text" placeholder="Particulars" id="productName">
+        <input type="text" placeholder="Quality" id="batchNo">
+        <input type="text" placeholder="Sales Rank" id="tax">
+      
+  
+        <button type="button" id="saveproduct" class=" btn btn-primary">Save</button>
+        <!-- <button type="button" id="saveAsDraft" class="btn btn-primary">Save as Draft</button> New "Save as Draft" button -->
+        <button type="button" id="closeForm" class="btn btn-primary" >Close</button>
+    </form>
+
+ 
+
+{{>footer}}
+
+  
+  </main>
+ 
+  {{>color}}
+  
+
+   
+    <script>
+        var id = ''; // Initialize the id variable
+        var table = $('#productTable').DataTable({
+            dom: 'Bfrtip',
+            buttons: ['copy', 'excel', 'pdf', 'csv'],
+            scrollY: '350px',
+         
+            paging: false,
+            scrollCollapse: true,
+        });
+        var table = $('#productsTable').DataTable({
+            dom: 'Bfrtip',
+            buttons: ['copy', 'excel', 'pdf', 'csv'],
+            scrollY: '350px',
+         
+            paging: false,
+            scrollCollapse: true,
+        });
+
+
+        // Add form button click event
+         // Add form button click event
+         $("#addproduct").click(function() {
+            $("#productForm").show();
+            $("#productName").val('');
+        });
+
+        // Save product button click event
+        $("#saveproduct").click(function() {
+            var name = $("#productName").val();
+            var batchno = $("#batchNo").val();
+            var tax = $("#tax").val();
+          
+       
+       
+
+            if (id === '') {
+                // Create a new row in the table
+                var newRow = [
+                    name, batchno, tax, 
+                    '<i class="fa-solid fa-pen-to-square editBtn"></i> <i class="fa-solid fa-trash deleteBtn"></i>'
+                ];
+
+                // Add the new row to the table
+                table.row.add(newRow).draw();
+            } else {
+                // Update an existing row in the table
+                var rowData = [
+                    name, batchno, tax,
+                    '<i class="fa-solid fa-pen-to-square editBtn"></i> <i class="fa-solid fa-trash deleteBtn"></i>'
+                ];
+                var row = table.row(function (idx, data, node) {
+                    return data[0] === id;
+                });
+                row.data(rowData).draw();
+            }
+
+            // Clear the form inputs and hide the form
+            $("#productForm input").val('');
+            $("#productForm").hide();
+            id = ''; // Reset id after saving
+        });
+
+        // Close form button click event
+        $("#closeForm").click(function() {
+            $("#productForm").hide();
+            id = ''; // Reset id when closing the form
+        });
+
+        // Edit button click event
+        $('#productTable').on('click', '.editBtn', function() {
+            var data = table.row($(this).parents('tr')).data();
+            var rowData = data.slice(0, -1); // Exclude the "Actions" column
+            $("#productName").val(data[0]);
+            $("#batchNo").val(rowData[1]);
+            $("#tax").val(rowData[2]);
+          
+          
+            $("#productForm").show();
+            id = data[0]; // Set the id when editing
+        });
+
+        // Delete button click event
+        $('#productTable').on('click', '.deleteBtn', function() {
+            table.row($(this).parents('tr')).remove().draw();
+            if (table.rows().count() === 0) {
+                // Show empty message if the table is empty
+                $("#emptyMessage").show();
+            }
+        });
+
+        $("#saveAsDraft").click(function() {
+            var name = $("#productName").val();
+            var batchno = $("#batchNo").val();
+            var tax = $("#tax").val();
+            var kgs = $("#kgs").val();
+            var nos = $("#nos").val();
+            var rate = $("#rate").val();
+            var discMode = $("#discMode").val();
+            var disc = $("#disc").val();
+            var amount = $("#amount").val();
+            var cgst = $("#cgst").val();
+            var sgst = $("#sgst").val();
+            var igst = $("#igst").val();
+            var totalAmount = $("#totalAmount").val();
+
+            if (id === '') {
+                // Create a new row in the table
+                var newRow = [
+                    name, batchno, tax, kgs, nos, rate, discMode, disc, amount, cgst, sgst, igst, totalAmount,
+                    '<button class="editBtn">Edit</button> <button class="deleteBtn">Delete</button>'
+                ];
+
+                // Add the new row to the table
+                table.row.add(newRow).draw();
+            }
+
+            // Clear the form inputs and hide the form
+            $("#productForm input").val('');
+            $("#productForm").hide();
+            id = ''; // Reset id
+        });
+    </script>
+     <script>
+  $( function() {
+    $( "#fromDate" ).datepicker();
+  } );
+  </script>
+ <script>
+  $( function() {
+    $( "#toDate" ).datepicker();
+  } );
+  </script>
+<script>
+
+ document.getElementById("clear-button").addEventListener("click", function () {
+        clearFilters();
+    });
+
+  function clearFilters() {
+        var table = document.getElementById("customerTable");
+        var rows = table.getElementsByTagName("tr");
+
+        for (var i = 1; i < rows.length; i++) {
+            rows[i].style.display = "";
+        }
+
+        // Check if noDataRow is defined before accessing it
+        var noDataRow = document.getElementById("noDataRow");
+        if (noDataRow) {
+            noDataRow.style.display = "none";
+        }
+
+        // Clear the values of the input fields
+        document.getElementById("fromDate").value = "";
+        document.getElementById("toDate").value = "";
+    }
+
+    document.getElementById("filter-button").addEventListener("click", function() {
+        var fromDate = new Date(document.getElementById("fromDate").value);
+        var toDate = new Date(document.getElementById("toDate").value);
+        var table = document.getElementById("customerTable");
+        var rows = table.getElementsByTagName("tr");
+        var hasData = false;
+
+        console.log('From Date:', fromDate);
+        console.log('To Date:', toDate);
+
+        for (var i = 1; i < rows.length; i++) {
+            var cell = rows[i].getElementsByTagName("td")[1]; // Assuming "Recipt Date" is the second column
+            if (cell) {
+                var cellContent = cell.innerText.trim();
+
+                // Try to extract a valid date using moment.js
+                var cellDate = moment(cellContent, "DD-MM-YYYY");
+
+                // Skip rows with invalid or non-date content
+                if (!cellDate.isValid()) {
+                    console.log('Skipping row with invalid or non-date content:', cellContent);
+                    continue;
+                }
+
+                console.log('Cell Content:', cellContent);
+                console.log('Parsed Date:', cellDate.format("YYYY-MM-DD"));
+
+                if (cellDate.isSameOrAfter(fromDate) && cellDate.isSameOrBefore(toDate)) {
+                    rows[i].style.display = "";
+                    hasData = true;
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+
+        // Check if noDataRow is defined before accessing it
+        var noDataRow = document.getElementById("noDataRow");
+        if (noDataRow) {
+            if (!hasData) {
+                noDataRow.style.display = "block";
+            } else {
+                noDataRow.style.display = "none";
+            }
+        }
+    });
+</script>
+
+</body>
+
+</html>

@@ -221,7 +221,7 @@
     });
        var table = $("#customerTable").DataTable({
     ajax: {
-        'url': 'http://localhost:5000/auth/supplier',
+        'url': '/auth/supplier',
         'dataType': 'json',
         'dataSrc': 'data',
          type: 'GET', // Adjust 'rows' based on your server response structure
@@ -242,8 +242,8 @@
     { data: 'pmtmode' },
     {data:'paymentlimit'},
     { data: 'address' },
-    { data: 'state' },
     { data: 'city' },
+    { data: 'state' },
     { data: 'location' },
     { data: 'pincode' },
     { data: 'beneficeiryname' },
@@ -284,6 +284,46 @@
         if (table.rows().count() === 0) {
             $("#emptyMessage").show();
         }
+
+
+  $.ajax({
+        url: '/auth/supplier/getcity',
+        method: 'GET',
+        success: function (response) {
+            var options = response.data;
+
+            if (options && options.length) {
+                var cityNames = options.map(option => option.city);
+
+           $('input[name="city"]').autocomplete({
+    source: cityNames,
+    minLength: 1,
+    select: function (event, ui) {
+        var selectedCity = ui.item.value;
+        var selectedState = options.find(option => option.city === selectedCity).state;
+        $('input[name="state"]').val(selectedState);
+    },
+    open: function (event, ui) {
+        var menu = $(this).autocomplete("widget");
+        var maxHeight = 200;
+        menu.css({
+            "max-height": maxHeight,
+            "overflow-y": "auto",
+            "z-index": 1000,  
+            "position": "absolute"  
+        });
+    }
+});
+
+            } else {
+                console.error('No options found for Supplier Ledger(dr)');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Error fetching options for Supplier Ledger(dr):', error);
+        }
+    });
+
     </script>
 <script>
    // Handle click event for the "Edit" button
@@ -355,7 +395,7 @@ $(document).on('submit', '.editForm', function(event) {
 
     $.ajax({
         type: 'PUT',
-        url: 'http://localhost:5000/auth/supplieredit/' + customerId,
+        url: '/auth/supplieredit/' + customerId,
         data: formData,
         success: function(response) {
             console.log(response);
@@ -408,7 +448,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
     var deleteButton = $(this);  // Store the reference to 'this' for later use
 
     if (data && data.id) {
-        var deleteUrl = 'http://localhost:5000/auth/supplierdelete/' + data.id;
+        var deleteUrl = '/auth/supplierdelete/' + data.id;
         console.log('Data:', data);
 
         $.ajax({

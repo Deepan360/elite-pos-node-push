@@ -203,7 +203,7 @@
     });
      var table = $("#customerTable").DataTable({
     ajax: {
-        url: 'http://localhost:5000/auth/journal',
+        url: '/auth/journal',
         dataType: 'json',
         dataSrc: 'data',
         type: 'GET',
@@ -236,6 +236,8 @@
     scrollX: '50px',
     responsive: true,
 });
+
+
 function formatDate(dateObject) {
     const date = new Date(dateObject);
     const year = date.getFullYear();
@@ -302,7 +304,7 @@ console.log('Manufacturer ID:', manufacturerId);
 
     $.ajax({
         type: 'PUT',
-        url: 'http://localhost:5000/auth/journaledit/' + manufacturerId,
+        url: '/auth/journaledit/' + manufacturerId,
         data: formData,
         success: function(response) {
             console.log(response);
@@ -353,7 +355,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
     var deleteButton = $(this);  // Store the reference to 'this' for later use
 
     if (data && data.id) {
-        var deleteUrl = 'http://localhost:5000/auth/journaldelete/' + data.id;
+        var deleteUrl = '/auth/journaldelete/' + data.id;
         console.log('Data:', data);
 
         $.ajax({
@@ -383,7 +385,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
 
 // Fetch options for particulars
 $.ajax({
-    url: 'http://localhost:5000/auth/journal/particulars',
+    url: '/auth/journal/particulars',
     method: 'GET',
     success: function (response) {
         console.log('Received response for  particulars:', response);

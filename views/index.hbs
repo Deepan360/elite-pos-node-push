@@ -3,23 +3,23 @@
 <head>
  
  {{>header}}
+  <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+ <style>
+  #barChart{
+    height: 200px;
+  }
+ </style>
 </head>
 <body class="g-sidenav-show   bg-gray-100">
   <!-- <div class="min-height-1 bg-primary position-absolute w-100"></div> -->
 {{>sidebar}}
+ 
   <main class="main-content position-relative border-radius-lg ">
+     {{>navbar}}
     <!-- Navbar -->
-    
-      
       <div class="container-fluid py-1 px-3">
-        
-         
      
-       
-       {{>navbar}}
-        
-         
-   
     <!-- End Navbar -->
     <div class="container-fluid py-4 ">
        <span> <h3 >Dashboard</h3></span>
@@ -31,8 +31,8 @@
                 <div class="col-8">
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">Supplier</p>
-                    <h5 class="font-weight-bolder">
-                      $53,000
+                    <h5 class="font-weight-bolder" id="supplierCount">
+                    
                     </h5>
                     {{!-- <p class="mb-0">
                       <span class="text-success text-sm font-weight-bolder">+55%</span>
@@ -56,8 +56,8 @@
                 <div class="col-8">
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">Customer</p>
-                    <h5 class="font-weight-bolder">
-                      $2,300
+                    <h5 class="font-weight-bolder" id="customerCount">
+                  
                     </h5>
                     {{!-- <p class="mb-0">
                       <span class="text-success text-sm font-weight-bolder">+3%</span>
@@ -81,8 +81,8 @@
                 <div class="col-8">
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">Products</p>
-                    <h5 class="font-weight-bolder">
-                      +3,462
+                    <h5 class="font-weight-bolder" id="productCount">
+                
                     </h5>
                     {{!-- <p class="mb-0">
                       <span class="text-danger text-sm font-weight-bolder">-2%</span>
@@ -106,8 +106,8 @@
                 <div class="col-8">
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">Purchase</p>
-                    <h5 class="font-weight-bolder">
-                      $103,430
+                    <h5 class="font-weight-bolder" id="purchaseCount">
+                    
                     </h5>
                     {{!-- <p class="mb-0">
                       <span class="text-success text-sm font-weight-bolder">+5%</span> than last month
@@ -124,15 +124,12 @@
           </div>
         </div>
       </div>
-      <div class="row mt-4">
-        <div class="col-lg-7 mb-lg-0 mb-4 ">
+      <div class="row mt-4" >
+        <div class="col-lg-6 mb-lg-0 mb-4 ">
           <div class="card z-index-2 h-100">
             <div class="card-header pb-0 pt-3 bg-transparent">
               <h6 class="text-capitalize">Sales overview</h6>
-              <p class="text-sm mb-0">
-                <i class="fa fa-arrow-up text-success"></i>
-                <span class="font-weight-bold">4% more</span> in 2023
-              </p>
+              <p >Month Wise</p>
             </div>
             <div class="card-body p-3">
               <div class="chart-container">
@@ -141,93 +138,255 @@
             </div>
           </div>
         </div>
-        <div class="col-lg-5">
-          <div class="card">
-            <div class="card-header pb-0 p-3">
-              <h6 class="mb-0">Categories</h6>
+ <div class="col-lg-6 " style="height: 300px !important;">
+        <div class="card">
+            <div class="card-header pb-0 p-3 ">
+                <h6 class="mb-0">Account Master</h6>
             </div>
             <div class="card-body p-3">
-              <div class="chart-container">
-                <canvas id="pieChart"></canvas>
-              </div>
+                <div class="chart-container">
+                    <canvas id="barChart"></canvas>
+                </div>
             </div>
-          </div>
         </div>
-      
-         {{>footer}}
+    </div>
+
 {{>color}}
     </div>
+     {{>footer}}
   </main>
- 
- 
- 
+
+        
     <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Sample data for 12 months
-    var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    var values = [10, 15, 7, 12, 20, 18, 25, 30, 22, 17, 28, 15];
-
-    // Get the canvas element
-    var ctx = document.getElementById('myLineChart').getContext('2d');
-
-    // Create a line chart
-    var myLineChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: months,
-            datasets: [{
-                label: 'Monthly Data',
-                data: values,
-                fill: false,
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1
-            }]
-        },
-        options: {
-            scales: {
-                x: {
-                    type: 'category',
-                    labels: months
-                },
-                y: {
-                    min: 0
-                }
-            }
-        }
-    });
-});
-
-
       document.addEventListener('DOMContentLoaded', function () {
-        // Sample data
-        var data = {
-          labels: ['Category A', 'Category B', 'Category C', 'Category D'],
-          datasets: [{
-            data: [25, 30, 15, 30],
-            backgroundColor: ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99']
-          }]
-        };
-    
-        // Options for the pie chart
-        var options = {
-          responsive: true,
-          maintainAspectRatio: false,
-          title: {
-            display: true,
-            text: 'Distribution of Categories'
-          }
-        };
-    
-        // Get the context of the canvas element we want to select
-        var ctx = document.getElementById('pieChart').getContext('2d');
-    
-        // Create the pie chart
-        var pieChart = new Chart(ctx, {
-          type: 'pie',
-          data: data,
-          options: options
-        });
+          // Fetch billwise data from the server
+          fetch('/auth/billwise')
+              .then(response => response.json())
+              .then(data => {
+                  console.log(data); 
+
+                  var monthlyData = aggregateMonthlyData(data.data);
+                  console.log(monthlyData); 
+
+                  var months = Object.keys(monthlyData);
+                  console.log("Months before sorting:", months); // Check the months before sorting
+                              // Sort the months in ascending order based on year and month
+                                      months.sort((a, b) => {
+                      // Extract year and month
+                      var [aYear, aMonth] = a.split('-').map(Number);
+                      var [bYear, bMonth] = b.split('-').map(Number);
+                      
+                      // Sort by year first
+                      if (aYear !== bYear) {
+                          return bYear - aYear; // Sort by year in ascending order
+                          return bMonth - aMonth;
+                      } else {
+                          // If years are the same, sort by month in ascending order
+                          return aMonth - bMonth;
+                      }
+                  });
+                  console.log("Months after sorting:", months); // Check the months after sorting
+
+                  // Get sale and purchase amounts for the sorted months
+                  var saleAmounts = months.map(month => monthlyData[month].totalSaleAmount);
+                  var purchaseAmounts = months.map(month => monthlyData[month].totalPurchaseAmount);
+
+                  // Update the chart with the received data
+                  updateChart(months, saleAmounts, purchaseAmounts);
+              })
+              .catch(error => {
+                  console.error('Error fetching billwise data:', error);
+              });
       });
+
+      function aggregateMonthlyData(data) {
+          // Initialize an object to store aggregated data for each month
+          var monthlyData = {};
+
+          // Iterate over each data item and aggregate amounts for each month
+          data.forEach(item => {
+              // Extract month and year in the format MM-YYYY
+              var dateParts = item.saledate.split('-'); // Splitting the date string by '-'
+              var monthYear = dateParts[1] + '-' + dateParts[0]; // Reversing month and year and formatting as MM-YYYY
+
+              if (!monthlyData[monthYear]) {
+                  // If monthYear key doesn't exist, initialize it with initial values
+                  monthlyData[monthYear] = {
+                      totalSaleAmount: 0,
+                      totalPurchaseAmount: 0
+                  };
+              }
+
+              // Add sale and purchase amounts to the corresponding monthYear
+              monthlyData[monthYear].totalSaleAmount += parseFloat(item.sumRate);
+              monthlyData[monthYear].totalPurchaseAmount += parseFloat(item.totalPurcRate);
+          });
+
+          return monthlyData;
+      }
+
+      function updateChart(months, saleAmounts, purchaseAmounts) {
+          var ctx = document.getElementById('myLineChart').getContext('2d');
+
+          // Format the sorted months for chart labels as MM-YYYY
+          var formattedLabels = months.map(month => {
+              var [year, monthNumber] = month.split('-');
+              return monthNumber + '-' + year; // Format as MM-YYYY
+          });
+
+          var myLineChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                  labels: formattedLabels, // Use the formatted labels with MM-YYYY format
+                  datasets: [{
+                      label: 'Total Sale Amount',
+                      data: saleAmounts,
+                      fill: false,
+                      borderColor: 'rgb(75, 192, 192)',
+                      tension: 0.1
+                  }, {
+                      label: 'Total Purchase Amount',
+                      data: purchaseAmounts,
+                      fill: false,
+                      borderColor: 'rgb(192, 75, 192)',
+                      tension: 0.1
+                  }]
+              },
+              options: {
+                  scales: {
+                      y: {
+                          beginAtZero: true
+                      }
+                  }
+              }
+          });
+      }
+
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('/auth/index/masterdata')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Data received:', data); // Check the structure of the received data
+
+                    // Extract counts from the data
+                    const customerCount = data.customer_count;
+                    const supplierCount = data.supplier_count;
+                    const salesmanCount = data.salesman_count;
+                    const ledgerCount = data.ledger_count;
+
+                    // Create chart data
+                    const chartData = {
+                        labels: ['Customer', 'Supplier', 'Salesman', 'Ledger'],
+                        datasets: [
+                            {
+                                label: 'Counts',
+                                data: [customerCount, supplierCount, salesmanCount, ledgerCount], // Data for four lines from left to right
+                                borderColor: ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99'],
+                                borderWidth: 2,
+                                fill: false
+                            }
+                        ]
+                    };
+
+                    // Chart options
+                    const options = {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Distribution of Categories'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: 'Categories'
+                                }
+                            },
+                            y: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: 'Counts'
+                                }
+                            }
+                        }
+                    };
+
+                    // Get the chart context
+                    const ctx = document.getElementById('barChart').getContext('2d');
+
+                    // Create a new line chart
+                    const lineChart = new Chart(ctx, {
+                        type: 'line',
+                        data: chartData,
+                        options: options
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching master data:', error);
+                    // Handle error
+                });
+        });
+
+// Fetch supplier count
+fetch('/auth/index/supplierCount')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('supplierCount').textContent = data.supplierCount; // Use the correct key
+        } else {
+            console.error('Error fetching supplier count:', data.message);
+        }
+    })
+    .catch(error => console.error('Error fetching supplier count:', error));
+
+// Fetch customer count
+fetch('/auth/index/customerCount')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('customerCount').textContent = data.customerCount; // Use the correct key
+        } else {
+            console.error('Error fetching customer count:', data.message);
+        }
+    })
+    .catch(error => console.error('Error fetching customer count:', error));
+// Fetch product count
+// Fetch product count
+fetch('/auth/index/productCount')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('productCount').textContent = data.row_count; // Access 'row_count' instead of 'productCount'
+        } else {
+            console.error('Error fetching product count:', data.message);
+        }
+    })
+    .catch(error => console.error('Error fetching product count:', error));
+
+// Fetch purchase count
+fetch('/auth/index/purchaseCount')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('purchaseCount').textContent = data.row_count; // Access 'row_count' instead of 'companyName'
+        } else {
+            console.error('Error fetching purchase count:', data.message);
+        }
+    })
+    .catch(error => console.error('Error fetching purchase count:', error));
+
     </script>
   <!--   Core JS Files   -->
   <script src="./assets/js/core/popper.min.js"></script>

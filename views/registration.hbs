@@ -1,6 +1,7 @@
 {{>header}}
- <main class="main-content  mt-0">
-    <div class="page-header align-items-start min-vh-50 pt-5 pb-11 m-3  border-radius-lg" style="background-image: url('https://wallpapershome.com/images/pages/pic_h/5416.jpg'); background-position: fixed;">
+<body>
+ <main class="main-content mt-0">
+    <div class="page-header align-items-start min-vh-50 pt-5 pb-11 m-3 border-radius-lg" style="background-image: url('https://wallpapershome.com/images/pages/pic_h/5416.jpg'); background-position: fixed;">
       <span class="mask bg-gradient-dark opacity-6"></span>
       <div class="container">
         <div class="row justify-content-center">
@@ -15,22 +16,24 @@
         <div class="col-xl-4 col-lg-5 col-md-7 mx-auto">
           <div class="card z-index-0">
             <div class="card-body">
-             <form action="/auth/registration" method="post">
+              <form id="registration-form" action="/auth/registration" method="post">
                 <div class="mb-3">
-                  <input type="text" class="form-control" placeholder="UserName" name="userid" id="userid" aria-label="userid" required>
-                </div>
-                <div class="mb-3"> 
-                  <input type="email" class="form-control" placeholder="Email" id="emailid" aria-label="emailid" name="emailid" required>
+                  <input type="text" class="form-control" placeholder="UserName" name="userid" id="userid" aria-label="userid" required autocomplete="off">
                 </div>
                 <div class="mb-3">
-                 <input type="password" class="form-control" placeholder="Password" id="password" name="password" aria-label="Password" required>
+                  <input type="email" class="form-control" placeholder="Email" id="emailid" aria-label="emailid" name="emailid" required autocomplete="off">
+                  <span id="emailMessage" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                  <input type="password" class="form-control" placeholder="Password" id="password" name="password" aria-label="Password" required autocomplete="off">
                 </div>
                 <div class="text-center">
-                 <button type="submit" class="btn bg-gradient-success w-100 my-4 mb-2">Sign up</button>
-
+                  <button type="submit" class="btn bg-gradient-success w-100 my-4 mb-2">Sign up</button>
                 </div>
+                <div id="error-message" class="text-danger"></div>
+                <div id="success-message" class="text-success"></div>
               </form>
-                <p class="text-sm mt-3 mb-0">Already have an account? <a href="/ " class="text-dark font-weight-bolder">Sign in</a></p>
+              <p class="text-sm mt-3 mb-0">Already have an account? <a href="/" class="text-dark font-weight-bolder">Sign in</a></p>
             </div>
           </div>
         </div>
@@ -38,3 +41,37 @@
     </div>
   </main>
 {{>footer}}
+
+<script>
+  $(document).ready(function() {
+    $('#registration-form').submit(function(event) {
+      event.preventDefault();
+      var formData = {
+        userid: $('#userid').val(),
+        emailid: $('#emailid').val(),
+        password: $('#password').val()
+      };
+
+      $.ajax({
+        type: 'POST',
+        url: 'http://localhost:5000/auth/registration',
+        data: JSON.stringify(formData),
+        contentType: 'application/json',
+        success: function(response) {
+          if (response.msg_type === "error") {
+            alert('Email ID is already taken');
+          } else {
+            alert('Successfully registered');
+               window.location.href = "/"; 
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error('AJAX error:', error);
+          alert('Email ID is already taken');
+        }
+      });
+    });
+  });
+</script>
+
+</body>

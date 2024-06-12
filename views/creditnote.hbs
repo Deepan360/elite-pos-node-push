@@ -203,7 +203,7 @@
     });
      var table = $("#customerTable").DataTable({
     ajax: {
-        url: 'http://localhost:5000/auth/creditnote',
+        url: '/auth/creditnote',
         dataType: 'json',
         dataSrc: 'data',
         type: 'GET',
@@ -231,7 +231,7 @@
     dom: 'Bfrtip',
     buttons: ['copy', 'excel', 'pdf', 'csv'],
     paging: false,
-    scrollY: '400px',
+    scrollY: '550px',
     scrollCollapse: true,
     scrollX: '50px',
     responsive: true,
@@ -302,7 +302,7 @@ console.log('Manufacturer ID:', manufacturerId);
 
     $.ajax({
         type: 'PUT',
-        url: 'http://localhost:5000/auth/creditnoteedit/' + manufacturerId,
+        url: '/auth/creditnoteedit/' + manufacturerId,
         data: formData,
         success: function(response) {
             console.log(response);
@@ -332,6 +332,8 @@ console.log('Manufacturer ID:', manufacturerId);
     });
 });
 
+
+
 // Handle form close button for the edit form
 $(document).on('click', '.editForm #closeForm', function() {
     $(".editForm").hide();
@@ -342,48 +344,52 @@ $(document).on('click', '.editForm #closeForm', function() {
     });
 </script>
 <script>
-// Handle form close button
+
 $('#closeForm').click(function() {
-    // Hide the form when the close button is clicked
+
     $("#manufacturerform").hide();
 });
 
 $('#customerTable').on('click', '.deleteBtn', function() {
     var data = table.row($(this).parents('tr')).data();
-    var deleteButton = $(this);  // Store the reference to 'this' for later use
 
     if (data && data.id) {
-        var deleteUrl = 'http://localhost:5000/auth/creditnotedelete/' + data.id;
+       var deleteUrl = '/auth/creditnotedelete/' + data.id;
         console.log('Data:', data);
 
         $.ajax({
             type: 'DELETE',
             url: deleteUrl,
-            success: function(response) {
+            success: function(response, textStatus, xhr) {
                 console.log(response);
-                if (response.success) {
+                if (xhr.status === 200) {
                     alert('Successfully Deleted 🗑');
                     table.ajax.reload();
                 } else {
-                    alert("Failed to delete customer: " + response.error);
+                    alert("Failed to delete credit note: " + response.error);
                 }
             },
-            error: function(error) {
-                console.error('Error deleting customer:', error);
-                alert("Failed to delete customer. Check console for details.");
+            error: function(xhr, status, error) {
+                console.error('Error deleting credit note:', error);
+                alert("Failed to delete credit note. Check console for details.");
             }
         });
     } else {
         console.error('Invalid or undefined data:', data);
     }
 });
+
+
+
+
+
 </script>
 <script>
 
 
 // Fetch options for particulars
 $.ajax({
-    url: 'http://localhost:5000/auth/creditnote/particulars',
+    url: '/auth/creditnote/particulars',
     method: 'GET',
     success: function (response) {
         console.log('Received response for  particulars:', response);

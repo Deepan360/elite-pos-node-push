@@ -96,14 +96,11 @@
  {{>sidebar}}
   <main class="main-content position-relative border-radius-lg ">
       {{>navbar}}
-
     <div class="table-responsive container-fluid py-4  ">
         <div class=" form-control card ">
             <h3>Product Category</h3>
-        
            <form action="/auth/productcategory" method="get">
              <table id="customerTable" class="table-responsive justify-content-between align-items-end" style="width:100% !important">
-         
                 <thead>
                     <tr>
                         <th>Id</th>
@@ -113,33 +110,18 @@
                         <th class="action">Action</th>
                     </tr>
                 </thead>
-                <tbody>
-                   
+                <tbody> 
                 </tbody>
-               
             </table>
              <button type="button" value="button" class="btn btn-primary" id="addmanufacturer" >add</button>
             </form>
-            
-
-            </div>
-             
-        </div>
-        
+            </div>      
+        </div>     
     </div>
-   
-    
    </div>
-
- 
-{{>footer}}
-  
+{{>footer}} 
   </main>
- 
   {{>color}}
-  
-
-
   <script>
     document.addEventListener('DOMContentLoaded', function () {
     // Wait for the DOM to be fully loaded
@@ -163,7 +145,7 @@
        var table = $("#customerTable").DataTable({
          debug: true,
     ajax: {
-        'url': 'http://localhost:5000/auth/productcategory',
+        'url': '/auth/productcategory',
         'dataType': 'json',
         'dataSrc': 'data',
          type: 'GET', // Adjust 'rows' based on your server response structure
@@ -213,11 +195,8 @@ $(document).on('click', '.editBtn', function() {
         $(".editForm #id").val(data.id);
         $(".editForm #categorycode").val(data.Category_code);
         $(".editForm #productcategory").val(data.Product_Category);
-     
-       
-       
-        // Check if 'active' property is true and set the checkbox accordingly
-        if (data.active) {
+    
+  if (data.Active) {
             $(".editForm #active").prop('checked', true);
         } else {
             $(".editForm #active").prop('checked', false);
@@ -241,7 +220,7 @@ $(document).on('submit', '.editForm', function(event) {
 
     $.ajax({
         type: 'PUT',
-        url: 'http://localhost:5000/auth/productcategoryedit/' + customerId,
+        url: '/auth/productcategoryedit/' + customerId,
         data: formData,
         success: function(response) {
             console.log(response);
@@ -294,7 +273,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
     var deleteButton = $(this);  // Store the reference to 'this' for later use
 
     if (data && data.id) {
-        var deleteUrl = 'http://localhost:5000/auth/productcategorydelete/' + data.id;
+        var deleteUrl = '/auth/productcategorydelete/' + data.id;
         console.log('Data:', data);
 
         $.ajax({
@@ -329,9 +308,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
             <input type="hidden" placeholder="Id" name="id" id="id">
             <input type="text" placeholder="Code No" name="categorycode" id="categorycode">
             <input type="text" placeholder="Product category" name="productcategory" id="productcategory">
-                    <label for="active" style="font-size: 14px;">Active<input type="checkbox" id="active" value="1" name="active" ></label>
-
-            
+            <label for="active" style="font-size: 14px;">Active<input type="checkbox" id="active" value="1" name="active" ></label>
         </div>
     </div>
     <button type="submit" value="submit" class="btn btn-primary" id="saveManufacturer">Save</button>
@@ -345,7 +322,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
             <input type="hidden" placeholder="Id" name="id" id="id">
             <input type="text" placeholder="Code " name="categorycode" id="categorycode">
             <input type="text" placeholder="Product category" name="productcategory" id="productcategory">
-                      <label for="active" style="font-size: 14px;">Active<input type="checkbox" id="active" value="1" name="active" ></label>
+            <label for="active" style="font-size: 14px;">Active<input type="checkbox" id="active" value="true" name="active" ></label>
 
             
         </div>

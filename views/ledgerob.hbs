@@ -171,7 +171,7 @@ function fetchAndDisplayTableData(ledgerTypeDesc) {
     console.log('Fetching data for ledger type:', ledgerTypeDesc);
 
     $.ajax({
-        url: `http://localhost:5000/auth/ledgerData?ledgerTypeDesc=${ledgerTypeDesc}`,
+        url: `/auth/ledgerData?ledgerTypeDesc=${ledgerTypeDesc}`,
         method: 'GET',
         success: function (response) {
             console.log('Received response for ledger data:', response);
@@ -187,7 +187,7 @@ function fetchAndDisplayTableData(ledgerTypeDesc) {
 
 // Fetch ledger options and populate the dropdown
 $.ajax({
-    url: 'http://localhost:5000/auth/ledgerob',
+    url: '/auth/ledgerob',
     method: 'GET',
     success: function (response) {
         console.log('Received response for Ledgerob:', response);

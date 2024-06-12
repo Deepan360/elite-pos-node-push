@@ -12,10 +12,8 @@
       left: 50%;
       transform: translate(-50%, -50%);
       background-color: #8f8f8f;
-      /* White background for the form */
       padding: 20px;
       z-index: 1000;
-      /* Ensure it's above other elements */
       border-radius: 10px;
       justify-content: space-between;
       align-content: space-between;
@@ -60,6 +58,7 @@
       align-items: center;
     }
 
+ 
     table {
       border-collapse: collapse;
       width: 100%;
@@ -75,21 +74,26 @@
 
     th,
     td {
-      border: 0px solid #dddddd;
-      text-align: center;
+      border: 0px ;
+      text-align: left;
       padding: 5px;
     }
- 
-    input {
+    table tbody tr {
+    border: 0px solid #ffffff !important;
+    box-sizing: border-box !important;
+    padding: 10px !important;
+}
+
+   table input {
       width: 100%;
       /* Make the input box take 100% width of its container */
       box-sizing: border-box;
       /* Include padding and border in the width */
       vertical-align: middle;
       /* Align the input vertically in the middle */
-      text-align: center !important;
+      font-size: small;
     }
-       table tbody tr td {
+    table tbody tr td {
     text-wrap:wrap  !important; 
 }
 

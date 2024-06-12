@@ -139,12 +139,12 @@ Stroke effects - Nucleo outline icons
 }
 .table-responsive  .row .col-date{
   float: inline-end !important;
-  font-size: 14px !important;
+  /* font-size: 14px !important; */
 }
 input,select{
   border-radius: 5px;
   border: 1px solid gray;
-  font-size: 14px;
+  /* font-size: 14px; */
 }
 .datebar{
   align-items: center !important;
@@ -211,7 +211,6 @@ aside .sidebar{
   }
   #sidenav-main{
     box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.5); /* Add a box shadow */
-
   }
 .nav-item .fa{
   color: #8f8686 !important;  
@@ -223,27 +222,24 @@ aside .sidebar{
   color: #8f8686 !important;
   background-color:#8f8686 !important ;
 }
-
-/* Add a transition for smoother animation */
 .navbar-brand-img {
-    transition: all 0.3s ease !important; /* Adjust the duration and easing as needed */
+    transition: all 0.3s ease !important; 
 }
-/* On hover, increase width and show a pop-up effect */
 .navbar-brand-img:hover {
-    transform: translateX(-10%) scaleX(1.3) !important; /* Increase size slightly for a pop-up effect */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important; /* Add a subtle box shadow */
+    transform: translateX(-10%) scaleX(1.3) !important; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important; 
 }
 .navbar-brand-img:hover::before {
-    content: url("/assets/img/Untitled\ design\ \(11\)-modified.png"); /* Unicode star character; replace with your desired icon */
+    content: url("/assets/img/Untitled\ design\ \(11\)-modified.png"); 
     color: #fff;
     background-color: #111111;
     position: absolute !important;
-    left: -25px !important; /* Adjust the position as needed */
+    left: -25px !important;
     top: 50% !important;
     transform: translateY(-50%) !important;
 }
 .card-plain{
-  box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.5); /* Add a box shadow */
+  box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.5); 
 }
 table thead tr th{
   text-wrap: nowrap !important;
@@ -252,11 +248,11 @@ table tbody tr td{
  text-align: center !important;
 }
 .editBtn {
-  color: #800080; /* Purple color for edit */
+  color: #800080; 
 }
 
 .deleteBtn {
-  color: #ff8800; /* Warning color for delete */
+  color: #ff8800; 
 }
 table thead th{
   text-align: center;
@@ -273,17 +269,14 @@ table tbody tr td{
   width: 100px !important;
 }
 
-/* Style for even rows */
 table tbody tr.even {
   background-color: #ffffff !important;
 }
 
-/* Style for odd rows */
 table tbody tr.odd {
-  background-color: #dadada !important; /* You can set a different background color for odd rows */
+  background-color: #dadada !important; 
 }
 
-/* Additional styling for all rows */
 table tbody tr {
   border: 1px solid #ffffff !important;
   box-sizing: border-box !important;
@@ -291,8 +284,8 @@ table tbody tr {
 }
 
 .align-right-top label {
-  display: inline !important; /* Each label on a new line */
-  font-size: 16px !important; /* Adjust the font size as needed */
+  display: inline !important; 
+  font-size: 16px !important; 
 }
 
 
@@ -300,29 +293,28 @@ table tbody tr {
   background-color: #051139 !important;
 }
 input {
-  font-size: 16px;
   border: 1px solid #ccc;
   position: relative;
-  padding: 2px; /* Adjust the padding value */
-  box-sizing: border-box; /* Include padding and border in element's total width and height */
-  line-height: 0.3; /* Adjust line-height to slightly lower the text */
+  padding: 5px; 
+  box-sizing: border-box; 
+  line-height: 0.3; 
 }
 
 input::placeholder {
   color: gray;
   position: absolute;
   transition: color 0.3s ease-out, transform 0.3s ease-out;
-  transform-origin: right center; /* Set the transform origin to the left center */
+  transform-origin: right center; 
 }
 
 input:focus::placeholder,
 input:not(:placeholder-shown)::placeholder {
   color: #3498db;
-  transform: translateY(-100%) translateY(5px); /* Move up and adjust for 1px border */
+  transform: translateY(-100%) translateY(5px); 
 }
 
 input:not(:placeholder-shown)::placeholder {
-  transform: translateY(-100%) translateY(5px); /* Move up and adjust for 1px border */
+  transform: translateY(-100%) translateY(5px);
 }
 
 input::placeholder  {
@@ -331,7 +323,6 @@ input::placeholder  {
   left: 10px;
   transform: translateY(-50%);
   transition: transform 0.3s, font-size 0.3s, color 0.3s;
-  font-size: 16px;
   color: grey;
   pointer-events: none;
 }
@@ -342,7 +333,6 @@ input:focus::placeholder {
   display: block;
   top: 0%;
   margin-top: 10px;
-  font-size: 16px;
   color: #000000;
   border: 1px solid black;
   padding: 0px;
@@ -359,40 +349,45 @@ input:focus::placeholder {
 
 .col {
   flex: 1;
-  padding: 5px;
+  padding: 2px;
 }
 .custom-input-container {
   position: relative;
   margin-bottom: 20px;
 }
 
+.custom-inputs-container {
+  position: relative;
+  margin-bottom: 20px;
+}
 .custom-input-container label {
-  position: absolute;
-  top: 50%;
-  left: 15px;
+  position: absolute !important;
+  top: 0%;
+ 
   pointer-events: none;
   transition: 0.3s;
-  color: #555; /* Adjust label color as needed */
+  color: #555;
   background-color: #fff;
-  transform: translateY(-50%);
-  font-size: 14px;
+  transform: translateY(50%);
+  align-items: center;
+  text-align: center;
 }
 
 .custom-input-container input {
   width: 100%;
   padding: 10px;
+align-items: end;
   box-sizing: border-box;
-  border: 1px solid #ddd; /* Adjust border color as needed */
+  border: 1px solid #ddd; 
   border-radius: 4px;
   outline: none;
-  font-size: 14px;
 }
 
-.custom-input-container input:focus + label,
-.custom-input-container input:not(:placeholder-shown) + label {
-  top: 0;
-  font-size: 12px;
-  color: #ffffff; /* Adjust label color on focus */
+
+
+.custom-input-container input:not(:focus):not(:placeholder-shown) + label {
+  top: 0%;
+  color: #555; 
 }
 
 
@@ -416,7 +411,6 @@ input:focus::placeholder {
 .dark-version .custom-input-container input:focus + label,
 .dark-version .custom-input-container input:not(:placeholder-shown) + label {
   top: 0;
-  font-size: 10px !important;
   color: #ffffff !important;
 }
  
@@ -424,37 +418,30 @@ input:focus::placeholder {
   background-color: #051139;
   color: white;
 }
-
-
-/* Style for even rows */
 .dark-version  table tbody tr.even {
   background-color: #051139!important;
 }
-
-/* Style for odd rows */
 .dark-version table tbody tr.odd {
-  background-color:#202e5c !important; /* You can set a different background color for odd rows */
+  background-color:#202e5c !important; 
 }
-
 .dark-version .btn {
-  background-color: #202e5c;
-  border: 1px solid #202e5c!important;
+  background-color: #051139;
+  border: 1px solid #051139!important;
 }
-
 .dark-version .buttons-copy,
 .dark-version .buttons-excel,
 .dark-version .buttons-pdf,
 .dark-version .buttons-csv {
-  background-color: #202e5c !important;
-  border: 1px solid #202e5c!important;
+  background-color: #051139 !important;
+  border: 1px solid #051139!important;
   color: #fff !important;
 }
 .dark-version .ps .fixed-plugin {
   color: #fff !important;
-  background-color: #202e5c !important;
+  background-color: #051139 !important;
 }
 .dark-version #manufacturerform{
-  background-color: #3f4761;
+  background-color: #202e5c !important;
 }
 .dark-version .dataTables_info{
   color: white !important;
@@ -464,3 +451,400 @@ input:focus::placeholder {
   background-color:#111C44 !important;
   background: #111C44!important;
 }
+.custom-inputs-container select {
+  width: 100% !important; 
+    border: 1px solid #ccc !important ; 
+    box-sizing: border-box !important; 
+    padding: 10px !important; 
+}
+  .custom-input-container {
+    position: relative !important;
+    margin-bottom: 20px !important; 
+
+}
+        .custom-input-container label {
+    position: absolute !important;
+    top: -20px !important; 
+    left: 10px !important; 
+    background-color: #fff; 
+    padding: 0 5px !important;
+}
+
+.custom-input-container input {
+    width: 100%; 
+    border: 1px solid #ccc; 
+    box-sizing: border-box !important; 
+    padding: 10px !important;
+}
+.custom-input-container select {
+    width: 100%; 
+    border: 1px solid #ccc; 
+    box-sizing: border-box !important; 
+    padding: 10px !important;
+}
+
+.custom-input-container select  label{
+position: absolute !important;
+}
+.dark-version .custom-inputs-container select  {
+  color: white;
+  background-color: #051139;
+}
+
+
+.dark-version .custom-inputs-container label{
+  color: white;
+  background-color: #051139;
+}
+
+
+
+.dark-version .modal-content{
+  color: white;
+  background-color: #051139;
+}
+
+.cell{
+  width: 200px;
+  display: flex;
+  align-items: end;
+  column-gap: 5px;
+  border-color: #051139;
+  color: #555;
+}
+#special-pop {
+  width: 100% !important;
+}
+
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100% !important; 
+  color: var(--bs-modal-color);
+  pointer-events: auto;
+  background-color: var(--bs-modal-bg);
+  background-clip: padding-box;
+  border: var(--bs-modal-border-width) solid var(--bs-modal-border-color);
+  border-radius: var(--bs-modal-border-radius);
+  outline: 0;
+}
+
+.modal-body {
+  flex: 1; 
+}
+.col .cell{
+  padding: 0% !important;
+  margin: 0% !important;
+  column-gap: 1px !important;
+}
+label input[type="text"]{
+  background-color: none !important;
+  background: transparent !important;
+}
+.dark-version #purchaseFormContainer {
+  background-color: #202e5c !important;
+}
+.dark-version input {
+  background-color: #202e5c !important;
+  color: white !important;
+}
+.dark-version .ui-datepicker table {
+  width: 100%;
+  font-size: .9em;
+  border-collapse: collapse;
+  margin: 0 0 0.4em;
+  color: #202e5c;
+}
+.dark-version .ui-state-default {
+  border: 1px solid #c5c5c5;
+  background:#202e5c !important;
+  font-weight: normal;
+  color: #000000;
+}
+
+.dark-version #filter-button {
+  background:#202e5c !important;
+  border-color: rgb(255, 255, 255) !important;
+}
+.dark-version .fa-heart {
+  color: #ae3a94!important;
+}
+.fa-heart {
+  color: #ae3a94 !important;
+}
+optgroup {
+  font-weight: bold;
+  background-color: #f0f0f0;
+}
+
+select .dropdown option{
+ 
+  height: 200px !important;
+  overflow-y: scroll !important;
+ scroll-behavior: smooth !important;
+}
+.labels {
+  display: flex;
+  flex-wrap: wrap;
+  align-items:  start !important;
+  justify-content: space-around;
+}
+
+.custom {
+  margin: 5px;
+  padding: 5px;
+ align-items:  start !important;
+ justify-content: space-evenly;
+}
+.custom-btn {
+  width: 100px !important; 
+  height: 41px !important;
+}
+.scrollbtn-container {
+  height: 150px; 
+  overflow-y: auto; 
+  position: relative; 
+}
+
+.buttons-wrapper {
+  display: flex;
+  flex-direction: column; 
+}
+
+.fixed-buttons {
+  position: absolute; 
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column; 
+}
+
+#batchDetailsModal table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
+
+#batchDetailsModal th, #batchDetailsModal td {
+  padding: 8px;
+  border: 1px solid #ddd;
+}
+
+#batchDetailsModal th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+#batchDetailsModal tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+#batchDetailsModal tbody tr:hover {
+  background-color: #ddd;
+}
+#batchDetailsBody tr:nth-child(odd) {
+  background-color: #f2f2f2; 
+}
+
+#batchDetailsBody tr:nth-child(even) {
+  background-color: #ffffff; 
+}
+
+#batchDetailsBody tr:nth-child(odd):hover{
+  background-color: #5785a3 !important;
+  color: white !important;
+}
+#batchDetailsBody tr:nth-child(even):hover{
+  background-color: #5785a3 !important;
+  color: white !important;
+} 
+tbody tr {
+ 
+  padding: 0;
+}
+
+.dark-version .dt-buttons>.dt-button, div.dt-buttons>div.dt-button-split .dt-button {
+  border-color: #8f8686 !important;
+  color: white !important;
+
+}
+
+.dark-version .nav-link-text{
+  color: white !important;
+}
+
+.form-switch .form-check-input {
+
+  margin: 0px !important;
+  padding: 0px !important;
+}
+
+.companyTitle {
+  align-items: center !important;
+  padding: 0%;
+  text-align: center;
+  justify-content: center;
+  font-size: 14px!important;
+  color: dimgrey;
+  animation: pulse 1s ease infinite alternate; /* Apply the animation */
+}
+
+@keyframes pulse {
+  0% {
+    font-size: 14px;
+  }
+  100% {
+    font-size: 16px;
+   }
+}
+
+.heading{
+  margin: 0px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0px !important;
+  text-align: start !important;
+  animation: fadeOut 1s ease infinite alternate; /* Apply the animation */
+}
+
+.dark-version .chart-container{
+  color: white !important;
+  text-emphasis-color: white  !important;
+ 
+}
+
+.dark-version i .fa-print  {
+    color: #f0f0f0 !important;
+}
+
+.dark-version table thead th  {
+    background: #111C44;
+    color: white;
+}
+
+.dark-version table tbody tr.odd {
+  background-color: #202e5c !important;
+}
+
+.dark-version table tbody tr.even {
+  background-color: #051139 !important;
+}
+
+.dark-version table.dataTable.display tbody tr.odd {
+  background-color: #202e5c !important; 
+}
+
+.dark-version table.dataTable.display tbody tr.even {
+  background-color: #051139 !important; 
+}
+
+.dataTables_scrollBody .dropdown-menu {
+  min-width: 200px; 
+}
+
+.dark-version .active {
+  background-color: #40465d !important;
+}
+
+.dark-version .sub-menu .active{
+  background-color: #40465d !important;
+  color: white;
+}
+
+.dark-version .sub-menu {
+  background-color: #474c5e !important;
+  color: white;
+}
+
+#logoutIcon{
+  cursor: pointer;
+}
+
+.loading-line {
+  display: block; 
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px; 
+  background: linear-gradient(to right, #4e54c8, #5e72e4);
+  z-index: 9999; 
+  animation: loading-animation 2s ease-in-out; 
+}
+
+.dark-version .loading-line {
+  display: block; 
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background:  linear-gradient(to right, #f1f1f1, #ffffff);
+  z-index: 9999;
+  animation: loading-animation 2s ease-in-out; 
+}
+
+@keyframes loading-animation {
+  0% {
+      left: -100%; 
+  }
+  100% {
+      left: 100%; 
+  }
+}
+
+#navbarBlur{
+  box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.5) !important; 
+  border-radius: 10px !important;
+  margin-top:20px !important ;
+  align-items: center !important;
+  padding: 5px !important;
+  justify-content: space-evenly !important;
+}
+
+.dark-version  #navbarBlur{
+  background: #111C44;
+}
+
+.text-dark{
+  color: #051139 !important;
+}
+
+.dark-version .text-dark{
+  color: #ffffff !important;
+}
+
+@media (max-width: 768px) {
+  .row {
+      flex-direction: column;
+      gap: 10px;
+  }
+
+  .col {
+      min-width: 100%;
+  }
+
+  .custom-input-container {
+      margin-bottom: 5px;
+  }
+
+  .custom-input-container input,
+  .custom-input-container select {
+      padding: 12px;
+      font-size: 16px;
+  }
+
+  .custom-input-container label {
+      font-size: 14px;
+  }
+}
+

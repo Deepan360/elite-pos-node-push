@@ -220,7 +220,7 @@
     });
      var table = $("#customerTable").DataTable({
     ajax: {
-        url: 'http://localhost:5000/auth/receipt',
+        url: '/auth/receipt',
         dataType: 'json',
         dataSrc: 'data',
         type: 'GET',
@@ -318,7 +318,7 @@ console.log('Manufacturer ID:', manufacturerId);
 
     $.ajax({
         type: 'PUT',
-        url: 'http://localhost:5000/auth/receiptedit/' + manufacturerId,
+        url: '/auth/receiptedit/' + manufacturerId,
         data: formData,
         success: function(response) {
             console.log(response);
@@ -369,7 +369,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
     var deleteButton = $(this);  // Store the reference to 'this' for later use
 
     if (data && data.id) {
-        var deleteUrl = 'http://localhost:5000/auth/receiptdelete/' + data.id;
+        var deleteUrl = '/auth/receiptdelete/' + data.id;
         console.log('Data:', data);
 
         $.ajax({
@@ -398,12 +398,13 @@ $('#customerTable').on('click', '.deleteBtn', function() {
 // Fetch options for cash/bank Ledger(dr)
 // Fetch options for cash/bank Ledger(dr)
 $.ajax({
-    url: 'http://localhost:5000/auth/recipt/dr',
+    url: '/auth/recipt/cr',
     method: 'GET',
     success: function (response) {
         console.log('Received response for cash/bank Ledger(dr):', response);
         var options = response.data;
         if (options && options.length) {
+            // Append options to the dropdown
             options.forEach(function (option) {
                 $('.dropdown[name="dr"]').append($('<option>', {
                     value: option.ledgername,
@@ -413,15 +414,26 @@ $.ajax({
         } else {
             console.error('No options found for cash/bank Ledger(dr)');
         }
+
+        // Manually append "cash" to the dropdown
+        $('.dropdown[name="dr"]').append($('<option>', {
+            value: 'cash',
+            text: 'cash'
+        }));
     },
     error: function (xhr, status, error) {
         console.error('Error fetching options for cash/bank Ledger(dr):', error);
     }
 });
 
+
+
+
+
+
 // Fetch options for customer Ledger(cr)
 $.ajax({
-    url: 'http://localhost:5000/auth/recipt/cr',
+    url: '/auth/recipt/dr',
     method: 'GET',
     success: function (response) {
         console.log('Received response for customer Ledger(cr):', response);

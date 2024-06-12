@@ -1,392 +1,591 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- {{>header}}
-     <style>
-        #manufacturerform {
-                  display: block;
-                  position: fixed;
-                  top: 50%;
-                  left: 50%;
-                  transform: translate(-50%, -50%);
-                  background-color: #8f8f8f; /* White background for the form */
-                  padding: 20px;
-                  z-index: 1000; /* Ensure it's above other elements */
-                  border-radius: 10px;
-              }
-            .editForm {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #8f8f8f;
-            padding: 20px;
-            z-index: 1000;
-            border-radius: 10px;
-        }
-           
-          </style>
-    <style>
-        .container{
-            margin-left: 20%;
-        }
-        .updateManufacturer{
-             background-color: rgba(50, 141, 168) !important;
-            color: white !important;
-             border: none !important;
-                border-radius: 3px !important;
-                width: 80px !important;
-            height: 30px;
-        }
-        .closeForm{
-             background-color: rgba(50, 141, 168) !important;
-            color: white !important;
-             border: none !important;
-                border-radius: 3px !important;
-                width: 80px !important;
-            height: 30px;
-        }
-  button{
-    margin: 1px;
-  }
-      #message {
-             display: none;
-              position: fixed;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -50%);
-              background-color: #ffffff; /* White background for the form */
-              color: black;
-              padding: 20px;
-              z-index: 1000; /* Ensure it's above other elements */
-              size: 200px;
-              font-weight: 700;
-              justify-content: space-between;
-              align-content: space-between;
-              align-items: center;
-              font-size: 14px;
-              box-shadow: 0px 0px 12px  rgba(0, 0, 0, 0.3) !important; /* Add a subtle box shadow */
-              border-radius: 8px; /* Optional: Add border-radius for rounded corners */
-              overflow: hidden; 
-        }
-    form input,select{
+    {{>header}}
+  <style>
+    #purchaseFormContainer {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #8f8f8f;
+        padding: 20px;
+        z-index: 1001;
+        border-radius: 10px;
+    }
+    .new-row {
+        display: none;
+    }
+    #manufacturerform {
+        display: block;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #8f8f8f;
+        padding: 20px;
+        z-index: 1000;
+        border-radius: 10px;
+    }
+    .editForm {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #8f8f8f;
+        padding: 20px;
+        z-index: 1000;
+        border-radius: 10px;
+    }
+    .container {
+        margin-left: 20%;
+    }
+    .updateManufacturer, .closeForm {
+        background-color: rgba(50, 141, 168) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 3px !important;
+        width: 80px !important;
+        height: 30px;
+    }
+    button {
+        margin: 1px;
+    }
+    #message {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #ffffff;
+        color: black;
+        padding: 20px;
+        z-index: 1000;
+        size: 200px;
+        font-weight: 700;
+        justify-content: space-between;
+        align-content: space-between;
+        align-items: center;
+        font-size: 14px;
+        box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.3) !important;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    form input,
+    select {
         margin: 2px;
     }
-        form button{
-           width: 100px !important;
-            padding: 5px;
-            margin: 5px;  
-        }
-      .col input{
+    form button {
+        width: 100px !important;
+        padding: 5px;
+        margin: 5px;
+    }
+    .col input {
         width: 100%;
-      }
-      input[type=checkbox]{
+    }
+    input[type=checkbox] {
         width: 100px;
         color: #8f8f8f !important;
-      }
-      table thead th{
+    }
+    table thead th {
         text-align: center;
-      }
-      .align-right-top {
-            position: absolute;
-            top: 0;
-            right: 0;
-            margin: 10px; /* Optional: Add margin for spacing */
-        }
-      #dr,
-#cr {
-    min-width: 150px; /* Adjust the width as needed */
+    }
+    .align-right-top {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 10px;
+    }
+    #dr,
+    #cr {
+        min-width: 150px;
+    }
+    .custom-form input[type="date"] {
+        width: 100% !important;
+    }
+    .custom-form {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        align-items: center;
+    }
+    .custom-form button {
+        align-items: end !important;
+    }
+    label>select {
+        margin: 2px !important;
+    }
+
+</style>
+
+</head>
+<body class="g-sidenav-show bg-gray-100">
+{{>sidebar}}
+    <main class="main-content position-relative border-radius-lg">
+        {{>navbar}}
+
+        <div class="table-responsive container-fluid py-4">
+            <div class="form-control card">
+
+                            <div style="display: flex;justify-content: space-between;">
+                <h3>Multi Receipt</h3>
+<div class="div" style="align-items: end;">
+    <button type="button" class="btn btn-success" id="new">New</button>
+    <button class="btn btn-info editmasbtn">Edit</button>
+    <button type="button" class="btn btn-danger deletemasBtn">Delete</button>
+</div>
+            </div>
+<form id="purchaseDetails" class="custom-form" method="post">
+<div class="form-group">
+  <label for="id">Select receipt:</label>
+  <select class="form-control" id="id" name="id">
+    <option value="view details">View Details</option>
+  </select>
+</div>
+    <div class="form-group">
+        <label for="receipt_date">Receipt Date:</label>
+        <input type="date" class="form-control" id="receipt_date" name="receipt_date">
+    </div>
+<div class="form-group">
+    <label for="cash_bank_ledger">Cash/Bank Ledger(Dr):</label>
+    <select class="form-control" id="cash_bank_ledger" name="cash_bank_ledger">
+        <option value="" selected disabled>Select Cash/Bank Ledger(Dr)</option>
+        <!-- Options will be populated dynamically -->
+    </select>
+</div>
+<div class="form-group">
+    <label for="customer_ledger">Customer Ledger(cr):</label>
+    <select class="form-control" id="customer_ledger" name="customer_ledger">
+        <option value="" selected disabled>Select Customer Ledger(cr)</option>
+        <!-- Options will be populated dynamically -->
+    </select>
+</div> 
+
+    <div class="form-group">
+        <label for="amount">Amount:</label>
+        <input type="text" class="form-control" id="amount" name="amount">
+    </div>
+</form>
+                <div class="custom-input-container">
+                    <a class="opener" id="openPurchaseForm"><i class="fa-solid fa-folder-plus fa-2x"></i></a>
+                </div>
+
+                <table id="customerTable" class="table-responsive justify-content-between align-items-end" style="width:100% !important">
+                     <thead>
+                        <tr>
+                            <th>Bill No</th>
+                            <th>Bill Date</th>
+                            <th>Bill Amount</th>
+                            <th>Recd Amount</th>
+                            <th>Disc. Amount</th>
+                            <th>Balance</th>
+                            <th class="action">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table body rows will be dynamically added here -->
+                    </tbody>
+                </table>
+                
+                <div class="row">
+                    <div class="col d-flex justify-content-end ms-auto">
+                        <button type="button" class="btn btn-info updateBtn opener" style="display: none;">Update</button>
+
+                        <button type="button" id="submitFormBtn" class="btn btn-primary custom-btn add">Submit</button>
+                    </div>
+                </div>
+            </div>
+            <div id="selectedRowDetails"></div>
+           
+        </div>
+        {{>footer}}
+    </main>
+     
+{{>color}}
+
+<script>
+// Function to populate the dropdown
+function populateDropdown(data, dropdownId) {
+    const dropdown = $(`#${dropdownId}`);
+    dropdown.empty(); // Clear existing options
+    
+    // Add the dummy option
+    dropdown.append($('<option disabled selected></option>').attr('value', '').text('Select an option'));
+
+    // Populate the dropdown with actual options
+    data.forEach(option => {
+        dropdown.append($('<option></option>').attr('value', option.ledgername).text(option.ledgername));
+    });
 }
 
-       label>select{
-            margin: 2px !important; 
-        }
-            </style> 
-</head>
-<body class="g-sidenav-show   bg-gray-100">
- {{>sidebar}}
-  <main class="main-content position-relative border-radius-lg ">
-      {{>navbar}}
-
-    <div class="table-responsive container-fluid py-4  ">
-        <div class=" form-control card ">
-            <h3>Multi Receipt </h3>
-          <div class=" align-right-top">
-        <div id="filterDateDiv" class="mb-3">
-    <label for="fromDate">From Date:</label>
-   <input type="text" id="fromDate">
-    <label for="toDate">To Date:</label>
-   <input type="text" id="toDate">
-    <button class="btn btn-primary" id="filter-button">Filter</button>
-</div>        
-    </div>
-           <form action="/auth/manufacturer" method="get">
-             <table id="customerTable" class="table-responsive justify-content-between align-items-end" style="width:100% !important">
-         
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Receipt Date</th>
-                        <th>Cash/Bank Ledger(Dr)</th>
-                        <th>Customer Ledger(cr)</th>
-                        <th>Amount</th>
-                        <th>Bill No</th>
-                        <th>Bill Date</th>
-                        <th>Bill Amount</th>
-                        <th>Recd Amount</th>
-                        <th>Disc. Amount</th>
-                        <th>Balance</th>
-                        <th class="action">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                   
-                </tbody>
-               
-            </table>
-             <button type="button" value="button" class="btn btn-primary" id="addmanufacturer" >add</button>
-            </form>
-            
-
-            </div>
-             
-        </div>
-        
-    </div>
-   
-    
-   </div>
-
- 
-{{>footer}}
-  
-  </main>
- 
-  {{>color}}
-
-<script>
-    document.getElementById("filter-button").addEventListener("click", function() {
-        var fromDate = new Date(document.getElementById("fromDate").value);
-        var toDate = new Date(document.getElementById("toDate").value);
-        var table = document.getElementById("customerTable");
-        var rows = table.getElementsByTagName("tr");
-        var hasData = false;
-
-        console.log('From Date:', fromDate);
-        console.log('To Date:', toDate);
-
-        for (var i = 1; i < rows.length; i++) {
-            var cell = rows[i].getElementsByTagName("td")[1]; // Assuming "Recipt Date" is the second column
-            if (cell) {
-                var cellContent = cell.innerText.trim();
-
-                // Try to extract a valid date using moment.js
-                var cellDate = moment(cellContent, "DD-MM-YYYY");
-
-                // Skip rows with invalid or non-date content
-                if (!cellDate.isValid()) {
-                    console.log('Skipping row with invalid or non-date content:', cellContent);
-                    continue;
-                }
-
-                console.log('Cell Content:', cellContent);
-                console.log('Parsed Date:', cellDate.format("YYYY-MM-DD"));
-
-                if (cellDate.isSameOrAfter(fromDate) && cellDate.isSameOrBefore(toDate)) {
-                    rows[i].style.display = "";
-                    hasData = true;
-                } else {
-                    rows[i].style.display = "none";
-                }
-            }
-        }
-
-        // Check if noDataRow is defined before accessing it
-        var noDataRow = document.getElementById("noDataRow");
-        if (noDataRow) {
-            if (!hasData) {
-                noDataRow.style.display = "block";
-            } else {
-                noDataRow.style.display = "none";
-            }
-        }
-    });
-</script>
-
-
-    <script>
-        // Add form button click event
-        $(document).on('click', '#addmanufacturer', function() {
-        $("#manufacturerform").show();
-        $("#id").val('');
-    });
-     var table = $("#customerTable").DataTable({
-    ajax: {
-        url: 'http://localhost:5000/auth/multireceipt',
-        dataType: 'json',
-        dataSrc: 'data',
+    // AJAX request to get Cash/Bank Ledger(Dr) options
+    $.ajax({
         type: 'GET',
-    },
-    columns: [
-        { data: 'id' },
-        { data: 'reciptdate',
-         render: function (data) {
-                            const formattedDate = moment(data).format("DD-MM-YYYY");
-                            return formattedDate;
-                        } },
-        { data: 'cash/bankLedger(dr)' },
-        { data: 'customerLedger(cr)' },
-        { data: 'amount' },
-        { data: 'billno' },
-        { data: 'billdate',
-         render: function (data) {
-                            const formattedDate = moment(data).format("DD-MM-YYYY");
-                            return formattedDate;
-                        },
-                        type: 'date-eu'
-                         },
-        { data: 'billamount' },
-        { data: 'recdamount' },
-        { data: 'discamount' },
-        { data: 'balance' },
-        {
-            data: 'id',
-            render: function (data) {
-                return '<i class="fa-regular fa-pen-to-square editBtn" type="button" data-id="' + data + '"></i>' +
-                    ' <i class="fa-solid fa-trash deleteBtn" type="button" data-id="' + data + '"></i>';
-            }
+        url: '/auth/multireceipt/dr',
+        success: function(response) {
+            populateDropdown(response.data, 'customer_ledger');
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching Cash/Bank Ledger(Dr) options:', error);
+            // Handle error
         }
-    ],
-    dom: 'Bfrtip',
-    buttons: ['copy', 'excel', 'pdf', 'csv'],
-    paging: false,
-    scrollY: '400px',
-    scrollCollapse: true,
-    scrollX: '50px',
-    responsive: true,
-});
+    });
 
+$.ajax({
+    url: '/auth/multipayment/cr',
+    method: 'GET',
+    success: function (response) {
+        console.log('Received response for Ledger(dr):', response);
+        var options = response.data;
+        var $dropdown = $('#cash_bank_ledger'); // Select the dropdown by its ID
+      
+        // Check if "Cash In" is present in the options
+        var cashInPresent = options.some(function(option) {
+            return option.ledgername === "Cash";
+        });
 
-        if (table.rows().count() === 0) {
-            $("#emptyMessage").show();
+        // If "Cash In" is not present, add it to the options
+        if (!cashInPresent) {
+            options.push({ ledgername: "Cash" });
         }
-    </script>
-<script>
-// Handle click event for the "Edit" button
-$(document).on('click', '.editBtn', function() {
-    // Get the data associated with the clicked row
-    var data = table.row($(this).parents('tr')).data();
 
-    console.log('Data:', data);
-
-    // Check if the data is valid and an object
-    if (data && typeof data === 'object' && !Array.isArray(data)) {
-        // Populate the edit form fields with the data
-        $(".editForm #id").val(data.id);
-
-        // Convert date objects to strings in the "YYYY-MM-DD" format
-        $(".editForm #reciptdate").val(formatDate(data.reciptdate));
-        $(".editForm #billdate").val(formatDate(data.billdate));
-
-        $(".editForm #dr").val(data['cash/bankLedger(dr)']);
-        $(".editForm #cr").val(data['customerLedger(cr)']);
-        $(".editForm #amount").val(data.amount);
-        $(".editForm #billno").val(data.billno);
-        $(".editForm #billamount").val(data.billamount);
-        $(".editForm #recdamount").val(data.recdamount);
-        $(".editForm #discamount").val(data.discamount);
-        $(".editForm #balance").val(data.balance);
-
-        // Check if 'active' property is true and set the checkbox accordingly
-        if (data.active) {
-            $(".editForm #active").prop('checked', true);
+        // Populate the dropdown with options
+        if (options && options.length) {
+            options.forEach(function (option) {
+                // Create an option element and append it to the dropdown
+                $dropdown.append($('<option>', {
+                    value: option.ledgername,
+                    text: option.ledgername
+                }));
+            });
         } else {
-            $(".editForm #active").prop('checked', false);
+            console.error('No options found for Ledger(dr)');
         }
-
-        // Show the edit form
-        $(".editForm").show();
-    } else {
-        console.error('Invalid or undefined data:', data);
+    },
+    error: function (xhr, status, error) {
+        console.error('Error fetching options for Ledger(dr):', error);
     }
 });
 
-// Function to format date objects to "YYYY-MM-DD" strings
-function formatDate(dateObject) {
-    const date = new Date(dateObject);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${day}-${month}`;
-}
+$(document).on('click', '.editmasbtn', function() {
+    $('.opener').show();
+    $('.updateBtn').show();
+    $('#customerTable tbody tr').each(function() {
+        var row = $(this);
+        var billNo = row.find('td:eq(0)').text();
+        var billDate = row.find('td:eq(1)').text();
+        var billAmount = row.find('td:eq(2)').text();
+        var recdAmount = row.find('td:eq(3)').text();
+        var discAmount = row.find('td:eq(4)').text();
+        var balance = row.find('td:eq(5)').text();
+        
+         var trans_Id = row.find('i.deletetransBtn').data('transid');
+        
+        row.html("<td><input type='text' name='billno' class='input-field' value='" + billNo + "'></td>" +
+            "<td><input type='date' name='billdate' class='input-field' value='" + billDate + "'></td>" +
+            "<td><input type='number' name='billamount' class='input-field' value='" + billAmount + "'></td>" +
+            "<td><input type='number' name='recdamount' class='input-field' value='" + recdAmount + "'></td>" +
+            "<td><input type='number' name='discamount' class='input-field' value='" + discAmount + "'></td>" +
+            "<td><input type='number' name='balance' class='input-field' value='" + balance + "'></td>" +
+            "<td><i class='fa-solid fa-trash deletetransBtn' type='button' data-transid='" + trans_Id + "'></i></td>");
+    });
+});
 
-// Handle form submission for the edit form
-$(document).on('submit', '.editForm', function(event) {
+
+$(document).on('click', '.updateBtn', function(event) {
     event.preventDefault();
 
-    var formData = $(this).serialize();
-    var manufacturerId = $(".editForm #id").val();
+var purchaseId = $('#id').val();
+if (!purchaseId) {
+    console.error('No purchase ID selected.');
+    alert('No purchase ID selected. Please select a purchase ID to update.');
+    return;
+}
 
-    console.log('Form Data:', formData);
-console.log('Manufacturer ID:', manufacturerId);
+
+    var masterData = {
+        receipt_date: $('#receipt_date').val(),
+        cash_bank_ledger: $('#cash_bank_ledger').val(),
+        customer_ledger: $('#customer_ledger').val(),
+        amount: $('#amount').val()
+    };
+
+    var transactionData = getUpdatedTransactionData();
+
+    var payload = {
+        purchaseId: purchaseId,
+        masterData: masterData,
+        transactionData: transactionData
+    };
+
+    console.log('Payload:', payload);
 
     $.ajax({
         type: 'PUT',
-        url: 'http://localhost:5000/auth/multireceiptedit/' + manufacturerId,
-        data: formData,
+        url: '/auth/multireceiptedit/' + purchaseId,
+        contentType: 'application/json',
+        data: JSON.stringify(payload),
         success: function(response) {
             console.log(response);
-
             if (response.success) {
-                // Update the table row with the new data
-                var tableRow = table.row('#' + manufacturerId); // Assuming each row has a unique ID
-                tableRow.data(response.updatedCustomerData); // Use the actual key from the response
-
-                // Optionally, you can hide the form after a successful update
-                $(".editForm").hide();
-                alert('manufacturer Updated Successfully 🖋');
-                table.ajax.reload();
+                alert('Successfully updated');
+                window.location.href = "/multireceipt";
             } else {
-                alert('Failed to update manufacturer');
+                alert("Failed to update purchase: " + response.message);
             }
         },
-        error: function(error) {
-            console.error('Error:', error);
-
-            if (error.status === 0) {
-                alert('Failed to connect to the server. Check your server and network connection.');
-            } else {
-                alert('Failed to update manufacturer. Check the console for more details.');
-            }
+        error: function(xhr, status, error) {
+            console.error('Error updating purchase:', error);
+            alert("Failed to update purchase. Check console for details.");
         }
     });
 });
 
-// Handle form close button for the edit form
-$(document).on('click', '.editForm #closeForm', function() {
-    $(".editForm").hide();
-});
-    // Handle form close button for the add form
-    $(document).on('click', '#closeForm', function() {
-        $("#manufacturerform").hide();
+function getUpdatedTransactionData() {
+    var transactionData = [];
+
+    $('#customerTable tbody tr').each(function() {
+        var row = $(this);
+        var billNo = row.find('input[name="billno"]').val();
+        var billDate = row.find('input[name="billdate"]').val();
+        var billAmount = row.find('input[name="billamount"]').val();
+        var recdAmount = row.find('input[name="recdamount"]').val();
+        var discAmount = row.find('input[name="discamount"]').val();
+        var balance = row.find('input[name="balance"]').val();
+
+        var data = {
+            billno: billNo,
+            billdate: billDate,
+            billamount: billAmount,
+            recdamount: recdAmount,
+            discamount: discAmount,
+            balance: balance
+        };
+
+        transactionData.push(data);
     });
-</script>
-<script>
-// Handle form close button
-$('#closeForm').click(function() {
-    // Hide the form when the close button is clicked
-    $("#manufacturerform").hide();
+
+    return transactionData;
+}
+
+
+const baseUrl = window.location.origin;
+
+$(document).on('click', '.deletetransBtn', function() {
+    var row = $(this).closest('tr');
+    var transId = $(this).data('transid'); // Corrected data attribute name
+
+    if (!confirm('Are you sure you want to delete this row?')) {
+        return;
+    }
+
+    $.ajax({
+        type: 'DELETE',
+        url: `${baseUrl}/auth/multireceipttransdelete/${transId}`,
+        success: function(response) {
+            if (response.success) {
+                row.remove();
+                alert('Row deleted successfully');
+            } else {
+                alert('Failed to delete row: ' + response.error);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error deleting row:', error);
+            alert('An error occurred while deleting the row.');
+        }
+    });
 });
 
-$('#customerTable').on('click', '.deleteBtn', function() {
-    var data = table.row($(this).parents('tr')).data();
-    var deleteButton = $(this);  // Store the reference to 'this' for later use
 
-    if (data && data.id) {
-        var deleteUrl = 'http://localhost:5000/auth/multireceiptdelete/' + data.id;
-        console.log('Data:', data);
 
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const dropdown = document.getElementById('id');
+
+  // Make AJAX request to fetch dropdown options
+  fetch('/auth/multireceipt') // Assuming this endpoint is available at '/auth/multireceipt'
+    .then(response => response.json())
+    .then(data => {
+      // Check if data.options exists and it's an array
+      if (data && Array.isArray(data.options)) {
+        data.options.forEach(option => {
+          const optionElement = document.createElement('option');
+          optionElement.value = option.value;
+          optionElement.textContent = option.label;
+          dropdown.appendChild(optionElement);
+        });
+      } else {
+        console.error('Data is not in the expected format:', data);
+      }
+    })
+    .catch(error => console.error('Error fetching data:', error));
+
+dropdown.addEventListener('change', (event) => {
+    const selectedId = event.target.value;
+    fetch(`/auth/multireceiptselect/${selectedId}`)
+        .then(response => response.json())
+        .then(data => {
+            // Update form fields with selected receipt details
+            const { masterData, transData } = data;
+            const master = masterData[0]; // Assuming only one master data row is returned
+            document.getElementById('receipt_date').value = formatDate(master.reciptdate);
+            document.getElementById('cash_bank_ledger').value = master['cash/bankLedger(dr)'];
+            document.getElementById('customer_ledger').value = master['customerLedger(cr)'];
+            document.getElementById('amount').value = master.amount;
+
+            // Update table with transaction details
+            const table = $('#customerTable').DataTable();
+            table.clear().draw(); // Clear existing rows
+            transData.forEach(transaction => {
+                table.row.add([
+                    transaction.billno,
+                    formatDate(transaction.billdate),
+                    transaction.billamount,
+                    transaction.recdamount,
+                    transaction.discamount,
+                    transaction.balance,
+                    `<i class="fa-solid fa-trash deletetransBtn" type="button"  data-transid="${transaction.trans_Id}"></i>`
+                ]).draw();
+            });
+        })
+        .catch(error => console.error('Error fetching selected receipt details:', error));
+});
+
+
+
+  
+  // Function to format date as dd-mm-yyyy
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  return `${year}-${month}-${day}`;
+}
+
+});
+
+$(document).ready(function () {
+  $('#customerTable').DataTable({
+    searching: false,
+    paging: false,
+    scrollY: '400px',
+    scrollX: true,
+    scrollCollapse: false,
+    responsive: true,
+    bInfo: true,
+    bBorders: true,
+    fixedColumns: {
+      leftColumns: 0
+    }
+  });
+
+  let products = [];
+
+  $(document).on('click', '#openPurchaseForm', function () {
+    console.log("Button clicked!");
+    let uniqueId = generateUniqueId();
+    let newRow = $("<tr>" +
+      "<td><input type='text' name='billno' class='input-field' id='billno_" + uniqueId + "' placeholder='Bill No'></td>" +
+      "<td><input type='date' name='billdate' class='input-field' id='billdate_" + uniqueId + "'></td>" +
+      "<td><input type='number' name='billamount' class='input-field' id='billamount_" + uniqueId + "' placeholder='Bill Amount'></td>" +
+      "<td><input type='number' name='recdamount' class='input-field' id='recdamount_" + uniqueId + "' placeholder='Recd Amount'></td>" +
+      "<td><input type='number' name='discamount' class='input-field' id='discamount_" + uniqueId + "' placeholder='Disc. Amount'></td>" +
+      "<td><input type='number' name='balance' class='input-field' id='balance_" + uniqueId + "' placeholder='Balance'></td>" +
+      "<td class='action new-row'><button class='btn btn-danger deleteRowBtn'>Delete Row</button></td>" +
+      "</tr>");
+
+    $('#customerTable tbody').append(newRow);
+  });
+
+  $('#customerTable tbody').on('click', 'button.deleteRowBtn', function () {
+    let row = $(this).closest("tr");
+    if (row) {
+      row.remove();
+    }
+  });
+
+  $('#submitFormBtn').on('click', function () {
+    let formData = {
+      // Retrieve values from the form fields
+      receipt_date: $('#receipt_date').val(),
+      cash_bank_ledger: $('#cash_bank_ledger').val(),
+      customer_ledger: $('#customer_ledger').val(),
+      amount: $('#amount').val(),
+      receipts: getProductsData() // Get products data directly
+    };
+
+    console.log('Data being sent to the server:', formData);
+
+    // Send AJAX request to the server
+    $.ajax({
+      url: '/auth/multireceipt',
+      method: 'POST',
+      contentType: 'application/json', // Specify content type as JSON
+      data: JSON.stringify(formData), // Convert form data to JSON string
+      success: function (response) {
+        console.log(response);
+        location.reload();
+        alert('Successfully Submitted purchase');
+      },
+      error: function (error) {
+        console.error("Error submitting form:", error);
+      }
+    });
+  });
+
+  function getProductsData() {
+    var products = [];
+
+    // Iterate through each row of the table
+    $('#customerTable tbody tr').each(function () {
+      var uniqueId = $(this).find('input[name="billno"]').attr('id');
+      if (uniqueId) {
+        uniqueId = uniqueId.split('_')[1];
+
+        var product = {
+          billno: $('#billno_' + uniqueId).val() || "",
+          billdate: $('#billdate_' + uniqueId).val() || "", // Correctly fetch the value of billdate
+          billamount: $('#billamount_' + uniqueId).val() || "", // Correctly fetch the value of billamount
+          recdamount: $('#recdamount_' + uniqueId).val() || "",
+          discamount: $('#discamount_' + uniqueId).val() || "",
+          balance: $('#balance_' + uniqueId).val() || ""
+        };
+        console.log('Product Details:', product);
+        products.push(product);
+      } else {
+        console.error('UniqueId attribute not found for this row:', this);
+      }
+    });
+
+    return { receipts: products }; // Wrap products in an object with key 'receipts'
+  }
+
+  function generateUniqueId() {
+    return uuidv4();
+  }
+});
+
+$(document).ready(function() {
+    // Function to handle delete button click
+    $(document).on('click', '.deletemasBtn', function() {
+        // Get the selected ID directly from the dropdown value
+        const selectedId = $('#id').val();
+        
+        // Check if a valid ID is selected
+        if (!selectedId) {
+            console.error('No purchase ID found');
+            return;
+        }
+        
+        // Construct the delete URL
+        var deleteUrl = '/auth/multireceiptdelete/' + selectedId; 
+        
+        // Send DELETE request
         $.ajax({
             type: 'DELETE',
             url: deleteUrl,
@@ -394,137 +593,50 @@ $('#customerTable').on('click', '.deleteBtn', function() {
                 console.log(response);
                 if (response.success) {
                     alert('Successfully Deleted 🗑');
-                    table.ajax.reload();
+                    // Reload the page after successful deletion
+                    location.reload();
                 } else {
-                    alert("Failed to delete customer: " + response.error);
+                    alert("Failed to delete purchase: " + response.error);
                 }
             },
             error: function(error) {
-                console.error('Error deleting customer:', error);
-                alert("Failed to delete customer. Check console for details.");
+                console.error('Error deleting purchase:', error);
+                alert("Failed to delete purchase. Check console for details.");
             }
         });
-    } else {
-        console.error('Invalid or undefined data:', data);
-    }
-});
-</script>
-<script>
-// Fetch options for cash/bank Ledger(dr)
-// Fetch options for cash/bank Ledger(dr)
-$.ajax({
-    url: 'http://localhost:5000/auth/multireceipt/dr',
-    method: 'GET',
-    success: function (response) {
-        console.log('Received response for cash/bank Ledger(dr):', response);
-        var options = response.data;
-        if (options && options.length) {
-            options.forEach(function (option) {
-                $('.dropdown[name="dr"]').append($('<option>', {
-                    value: option.ledgername,
-                    text: option.ledgername
-                }));
-            });
-        } else {
-            console.error('No options found for cash/bank Ledger(dr)');
-        }
-    },
-    error: function (xhr, status, error) {
-        console.error('Error fetching options for cash/bank Ledger(dr):', error);
-    }
+    }); 
 });
 
-// Fetch options for customer Ledger(cr)
-$.ajax({
-    url: 'http://localhost:5000/auth/multireceipt/cr',
-    method: 'GET',
-    success: function (response) {
-        console.log('Received response for customer Ledger(cr):', response);
-        var options = response.data;
-        if (options && options.length) {
-            options.forEach(function (option) {
-                $('.dropdown[name="cr"]').append($('<option>', {
-                    value: option.ledgername,
-                    text: option.ledgername
-                }));
-            });
-        } else {
-            console.error('No options found for customer Ledger(cr)');
-        }
-    },
-    error: function (xhr, status, error) {
-        console.error('Error fetching options for customer Ledger(cr):', error);
-    }
-});
-</script>
-</body>
-</html>
-<form id="manufacturerform" style="display: none;" method="post" action="/auth/multireceipt">
-    <div class="row">
-        <div class="col">
-           <!-- Your form fields -->
-      <label for="Recipt Date" class="h6">Receipt Date:</label>
-      <input type="date"  name="reciptdate" id="reciptdate" value="">
-      <!-- Inside your form -->
-      <label class="h6" for="cash/bank Ledger(dr)">cash/bank Ledger(dr):</label>
-      <select id="dr" name="dr"class="dropdown"  ></select>
-      <label class="h6" for="customer Ledger(cr)">customer Ledger(cr):</label>
-      <select id="cr" class="dropdown" name="cr"></select>
-            <input type="text" placeholder="Amount" name="amount" id="amount">
-            <input type="text" placeholder="Bill No" name="billno" id="billno">
-            <label for="Bill Date" class="h6">Bill Date:</label>
-            <input type="date"  name="billdate" id="billdate" value="">
-            <input type="text" placeholder="Bill Amount" name="billamount" id="billamount">
-            <input type="text" placeholder="Recd Amount" name="recdamount" id="recdamount">
-            <input type="text" placeholder="Disc. Amount" name="discamount" id="discamount">
-            <input type="text" placeholder="Balance" name="balance" id="balance">
-        </div>
-    </div>
-    <button type="submit" value="submit" class="btn btn-primary" id="saveManufacturer">Save</button>
-    <button type="button" class="btn btn-primary" id="closeForm">Close</button>
-</form>
-
-<form class="editForm" method="put" action="/auth/multireceiptedit/:id">
-  <div class="row">
-        <div class="col">
-            <input type="hidden" name="id" id="id" value="">
-      <label for="Recipt Date" class="h6">Recipt Date:</label>
-      <input type="date" placeholder="Id" name="reciptdate" id="reciptdate" value="">
-      <!-- Inside your form -->
-     <label class="h6" for="cash_bank_Ledger_dr">cash/bank Ledger(dr):</label>
-<select id="dr" class="dropdown" name="dr"></select>
-<label class="h6" for="customer_Ledger_cr">customer Ledger(cr):</label>
-<select id="cr" class="dropdown" name="cr"></select> 
-            <input type="text" placeholder="Amount" name="amount" id="amount">
-            <input type="text" placeholder="Bill No" name="billno" id="billno">
-            <label for="Bill Date" class="h6">Bill Date:</label>
-            <input type="date" placeholder="Bill Date" name="billdate" id="billdate" value="">
-            <input type="text" placeholder="Bill Amount" name="billamount" id="billamount">
-            <input type="text" placeholder="Recd Amount" name="recdamount" id="recdamount">
-            <input type="text" placeholder="Disc. Amount" name="discamount" id="discamount">
-            <input type="text" placeholder="Balance" name="balance" id="balance">
-        </div>
-    </div>
-    <button type="submit" class="btn btn-primary">Update</button>
-    <button type="button" class="btn btn-primary" id="closeEditForm">Close</button>
-</form>
 
 
- <script>
-  $( function() {
-    $( "#fromDate" ).datepicker();
-  } );
-  </script>
- <script>
-  $( function() {
-    $( "#toDate" ).datepicker();
-  } );
-  </script>
-
-<script>
+$(document).ready(function () {
+    $('.div').hide();
+    $('.add').show();
     
-// Handle form close button for the edit form
-$(document).on('click', '.editForm #closeEditForm', function() {
-    $(".editForm").hide();
+    // Select the dropdown using jQuery
+    const dropdown = $('#id');
+    
+    dropdown.on('change', function(event) {
+        var selectedOption = $(this).find('option:selected');
+        if (selectedOption.val() && selectedOption.val() !== 'view details') {
+            $('.div').show();
+            $('.opener').hide();
+            $('.add').hide();
+        } else {
+            $('.div').hide();
+            $('.add').show();
+        }
+    });
+});
+
+
+
+$(document).ready(function() {
+    $('#new').click(function() {
+       window.location.href = '/multireceipt'
+    });
 });
 </script>
+
+</body>      
+</html>

@@ -74,6 +74,30 @@
       box-sizing: border-box; /* Include padding and border in the width */
       vertical-align:middle; /* Align the input vertically in the middle */
     }
+      .password-container {
+      position: relative;
+    }
+.password-toggle {
+    background-color: white !important;
+    position: absolute;
+    right: 5px;
+    top: 75%;
+    border: rgb(255, 255, 255);
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.dark-version .password-toggle {
+       background-color: #202e5c !important;
+    color: white !important;
+    position: absolute;
+    right: 5px;
+    top: 75%;
+    border:#202e5c;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
       </style>
  
 </head>
@@ -85,23 +109,66 @@
 
     <div class="table-responsive container-fluid py-4  ">
         <div class=" form-control card ">
-      
+
             <h3>User Profile</h3>
+             <div class="form-container">
+  <form id="userForm">
+    <div class="row">
+
+ 
+    <div class="col">
+  <div>
+    <input type="hidden"  name ="id" id="id">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+    </div>
+ <div class="password-container">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="button" class="password-toggle" id="togglePassword"><i class="fa fa-eye-slash" aria-hidden="true"></i></button>
+          </div>
+    </div>
+
+  <div class="col">
+    <div>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+    <div>
+      <label for="role">Role:</label>
+      <input type="text" id="role" name="role"  autocomplete="off" required maxlength="50">
+<input type="hidden" id="roleId" name="roleId"  >
+    </div>
+  </div>
+   </div>
+    <!-- Add more fields as needed -->
+   <div >
+    <button type="submit" id="submitBtn" class="btn btn-primary">Create User</button>
+    <button type="button" id="updateBtn" class="btn btn-primary" style="display: none;">Update User</button>
+</div>
+
+
+  </form>
+</div>
+        </div></div>
+
+     <div class="table-responsive container-fluid py-4  ">
+        <div class=" form-control card ">
+<div class="form-container">
             <div class="row">
-               
         <form action="/auth/user" method="get">
                 <table id="productTable" class="table-responsive justify-content-between align-items-end display text-align-center"  style="width:100%">
-                
+                <h5>User Details</h5>
                     <thead>
                       
                         <tr>
+                          <th ></th>
                             <th>Id</th>
-                            <th>User Id</th>
+                            <th>User Name</th>
                             <th>Email Id</th>
-                            {{!-- <th>password</th> --}}
-                            {{!-- <th>Action</th> --}}
-                            <!-- <th>Logged device</th> -->
-                          
+                            <th></th>
+                            <th>Role</th>
+                            <th class="action">Action</th> 
                         </tr>
                     </thead>
                     <tbody class="table-body card-body tbody align-items-center text-align-center" >
@@ -113,44 +180,224 @@
                 </form>
                 {{!-- <button id="addform"  class="btn  btn-primary">Add</button> --}}
             </div>
-        </div>
-        
-    </div>
-   
-    
    </div>
-  
-<form id="adduser" style="display: none; " action="/auth/registration" method="post">
-<input type="text" name="userid" id="userid" placeholder="User id">
-<input type="text" placeholder="Email" id="emailid"  name="emailid">
-<input type="text" id="password" name="password"  placeholder="Password">
-<!-- <input type="text" id="confirmpassword" placeholder="Confrim Password"> -->
-<button id="saveform" value="submit" class="btn  btn-primary">Save</button>
-<button id="closeform" class="btn  btn-primary">Close</button>
-</form>
-<script>
-    var id = ''; // Initialize the id variable
-     var table = $('#productTable').DataTable({
-    dom: 'Bfrtip',
-    buttons: ['copy', 'excel', 'pdf', 'csv'],
-    scrollY: '350px',
-    paging: false,
+        </div></div>
 
-    scrollCollapse: true,
-    ajax: {
-        url: "http://localhost:5000/auth/user",
-        type: 'GET', // Corrected: use uppercase 'GET'
-        dataSrc: "data" // Corrected: use "rows" as data source
-    },
-    columns: [ // Add your column definitions here
-        { data: "id" },
-        { data: "userid" },
-        { data: "emailid" }
-        // Add more columns as needed
-    ]
+<script>
+
+// Edit button click event
+    $('#productTable').on('click', '.editBtn', function() {
+        var rowData = table.row($(this).parents('tr')).data();
+        $("#id").val(rowData.id);
+        $("#username").val(rowData.userid);
+        $("#email").val(rowData.emailid);
+      
+    $("#role").val(rowData.roles);
+        $("#roleId").val(rowData.role);
+        $("#adduser").show();
+        $('#updateBtn').show(); // Show the update button
+        $('#submitBtn').hide(); // Hide the submit button
+    });
+
+
+// Event handler for update button click
+$('#updateBtn').click(function(event) {
+    event.preventDefault(); // Prevent the default form submission behavior
+    
+    // Retrieve form data
+    var formData = {
+        id: $('#id').val(),
+        username: $('#username').val(),
+        email: $('#email').val(),
+        roleId: $('#roleId').val(),
+        password: $('#password').val().trim() // Trim the password to remove leading/trailing spaces
+    };
+
+    // Validate password field
+    if (!formData.password) {
+        alert('Please Re-enter or change a password.');
+        return; // Exit the function if password is empty
+    }
+    
+    // AJAX request to edit/update user details
+    $.ajax({
+        url: '/auth/user/updateUser',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(formData),
+        success: function(response) {
+            console.log('User updated successfully:', response);
+            alert('User updated successfully!');
+            // Reload the page or update the table data if needed
+            window.location.reload();
+        },
+        error: function(xhr, status, error) {
+            console.error('Error updating user:', error);
+            // Handle error scenario
+            alert('An error occurred while updating the user. Please try again.');
+        }
+    });
+});
+
+            var id = ''; 
+            
+            var table = $('#productTable').DataTable({
+                scrollY: '350px',
+                paging: false,
+                searching: false,
+                scrollCollapse: true,
+                responsive: true,
+                ajax: {
+                    url: "/auth/user",
+                    type: 'GET',
+                    dataSrc: "data"
+                },
+                columns: [
+                    { data: "id" },
+                    { data: "id" }, // Assuming this is another "id" column from your database
+                    { data: "userid" },
+                    { data: "emailid" },
+                    {data:"role"},
+                    { 
+                        data: "roles", 
+                        render: function(data, type, row) {
+                            // Render the role value
+                            return data;
+                        }
+                    },
+                    {
+                        data: 'id',
+                        render: function (data) {
+                            return '<i class="fa-regular fa-pen-to-square editBtn" type="button" data-id="' + data + '"></i>' +
+                                ' <i class="fa-solid fa-trash deleteBtn" type="button" data-id="' + data + '"></i>';
+                        }
+                    }
+                ],
+                columnDefs: [
+                    { targets: [0,4], visible: false } // Hide the first column (index 0)
+                ]
+            });
+
+
+$(document).on('click', '.deleteBtn', function(event) {
+    event.preventDefault(); // Prevent the default behavior of the click event
+    
+    // Retrieve the data ID from the button's data attribute
+    var id = $(this).data('id');
+    
+    // Show confirmation dialog
+    var confirmDelete = confirm("Are you sure you want to delete this record?");
+    
+    // Store reference to 'this'
+    var that = this;
+    
+    // If user confirms deletion
+    if (confirmDelete) {
+        // AJAX request to delete the record
+        $.ajax({
+            url: '/auth/user/deleteUser/' + id, // Replace with your API endpoint
+            type: 'DELETE',
+            success: function(response) {
+                console.log('Record deleted successfully:', response);
+                    ajax.table.reload();
+            },
+            error: function(xhr, status, error) {
+                console.error('Error deleting record:', error);
+                // Handle the error scenario
+            }
+        });
+    }
 });
 
 
+
+$(document).ready(function() {
+    $('#userForm').submit(function(event) {
+        event.preventDefault();
+        var formData = {
+            username: $('#username').val(),
+            password: $('#password').val(),
+            email: $('#email').val(),
+            role: $('#roleId').val()
+        };
+        $.ajax({
+            url: '/auth/user/create',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function(response) {
+                console.log('User created successfully:', response);
+                alert('User created successfully!');
+                location.reload(); 
+            },
+            error: function(xhr, status, error) {
+                console.error('Error creating user:', error);
+                if (xhr.responseJSON && xhr.responseJSON.error === 'Email already exists') {
+                    alert('Email already exists. Please choose a different email.');
+                } else {
+                    alert('An error occurred while creating the user. Please try again.');
+                }
+            }
+        });
+    });
+});
+
+$.ajax({
+    url: '/auth/user/getrole',
+    method: 'GET',
+    success: function(response) {
+        console.log('Received response for roles:', response);
+        var options = response.data;
+
+        if (options && options.length) {
+            var roleNames = options.map(option => option.role);
+            var roleIds = options.map(option => option.id);
+
+            $('#role').autocomplete({
+                source: roleNames,
+                minLength: 1,
+                select: function(event, ui) {
+                    var selectedRole = ui.item.value;
+                    var selectedRoleId;
+
+                    for (var i = 0; i < roleNames.length; i++) {
+                        if (roleNames[i] === selectedRole) {
+                            selectedRoleId = roleIds[i];
+                            break; 
+                        }
+                    }
+                    console.log('Selected role:', selectedRole);
+                    console.log('ID:', selectedRoleId);
+                    $('#roleId').val(selectedRoleId);
+                },
+                open: function(event, ui) {
+                    var menu = $(this).autocomplete("widget");
+                    var maxHeight = 200;
+                    menu.css({
+                        "max-height": maxHeight,
+                        "overflow-y": "auto"
+                    });
+                }
+            });
+        } else {
+            console.error('No options found for roles');
+        }
+    },
+    error: function(xhr, status, error) {
+        console.error('Error fetching options for roles:', error);
+    }
+});
+
+   const passwordInput = document.getElementById('password');
+    const toggleButton = document.getElementById('togglePassword');
+
+    toggleButton.addEventListener('click', () => {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+       toggleButton.querySelector('i').classList.toggle('fa-eye-slash');
+      toggleButton.querySelector('i').classList.toggle('fa-eye');
+     
+    });
         // Add form button click event
          // Add form button click event
          $("#addform").click(function() {
@@ -209,8 +456,7 @@
                 $("#emptyMessage").show();
             }
         });
-</script>
-<script>
+
   document.getElementById('adduser').addEventListener('submit', function(event) {
       event.preventDefault(); // Prevents the default form submission behavior
       // Your custom form submission logic here (e.g., using AJAX)
@@ -220,121 +466,9 @@
 
   
   </main>
- 
-  <div class="fixed-plugin">
-    <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
-      <i class="fa fa-cog py-2"> </i>
-    </a>
-    <div class="card shadow-lg">
-      <div class="card-header pb-0 pt-3 ">
-        <div class="float-start">
-          <h5 class="mt-3 mb-0">Configuration</h5>
-         
-        </div>
-        <div class="float-end mt-4">
-          <button class="btn btn-link text-dark p-0 fixed-plugin-close-button">
-            <i class="fa fa-close"></i>
-          </button>
-        </div>
-        <!-- End Toggle Button -->
-      </div>
-      <hr class="horizontal dark my-1">
-      <div class="card-body pt-sm-3 pt-0 overflow-auto">
-        <!-- Sidebar Backgrounds -->
-        <div>
-          <h6 class="mb-0">Sidebar Colors</h6>
-        </div>
-        <a href="javascript:void(0)" class="switch-trigger background-color">
-          <div class="badge-colors my-2 text-start">
-            <span class="badge filter bg-gradient-primary active" data-color="primary" onclick="sidebarColor(this)"></span>
-            <span class="badge filter bg-gradient-dark" data-color="dark" onclick="sidebarColor(this)"></span>
-            <span class="badge filter bg-gradient-info" data-color="info" onclick="sidebarColor(this)"></span>
-            <span class="badge filter bg-gradient-success" data-color="success" onclick="sidebarColor(this)"></span>
-            <span class="badge filter bg-gradient-warning" data-color="warning" onclick="sidebarColor(this)"></span>
-            <span class="badge filter bg-gradient-danger" data-color="danger" onclick="sidebarColor(this)"></span>
-          </div>
-        </a>
-        <!-- Sidenav Type -->
-        <div class="mt-3">
-          <h6 class="mb-0">Sidenav Type</h6>
-          <p class="text-sm">Choose between 2 different sidenav types.</p>
-        </div>
-        <div class="d-flex">
-          <button class="btn bg-gradient-primary w-100 px-3 mb-2 active me-2" data-class="bg-white" onclick="sidebarType(this)">White</button>
-          <button class="btn bg-gradient-primary w-100 px-3 mb-2" data-class="bg-dark" onclick="sidebarType(this)">Dark</button>
-        </div>
-        <p class="text-sm d-xl-none d-block mt-2">You can change the sidenav type just on desktop view.</p>
-        <!-- Navbar Fixed -->
-        <hr class="horizontal dark my-sm-4">
-        <div class="mt-2 mb-5 d-flex">
-          <h6 class="mb-0">Light / Dark</h6>
-          <div class="form-check form-switch ps-0 ms-auto my-auto">
-            <input class="form-check-input mt-1 ms-auto" type="checkbox" id="dark-version" onclick="darkMode(this)">
-          </div>
-        </div>
-        <!-- <a class="btn bg-gradient-dark w-100" href="https://www.creative-tim.com/product/argon-dashboard">Free Download</a>
-        <a class="btn btn-outline-dark w-100" href="https://www.creative-tim.com/learning-lab/bootstrap/license/argon-dashboard">View documentation</a>
-        <div class="w-100 text-center">
-          <a class="github-button" href="https://github.com/creativetimofficial/argon-dashboard" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star creativetimofficial/argon-dashboard on GitHub">Star</a>
-          <h6 class="mt-3">Thank you for sharing!</h6>
-          <a href="https://twitter.com/intent/tweet?text=Check%20Argon%20Dashboard%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23bootstrap5&amp;url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fargon-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
-            <i class="fab fa-twitter me-1" aria-hidden="true"></i> Tweet
-          </a>
-          <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/argon-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
-            <i class="fab fa-facebook-square me-1" aria-hidden="true"></i> Share
-          </a> -->
-        </div>
-      </div>
-    </div>
+{{>color}}
   
 
-   
-    
-      <script>
-        document.getElementById("filter-button").addEventListener("click", function() {
-            var fromDate = new Date(document.getElementById("fromDate").value);
-            var toDate = new Date(document.getElementById("toDate").value);
-            var table = document.getElementById("contraTable");
-            var rows = table.getElementsByTagName("tr");
-
-            for (var i = 1; i < rows.length; i++) {
-                var cell = rows[i].getElementsByTagName("td")[0];
-                if (cell) {
-                    var cellDate = new Date(cell.innerText);
-                    if (cellDate >= fromDate && cellDate <= toDate) {
-                        rows[i].style.display = "";
-                    } else {
-                        rows[i].style.display = "none";
-                    }
-                }
-            }
-            if (!hasData) {
-                noDataRow.style.display = "block";
-            } else {
-                noDataRow.style.display = "none";
-            }
-        });
-        
-    </script>
-
-  <!--   Core JS Files   -->
-  <script src="../assets/js/core/popper.min.js"></script>
-  <script src="../assets/js/core/bootstrap.min.js"></script>
-  <script src="../assets/js/plugins/perfect-scrollbar.min.js"></script>
-  <script src="../assets/js/plugins/smooth-scrollbar.min.js"></script>
-  <script>
-    var win = navigator.platform.indexOf('Win') > -1;
-    if (win && document.querySelector('#sidenav-scrollbar')) {
-      var options = {
-        damping: '0.5'
-      }
-      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
-    }
-  </script>
-  <!-- Github buttons -->
-  <script async defer src="https://buttons.github.io/buttons.js"></script>
-  <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
-  <script src="../assets/js/argon-dashboard.min.js?v=2.0.4"></script>
 </body>
 
 </html>

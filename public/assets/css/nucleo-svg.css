@@ -600,7 +600,7 @@ select .dropdown option{
 
 .custom {
   margin: 5px;
-  padding: 5px;
+  padding: 5px; 
  align-items:  start !important;
  justify-content: space-evenly;
 }

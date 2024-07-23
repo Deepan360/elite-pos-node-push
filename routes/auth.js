@@ -220,4 +220,26 @@ router.post('/menuaccess/updateCheckbox/:id', userController.updateCheckbox);
 router.get('/sidebar', userController.sidebar);
 
 
+
+router.get("/salesretail/salesretailDetails", userController.salesretailDetails);
+router.post("/salesretail", userController.salesretailadd);
+router.put("/salesretailEdit/:id", userController.salesretailEdit); 
+router.get("/salesretail/salesretailids", userController.salesretailids);     
+router.delete("/salesretaildelete/:id", userController.salesretaildelete);
+router.delete(
+  "/salesretailtransdelete/:id",
+  userController.salesretailtransdelete
+);
+router.get(
+  "/salesretail/salesretailproductid",
+  userController.salesretailproductid
+);
+router.get("/salesretailregister", userController.salesretailregister);
+router.get("/salesretail/customername", userController.customername);
+router.post(
+  "/salesretail/batchDetails/:selectedProductId",
+  userController.batchDetails
+);
+
+
 module.exports = router;

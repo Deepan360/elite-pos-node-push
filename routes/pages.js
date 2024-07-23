@@ -604,4 +604,34 @@ router.get('/menuaccesscontrol',(req,res)=>{
   res.render('menuaccesscontrol');
 });
 
+router.get("/salesretail", (req, res) => {
+  res.render("salesretail");
+});
+router.post("/salesretail", (req, res) => {
+  res.render("salesretail");
+});
+router.put("/salesretail", (req, res) => {
+  res.render("salesretailEdit", { id: req.params.id });
+});
+router.get("/editsalesretail", (req, res) => {
+  res.render("editsalesretail", { id: req.params.id });
+});
+router.get("/editsalesretail/salesretailEdit", (req, res) => {
+  res.render("salesretailEdit", { id: req.params.id });
+});
+router.get("/salesretail", (req, res) => {
+  res.render("salesretaildelete", { id: req.params.id });
+});
+router.get("/salesretail", (req, res) => {
+  res.render("salesretailtransdelete", { id: req.params.id });
+});
+router.get("/salesretailregister", (req, res) => {
+  res.render("salesretailregister");
+});
+router.get("/salesretail", (req, res) => {
+  res.render("batchDetails", { id: req.body });
+});
+
+
+
 module.exports=router;     

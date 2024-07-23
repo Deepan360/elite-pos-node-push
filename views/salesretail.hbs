@@ -127,7 +127,7 @@
     <div class="table-responsive container-fluid py-4">
         <div class="form-control card">
             <div style="display: flex;justify-content: space-between;">
-<h3>Sales </h3>
+<h3>Sales Retail </h3>
 <div class="div" style="align-items: end;">
     <button type="button" class="btn btn-success" id="new">New</button>
     <button class="btn btn-info editmasbtn">Edit</button>
@@ -383,7 +383,7 @@ $(document).ready(function() {
 });
 
 $(document).on('click', '.editmasbtn', function() {
-    alert("IF YOU GONNA EDIT IN QUANTITY OF SALES PRODUCT,DELETE THE TRANSACTION AND ADD  CORRECT QUANTITY.");
+    alert("IF YOU GONNA EDIT IN QUANTITY OF salesretail PRODUCT,DELETE THE TRANSACTION AND ADD  CORRECT QUANTITY.");
    $('.opener').show();
     $('#customerTable tbody tr').each(function() {
         var row = $(this);
@@ -509,7 +509,7 @@ $(document).ready(function() {
                 console.log(response);
                 if (response.success) {
                     alert('Successfully updated');
-                    window.location.href = "/sales";
+                    window.location.href = "/salesretail";
                 } else {
                     alert("Failed to update purchase: " + response.message);
                 }
@@ -630,7 +630,7 @@ $(document).ready(function() {
                 console.log(response);
                 if (response.success) {
                     alert('Successfully Deleted 🗑');
-                   window.location.href = "/sales";
+                   window.location.href = "/salesretail";
                 } else {
                     alert("Failed to delete purchase: " + response.error);
                 }
@@ -775,7 +775,7 @@ $(document).ready(function() {
 
         // Send AJAX request to the server
         $.ajax({
-            url: '/auth/sales',
+            url: '/auth/salesretail',
             method: 'POST',
             data: formData,
             success: function (response) {
@@ -840,7 +840,7 @@ function fetchBatchDetails(selectedProductId, uniqueId) {
     };
 
     $.ajax({
-        url: '/auth/sales/batchDetails/' + selectedProductId,
+        url: '/auth/salesretail/batchDetails/' + selectedProductId,
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(requestData),
@@ -1077,7 +1077,7 @@ $('#pdiscMode, #pdiscount').change(function() {
     });
     $('#purchaseId').on('change', function () {
         var selectedPurchaseId = $(this).val();
-       table.ajax.url('/auth/sales/saleproductid?purchaseId=' + selectedPurchaseId).load();
+       table.ajax.url('/auth/salesretail/saleproductid?purchaseId=' + selectedPurchaseId).load();
     });
 if (table.data().count() === 0) {
     console.log("No data available in table");
@@ -1183,7 +1183,7 @@ $('.dropdown[name="customername"]').on('change', function () {
 
 function fetchSupplierNames() {
 $.ajax({
-    url: '/auth/sales/customername',
+    url: '/auth/salesretail/customername',
     method: 'GET',
     success: function (response) {
         console.log('Received response for Customer Name:', response);
@@ -1249,7 +1249,7 @@ fetchSupplierNames();
 
     var rowDetails;
 $.ajax({
-    url: '/auth/sales/salesids',
+    url: '/auth/salesretail/salesids',
     method: 'GET',
     data: { view: 'salesids' },
   success: function (response) {
@@ -1279,7 +1279,7 @@ $.ajax({
                     }
                 });
         } else {
-            console.error('No options found for sales IDs');
+            console.error('No options found for salesretail IDs');
         }
 
         var urlParams = new URLSearchParams(window.location.search);
@@ -1303,7 +1303,7 @@ $.ajax({
         }
     },
     error: function (xhr, status, error) {
-        console.error('Error fetching options for sales IDs:', error);
+        console.error('Error fetching options for salesretail IDs:', error);
     }
 });
 
@@ -1358,7 +1358,7 @@ $('#pdiscount').val(rowDetails.discount);
         }
 
         $.ajax({
-            url: '/auth/sales/saleproductid',
+            url: '/auth/salesretail/saleproductid',
             method: 'GET',
             data: { purchaseId: purchaseId },
             success: function (response) {
@@ -1391,7 +1391,7 @@ function formatDate(dateObject) {
 
 $(document).ready(function() {
     $('#new').click(function() {
-       window.location.href = '/sales'
+       window.location.href = '/salesretail'
     });
 });
 

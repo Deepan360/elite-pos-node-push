@@ -137,47 +137,29 @@
              
 <form id="purchaseDetails" class="form-control" style="display: block; align-item: start;" method="post">
     <div class="row">
-        <div class="col">
+        <div class="col-md-4">
     <div class="custom-input-container">
     <select name="Id" class="dropdown" id="Id" >
         <option selected>view details</option>
     </select>
-    <label for="purchaseId">Purchase Id</label>
+    <label for="purchaseId">Sale Id</label>
     <input type="hidden" name="id" id="id">
 </div>
-            <div class="custom-input-container">
-                <input type="text" placeholder=" " name="customermobileno" id="customermobileno">
-                <label for="customermobileno">Customer Mobile No</label>
-            </div>
-            <div class="custom-input-container">
-                <input type="text" placeholder=" " name="paymentmode" id="paymentmode">
-                <label for="paymentmode">Payment Mode</label>
-            </div>
         </div>
-        <div class="col">
+        <div class="col-md-4">
             <div class="custom-input-container">
                 <input type="date" placeholder=" " name="saledate" id="saledate">
                 <label for="saledate">Sale Date</label>
             </div>
-            <div class="custom-input-container">
-                <input type="text" placeholder=" " name="referno" id="referno">
-                <label for="referno">Refer No</label>
-            </div>
-         
         </div>
-        <div class="col">
-    <div class="custom-input-container">
-                <select id="supplierSelect" class="dropdown" name="customername" >
-                    <option selected="disabled">Select Customer</option>
-                </select>
-                <label for="customername">Customer Name</label>
-            </div>
-               <div class="custom-input-container">
-                <input type="text" placeholder=" " name="transportno" id="transportno">
-                <label for="transportno">Transport No</label>
-            </div>
+        <div class="col-md-4">
+                <div class="custom-input-container">
+                    <input type="text" placeholder=" " name="paymentmode" id="paymentmode">
+                    <label for="paymentmode">Payment Mode</label>
+                </div>
         </div>
-    </div>
+        </div>
+
     <div style="display: none;">
         <input type="hidden" id="pamount_" name="pamount" value="0.00">
         <input type="hidden" id="pigst_" name="pigst" value="0.00">
@@ -207,6 +189,7 @@
                         <th>Quantity</th>
                         <th>UOM</th>
                         <th>Purc.Rate</th>
+                        <th>MRP</th>
                         <th>Rate</th>
                         <th>Disc.Mode</th>
                         <th>Disc</th>
@@ -394,14 +377,15 @@ $(document).on('click', '.editmasbtn', function() {
         var quantity = row.find('td:eq(4)').text();
         var uom = row.find('td:eq(5)').text();
         var purcRate = row.find('td:eq(6)').text();
-        var rate = row.find('td:eq(7)').text();
-        var discMode = row.find('td:eq(8)').text();
-        var discount = row.find('td:eq(9)').text();
-        var amount = row.find('td:eq(10)').text();
-        var cgst = row.find('td:eq(11)').text();
-        var sgst = row.find('td:eq(12)').text();
-        var igst = row.find('td:eq(13)').text();
-        var totalAmount = row.find('td:eq(14)').text();
+         var mrp = row.find('td:eq(7)').text();
+        var rate = row.find('td:eq(8)').text();
+        var discMode = row.find('td:eq(9)').text();
+        var discount = row.find('td:eq(10)').text();
+        var amount = row.find('td:eq(11)').text();
+        var cgst = row.find('td:eq(12)').text();
+        var sgst = row.find('td:eq(13)').text();
+        var igst = row.find('td:eq(14)').text();
+        var totalAmount = row.find('td:eq(15)').text();
         
     row.html("<td><input type='number' readonly name='Id' class='input-field  purchase-id' value='" + id + "'></td>" +
     "<td><select name='product' class='input-field product-name dropdown' id='productname_" + id + "'><option selected disabled>Select product</option></select></td>" +
@@ -409,7 +393,8 @@ $(document).on('click', '.editmasbtn', function() {
     "<td><input type='text' name='tax' class='input-field' value='" + tax + "'></td>" +
     "<td><input type='number' name='quantity' class='input-field' value='" + quantity + "'></td>" +
     "<td><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
-     "<td><input type='number' name='purcRate' class='input-field' value='" + rate + "'></td>" +
+     "<td><input type='number' name='purcRate' class='input-field' value='" + purcRate + "'></td>" +
+      "<td><input type='number' name='mrp' class='input-field' value='" + mrp + "'></td>" +
     "<td><input type='number' name='rate' class='input-field' value='" + rate + "'></td>" +
     "<td><select name='discMode' class='input-field disc-mode dropdown' id='discMode_" + id + "'><option selected disabled>Select Disc Mode</option></select></td>" +
     "<td><input type='number' name='discount' class='input-field' value='" + discount + "'></td>" +
@@ -440,7 +425,7 @@ $(document).on('click', '.deletetransBtn', function() {
     }
     $.ajax({
         type: 'DELETE',
-        url: `/auth/salestransdelete/${id}`,
+        url: `/auth/salesretailtransdelete/${id}`,
         success: function(response) {
             if (response.success) {
                   table.row(row).remove().draw(false);
@@ -473,10 +458,6 @@ $(document).ready(function() {
             id: $('#id').val(),
             saledate: $('#saledate').val(),
             paymentmode: $('#paymentmode').val(),
-            referno: $('#referno').val(),
-            transportno: $('#transportno').val(),
-            customername: $('#supplierSelect').val(), // Make sure this ID matches the customer name field ID in the HTML
-             customermobileno: $('#customermobileno').val(),
             pamount: parseFloat($('#pamount_').val()),
             pigst: parseFloat($('#pigst_').val()),
             pcgst: parseFloat($('#pcgst_').val()),
@@ -534,6 +515,7 @@ function getUpdatedProductsData() {
             var quantity = $(this).find('[name="quantity"]').val();
             var uom = $(this).find('[name="uom"]').val();
             var purcRate = $(this).find('[name="purcRate"]').val();
+               var mrp = $(this).find('[name="mrp"]').val();
             var rate = $(this).find('[name="rate"]').val();
             var discMode = $(this).find('[name="discMode"]').val();
             var discount = $(this).find('[name="discount"]').val();
@@ -551,6 +533,7 @@ function getUpdatedProductsData() {
                 quantity: quantity,
                 uom: uom,
                 purcRate: purcRate,
+                 mrp: mrp,
                 rate: rate,
                 discMode: discMode,
                 discount: discount,
@@ -673,253 +656,319 @@ $(document).ready(function () {
     });
 });
 
-$(document).ready(function () {
-    let table = $('#customerTable').DataTable();
-    let products = [];
-   let uniqueId = generateUniqueId();
-     calculateTotals();
-     $('#openPurchaseForm').on('click', function () {
-        let selectedSupplier = $('#supplierSelect').val();
-        if (selectedSupplier !== 'Select Customer') {
+    $(document).ready(function () {
+        let table = $('#customerTable').DataTable();
+        let products = [];
+        let uniqueId = generateUniqueId();
+
+        calculateTotals();
+
+        // Event listener for opening the purchase form and adding a new row
+        $('#openPurchaseForm').on('click', function () {
             let purchaseId = generateUniqueId();
             $('#purchaseId').val(purchaseId);
-            let uniqueId = generateUniqueId();              
-let newRow = $("<tr data-uniqueId='" + uniqueId + "'>" +
-    "<td><input type='hidden' name='purchaseId' class='input-field purchase-id' value='" + purchaseId + "'></td>" +
-    "<td><select name='productname' class='input-field product-name dropdown' id='productname_" + uniqueId + "' placeholder='Product Name'><option selected disabled>Select product</option></select></td>" +
-    "<td><input type='text' name='batchNo' class='input-field' id='batchNo_" + uniqueId + "' placeholder='Batch No'></td>" +
-    "<td><input type='text' name='tax' class='input-field' id='tax_" + uniqueId + "' placeholder='Tax(%)'></td>" +
-    "<td><input type='number' name='quantity' class='input-field' id='quantity_" + uniqueId + "' placeholder='Quantity'></td>" +
-    "<td><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
-    "<td><input type='number' name='purcRate' class='input-field' id='purcRate_" + uniqueId + "' placeholder='purcRate'></td>" +
-    "<td><input type='number' name='rate' class='input-field' id='rate_" + uniqueId + "' placeholder='Rate'></td>" +
-    "<td><select name='discMode' class='input-field product-name dropdown  ' id='discMode_" + uniqueId + "' placeholder='Disc.Mode'><option selected disabled>Select Disc Mode</option></select></td>" +
-    "<td><input type='number' name='discount' class='input-field' id='discount_" + uniqueId + "' placeholder='Discount'></td>" +
-    "<td><input type='number' name='amount' class='input-field' id='amount_" + uniqueId + "' placeholder='Amount'></td>" +
-    "<td><input type='number' name='cgst' class='input-field' id='cgst_" + uniqueId + "' placeholder='CGST'></td>" +
-    "<td><input type='number' name='sgst' class='input-field' id='sgst_" + uniqueId + "' placeholder='SGST'></td>" +
-    "<td><input type='number' name='igst' class='input-field' id='igst_" + uniqueId + "' placeholder='IGST'></td>" +
-    "<td><input type='number' name='totalAmount' class='input-field' id='totalAmount_" + uniqueId + "' placeholder='Total Amount'></td>" +
-"<td class='action new-row'><button class='btn btn-danger deleteRowBtn'>Delete Row</button></td>" +
-    "</tr>");
+
+            uniqueId = generateUniqueId();
+            let newRow = $("<tr data-uniqueId='" + uniqueId + "'>" +
+                "<td><input type='hidden' name='purchaseId' class='input-field purchase-id' value='" + purchaseId + "'></td>" +
+                "<td><select name='productname' class='input-field product-name dropdown' id='productname_" + uniqueId + "' placeholder='Product Name'><option selected disabled>Select product</option></select></td>" +
+                "<td><input type='text' name='batchNo' class='input-field' id='batchNo_" + uniqueId + "' placeholder='Batch No'></td>" +
+                "<td><input type='text' name='tax' class='input-field' id='tax_" + uniqueId + "' placeholder='Tax(%)'></td>" +
+                "<td><input type='number' name='quantity' class='input-field' id='quantity_" + uniqueId + "' placeholder='Quantity'></td>" +
+                "<td><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
+                "<td><input type='number' name='purcRate' class='input-field' id='purcRate_" + uniqueId + "' placeholder='purcRate'></td>" +
+             "<td><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='MRP'></td>" +
+                "<td><input type='number' name='rate' class='input-field' id='rate_" + uniqueId + "' placeholder='Rate'></td>" +
+                "<td><select name='discMode' class='input-field product-name dropdown' id='discMode_" + uniqueId + "' placeholder='Disc.Mode'><option selected disabled>Select Disc Mode</option></select></td>" +
+                "<td><input type='number' name='discount' class='input-field' id='discount_" + uniqueId + "' placeholder='Discount'></td>" +
+                "<td><input type='number' name='amount' class='input-field' id='amount_" + uniqueId + "' placeholder='Amount'></td>" +
+                "<td><input type='number' name='cgst' class='input-field' id='cgst_" + uniqueId + "' placeholder='CGST'></td>" +
+                "<td><input type='number' name='sgst' class='input-field' id='sgst_" + uniqueId + "' placeholder='SGST'></td>" +
+                "<td><input type='number' name='igst' class='input-field' id='igst_" + uniqueId + "' placeholder='IGST'></td>" +
+                "<td><input type='number' name='totalAmount' class='input-field' id='totalAmount_" + uniqueId + "' placeholder='Total Amount'></td>" +
+                "<td class='action new-row'><button class='btn btn-danger deleteRowBtn'>Delete Row</button></td>" +
+                "</tr>");
+
             $('#customerTable tbody').append(newRow);
             table.rows.add([newRow[0]]).draw();
-$.ajax({
-    url: '/auth/purchase/productname',
-    method: 'GET',
-    success: function (response) {
-        console.log('Received response for product:', response);
-        var options = response.data;
 
-        if (options && options.length) {
-            options.forEach(function (option) {
-                console.log('Option:', option);
-                $('#productname_' + uniqueId).append($('<option>', {
-                    value: option.id,
-                    text: option.productname
-                }));
+            // Fetch product options and populate the product dropdown
+            $.ajax({
+                url: '/auth/purchase/productname',
+                method: 'GET',
+                success: function (response) {
+                    console.log('Received response for product:', response);
+                    var options = response.data;
+
+                    if (options && options.length) {
+                        options.forEach(function (option) {
+                            console.log('Option:', option);
+                            $('#productname_' + uniqueId).append($('<option>', {
+                                value: option.id,
+                                text: option.productname
+                            }));
+                        });
+
+                        $('#productname_' + uniqueId).on('change', function () {
+                            var selectedProductId = $(this).val();
+                            var selectedProduct = options.find(function (product) {
+                                return product.id == selectedProductId;
+                            });
+
+                            if (selectedProduct) {
+                                console.log('Selected Product:', selectedProductId);
+                                fetchBatchDetails(selectedProductId, uniqueId);
+                            }
+                        });
+
+                        fetchDiscmodeOptions(uniqueId);
+                    } else {
+                        console.error('No options found for product name');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching options for product name:', error);
+                }
             });
+        });
 
-$('#productname_' + uniqueId).on('change', function () {
-    var selectedProductId = $(this).val();
-
-    var selectedProduct = options.find(function (product) {
-        return product.id == selectedProductId;
-    });
-
-    if (selectedProduct) {
-        // Log the selected product details to the console
-        console.log('Selected Product:', selectedProductId);
-
-        fetchBatchDetails(selectedProductId, uniqueId); // Pass uniqueId here
-    }
-});
-
-
-            fetchDiscmodeOptions(uniqueId);
-        } else {
-            console.error('No options found for product name');
-        }
-    },
-    error: function (xhr, status, error) {
-        console.error('Error fetching options for product name:', error);
-    }
-});
-
-
-        } else {
-            alert("Please select a Customer before adding a row.");
-        }
-    });
-
-
-    $('#customerTable tbody').on('click', 'button.deleteRowBtn', function () {
-        let row = $(this).closest("tr");
-        if (row) {
-            table.row(row).remove().draw(false);
-calculateTotals();
-        }
-    });
-
-$(document).ready(function() {
-
-    $('#submitFormBtn').on('click', function () {
-        let formData = $('#purchaseDetails').serializeArray();
-        products = getProductsData(); 
-
-        formData.push({ name: 'products', value: JSON.stringify(products) });
-        
-        console.log('Data being sent to the server:', formData);
-        console.log('Received products:', products);
-        console.log('Number of received products:', products.length);
-
-        // Send AJAX request to the server
-        $.ajax({
-            url: '/auth/salesretail',
-            method: 'POST',
-            data: formData,
-            success: function (response) {
-                console.log(response);
-                location.reload();
-                alert('Successfully Submitted purchase');
-            },
-            error: function (error) {
-                console.error("Error submitting form:", error);
+        // Event listener for deleting a row
+        $('#customerTable tbody').on('click', 'button.deleteRowBtn', function () {
+            let row = $(this).closest("tr");
+            if (row) {
+                table.row(row).remove().draw(false);
+                calculateTotals();
             }
         });
-    });
-});
 
+        // Event listener for submitting the form
+        $('#submitFormBtn').on('click', function () {
+            let formData = $('#purchaseDetails').serializeArray();
+            products = getProductsData();
 
-   function getProductsData() {
-    var products = [];
+            formData.push({ name: 'products', value: JSON.stringify(products) });
 
-    $('#customerTable tbody tr').each(function () {
-        try {
-            var uniqueId = $(this).find('select[name="productname"]').attr('id');
-            if (uniqueId) {
-                uniqueId = uniqueId.split('_')[1];
+            console.log('Data being sent to the server:', formData);
+            console.log('Received products:', products);
+            console.log('Number of received products:', products.length);
 
-                var product = {
-                    purchaseId: $(this).find('.purchase-id').val(),
-                    productId: $('#productname_' + uniqueId).val() || "",
-                    batchNo: $('#batchNo_' + uniqueId).val() || "",
-                    tax: $('#tax_' + uniqueId).val() || "",
-                    quantity: $('#quantity_' + uniqueId).val() || "",
-                    uom: $('#uom_' + uniqueId).val() || "",
-                    purcRate: $('#purcRate_' + uniqueId).val() || "",
-                    rate: $('#rate_' + uniqueId).val() || "",
-                    discMode: $('#discMode_' + uniqueId).val() || "",
-                    discount: $('#discount_' + uniqueId).val() || "",
-                    amount: $('#amount_' + uniqueId).val() || "",
-                    cgst: $('#cgst_' + uniqueId).val() || "",
-                    sgst: $('#sgst_' + uniqueId).val() || "",
-                    igst: $('#igst_' + uniqueId).val() || "",
-                    totalAmount: $('#totalAmount_' + uniqueId).val() || ""
-                };
-                console.log('Product Details:', product);
-                products.push(product);
-            } else {
-                console.error('UniqueId attribute not found for this row:', this);
-            }
-        } catch (error) {
-            console.error('Error processing row:', this);
-            console.error('Error details:', error);
+            $.ajax({
+                url: '/auth/salesretail',
+                method: 'POST',
+                data: formData,
+                success: function (response) {
+                    console.log(response);
+                    location.reload();
+                    alert('Successfully Submitted purchase');
+                },
+                error: function (error) {
+                    console.error("Error submitting form:", error);
+                }
+            });
+        });
+
+        function getProductsData() {
+            var products = [];
+
+            $('#customerTable tbody tr').each(function () {
+                try {
+                    var uniqueId = $(this).find('select[name="productname"]').attr('id');
+                    if (uniqueId) {
+                        uniqueId = uniqueId.split('_')[1];
+
+                        var product = {
+                            purchaseId: $(this).find('.purchase-id').val(),
+                            productId: $('#productname_' + uniqueId).val() || "",
+                            batchNo: $('#batchNo_' + uniqueId).val() || "",
+                            tax: $('#tax_' + uniqueId).val() || "",
+                            quantity: $('#quantity_' + uniqueId).val() || "",
+                            uom: $('#uom_' + uniqueId).val() || "",
+                            purcRate: $('#purcRate_' + uniqueId).val() || "",
+                             mrp: $('#mrp_' + uniqueId).val() || "",
+                            rate: $('#rate_' + uniqueId).val() || "",
+                            discMode: $('#discMode_' + uniqueId).val() || "",
+                            discount: $('#discount_' + uniqueId).val() || "",
+                            amount: $('#amount_' + uniqueId).val() || "",
+                            cgst: $('#cgst_' + uniqueId).val() || "",
+                            sgst: $('#sgst_' + uniqueId).val() || "",
+                            igst: $('#igst_' + uniqueId).val() || "",
+                            totalAmount: $('#totalAmount_' + uniqueId).val() || ""
+                        };
+                        console.log('Product Details:', product);
+                        products.push(product);
+                    } else {
+                        console.error('UniqueId attribute not found for this row:', this);
+                    }
+                } catch (error) {
+                    console.error('Error processing row:', this);
+                    console.error('Error details:', error);
+                }
+            });
+
+            return products;
         }
-    });
 
-    return products;
-}
+        function fetchBatchDetails(selectedProductId, uniqueId) {
+            console.log('Selected Product ID:', selectedProductId);
 
+            var requestData = {
+                selectedProductId: selectedProductId
+            };
 
-function fetchBatchDetails(selectedProductId, uniqueId) {
-    console.log('Selected Product ID:', selectedProductId);
-
-    var requestData = {
-        selectedProductId: selectedProductId
-    };
-
-    $.ajax({
-        url: '/auth/salesretail/batchDetails/' + selectedProductId,
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(requestData),
-        success: function (response) {
-            console.log('Received response for batch details:', response);
-            if (response.success) {
-                $('#batchDetailsBody').empty();
-                response.data.forEach(function (batch) {
-                   $('#batchDetailsBody').append(
-    `<tr data-uniqueId="${uniqueId}" data-batchNo="${batch.batchNo}" data-tax="${batch.tax}" data-quantity="${batch.quantity}" data-uom="${batch.uom}" data-rate="${batch.rate}">
-        <td>${batch.batchNo}</td>
-        <td>${batch.tax}</td>
-        <td>${batch.op_quantity}</td>
-        <td>${batch.uom}</td>
-        <td>${batch.rate}</td>
-    </tr>`
-);
-
-                });
-                $('#overlay').show();
-                $('#batchform').show();
-            } else {
-                console.error('No batch details found for the selected product');
-            }
-        },
-        error: function (xhr, status, error) {
-            console.error('Error fetching batch details:', error);
-            console.error('XHR Status:', status);
-            console.error('XHR Response:', xhr.responseText);
-            $('#batchDetailsBody').empty();
-            $('#batchDetailsBody').append(
-                `<tr>
-                    <td colspan="5">Error fetching batch details: ${error}</td>
-                </tr>`
-            );
-            // Show the overlay and batch form
-            $('#overlay').show();
-            $('#batchform').show();
+            $.ajax({
+                url: '/auth/salesretail/batchDetails/' + selectedProductId,
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function (response) {
+                    console.log('Received response for batch details:', response);
+                    if (response.success) {
+                        $('#batchDetailsBody').empty();
+                        response.data.forEach(function (batch) {
+                            $('#batchDetailsBody').append(
+                                `<tr data-uniqueId="${uniqueId}" data-batchNo="${batch.batchNo}" data-tax="${batch.tax}" data-quantity="${batch.quantity}" data-uom="${batch.uom}" data-rate="${batch.rate}">
+                                <td>${batch.batchNo}</td>
+                                <td>${batch.tax}</td>
+                                <td>${batch.op_quantity}</td>
+                                <td>${batch.uom}</td>
+                                <td>${batch.rate}</td>
+                            </tr>`
+                            );
+                        });
+                        $('#overlay').show();
+                        $('#batchform').show();
+                    } else {
+                        console.error('No batch details found for the selected product');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching batch details:', error);
+                    console.error('XHR Status:', status);
+                    console.error('XHR Response:', xhr.responseText);
+                    $('#batchDetailsBody').empty();
+                    $('#batchDetailsBody').append(
+                        `<tr>
+                        <td colspan="5">Error fetching batch details: ${error}</td>
+                    </tr>`
+                    );
+                    $('#overlay').show();
+                    $('#batchform').show();
+                }
+            });
         }
+
+        // Event listener for selecting a batch detail row
+        $('#batchDetailsBody').on('click', 'tr', function () {
+            var uniqueId = $(this).attr('data-uniqueId');
+            console.log('Retrieved uniqueId:', uniqueId);
+
+            var selectedProductId = $('#productname_' + uniqueId).val();
+            var selectedBatchNo = $(this).attr('data-batchNo');
+            var selectedTax = $(this).attr('data-tax');
+            var selectedQuantity = $(this).attr('data-quantity');
+            var selectedUom = $(this).attr('data-uom');
+            var selectedRate = $(this).attr('data-rate');
+
+            $('#batchNo_' + uniqueId).val(selectedBatchNo);
+            $('#tax_' + uniqueId).val(selectedTax);
+            $('#quantity_' + uniqueId).val(selectedQuantity);
+            $('#uom_' + uniqueId).val(selectedUom);
+            $('#purcRate_' + uniqueId).val(selectedRate);
+
+            calculateRowTotal(uniqueId);
+            $('#overlay').hide();
+            $('#batchform').hide();
+        });
+
+        function fetchDiscmodeOptions(uniqueId) {
+            $.ajax({
+                url: '/auth/sales/discmode',
+                method: 'GET',
+                success: function (response) {
+                    console.log('Received response for disc mode:', response);
+                    var options = response.data;
+
+                    if (options && options.length) {
+                        options.forEach(function (option) {
+                            console.log('Option:', option);
+                            $('#discMode_' + uniqueId).append($('<option>', {
+                                value: option.id,
+                                text: option.mode
+                            }));
+                        });
+                    } else {
+                        console.error('No options found for disc mode');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching options for disc mode:', error);
+                }
+            });
+        }
+
+        function calculateRowTotal(uniqueId) {
+            var quantity = parseFloat($('#quantity_' + uniqueId).val()) || 0;
+            var rate = parseFloat($('#rate_' + uniqueId).val()) || 0;
+            var tax = parseFloat($('#tax_' + uniqueId).val()) || 0;
+            var discMode = $('#discMode_' + uniqueId).val();
+            var discount = parseFloat($('#discount_' + uniqueId).val()) || 0;
+
+            var discountAmount = 0;
+            if (discMode === 'Percentage') {
+                discountAmount = (rate * discount) / 100;
+            } else if (discMode === 'Value') {
+                discountAmount = discount;
+            }
+
+            var amount = quantity * rate;
+            var discountedAmount = amount - discountAmount;
+            var taxAmount = (discountedAmount * tax) / 100;
+            var totalAmount = discountedAmount + taxAmount;
+
+            $('#amount_' + uniqueId).val(discountedAmount.toFixed(2));
+            $('#cgst_' + uniqueId).val((taxAmount / 2).toFixed(2));
+            $('#sgst_' + uniqueId).val((taxAmount / 2).toFixed(2));
+            $('#igst_' + uniqueId).val(0);
+            $('#totalAmount_' + uniqueId).val(totalAmount.toFixed(2));
+
+            calculateTotals();
+        }
+
+        function calculateTotals() {
+            var totalQuantity = 0;
+            var totalAmount = 0;
+            var totalCGST = 0;
+            var totalSGST = 0;
+            var totalIGST = 0;
+            var grandTotal = 0;
+
+            $('#customerTable tbody tr').each(function () {
+                totalQuantity += parseFloat($(this).find('input[name="quantity"]').val()) || 0;
+                totalAmount += parseFloat($(this).find('input[name="amount"]').val()) || 0;
+                totalCGST += parseFloat($(this).find('input[name="cgst"]').val()) || 0;
+                totalSGST += parseFloat($(this).find('input[name="sgst"]').val()) || 0;
+                totalIGST += parseFloat($(this).find('input[name="igst"]').val()) || 0;
+                grandTotal += parseFloat($(this).find('input[name="totalAmount"]').val()) || 0;
+            });
+
+            $('#totalQuantity').text(totalQuantity.toFixed(2));
+            $('#totalAmount').text(totalAmount.toFixed(2));
+            $('#totalCGST').text(totalCGST.toFixed(2));
+            $('#totalSGST').text(totalSGST.toFixed(2));
+            $('#totalIGST').text(totalIGST.toFixed(2));
+            $('#grandTotal').text(grandTotal.toFixed(2));
+        }
+
+        function generateUniqueId() {
+            return 'ID_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Hide overlay when clicking outside the form
+        $('#overlay').on('click', function () {
+            $(this).hide();
+            $('#batchform').hide();
+        });
     });
-}
-
-$('#batchDetailsBody').on('click', 'tr', function() {
-    // Retrieve uniqueId from the clicked row
-    var uniqueId = $(this).attr('data-uniqueId');
-    console.log('Retrieved uniqueId:', uniqueId);
-
-    // Retrieve selectedProductId from the dropdown associated with this row
-    var selectedProductId = $('#productname_' + uniqueId).val();
-    console.log('Retrieved selectedProductId:', selectedProductId);
-
-    // Retrieve values from the clicked row
-    var batchNo = $(this).find('td:eq(0)').text();
-    var tax = $(this).find('td:eq(1)').text();
-    var quantity = $(this).find('td:eq(2)').text();
-    var uom = $(this).find('td:eq(3)').text();
-    var rate = $(this).find('td:eq(4)').text();
-
-    // Update input fields in the customerTable with uniqueId
-    $('#batchNo_' + uniqueId).val(batchNo);
-    $('#tax_' + uniqueId).val(tax);
-    $('#quantity_' + uniqueId).val(quantity);
-    $('#uom_' + uniqueId).val(uom);
-    $('#purcRate_' + uniqueId).val(rate);
-
-    // Hide overlay and batch form
-    $('#overlay').hide();
-    $('#batchform').hide();
-});
-
-   
-   
-    function generateUniqueId() {
-        return uuidv4();
-    }
-
-
-});
-
 
 function fetchDiscmodeOptions(uniqueId) {
     $.ajax({
@@ -1052,6 +1101,7 @@ $('#pdiscMode, #pdiscount').change(function() {
         { data: 'quantity' },
         { data: 'uom' },  
         { data: 'purcRate' },
+         { data: 'mrp' },
         { data: 'rate' },
         { data: 'discMode'},
         { data: 'discount' },
@@ -1085,296 +1135,130 @@ if (table.data().count() === 0) {
         if (table.rows().count() === 0) {
             $("#emptyMessage").show();
         }
-$(document).ready(function () {
-    var companyState;
-    var totalAmount = 0;
-var selectedSupplier;
+    $(document).ready(function () {
+        var companyState;
+        var totalAmount = 0;
 
-    $('#customerTable tbody').on('input', 'input[name^="rate"], input[name^="quantity"], select[name^="discMode"], input[name^="discount"]', function () {
-        var row = $(this).closest('tr');
-        var rate = parseInt(row.find('input[name^="rate"]').val()) || 0;
-        var quantity = parseInt(row.find('input[name^="quantity"]').val()) || 0;
-        var discMode = row.find('select[name^="discMode"]').val();
-        var discountInput = row.find('input[name^="discount"]');
+        $('#customerTable tbody').on('input', 'input[name^="rate"], input[name^="quantity"], select[name^="discMode"], input[name^="discount"]', function () {
+            var row = $(this).closest('tr');
+            var rate = parseInt(row.find('input[name^="rate"]').val()) || 0;
+            var quantity = parseInt(row.find('input[name^="quantity"]').val()) || 0;
+            var discMode = row.find('select[name^="discMode"]').val();
+            var discountInput = row.find('input[name^="discount"]');
 
-        if (discMode === '3') {
-            discountInput.val('0');
-        }
+            if (discMode === '3') {
+                discountInput.val('0');
+            }
 
-        var discount = parseInt(discountInput.val()) || 0;
-        var amount = calculateAmount(rate, quantity, discMode, discount);
+            var discount = parseInt(discountInput.val()) || 0;
+            var amount = calculateAmount(rate, quantity, discMode, discount);
 
-        row.find('input[name^="amount"]').val(amount.toFixed(2));
+            row.find('input[name^="amount"]').val(amount.toFixed(2));
 
-        var selectedCustomerState = $('#supplierSelect').find(':selected').data('state');
-        calculateTax(row, selectedCustomerState, companyState);
-        calculateTotals();
-        calculateTotalAmount(); 
-    });
-
-    function calculateTotalAmount() {
-        $('#customerTable tbody tr').each(function () {
-            var row = $(this);
-            var amount = parseInt(row.find('input[name^="amount"]').val()) || 0;
-            var cgst = parseInt(row.find('input[name^="cgst"]').val()) || 0;
-            var sgst = parseInt(row.find('input[name^="sgst"]').val()) || 0;
-            var igst = parseInt(row.find('input[name^="igst"]').val()) || 0;
-
-            var totalTax = cgst + sgst + igst; 
-            var rowTotalAmount = amount + totalTax;   
-            row.find('input[name^="totalAmount"]').val(rowTotalAmount.toFixed(2));
+            calculateTax(row);
+            calculateTotalAmount();
         });
-    }
 
-    function calculateAmount(rate, quantity, discMode, discount) {
-        console.log('Calculating Amount - Inputs:', { rate, quantity, discMode, discount });
+        function calculateTotalAmount() {
+            $('#customerTable tbody tr').each(function () {
+                var row = $(this);
+                var amount = parseFloat(row.find('input[name^="amount"]').val()) || 0;
+                var cgst = parseFloat(row.find('input[name^="cgst"]').val()) || 0;
+                var sgst = parseFloat(row.find('input[name^="sgst"]').val()) || 0;
+                var igst = parseFloat(row.find('input[name^="igst"]').val()) || 0;
 
-        var calculatedAmount = 0;
-
-        if (discMode === 'N/A' || discMode === '3') {
-            discount = 0;
-            calculatedAmount = rate * quantity - discount;
-            console.log('Calculating Amount - N/A or 3:', calculatedAmount);
-        } else if (discMode === 'percentage' || discMode === '1') {
-            calculatedAmount = rate * quantity * (1 - discount / 100);
-            console.log('Calculating Amount - Percentage:', calculatedAmount);
-        } else {
-            calculatedAmount = rate * quantity - discount;
-            console.log('Calculating Amount - Value:', calculatedAmount);
-        }
-
-        return calculatedAmount;
-    }
-
-    function calculateTax(row, customerState, companyState) {
-        var amount = parseInt(row.find('input[name^="amount"]').val()) || 0;
-        var taxRate = parseInt(row.find('input[name^="tax"]').val()) || 0;
-
-        var isLocalSupply = customerState && companyState && customerState.toLowerCase() === companyState.toLowerCase();
-
-        var cgst, sgst, igst;
-
-        if (isLocalSupply) {
-            cgst = (amount * taxRate / 200).toFixed(2);
-            sgst = cgst;
-            igst = 0;
-        } else {
-            cgst = 0;
-            sgst = 0;
-            igst = (amount * taxRate / 100).toFixed(2);
-        }
-
-        var totalTax = (parseInt(cgst) + parseInt(sgst) + parseInt(igst)).toFixed(2);
-
-        row.find('input[name^="cgst"]').val(cgst);
-        row.find('input[name^="sgst"]').val(sgst);
-        row.find('input[name^="igst"]').val(igst);
-        row.find('input[name^="totalTax"]').val(totalTax);
-
-        calculateTotalAmount();   
-    }
-
-
-$('.dropdown[name="customername"]').on('change', function () {
-    var selectedSupplier = $(this).val(); 
-    console.log('Selected Supplier:', selectedSupplier);
-    initiateFetchCompanyState(selectedSupplier); 
-});
-
-function fetchSupplierNames() {
-$.ajax({
-    url: '/auth/salesretail/customername',
-    method: 'GET',
-    success: function (response) {
-        console.log('Received response for Customer Name:', response);
-        var options = response.data;
-        if (options && options.length) {
-            options.forEach(function (option) {
-                var $option = $('<option>', {
-                    value: option.id,
-                    text: option.ledgername,
-                    'data-state': option.state,
-                    'data-mobile': option.mobile // Add data attribute to store mobile number
-                });
-                $('.dropdown[name="customername"]').append($option);
+                var totalTax = cgst + sgst + igst;
+                var rowTotalAmount = amount + totalTax;
+                row.find('input[name^="totalAmount"]').val(rowTotalAmount.toFixed(2));
             });
-            
-            // Trigger change event to update mobile number when the first option is selected by default
-            $('.dropdown[name="customername"]').change();
-        } else {
-            console.error('No options found for Customer Name');
-        }
-    },
-    error: function (xhr, status, error) {
-        console.error('Error fetching options for Customer Name:', error);
-    }
-});
-
-// Update mobile number input field when customer selection changes
-$('.dropdown[name="customername"]').change(function() {
-    var selectedMobile = $(this).find(':selected').data('mobile');
-    $('#customermobileno').val(selectedMobile).show(); // Set and show mobile number
-});
-
-}
-function initiateFetchCompanyState(customerState) {
-    fetchCompanyStateAndCalculateTax(customerState);
-}
-
-function fetchCompanyStateAndCalculateTax(customerState) {
-    $.ajax({
-        url: '/auth/purchase/companystate',
-        method: 'GET',
-        success: function (response) {
-            console.log('Received response for Company State:', response);
-            companyState = response.data[0].state;
-            console.log('Company State:', companyState);
-            calculateTaxForAllRows(customerState, companyState);
-        },
-        error: function (xhr, status, error) {
-            console.error('Error fetching Company State:', error);
-        }
-    });
-}
-
-function calculateTaxForAllRows(customerState, companyState) {
-    $('#customerTable tbody tr').each(function () {
-        var row = $(this);
-        calculateTax(row, customerState, companyState); 
-    });
-}
-
-
-fetchSupplierNames();
-
-    var rowDetails;
-$.ajax({
-    url: '/auth/salesretail/salesids',
-    method: 'GET',
-    data: { view: 'salesids' },
-  success: function (response) {
-            console.log('Received response for Purchase IDs:', response);
-
-            var options = response.data;
-            console.log('Options:', options);
-
-            if (options && options.length) {
-                options.forEach(function (row) {
-                    if (row.id !== undefined && row.id !== null && !isNaN(row.id)) {
-                        var saledate = formatDate(row.saledate);
-                   
-                        var optionHtml =
-                            '<option value=\'' +
-                            JSON.stringify(row) +
-                            '\'>' +
-                            '<strong>ID: </strong>' + row.id +
-                            ',<strong>Customer Name:</strong> ' + row.customername +
-                            ',<strong>Customer Mobile No: </strong>' + row.customermobileno +
-                            ',<strong> Sale Date: </strong>' + saledate+
-                            '</option>';
-
-                        $('.dropdown[name="Id"]').append(optionHtml);
-                    } else {
-                        console.warn('Skipping option with invalid ID:', row);
-                    }
-                });
-        } else {
-            console.error('No options found for salesretail IDs');
         }
 
-        var urlParams = new URLSearchParams(window.location.search);
-        var purchaseIdParam = urlParams.get('id');
-        console.log('Purchase ID from URL:', purchaseIdParam);
+        function calculateAmount(rate, quantity, discMode, discount) {
+            var calculatedAmount = 0;
 
-        if (purchaseIdParam) {
-            var purchaseIdInt = parseInt(purchaseIdParam);
+            if (discMode === 'N/A' || discMode === '3') {
+                discount = 0;
+                calculatedAmount = rate * quantity - discount;
+            } else if (discMode === 'percentage' || discMode === '1') {
+                calculatedAmount = rate * quantity * (1 - discount / 100);
+            } else {
+                calculatedAmount = rate * quantity - discount;
+            }
 
-            $('.dropdown[name="Id"] option').each(function() {
-                var optionValue = $(this).val();
-                if (optionValue !== 'view details') {
-                    var optionRow = JSON.parse(optionValue);
-                    if (optionRow.id === purchaseIdInt) {
-                        $(this).prop('selected', true);
-                    }
+            return calculatedAmount;
+        }
+
+        function calculateTax(row) {
+            var amount = parseFloat(row.find('input[name^="amount"]').val()) || 0;
+            var taxRate = parseFloat(row.find('input[name^="tax"]').val()) || 0;
+
+            var cgst = (amount * taxRate / 200).toFixed(2);
+            var sgst = cgst;
+            var igst = 0;
+
+            var totalTax = (parseFloat(cgst) + parseFloat(sgst) + parseFloat(igst)).toFixed(2);
+
+            row.find('input[name^="cgst"]').val(cgst);
+            row.find('input[name^="sgst"]').val(sgst);
+            row.find('input[name^="igst"]').val(igst);
+            row.find('input[name^="totalTax"]').val(totalTax);
+
+            calculateTotalAmount();
+        }
+
+        function fetchCompanyState() {
+            $.ajax({
+                url: '/auth/purchase/companystate',
+                method: 'GET',
+                success: function (response) {
+                    companyState = response.data[0].state;
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching Company State:', error);
                 }
             });
-
-            $('.dropdown[name="Id"]').change();
-        }
-    },
-    error: function (xhr, status, error) {
-        console.error('Error fetching options for salesretail IDs:', error);
-    }
-});
-
-
-$('.dropdown[name="Id"]').change(function () {
-    var selectedOption = $(this).find('option:selected');
-
-    if (!selectedOption || !selectedOption.val()) {
-        return;
-    }
-
-    try {
-        var rowDetails = JSON.parse(selectedOption.val());
-        $('#id').val(rowDetails.id);
-        $('#customermobileno').val(rowDetails.customermobileno); 
-        $('#paymentmode').val(rowDetails.paymentmode);
-        $('#saledate').val(formatDate(rowDetails.saledate));
-        $('#referno').val(rowDetails.referno);
-        $('#transportno').val(rowDetails.transportno);
-       $('#supplierSelect').val(rowDetails.customer);
-
-        $('.dropdown[name="customername"]').val(rowDetails.customer);
-
-        var selectedSupplierState = $('#supplierSelect').find(':selected').data('state');
-        initiateFetchCompanyState(selectedSupplierState);
-
-        $('#pnetAmount').text(!isNaN(rowDetails.netAmount) ? parseFloat(rowDetails.netAmount).toFixed(2) : 'Invalid Net Amount');
-        $('#pamount').text(!isNaN(rowDetails.amount) ? parseFloat(rowDetails.amount).toFixed(2) : 'Invalid Amount');
-        $('#pigst').text(!isNaN(rowDetails.igst) ? parseFloat(rowDetails.igst).toFixed(2) : 'Invalid IGST');
-        $('#pcgst').text(!isNaN(rowDetails.cgst) ? parseFloat(rowDetails.cgst).toFixed(2) : 'Invalid CGST');
-        $('#psgst').text(!isNaN(rowDetails.sgst) ? parseFloat(rowDetails.sgst).toFixed(2) : 'Invalid SGST');
-        $('#psubtotal').text(!isNaN(rowDetails.subtotal) ? parseFloat(rowDetails.subtotal).toFixed(2) : 'Invalid Sub Total');
-        $('#ptcs').text(!isNaN(rowDetails.tcs) ? parseFloat(rowDetails.tcs).toFixed(2) : 'Invalid TCS');
-      $('#proundOff').text(!isNaN(rowDetails.roundoff) ? parseFloat(rowDetails.roundoff).toFixed(2) : 'Invalid roundOff');
-
-// Set the selected value in the dropdown
-$('#pdiscMode').val(rowDetails.discMode);
-
-// Set the discount input box value
-$('#pdiscount').val(rowDetails.discount);
-
-        selectedOption.prop('selected', true);
-
-        console.log('rowDetails.id:', rowDetails.id);
-        console.log('Dropdown Options:', $(this).val());
-
-        var purchaseId = parseInt(rowDetails.id);
-
-        if (isNaN(purchaseId)) {
-            console.error('Invalid purchaseId:', purchaseId);
-            return;
         }
 
-        $.ajax({
-            url: '/auth/salesretail/saleproductid',
-            method: 'GET',
-            data: { purchaseId: purchaseId },
-            success: function (response) {
-                console.log('Received response for ProductId:', response);
-                updateCustomerTable(response.data);
-            },
-            error: function (xhr, status, error) {
-                console.error('Error fetching ProductId data:', error);
-            }
+        function fetchSupplierNames() {
+            $.ajax({
+                url: '/auth/salesretail/customername',
+                method: 'GET',
+                success: function (response) {
+                    var options = response.data;
+                    if (options && options.length) {
+                        options.forEach(function (option) {
+                            var $option = $('<option>', {
+                                value: option.id,
+                                text: option.ledgername,
+                                'data-mobile': option.mobile
+                            });
+                            $('.dropdown[name="customername"]').append($option);
+                        });
+                        $('.dropdown[name="customername"]').change();
+                    } else {
+                        console.error('No options found for Customer Name');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching options for Customer Name:', error);
+                }
+            });
+        }
+
+        $('.dropdown[name="customername"]').change(function () {
+            var selectedMobile = $(this).find(':selected').data('mobile');
+            $('#customermobileno').val(selectedMobile).show();
         });
-    } catch (error) {
-        console.error('Error parsing JSON:', error);
-    }
-});
 
-});
+        fetchCompanyState();
+        fetchSupplierNames();
+    });
+
+    function updateCustomerTable(data) {
+        var table = $('#customerTable').DataTable();
+        table.clear().rows.add(data).draw();
+    }
+
 
 function updateCustomerTable(data) {
     var table = $('#customerTable').DataTable();

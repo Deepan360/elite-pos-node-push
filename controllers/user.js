@@ -44,57 +44,8 @@ const poolConnect = async () => {
 
 
 //salesretail retail
-exports.customername = (req, res) => {
-  pool.connect((err, connection) => {
-    if (err) {
-      console.error('Error getting connection from pool:', err);
-      return res.status(500).json({ error: 'Internal Server Error' });
-    }
 
-    pool.query('SELECT [id], [ledgername],[state],[mobile] FROM [elite_pos].[dbo].[customer]', (err, result) => {
-      connection.release(); // Release the connection back to the pool
 
-      if (err) {
-        console.error('Error in listing data:', err);
-        return res.status(500).json({ error: 'Internal Server Error' });
-      }
-
-      // Send the data as JSON response
-      res.json({ data: result.recordset });
-    });
-  });
-};
-
-exports.batchDetails = async (req, res) => {
-  const { selectedProductId } = req.body; 
-  try {
-      console.log('Selected Product ID:', selectedProductId); 
-      const result = await pool.query(`
-          SELECT 
-              [batchNo],
-              [tax],
-              [op_quantity],
-              [uom],
-              [rate] 
-          FROM 
-              [elite_pos].[dbo].[stock_Ob]
-          WHERE 
-              product = ${selectedProductId};
-      `);
-      if (result.recordset.length > 0) {
-          console.log('Batch details retrieved successfully:', result.recordset);
-          res.status(200).json({ success: true, data: result.recordset });
-      } else {
-          // Return a 404 error if no batch details are found for the product ID
-          console.log('No batch details found for the product ID:', selectedProductId);
-          res.status(404).json({ success: false, message: 'No batch details found for the product ID.' });
-      }
-  } catch (error) {
-      // Handle any errors that occur during database query or processing
-      console.error('Error fetching batch details:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-};
 
 exports.salesretailDetails=async(req,res)=>{
   pool.connect((err, connection) => {
@@ -103,7 +54,7 @@ exports.salesretailDetails=async(req,res)=>{
       return res.status(500).json({ error: 'Internal Server Error' });
     }
 
-    const query = 'SELECT * FROM [elite_pos].[dbo].[sales_Master]';
+    const query = 'SELECT * FROM [elite_pos].[dbo].[salesretail_Master]';
 
     pool.query(query, (err, result) => {
       connection.release(); // Release the connection back to the pool
@@ -125,8 +76,6 @@ exports.salesretailadd = async (req, res) => {
   const {
       saledate,
       paymentmode,
-      referno,
-      transportno,
       customermobileno, 
       customername, 
       pamount,
@@ -155,10 +104,10 @@ exports.salesretailadd = async (req, res) => {
 
       // Insert salesretail master record
       const result = await pool.query`
-          INSERT INTO [elite_pos].[dbo].[sales_Master]
-          ([saledate], [paymentmode], [referno], [transportno], [customermobileno], [customer], [amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff])
+          INSERT INTO [elite_pos].[dbo].[salesretail_Master]
+          ([saledate], [paymentmode],  [customermobileno], [customer], [amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff])
           VALUES
-          (${formattedSaleDate}, ${paymentmode}, ${referno}, ${transportno}, ${customermobileno}, ${customername}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff});
+          (${formattedSaleDate}, ${paymentmode},  ${customermobileno}, ${customername}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff});
 
           SELECT SCOPE_IDENTITY() as salesId;
       `;
@@ -167,14 +116,14 @@ exports.salesretailadd = async (req, res) => {
       console.log('Number of products:', parsedProducts.length);
 
       for (const product of parsedProducts) {
-        const { productId, batchNo, tax, quantity, uom, purcRate, rate, discMode, discount, amount, cgst, sgst, igst, totalAmount } = product;
+        const { productId, batchNo, tax, quantity, uom, purcRate,mrp, rate, discMode, discount, amount, cgst, sgst, igst, totalAmount } = product;
     
         // Insert salesretail transaction record
         await pool.query`
-            INSERT INTO [elite_pos].[dbo].[sales_Trans]
-            ([salesId], [product], [batchNo], [tax], [quantity], [uom],[purcRate], [rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
+            INSERT INTO [elite_pos].[dbo].[salesretail_Trans]
+            ([salesId], [product], [batchNo], [tax], [quantity], [uom],[purcRate], [mrp],[rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
             VALUES
-            (${salesId}, ${productId}, ${batchNo}, ${tax}, ${quantity}, ${uom},${purcRate} ,${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
+            (${salesId}, ${productId}, ${batchNo}, ${tax}, ${quantity}, ${uom},${purcRate},${mrp} ,${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
         `;
     
         // Reduce stock quantity
@@ -196,12 +145,10 @@ exports.salesretailEdit = async (req, res) => {
     console.log('Received request to edit purchase:', req.body); 
     // Update salesretail master table
     await pool.query`
-        UPDATE [elite_pos].[dbo].[sales_Master]
+        UPDATE [elite_pos].[dbo].[salesretail_Master]
         SET
             [saledate] = ${purchaseDetails.saledate},
             [paymentmode] = ${purchaseDetails.paymentmode},
-            [referno] = ${purchaseDetails.referno},
-            [transportno] = ${purchaseDetails.transportno},
             [customermobileno] = ${purchaseDetails.customermobileno},
             [customer] = ${purchaseDetails.customername},
             [amount] = ${purchaseDetails.pamount},
@@ -219,10 +166,10 @@ exports.salesretailEdit = async (req, res) => {
             [id] = ${purchaseDetails.id};
     `;
     for (const product of products) {
-      const { Id, productId, batchNo, tax, quantity, uom,purcRate ,rate, discMode, discount, amount, cgst, sgst, igst, totalAmount } = product;
+      const { Id, productId, batchNo, tax, quantity, uom,purcRate,mrp ,rate, discMode, discount, amount, cgst, sgst, igst, totalAmount } = product;
       if (Id) {
         await pool.query`
-          UPDATE [elite_pos].[dbo].[sales_Trans]
+          UPDATE [elite_pos].[dbo].[salesretail_Trans]
           SET
               [product] = ${productId},
               [batchNo] = ${batchNo},
@@ -230,6 +177,7 @@ exports.salesretailEdit = async (req, res) => {
               [quantity] = ${quantity},
               [uom] = ${uom},
               [purcRate]=${purcRate},
+               [mrp]=${mrp},
               [rate] = ${rate},
               [discMode] = ${discMode},
               [discount] = ${discount},
@@ -243,8 +191,8 @@ exports.salesretailEdit = async (req, res) => {
         `; 
       } else {
         await pool.query`
-          INSERT INTO [elite_pos].[dbo].[sales_Trans] ([salesId], [product], [batchNo], [tax], [quantity], [uom],[purcRate], [rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
-          VALUES ( ${purchaseDetails.id}, ${productId}, ${batchNo}, ${tax}, ${quantity}, ${uom},${purcRate} ,${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
+          INSERT INTO [elite_pos].[dbo].[salesretail_Trans] ([salesId], [product], [batchNo], [tax], [quantity], [uom],[purcRate],[mrp], [rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
+          VALUES ( ${purchaseDetails.id}, ${productId}, ${batchNo}, ${tax}, ${quantity}, ${uom},${purcRate},${mrp} ,${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
         `
          // Reduce stock quantity
          await reduceStock(productId, quantity,batchNo);
@@ -279,13 +227,10 @@ exports.salesretailids = (req, res) => {
       return res.status(500).json({ error: 'Internal Server Error' });
     }
     const query = `
-                  SELECT 
-                  pt.*,
-                  s.ledgername AS customername
+                  SELECT *
+                 
               FROM 
-                  [elite_pos].[dbo].[sales_Master] pt
-              JOIN
-                  [elite_pos].[dbo].[customer] s ON pt.[customer] = s.[id];
+                  [elite_pos].[dbo].[salesretail_Master] 
               
               `;
     pool.query(query, (err, result) => {
@@ -318,6 +263,7 @@ exports.salesretailproductid = (req, res) => {
     pt.quantity,
     pt.uom,
     pt.purcRate,
+     pt.mrp,
     pt.rate,
     pt.discount,
     pt.amount,
@@ -326,7 +272,7 @@ exports.salesretailproductid = (req, res) => {
     pt.igst,
     pt.totalAmount
 FROM 
-    [elite_pos].[dbo].[sales_Trans] pt
+    [elite_pos].[dbo].[salesretail_Trans] pt
 JOIN
     [elite_pos].[dbo].[product] p ON pt.product = p.id
 JOIN
@@ -369,7 +315,7 @@ exports.salesretaildelete = async (req, res) => {
     // Fetch transaction details associated with the salesId
     const transDetailsResult = await pool.query`
     SELECT Id, product, batchNo, quantity, tax, uom, rate
-      FROM [elite_pos].[dbo].[sales_Trans]
+      FROM [elite_pos].[dbo].[salesretail_Trans]
       WHERE [salesId] = ${salesId};
     `;
 
@@ -403,13 +349,13 @@ exports.salesretaildelete = async (req, res) => {
 
     // Delete from sales_Master
     await pool.query`
-      DELETE FROM [elite_pos].[dbo].[sales_Master]
+      DELETE FROM [elite_pos].[dbo].[salesretail_Master]
       WHERE [id] = ${salesId};
     `;
     
     // Delete associated products from sales_Trans
     await pool.query`
-      DELETE FROM [elite_pos].[dbo].[sales_Trans]
+      DELETE FROM [elite_pos].[dbo].[salesretail_Trans]
       WHERE [salesId] = ${salesId};
     `;
 
@@ -428,7 +374,7 @@ exports.salesretailtransdelete = async (req, res) => {
 
     const { recordset } = await pool.request()
       .input('manufacturerId', sql.Int, manufacturerId)
-      .query('SELECT quantity, Product, batchNo, uom, rate, tax FROM [elite_pos].[dbo].[sales_Trans] WHERE Id = @manufacturerId');
+      .query('SELECT quantity, Product, batchNo, uom, rate, tax FROM [elite_pos].[dbo].[salesretail_Trans] WHERE Id = @manufacturerId');
 
     // Check if a record was found
     if (recordset.length === 0) {
@@ -444,7 +390,7 @@ exports.salesretailtransdelete = async (req, res) => {
     // Delete the salesretail transaction
     const result = await pool.request()
       .input('manufacturerId', sql.Int, manufacturerId)
-      .query('DELETE FROM [elite_pos].[dbo].[sales_Trans] WHERE Id = @manufacturerId');
+      .query('DELETE FROM [elite_pos].[dbo].[salesretail_Trans] WHERE Id = @manufacturerId');
 
     // Update the stock in the stock_Ob table based on the productId, batchNo, and retrieved quantity
     await increaseStock(productId, batchNo, quantity, uom, rate, tax);
@@ -468,9 +414,8 @@ exports.salesretailregister = (req, res) => {
     }
 
     pool.query(`
-    SELECT s.*, c.ledgername
-    FROM [elite_pos].[dbo].[sales_Master] s
-    JOIN [elite_pos].[dbo].[customer] c ON s.customer = c.id;
+    SELECT *
+    FROM [elite_pos].[dbo].[salesretail_Master] 
     
    ;
     `, (err, result) => {

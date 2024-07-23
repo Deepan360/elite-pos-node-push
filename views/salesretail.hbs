@@ -306,8 +306,7 @@
 </div>
 
 </form>
-
-        </div>
+ </div>
           <div id="selectedRowDetails"></div>
 
 </div>
@@ -441,7 +440,6 @@ $(document).on('click', '.deletetransBtn', function() {
         }
     });
 });
-
 
 $(document).ready(function() {
     $(document).on('click', '.updateBtn', function(event) {
@@ -656,14 +654,15 @@ $(document).ready(function () {
     });
 });
 
-    $(document).ready(function () {
+$(document).ready(function () {
+        // Initialize DataTable
         let table = $('#customerTable').DataTable();
         let products = [];
         let uniqueId = generateUniqueId();
 
         calculateTotals();
 
-        // Event listener for opening the purchase form and adding a new row
+        // Open Purchase Form and Add New Row
         $('#openPurchaseForm').on('click', function () {
             let purchaseId = generateUniqueId();
             $('#purchaseId').val(purchaseId);
@@ -677,7 +676,7 @@ $(document).ready(function () {
                 "<td><input type='number' name='quantity' class='input-field' id='quantity_" + uniqueId + "' placeholder='Quantity'></td>" +
                 "<td><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
                 "<td><input type='number' name='purcRate' class='input-field' id='purcRate_" + uniqueId + "' placeholder='purcRate'></td>" +
-             "<td><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='MRP'></td>" +
+                "<td><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='MRP'></td>" +
                 "<td><input type='number' name='rate' class='input-field' id='rate_" + uniqueId + "' placeholder='Rate'></td>" +
                 "<td><select name='discMode' class='input-field product-name dropdown' id='discMode_" + uniqueId + "' placeholder='Disc.Mode'><option selected disabled>Select Disc Mode</option></select></td>" +
                 "<td><input type='number' name='discount' class='input-field' id='discount_" + uniqueId + "' placeholder='Discount'></td>" +
@@ -697,12 +696,9 @@ $(document).ready(function () {
                 url: '/auth/purchase/productname',
                 method: 'GET',
                 success: function (response) {
-                    console.log('Received response for product:', response);
                     var options = response.data;
-
                     if (options && options.length) {
                         options.forEach(function (option) {
-                            console.log('Option:', option);
                             $('#productname_' + uniqueId).append($('<option>', {
                                 value: option.id,
                                 text: option.productname
@@ -716,7 +712,6 @@ $(document).ready(function () {
                             });
 
                             if (selectedProduct) {
-                                console.log('Selected Product:', selectedProductId);
                                 fetchBatchDetails(selectedProductId, uniqueId);
                             }
                         });
@@ -732,7 +727,7 @@ $(document).ready(function () {
             });
         });
 
-        // Event listener for deleting a row
+        // Delete Row
         $('#customerTable tbody').on('click', 'button.deleteRowBtn', function () {
             let row = $(this).closest("tr");
             if (row) {
@@ -741,23 +736,18 @@ $(document).ready(function () {
             }
         });
 
-        // Event listener for submitting the form
+        // Submit Form
         $('#submitFormBtn').on('click', function () {
             let formData = $('#purchaseDetails').serializeArray();
             products = getProductsData();
 
             formData.push({ name: 'products', value: JSON.stringify(products) });
 
-            console.log('Data being sent to the server:', formData);
-            console.log('Received products:', products);
-            console.log('Number of received products:', products.length);
-
             $.ajax({
                 url: '/auth/salesretail',
                 method: 'POST',
                 data: formData,
                 success: function (response) {
-                    console.log(response);
                     location.reload();
                     alert('Successfully Submitted purchase');
                 },
@@ -767,50 +757,42 @@ $(document).ready(function () {
             });
         });
 
+        // Get Product Data
         function getProductsData() {
             var products = [];
 
             $('#customerTable tbody tr').each(function () {
-                try {
-                    var uniqueId = $(this).find('select[name="productname"]').attr('id');
-                    if (uniqueId) {
-                        uniqueId = uniqueId.split('_')[1];
+                var uniqueId = $(this).find('select[name="productname"]').attr('id');
+                if (uniqueId) {
+                    uniqueId = uniqueId.split('_')[1];
 
-                        var product = {
-                            purchaseId: $(this).find('.purchase-id').val(),
-                            productId: $('#productname_' + uniqueId).val() || "",
-                            batchNo: $('#batchNo_' + uniqueId).val() || "",
-                            tax: $('#tax_' + uniqueId).val() || "",
-                            quantity: $('#quantity_' + uniqueId).val() || "",
-                            uom: $('#uom_' + uniqueId).val() || "",
-                            purcRate: $('#purcRate_' + uniqueId).val() || "",
-                             mrp: $('#mrp_' + uniqueId).val() || "",
-                            rate: $('#rate_' + uniqueId).val() || "",
-                            discMode: $('#discMode_' + uniqueId).val() || "",
-                            discount: $('#discount_' + uniqueId).val() || "",
-                            amount: $('#amount_' + uniqueId).val() || "",
-                            cgst: $('#cgst_' + uniqueId).val() || "",
-                            sgst: $('#sgst_' + uniqueId).val() || "",
-                            igst: $('#igst_' + uniqueId).val() || "",
-                            totalAmount: $('#totalAmount_' + uniqueId).val() || ""
-                        };
-                        console.log('Product Details:', product);
-                        products.push(product);
-                    } else {
-                        console.error('UniqueId attribute not found for this row:', this);
-                    }
-                } catch (error) {
-                    console.error('Error processing row:', this);
-                    console.error('Error details:', error);
+                    var product = {
+                        purchaseId: $(this).find('.purchase-id').val(),
+                        productId: $('#productname_' + uniqueId).val() || "",
+                        batchNo: $('#batchNo_' + uniqueId).val() || "",
+                        tax: parseFloat($('#tax_' + uniqueId).val()) || 0,
+                        quantity: parseFloat($('#quantity_' + uniqueId).val()) || 0,
+                        uom: $('#uom_' + uniqueId).val() || "",
+                        purcRate: parseFloat($('#purcRate_' + uniqueId).val()) || 0,
+                        mrp: parseFloat($('#mrp_' + uniqueId).val()) || 0,
+                        rate: parseFloat($('#rate_' + uniqueId).val()) || 0,
+                        discMode: $('#discMode_' + uniqueId).val() || "",
+                        discount: parseFloat($('#discount_' + uniqueId).val()) || 0,
+                        amount: parseFloat($('#amount_' + uniqueId).val()) || 0,
+                        cgst: parseFloat($('#cgst_' + uniqueId).val()) || 0,
+                        sgst: parseFloat($('#sgst_' + uniqueId).val()) || 0,
+                        igst: parseFloat($('#igst_' + uniqueId).val()) || 0,
+                        totalAmount: parseFloat($('#totalAmount_' + uniqueId).val()) || 0
+                    };
+                    products.push(product);
                 }
             });
 
             return products;
         }
 
+        // Fetch Batch Details
         function fetchBatchDetails(selectedProductId, uniqueId) {
-            console.log('Selected Product ID:', selectedProductId);
-
             var requestData = {
                 selectedProductId: selectedProductId
             };
@@ -821,7 +803,6 @@ $(document).ready(function () {
                 contentType: 'application/json',
                 data: JSON.stringify(requestData),
                 success: function (response) {
-                    console.log('Received response for batch details:', response);
                     if (response.success) {
                         $('#batchDetailsBody').empty();
                         response.data.forEach(function (batch) {
@@ -842,9 +823,6 @@ $(document).ready(function () {
                     }
                 },
                 error: function (xhr, status, error) {
-                    console.error('Error fetching batch details:', error);
-                    console.error('XHR Status:', status);
-                    console.error('XHR Response:', xhr.responseText);
                     $('#batchDetailsBody').empty();
                     $('#batchDetailsBody').append(
                         `<tr>
@@ -857,12 +835,10 @@ $(document).ready(function () {
             });
         }
 
-        // Event listener for selecting a batch detail row
+        // Select Batch Detail Row
         $('#batchDetailsBody').on('click', 'tr', function () {
             var uniqueId = $(this).attr('data-uniqueId');
-            console.log('Retrieved uniqueId:', uniqueId);
 
-            var selectedProductId = $('#productname_' + uniqueId).val();
             var selectedBatchNo = $(this).attr('data-batchNo');
             var selectedTax = $(this).attr('data-tax');
             var selectedQuantity = $(this).attr('data-quantity');
@@ -875,100 +851,79 @@ $(document).ready(function () {
             $('#uom_' + uniqueId).val(selectedUom);
             $('#purcRate_' + uniqueId).val(selectedRate);
 
-            calculateRowTotal(uniqueId);
+            $('#overlay').hide();
+            $('#batchform').hide();
+            calculateTotals();
+        });
+
+        // Close Batch Form
+        $('#closeBatchForm').on('click', function () {
             $('#overlay').hide();
             $('#batchform').hide();
         });
 
+        // Fetch Discount Mode Options
         function fetchDiscmodeOptions(uniqueId) {
             $.ajax({
-                url: '/auth/sales/discmode',
+                url: '/auth/purchase/discmode',
                 method: 'GET',
                 success: function (response) {
-                    console.log('Received response for disc mode:', response);
-                    var options = response.data;
-
-                    if (options && options.length) {
-                        options.forEach(function (option) {
-                            console.log('Option:', option);
+                    var discmodeOptions = response.data;
+                    if (discmodeOptions && discmodeOptions.length) {
+                        discmodeOptions.forEach(function (option) {
                             $('#discMode_' + uniqueId).append($('<option>', {
                                 value: option.id,
-                                text: option.mode
+                                text: option.discMode
                             }));
                         });
                     } else {
-                        console.error('No options found for disc mode');
+                        console.error('No options found for discount mode');
                     }
                 },
                 error: function (xhr, status, error) {
-                    console.error('Error fetching options for disc mode:', error);
+                    console.error('Error fetching options for discount mode:', error);
                 }
             });
         }
 
-        function calculateRowTotal(uniqueId) {
-            var quantity = parseFloat($('#quantity_' + uniqueId).val()) || 0;
-            var rate = parseFloat($('#rate_' + uniqueId).val()) || 0;
-            var tax = parseFloat($('#tax_' + uniqueId).val()) || 0;
-            var discMode = $('#discMode_' + uniqueId).val();
-            var discount = parseFloat($('#discount_' + uniqueId).val()) || 0;
-
-            var discountAmount = 0;
-            if (discMode === 'Percentage') {
-                discountAmount = (rate * discount) / 100;
-            } else if (discMode === 'Value') {
-                discountAmount = discount;
-            }
-
-            var amount = quantity * rate;
-            var discountedAmount = amount - discountAmount;
-            var taxAmount = (discountedAmount * tax) / 100;
-            var totalAmount = discountedAmount + taxAmount;
-
-            $('#amount_' + uniqueId).val(discountedAmount.toFixed(2));
-            $('#cgst_' + uniqueId).val((taxAmount / 2).toFixed(2));
-            $('#sgst_' + uniqueId).val((taxAmount / 2).toFixed(2));
-            $('#igst_' + uniqueId).val(0);
-            $('#totalAmount_' + uniqueId).val(totalAmount.toFixed(2));
-
-            calculateTotals();
-        }
-
+        // Calculate Totals
         function calculateTotals() {
-            var totalQuantity = 0;
             var totalAmount = 0;
-            var totalCGST = 0;
-            var totalSGST = 0;
-            var totalIGST = 0;
-            var grandTotal = 0;
+            var totalQuantity = 0;
 
             $('#customerTable tbody tr').each(function () {
-                totalQuantity += parseFloat($(this).find('input[name="quantity"]').val()) || 0;
-                totalAmount += parseFloat($(this).find('input[name="amount"]').val()) || 0;
-                totalCGST += parseFloat($(this).find('input[name="cgst"]').val()) || 0;
-                totalSGST += parseFloat($(this).find('input[name="sgst"]').val()) || 0;
-                totalIGST += parseFloat($(this).find('input[name="igst"]').val()) || 0;
-                grandTotal += parseFloat($(this).find('input[name="totalAmount"]').val()) || 0;
+                var quantity = parseFloat($(this).find('input[name="quantity"]').val()) || 0;
+                var rate = parseFloat($(this).find('input[name="rate"]').val()) || 0;
+                var discount = parseFloat($(this).find('input[name="discount"]').val()) || 0;
+                var amount = quantity * rate - discount;
+
+                $(this).find('input[name="amount"]').val(amount.toFixed(2));
+
+                var tax = parseFloat($(this).find('input[name="tax"]').val()) || 0;
+                var cgst = amount * (tax / 2) / 100;
+                var sgst = amount * (tax / 2) / 100;
+                var igst = amount * tax / 100;
+                var totalAmountRow = amount + cgst + sgst + igst;
+
+                $(this).find('input[name="cgst"]').val(cgst.toFixed(2));
+                $(this).find('input[name="sgst"]').val(sgst.toFixed(2));
+                $(this).find('input[name="igst"]').val(igst.toFixed(2));
+                $(this).find('input[name="totalAmount"]').val(totalAmountRow.toFixed(2));
+
+                totalAmount += totalAmountRow;
+                totalQuantity += quantity;
             });
 
-            $('#totalQuantity').text(totalQuantity.toFixed(2));
             $('#totalAmount').text(totalAmount.toFixed(2));
-            $('#totalCGST').text(totalCGST.toFixed(2));
-            $('#totalSGST').text(totalSGST.toFixed(2));
-            $('#totalIGST').text(totalIGST.toFixed(2));
-            $('#grandTotal').text(grandTotal.toFixed(2));
+            $('#totalQuantity').text(totalQuantity.toFixed(2));
         }
 
+        // Generate Unique ID
         function generateUniqueId() {
-            return 'ID_' + Math.random().toString(36).substr(2, 9);
+            return Math.floor(Math.random() * 1000000);
         }
-
-        // Hide overlay when clicking outside the form
-        $('#overlay').on('click', function () {
-            $(this).hide();
-            $('#batchform').hide();
-        });
     });
+
 
 function fetchDiscmodeOptions(uniqueId) {
     $.ajax({
@@ -1127,7 +1082,7 @@ $('#pdiscMode, #pdiscount').change(function() {
     });
     $('#purchaseId').on('change', function () {
         var selectedPurchaseId = $(this).val();
-       table.ajax.url('/auth/salesretail/saleproductid?purchaseId=' + selectedPurchaseId).load();
+       table.ajax.url('/auth/salesretail/productid?purchaseId=' + selectedPurchaseId).load();
     });
 if (table.data().count() === 0) {
     console.log("No data available in table");
@@ -1278,6 +1233,8 @@ $(document).ready(function() {
        window.location.href = '/salesretail'
     });
 });
+
+
 
 </script>
 

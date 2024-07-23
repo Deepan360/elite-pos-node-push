@@ -109,7 +109,6 @@
                                 <th>Vch No</th>
                                 <th>Vch Date</th>
                                 <th>Customer</th>
-                                <th>Code</th>
                                 <th>Mobile no</th>
                                 <th>Total Amount</th>
                                 <th class="action">Action</th>
@@ -230,36 +229,55 @@
     "bInfo": true, // Show information (records, etc.)
     "bBorders": true, // Show borders
     ajax: {
-        url: '/auth/salesregister',
+        url: '/auth/salesretailregister',
         type: 'GET', // or 'POST' depending on your server-side implementation
         dataType: 'json',
         dataSrc: 'data' // Change 'data' to match your server's response structure
     },
-    columns: [
-          { data: 'id' },
-        { data: 'saledate', render: function (data) {
-                            const formattedDate = moment(data).format("DD-MM-YYYY");
-                            return formattedDate;
-                        }  },
-       {    data: 'ledgername'
-        },
-        { data: 'referno' },
-         {    data: 'customermobileno'},
-        { data: 'subtotal' },
-        {
-    data: 'id',
-    render: function (data) {
-        return '<i class="fa-solid fa-file-pen fa-2x" type="button" data-id="' + data + '"></i>';
-    }
-},
-        { 
-            data: 'id',
-            render: function (data, type, row) {
-                // You can customize the print column content here
-                return '<i class="fa-solid fa-print fa-2x" type="button" data-id="' + data + '"></i>';
-            }
-        }
-    ],
+       columns: [
+           {
+               data: 'id'
+           },
+           {
+               data: 'saledate',
+               render: function (data) {
+                   if (!data) return 'null';
+                   const formattedDate = moment(data).format("DD-MM-YYYY");
+                   return formattedDate;
+               }
+           },
+           {
+               data: 'customer',
+               render: function (data) {
+                   return data ? data : 'null';
+               }
+           },
+           {
+               data: 'customermobileno',
+               render: function (data) {
+                   return data ? data : 'null';
+               }
+           },
+           {
+               data: 'subtotal',
+               render: function (data) {
+                   return data ? data : 'null';
+               }
+           },
+           {
+               data: 'id',
+               render: function (data) {
+                   return '<i class="fa-solid fa-file-pen fa-2x" type="button" data-id="' + data + '"></i>';
+               }
+           },
+           {
+               data: 'id',
+               render: function (data) {
+                   return '<i class="fa-solid fa-print fa-2x" type="button" data-id="' + data + '"></i>';
+               }
+           }
+       ]
+,
       "createdRow": function (row, data, dataIndex) {
         // Set data-id attribute on each row
         $(row).attr('data-id', data.id);

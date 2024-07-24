@@ -65,6 +65,7 @@ app.use("/", require("./routes/pages"));
 app.use("/auth", require("./routes/auth"));
 
 
+
  app.get('/api/user/role', (req, res) => {
     res.json({ role: 'userRoleFromDatabase' });
 });

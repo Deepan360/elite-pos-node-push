@@ -45,8 +45,6 @@ const poolConnect = async () => {
 
 //salesretail retail
 
-
-
 exports.salesretailDetails=async(req,res)=>{
   pool.connect((err, connection) => {
     if (err) {

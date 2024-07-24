@@ -69,7 +69,7 @@ exports.salesretailDetails=async(req,res)=>{
       res.json({ data: result.recordset });
     });
   });
-}
+};
 
 exports.salesretailadd = async (req, res) => {
   console.log(req.body);

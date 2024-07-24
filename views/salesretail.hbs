@@ -481,7 +481,7 @@ $(document).ready(function() {
 
         $.ajax({
             type: 'PUT',
-            url: '/auth/salesEdit/' + purchaseId,
+            url: '/auth/salesretailEdit/' + purchaseId,
             contentType: 'application/json',
             data: JSON.stringify(payload),
             success: function(response) {
@@ -603,7 +603,7 @@ function populateDropdown(selector, options, selectedOption) {
 $(document).ready(function() {
     $(document).on('click', '.deletemasBtn', function() {
         var id = getSelectedPurchaseId();
-        var deleteUrl = '/auth/salesdelete/' + id; 
+        var deleteUrl = '/auth/salesretaildelete/' + id; 
         $.ajax({
             type: 'DELETE',
             url: deleteUrl,
@@ -1082,7 +1082,7 @@ $('#pdiscMode, #pdiscount').change(function() {
     });
     $('#purchaseId').on('change', function () {
         var selectedPurchaseId = $(this).val();
-       table.ajax.url('/auth/salesretail/productid?purchaseId=' + selectedPurchaseId).load();
+          table.ajax.url('/auth/salesretail/salesretailproductid?purchaseId=' + selectedPurchaseId).load();
     });
 if (table.data().count() === 0) {
     console.log("No data available in table");
@@ -1208,6 +1208,169 @@ if (table.data().count() === 0) {
         fetchCompanyState();
         fetchSupplierNames();
     });
+    $('.dropdown[name="customername"]').on('change', function () {
+        var selectedSupplier = $(this).val();
+        console.log('Selected Supplier:', selectedSupplier);
+        initiateFetchCompanyState(selectedSupplier);
+    });
+
+   
+    function initiateFetchCompanyState(customerState) {
+        fetchCompanyStateAndCalculateTax(customerState);
+    }
+
+    function fetchCompanyStateAndCalculateTax(customerState) {
+        $.ajax({
+            url: '/auth/purchase/companystate',
+            method: 'GET',
+            success: function (response) {
+                console.log('Received response for Company State:', response);
+                companyState = response.data[0].state;
+                console.log('Company State:', companyState);
+                calculateTaxForAllRows(customerState, companyState);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching Company State:', error);
+            }
+        });
+    }
+
+    function calculateTaxForAllRows(customerState, companyState) {
+        $('#customerTable tbody tr').each(function () {
+            var row = $(this);
+            calculateTax(row, customerState, companyState);
+        });
+    }
+
+
+
+    var rowDetails;
+    $.ajax({
+        url: '/auth/salesretail/salesretailids',
+        method: 'GET',
+        data: { view: 'salesids' },
+        success: function (response) {
+            console.log('Received response for Purchase IDs:', response);
+
+            var options = response.data;
+            console.log('Options:', options);
+
+            if (options && options.length) {
+                options.forEach(function (row) {
+                    if (row.id !== undefined && row.id !== null && !isNaN(row.id)) {
+                        var saledate = formatDate(row.saledate);
+
+                        var optionHtml =
+                            '<option value=\'' +
+                            JSON.stringify(row) +
+                            '\'>' +
+                            '<strong>ID: </strong>' + row.id +
+                            ',<strong>Customer Name:</strong> ' + row.customername +
+                            ',<strong>Customer Mobile No: </strong>' + row.customermobileno +
+                            ',<strong> Sale Date: </strong>' + saledate +
+                            '</option>';
+
+                        $('.dropdown[name="Id"]').append(optionHtml);
+                    } else {
+                        console.warn('Skipping option with invalid ID:', row);
+                    }
+                });
+            } else {
+                console.error('No options found for sales IDs');
+            }
+
+            var urlParams = new URLSearchParams(window.location.search);
+            var purchaseIdParam = urlParams.get('id');
+            console.log('Purchase ID from URL:', purchaseIdParam);
+
+            if (purchaseIdParam) {
+                var purchaseIdInt = parseInt(purchaseIdParam);
+
+                $('.dropdown[name="Id"] option').each(function () {
+                    var optionValue = $(this).val();
+                    if (optionValue !== 'view details') {
+                        var optionRow = JSON.parse(optionValue);
+                        if (optionRow.id === purchaseIdInt) {
+                            $(this).prop('selected', true);
+                        }
+                    }
+                });
+
+                $('.dropdown[name="Id"]').change();
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Error fetching options for sales IDs:', error);
+        }
+    });
+
+
+    $('.dropdown[name="Id"]').change(function () {
+        var selectedOption = $(this).find('option:selected');
+
+        if (!selectedOption || !selectedOption.val()) {
+            return;
+        }
+
+        try {
+            var rowDetails = JSON.parse(selectedOption.val());
+            $('#id').val(rowDetails.id);
+            $('#customermobileno').val(rowDetails.customermobileno);
+            $('#paymentmode').val(rowDetails.paymentmode);
+            $('#saledate').val(formatDate(rowDetails.saledate));
+            $('#referno').val(rowDetails.referno);
+            $('#transportno').val(rowDetails.transportno);
+            $('#supplierSelect').val(rowDetails.customer);
+
+            $('.dropdown[name="customername"]').val(rowDetails.customer);
+
+            var selectedSupplierState = $('#supplierSelect').find(':selected').data('state');
+            initiateFetchCompanyState(selectedSupplierState);
+
+            $('#pnetAmount').text(!isNaN(rowDetails.netAmount) ? parseFloat(rowDetails.netAmount).toFixed(2) : 'Invalid Net Amount');
+            $('#pamount').text(!isNaN(rowDetails.amount) ? parseFloat(rowDetails.amount).toFixed(2) : 'Invalid Amount');
+            $('#pigst').text(!isNaN(rowDetails.igst) ? parseFloat(rowDetails.igst).toFixed(2) : 'Invalid IGST');
+            $('#pcgst').text(!isNaN(rowDetails.cgst) ? parseFloat(rowDetails.cgst).toFixed(2) : 'Invalid CGST');
+            $('#psgst').text(!isNaN(rowDetails.sgst) ? parseFloat(rowDetails.sgst).toFixed(2) : 'Invalid SGST');
+            $('#psubtotal').text(!isNaN(rowDetails.subtotal) ? parseFloat(rowDetails.subtotal).toFixed(2) : 'Invalid Sub Total');
+            $('#ptcs').text(!isNaN(rowDetails.tcs) ? parseFloat(rowDetails.tcs).toFixed(2) : 'Invalid TCS');
+            $('#proundOff').text(!isNaN(rowDetails.roundoff) ? parseFloat(rowDetails.roundoff).toFixed(2) : 'Invalid roundOff');
+
+            // Set the selected value in the dropdown
+            $('#pdiscMode').val(rowDetails.discMode);
+
+            // Set the discount input box value
+            $('#pdiscount').val(rowDetails.discount);
+
+            selectedOption.prop('selected', true);
+
+            console.log('rowDetails.id:', rowDetails.id);
+            console.log('Dropdown Options:', $(this).val());
+
+            var purchaseId = parseInt(rowDetails.id);
+
+            if (isNaN(purchaseId)) {
+                console.error('Invalid purchaseId:', purchaseId);
+                return;
+            }
+
+            $.ajax({
+                url: '/auth/salesretail/salesretailproductid',
+                method: 'GET',
+                data: { purchaseId: purchaseId },
+                success: function (response) {
+                    console.log('Received response for ProductId:', response);
+                    updateCustomerTable(response.data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching ProductId data:', error);
+                }
+            });
+        } catch (error) {
+            console.error('Error parsing JSON:', error);
+        }
+    });
+
 
     function updateCustomerTable(data) {
         var table = $('#customerTable').DataTable();

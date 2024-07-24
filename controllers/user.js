@@ -1,5 +1,6 @@
 const sql = require('mssql');
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcryptjs");
+
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');

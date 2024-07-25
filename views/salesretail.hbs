@@ -1075,22 +1075,22 @@ $('#pdiscMode, #pdiscount').change(function() {
         scrollY: '400px',
         scrollX: true,
         columns: [
-        { data: 'Id' },
-        { data: 'product' },
-        { data: 'batchNo' },
-        { data: 'tax' },
-        { data: 'quantity' },
-        { data: 'uom' },  
-        { data: 'purcRate' },
-         { data: 'mrp' },
-        { data: 'rate' },
+        { data: 'Id'},
+        { data: 'product'},
+        { data: 'batchNo'},
+        { data: 'tax'},
+        { data: 'quantity'},
+        { data: 'uom'},  
+        { data: 'purcRate'},
+        { data: 'mrp'},
+        { data: 'rate'},
         { data: 'discMode'},
-        { data: 'discount' },
-        { data: 'amount' },
-        { data: 'cgst' },
-        { data: 'sgst' },
-        { data: 'igst' },
-        { data: 'totalAmount' },
+        { data: 'discount'},
+        { data: 'amount'},
+        { data: 'cgst'},
+        { data: 'sgst'},
+        { data: 'igst'},
+        { data: 'totalAmount'},
        {
             data: 'Id',
             render: function (data) {
@@ -1102,11 +1102,11 @@ $('#pdiscMode, #pdiscount').change(function() {
         responsive: true,
         bInfo: true,
         bBorders: true,
-      fixedColumns: {
+        fixedColumns: {
             leftColumns: 1
         }
     });
-    
+
     $('#purchaseId').on('change', function () {
         var selectedPurchaseId = $(this).val();
           table.ajax.url('/auth/salesretail/salesretailproductid?purchaseId=' + selectedPurchaseId).load();

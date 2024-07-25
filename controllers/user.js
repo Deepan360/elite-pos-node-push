@@ -1377,8 +1377,6 @@ exports.companyTitle = async (req, res) => {
     }
   }
 };
-
-
 //company 
 
 //salesReturn 
@@ -1424,7 +1422,6 @@ exports.batchDetails = async (req, res) => {
       res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
-
 
 exports.salesReturnDetails=async(req,res)=>{
   pool.connect((err, connection) => {
@@ -3526,8 +3523,6 @@ exports.contra = async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
 /*contra*/
 
 
@@ -3639,7 +3634,6 @@ exports.creditnoteedit = async (req, res) => {
   }
 };
 
-
 exports.creditnote = async (req, res) => {
   try {
     // Ensure the database connection is established before proceeding
@@ -3655,8 +3649,6 @@ exports.creditnote = async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' }); 
   }
 };
-
-
 /*creditnotes*/
 
 /*journals*/
@@ -3726,10 +3718,6 @@ exports.journaladd = async (req, res) => {
   }
 };
 
-
-
-
-
 exports.journaldelete = async (req, res) => {
   const manufacturerId = req.params.id;
   try {
@@ -3748,7 +3736,6 @@ exports.journaldelete = async (req, res) => {
       return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
-
 
 exports.journaledit = async (req, res) => {
   const manufacturerId = req.params.id;
@@ -3790,9 +3777,6 @@ exports.journaledit = async (req, res) => {
   }
 };
 
-
-
-
 exports.journal = async (req, res) => {
   try {
     // Ensure the database connection is established before proceeding
@@ -3808,8 +3792,6 @@ exports.journal = async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
 /*journals*/
 
 /*ledgerob*/
@@ -3834,7 +3816,6 @@ exports.ledgerData = async (req, res) => {
   }
 };
 
-
 exports.ledgerob = async (req, res) => {
   try {
     // Ensure the database connection is established before proceeding
@@ -3850,8 +3831,6 @@ exports.ledgerob = async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
 /*ledgerob*/
 //product//
 exports.getcategory = (req, res) => {
@@ -3890,7 +3869,6 @@ exports.getuom = async (req, res) => {
   }
 };
 
-
 exports.gettype = async (req, res) => {
   try {
     // Ensure the database connection is established before proceeding
@@ -3907,7 +3885,6 @@ exports.gettype = async (req, res) => {
   }
 };
 
-
 exports.getproduct = async (req, res) => {
   try {
     // Ensure the database connection is established before proceeding
@@ -3923,12 +3900,9 @@ exports.getproduct = async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
 //product//
 
 /*payment*/
-
 exports.paymentCr = async (req, res) => {
   try {
     // Ensure the database connection is established before proceeding
@@ -3997,7 +3971,6 @@ exports.paymentadd = async (req, res) => {
   }
 };
 
-
 exports.paymentdelete = async (req, res) => {
   const manufacturerId = req.params.id;
   try {
@@ -4016,7 +3989,6 @@ exports.paymentdelete = async (req, res) => {
     return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
-
 
 exports.paymentedit = async (req, res) => {
   const manufacturerId = req.params.id;
@@ -4058,7 +4030,6 @@ exports.paymentedit = async (req, res) => {
   }
 };
 
-
 exports.payment = (req, res) => {
   // Connect to the database pool
   pool.connect((err, connection) => {
@@ -4082,13 +4053,9 @@ exports.payment = (req, res) => {
   });
 };
 
-
 /*payment*/
 
-
-
 /*----recipt---*/
-
 exports.receiptadd = async (req, res) => {
   console.log(req.body);
   const {
@@ -4124,7 +4091,6 @@ exports.receiptadd = async (req, res) => {
   }
 };
 
-
 exports.receiptdelete = async (req, res) => {
   const manufacturerId = req.params.id;
   try {
@@ -4148,7 +4114,6 @@ exports.receiptdelete = async (req, res) => {
     return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
-
 
 exports.receiptedit = async (req, res) => {
   const manufacturerId = req.params.id;
@@ -4185,7 +4150,6 @@ exports.receiptedit = async (req, res) => {
   }
 };
 
-
 exports.receipt = (req, res) => {
   pool.connect((err, connection) => {
     if (err) {
@@ -4209,7 +4173,6 @@ exports.receipt = (req, res) => {
     });
   });
 };
-
 
 exports.receiptCr = (req, res) => {
   pool.connect((err, connection) => {

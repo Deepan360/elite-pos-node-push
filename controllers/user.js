@@ -4056,6 +4056,7 @@ exports.payment = (req, res) => {
 /*payment*/
 
 /*----recipt---*/
+
 exports.receiptadd = async (req, res) => {
   console.log(req.body);
   const {
@@ -4173,7 +4174,7 @@ exports.receipt = (req, res) => {
     });
   });
 };
-
+    
 exports.receiptCr = (req, res) => {
   pool.connect((err, connection) => {
     if (err) {
@@ -4198,7 +4199,6 @@ exports.receiptCr = (req, res) => {
   });
 };
 
-
 exports.receiptDr = (req, res) => {
   pool.connect((err, connection) => {
     if (err) {
@@ -4222,7 +4222,6 @@ exports.receiptDr = (req, res) => {
     });
   });
 };
-
 
 /*------receipt------*/
 /*----multipayment---*/

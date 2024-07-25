@@ -207,6 +207,7 @@
                         <th>Quantity</th>
                         <th>UOM</th>
                         <th>Purc.Rate</th>
+                        <th>MRP</th>
                         <th>Rate</th>
                         <th>Disc.Mode</th>
                         <th>Disc</th>
@@ -314,6 +315,7 @@
                     <th>Quantity</th>
                     <th>UOM</th>
                     <th>Rate</th>
+                    <th>MRP</th>
                 </tr>
             </thead>
             <tbody id="batchDetailsBody"></tbody>
@@ -394,14 +396,15 @@ $(document).on('click', '.editmasbtn', function() {
         var quantity = row.find('td:eq(4)').text();
         var uom = row.find('td:eq(5)').text();
         var purcRate = row.find('td:eq(6)').text();
-        var rate = row.find('td:eq(7)').text();
-        var discMode = row.find('td:eq(8)').text();
-        var discount = row.find('td:eq(9)').text();
-        var amount = row.find('td:eq(10)').text();
-        var cgst = row.find('td:eq(11)').text();
-        var sgst = row.find('td:eq(12)').text();
-        var igst = row.find('td:eq(13)').text();
-        var totalAmount = row.find('td:eq(14)').text();
+          var mrp = row.find('td:eq(7)').text();
+        var rate = row.find('td:eq(8)').text();
+        var discMode = row.find('td:eq(9)').text();
+        var discount = row.find('td:eq(10)').text();
+        var amount = row.find('td:eq(11)').text();
+        var cgst = row.find('td:eq(12)').text();
+        var sgst = row.find('td:eq(13)').text();
+        var igst = row.find('td:eq(14)').text();
+        var totalAmount = row.find('td:eq(15)').text();
         
     row.html("<td><input type='number' readonly name='Id' class='input-field  purchase-id' value='" + id + "'></td>" +
     "<td><select name='product' class='input-field product-name dropdown' id='productname_" + id + "'><option selected disabled>Select product</option></select></td>" +
@@ -410,6 +413,7 @@ $(document).on('click', '.editmasbtn', function() {
     "<td><input type='number' name='quantity' class='input-field' value='" + quantity + "'></td>" +
     "<td><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
      "<td><input type='number' name='purcRate' class='input-field' value='" + rate + "'></td>" +
+        "<td><input type='number' name='mrp' class='input-field' value='" + rate + "'></td>" +
     "<td><input type='number' name='rate' class='input-field' value='" + rate + "'></td>" +
     "<td><select name='discMode' class='input-field disc-mode dropdown' id='discMode_" + id + "'><option selected disabled>Select Disc Mode</option></select></td>" +
     "<td><input type='number' name='discount' class='input-field' value='" + discount + "'></td>" +
@@ -534,6 +538,7 @@ function getUpdatedProductsData() {
             var quantity = $(this).find('[name="quantity"]').val();
             var uom = $(this).find('[name="uom"]').val();
             var purcRate = $(this).find('[name="purcRate"]').val();
+            var mrp = $(this).find('[name="mrp"]').val();
             var rate = $(this).find('[name="rate"]').val();
             var discMode = $(this).find('[name="discMode"]').val();
             var discount = $(this).find('[name="discount"]').val();
@@ -551,6 +556,7 @@ function getUpdatedProductsData() {
                 quantity: quantity,
                 uom: uom,
                 purcRate: purcRate,
+                  mrp: mrp,
                 rate: rate,
                 discMode: discMode,
                 discount: discount,
@@ -692,6 +698,8 @@ let newRow = $("<tr data-uniqueId='" + uniqueId + "'>" +
     "<td><input type='number' name='quantity' class='input-field' id='quantity_" + uniqueId + "' placeholder='Quantity'></td>" +
     "<td><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
     "<td><input type='number' name='purcRate' class='input-field' id='purcRate_" + uniqueId + "' placeholder='purcRate'></td>" +
+       "<td><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='mrp'></td>" +
+
     "<td><input type='number' name='rate' class='input-field' id='rate_" + uniqueId + "' placeholder='Rate'></td>" +
     "<td><select name='discMode' class='input-field product-name dropdown  ' id='discMode_" + uniqueId + "' placeholder='Disc.Mode'><option selected disabled>Select Disc Mode</option></select></td>" +
     "<td><input type='number' name='discount' class='input-field' id='discount_" + uniqueId + "' placeholder='Discount'></td>" +
@@ -808,6 +816,7 @@ $(document).ready(function() {
                     quantity: $('#quantity_' + uniqueId).val() || "",
                     uom: $('#uom_' + uniqueId).val() || "",
                     purcRate: $('#purcRate_' + uniqueId).val() || "",
+                      mrp: $('#mrp_' + uniqueId).val() || "",
                     rate: $('#rate_' + uniqueId).val() || "",
                     discMode: $('#discMode_' + uniqueId).val() || "",
                     discount: $('#discount_' + uniqueId).val() || "",
@@ -850,12 +859,13 @@ function fetchBatchDetails(selectedProductId, uniqueId) {
                 $('#batchDetailsBody').empty();
                 response.data.forEach(function (batch) {
                    $('#batchDetailsBody').append(
-    `<tr data-uniqueId="${uniqueId}" data-batchNo="${batch.batchNo}" data-tax="${batch.tax}" data-quantity="${batch.quantity}" data-uom="${batch.uom}" data-rate="${batch.rate}">
+    `<tr data-uniqueId="${uniqueId}" data-batchNo="${batch.batchNo}" data-tax="${batch.tax}" data-quantity="${batch.quantity}" data-uom="${batch.uom}" data-rate="${batch.rate}" data-mrp="${batch.mrp}">
         <td>${batch.batchNo}</td>
         <td>${batch.tax}</td>
         <td>${batch.op_quantity}</td>
         <td>${batch.uom}</td>
         <td>${batch.rate}</td>
+          <td>${batch.mrp}</td>
     </tr>`
 );
 
@@ -898,6 +908,7 @@ $('#batchDetailsBody').on('click', 'tr', function() {
     var quantity = $(this).find('td:eq(2)').text();
     var uom = $(this).find('td:eq(3)').text();
     var rate = $(this).find('td:eq(4)').text();
+     var mrp = $(this).find('td:eq(5)').text();
 
     // Update input fields in the customerTable with uniqueId
     $('#batchNo_' + uniqueId).val(batchNo);
@@ -905,6 +916,7 @@ $('#batchDetailsBody').on('click', 'tr', function() {
     $('#quantity_' + uniqueId).val(quantity);
     $('#uom_' + uniqueId).val(uom);
     $('#purcRate_' + uniqueId).val(rate);
+     $('#mrp_' + uniqueId).val(mrp);
 
     // Hide overlay and batch form
     $('#overlay').hide();
@@ -1042,7 +1054,7 @@ $('#pdiscMode, #pdiscount').change(function() {
     var table = $("#customerTable").DataTable({
         searching: false,
         paging: false,
-        scrollY: '200px',
+        scrollY: '400px',
         scrollX: true,
         columns: [
         { data: 'Id' },
@@ -1052,6 +1064,7 @@ $('#pdiscMode, #pdiscount').change(function() {
         { data: 'quantity' },
         { data: 'uom' },  
         { data: 'purcRate' },
+         { data: 'mrp' },
         { data: 'rate' },
         { data: 'discMode'},
         { data: 'discount' },

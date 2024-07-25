@@ -90,7 +90,7 @@
         {{>navbar}}
         <div class="table-responsive container-fluid py-4">
             <div class="form-control card">
-                <h3>Sales Retail Register</h3>
+                <h3>Retailer Sales Register</h3>
                 <div><a href="/salesretail"><i class="fa-solid fa-file-circle-plus fa-2x"></i></a></div>
                 <div class="align-right-top">
                     <div id="filterDateDiv" class="mb-3">
@@ -212,99 +212,120 @@
     }
 });
   </script>
-    <script>
+  <script>
+    $(document).ready(function () {
+        // Hide all .div elements initially
+        $('.div').hide();
+        // Show the .add element initially
+        $('.add').show();
 
-        $(document).on('click', '#addmanufacturer', function() {
+        // Add change event listener to the dropdown with name="Id"
+        $('.dropdown[name="Id"]').change(function () {
+            var selectedOption = $(this).find('option:selected');
+            // If a valid option is selected (not 'view details')
+            if (selectedOption.val() && selectedOption.val() !== 'view details') {
+                $('.div').show();
+                $('.opener').hide();
+                $('.add').hide();
+            } else {
+                $('.div').hide();
+                $('.add').show();
+            }
+        });
+    });
+
+    // Add event listener for the "addmanufacturer" button
+    $(document).on('click', '#addmanufacturer', function () {
         $("#manufacturerform").show();
         $("#id").val('');
     });
-   var table = $("#customerTable").DataTable({
-    dom: 'Bfrtip',
-    buttons: ['copy', 'excel', 'pdf', 'csv'],
-    paging: false,
-    scrollY: '550px',
-    scrollX: '100px',
-    scrollCollapse: true,
-    responsive: true,
-    "bInfo": true, // Show information (records, etc.)
-    "bBorders": true, // Show borders
-    ajax: {
-        url: '/auth/salesretailregister',
-        type: 'GET', // or 'POST' depending on your server-side implementation
-        dataType: 'json',
-        dataSrc: 'data' // Change 'data' to match your server's response structure
-    },
-       columns: [
-           {
-               data: 'id'
-           },
-           {
-               data: 'saledate',
-               render: function (data) {
-                   if (!data) return 'null';
-                   const formattedDate = moment(data).format("DD-MM-YYYY");
-                   return formattedDate;
-               }
-           },
-           {
-               data: 'customer',
-               render: function (data) {
-                   return data ? data : 'null';
-               }
-           },
-           {
-               data: 'customermobileno',
-               render: function (data) {
-                   return data ? data : 'null';
-               }
-           },
-           {
-               data: 'subtotal',
-               render: function (data) {
-                   return data ? data : 'null';
-               }
-           },
-           {
-               data: 'id',
-               render: function (data) {
-                   return '<i class="fa-solid fa-file-pen fa-2x" type="button" data-id="' + data + '"></i>';
-               }
-           },
-           {
-               data: 'id',
-               render: function (data) {
-                   return '<i class="fa-solid fa-print fa-2x" type="button" data-id="' + data + '"></i>';
-               }
-           }
-       ]
-,
-      "createdRow": function (row, data, dataIndex) {
-        // Set data-id attribute on each row
-        $(row).attr('data-id', data.id);
-    }
-});
 
-$('#customerTable').on('click', 'i.fa-file-pen', function() {
-    var salesId = $(this).data('id');
-    console.log('sales ID:', salesId); // Debugging
-    window.location.href = '/sales?id=' + salesId;
-});
-
-$(document).on('click', '#customerTable i.fa-print', function() {
-    var salesId = $(this).closest('tr').data('id');
-    console.log('Sales ID:', salesId); // Debugging
-    if (salesId !== undefined) {
-        window.location.href = '/salesprintpage?id=' + salesId;
-    } else {
-        console.error('Sales ID is undefined.');
-        // Handle the case where salesId is undefined
-    }
-});
-
-        if (table.rows().count() === 0) {
-            $("#emptyMessage").show();
+    // Initialize DataTable with specified options
+    var table = $("#customerTable").DataTable({
+        dom: 'Bfrtip',
+        buttons: ['copy', 'excel', 'pdf', 'csv'],
+        paging: false,
+        scrollY: '550px',
+        scrollX: '100px',
+        scrollCollapse: true,
+        responsive: true,
+        "bInfo": true,
+        "bBorders": true,
+        ajax: {
+            url: '/auth/salesretailregister',
+            type: 'GET',
+            dataType: 'json',
+            dataSrc: 'data'
+        },
+        columns: [
+            { data: 'id' },
+            {
+                data: 'saledate',
+                render: function (data) {
+                    return data ? moment(data).format("DD-MM-YYYY") : 'null';
+                }
+            },
+            {
+                data: 'customername',
+                render: function (data) {
+                    return data ? data : 'null';
+                }
+            },
+            {
+                data: 'customermobileno',
+                render: function (data) {
+                    return data ? data : 'null';
+                }
+            },
+            {
+                data: 'subtotal',
+                render: function (data) {
+                    return data ? data : 'null';
+                }
+            },
+            {
+                data: 'id',
+                render: function (data) {
+                    return '<i class="fa-solid fa-file-pen fa-2x" type="button" data-id="' + data + '"></i>';
+                }
+            },
+            {
+                data: 'id',
+                render: function (data) {
+                    return '<i class="fa-solid fa-print fa-2x" type="button" data-id="' + data + '"></i>';
+                }
+            }
+        ],
+        "createdRow": function (row, data, dataIndex) {
+            $(row).attr('data-id', data.id);
         }
-    </script>
+    });
+
+    // Handle click event for the edit icon
+    $('#customerTable').on('click', 'i.fa-file-pen', function () {
+        var salesId = $(this).data('id');
+        console.log('sales ID:', salesId); // Debugging
+        window.location.href = '/salesretail?id=' + salesId;
+    });
+
+    // Handle click event for the print icon
+    $(document).on('click', '#customerTable i.fa-print', function () {
+        var salesId = $(this).closest('tr').data('id');
+        console.log('Sales ID:', salesId); // Debugging
+        if (salesId !== undefined) {
+            window.location.href = '/salesretailprint?id=' + salesId;
+        } else {
+            console.error('Sales ID is undefined.');
+            // Handle the case where salesId is undefined
+        }
+    });
+
+    // Show a message if there are no rows in the table
+    if (table.rows().count() === 0) {
+        $("#emptyMessage").show();
+    }
+</script>
+
 
 </body>
 </html>

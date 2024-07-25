@@ -600,6 +600,9 @@ router.get('/purchaseprintpage',(req,res)=>{
 router.get('/salesprintpage',(req,res)=>{
   res.render('salesprintpage');
 });
+router.get("/salesretailprint", (req, res) => {
+  res.render("salesretailprint");
+});
 router.get('/menuaccesscontrol',(req,res)=>{
   res.render('menuaccesscontrol');
 });

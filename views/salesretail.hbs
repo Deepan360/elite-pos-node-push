@@ -137,7 +137,7 @@
              
 <form id="purchaseDetails" class="form-control" style="display: block; align-item: start;" method="post">
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-2">
     <div class="custom-input-container">
     <select name="Id" class="dropdown" id="Id" >
         <option selected>view details</option>
@@ -146,18 +146,30 @@
     <input type="hidden" name="id" id="id">
 </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-2">
             <div class="custom-input-container">
                 <input type="date" placeholder=" " name="saledate" id="saledate">
                 <label for="saledate">Sale Date</label>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-2">
                 <div class="custom-input-container">
                     <input type="text" placeholder=" " name="paymentmode" id="paymentmode">
                     <label for="paymentmode">Payment Mode</label>
                 </div>
         </div>
+            <div class="col-md-2">
+                <div class="custom-input-container">
+                    <input type="text" placeholder=" " name="customername" id="customername">
+                    <label for="customername">Customer Name</label>
+                </div>
+            </div>
+<div class="col-md-2">
+    <div class="custom-input-container">
+        <input type="text" placeholder=" " name="customermobileno" id="customermobileno">
+        <label for="customermobileno">Customer Mobile No</label>
+    </div>
+</div>
         </div>
 
     <div style="display: none;">
@@ -297,6 +309,7 @@
                     <th>Quantity</th>
                     <th>UOM</th>
                     <th>Rate</th>
+                    <th>MRP</th>
                 </tr>
             </thead>
             <tbody id="batchDetailsBody"></tbody>
@@ -456,6 +469,8 @@ $(document).ready(function() {
             id: $('#id').val(),
             saledate: $('#saledate').val(),
             paymentmode: $('#paymentmode').val(),
+            customername: $('#customername').val(),
+            customermobileno: $('#customermobileno').val(),
             pamount: parseFloat($('#pamount_').val()),
             pigst: parseFloat($('#pigst_').val()),
             pcgst: parseFloat($('#pcgst_').val()),
@@ -513,7 +528,7 @@ function getUpdatedProductsData() {
             var quantity = $(this).find('[name="quantity"]').val();
             var uom = $(this).find('[name="uom"]').val();
             var purcRate = $(this).find('[name="purcRate"]').val();
-               var mrp = $(this).find('[name="mrp"]').val();
+            var mrp = $(this).find('[name="mrp"]').val();
             var rate = $(this).find('[name="rate"]').val();
             var discMode = $(this).find('[name="discMode"]').val();
             var discount = $(this).find('[name="discount"]').val();
@@ -592,7 +607,7 @@ function populateDropdown(selector, options, selectedOption) {
             var discMode = option.discMode ? option.discMode.trim() : '';
             var optionText = (productName && discMode) ? productName + ' (' + discMode + ')' : productName || discMode || '';
             var optionValue = option.id;
-            var isSelected = optionText === selectedOption; // Check if the option matches the selected option
+            var isSelected = optionText === selectedOption; 
             dropdown.append($('<option>').text(optionText).attr('value', optionValue).prop('selected', isSelected));
         } else {
             dropdown.append($('<option>').text(option).attr('value', option));
@@ -807,12 +822,13 @@ $(document).ready(function () {
                         $('#batchDetailsBody').empty();
                         response.data.forEach(function (batch) {
                             $('#batchDetailsBody').append(
-                                `<tr data-uniqueId="${uniqueId}" data-batchNo="${batch.batchNo}" data-tax="${batch.tax}" data-quantity="${batch.quantity}" data-uom="${batch.uom}" data-rate="${batch.rate}">
+                                `<tr data-uniqueId="${uniqueId}" data-batchNo="${batch.batchNo}" data-tax="${batch.tax}" data-quantity="${batch.quantity}" data-uom="${batch.uom}" data-rate="${batch.rate}" data-mrp="${batch.mrp}">
                                 <td>${batch.batchNo}</td>
                                 <td>${batch.tax}</td>
                                 <td>${batch.op_quantity}</td>
                                 <td>${batch.uom}</td>
                                 <td>${batch.rate}</td>
+                                 <td>${batch.mrp}</td>
                             </tr>`
                             );
                         });
@@ -835,26 +851,36 @@ $(document).ready(function () {
             });
         }
 
-        // Select Batch Detail Row
-        $('#batchDetailsBody').on('click', 'tr', function () {
-            var uniqueId = $(this).attr('data-uniqueId');
 
-            var selectedBatchNo = $(this).attr('data-batchNo');
-            var selectedTax = $(this).attr('data-tax');
-            var selectedQuantity = $(this).attr('data-quantity');
-            var selectedUom = $(this).attr('data-uom');
-            var selectedRate = $(this).attr('data-rate');
 
-            $('#batchNo_' + uniqueId).val(selectedBatchNo);
-            $('#tax_' + uniqueId).val(selectedTax);
-            $('#quantity_' + uniqueId).val(selectedQuantity);
-            $('#uom_' + uniqueId).val(selectedUom);
-            $('#purcRate_' + uniqueId).val(selectedRate);
+    $('#batchDetailsBody').on('click', 'tr', function () {
+        // Retrieve uniqueId from the clicked row
+        var uniqueId = $(this).attr('data-uniqueId');
+        console.log('Retrieved uniqueId:', uniqueId);
 
-            $('#overlay').hide();
-            $('#batchform').hide();
-            calculateTotals();
-        });
+        // Retrieve selectedProductId from the dropdown associated with this row
+        var selectedProductId = $('#productname_' + uniqueId).val();
+        console.log('Retrieved selectedProductId:', selectedProductId);
+
+        // Retrieve values from the clicked row
+        var batchNo = $(this).find('td:eq(0)').text();
+        var tax = $(this).find('td:eq(1)').text();
+        var quantity = $(this).find('td:eq(2)').text();
+        var uom = $(this).find('td:eq(3)').text();
+        var rate = $(this).find('td:eq(4)').text();
+
+        // Update input fields in the customerTable with uniqueId
+        $('#batchNo_' + uniqueId).val(batchNo);
+        $('#tax_' + uniqueId).val(tax);
+        $('#quantity_' + uniqueId).val(quantity);
+        $('#uom_' + uniqueId).val(uom);
+        $('#purcRate_' + uniqueId).val(rate);
+
+        // Hide overlay and batch form
+        $('#overlay').hide();
+        $('#batchform').hide();
+    });
+
 
         // Close Batch Form
         $('#closeBatchForm').on('click', function () {
@@ -1046,7 +1072,7 @@ $('#pdiscMode, #pdiscount').change(function() {
     var table = $("#customerTable").DataTable({
         searching: false,
         paging: false,
-        scrollY: '200px',
+        scrollY: '400px',
         scrollX: true,
         columns: [
         { data: 'Id' },
@@ -1080,6 +1106,7 @@ $('#pdiscMode, #pdiscount').change(function() {
             leftColumns: 1
         }
     });
+    
     $('#purchaseId').on('change', function () {
         var selectedPurchaseId = $(this).val();
           table.ajax.url('/auth/salesretail/salesretailproductid?purchaseId=' + selectedPurchaseId).load();
@@ -1315,6 +1342,7 @@ if (table.data().count() === 0) {
         try {
             var rowDetails = JSON.parse(selectedOption.val());
             $('#id').val(rowDetails.id);
+             $('#customername').val(rowDetails.customername);
             $('#customermobileno').val(rowDetails.customermobileno);
             $('#paymentmode').val(rowDetails.paymentmode);
             $('#saledate').val(formatDate(rowDetails.saledate));
@@ -1322,7 +1350,7 @@ if (table.data().count() === 0) {
             $('#transportno').val(rowDetails.transportno);
             $('#supplierSelect').val(rowDetails.customer);
 
-            $('.dropdown[name="customername"]').val(rowDetails.customer);
+          
 
             var selectedSupplierState = $('#supplierSelect').find(':selected').data('state');
             initiateFetchCompanyState(selectedSupplierState);

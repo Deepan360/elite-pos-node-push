@@ -20,7 +20,7 @@ const config = {
     options: {
         encrypt: false,
         enableArithAbort: true, 
-    }
+    } 
 };
 
 const pool = new sql.ConnectionPool(config);

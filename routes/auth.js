@@ -210,6 +210,9 @@ router.get('/salesprintpage/productdetails', userController.getSalesProductDetai
 router.get('/salesprintpage/salesdetails', userController.salesdetails);
 
 
+router.get('/salesretailprint/productdetails', userController.getSalesretailProductDetails);
+router.get('/salesretailprint/salesdetails', userController.salesretaildetails);
+
 router.get('/user/getrole', userController.getrole);
 router.post('/user/create', userController.create);
 router.post('/user/updateUser', userController.updateUser);

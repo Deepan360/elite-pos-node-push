@@ -26,14 +26,14 @@
     padding: 5px; ;
 }
     .editForm {
-              display: none;
+    display: none;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: #8f8f8f;
     padding: 20px;
-    z-index: 1001; /* Ensure the popup is above the blurred background */
+    z-index: 1001; 
     border-radius: 10px;
         }
         .container {
@@ -975,7 +975,7 @@ $('#pdiscMode, #pdiscount').change(function() {
         { data: 'quantity' },
         { data: 'uom' },     
         { data: 'rate' },
-         { data: 'mrp' },
+        { data: 'mrp' },
         { data: 'discMode'},
         { data: 'discount' },
         { data: 'amount' },
@@ -1020,8 +1020,8 @@ var selectedSupplier;
 
     $('#customerTable tbody').on('input', 'input[name^="rate"], input[name^="quantity"], select[name^="discMode"], input[name^="discount"]', function () {
         var row = $(this).closest('tr');
-        var rate = parseInt(row.find('input[name^="rate"]').val()) || 0;
-        var quantity = parseInt(row.find('input[name^="quantity"]').val()) || 0;
+        var rate = parseFloat(row.find('input[name^="rate"]').val()) || 0;
+        var quantity = parseFloat(row.find('input[name^="quantity"]').val()) || 0;
         var discMode = row.find('select[name^="discMode"]').val();
         var discountInput = row.find('input[name^="discount"]');
 
@@ -1029,7 +1029,7 @@ var selectedSupplier;
             discountInput.val('0');
         }
 
-        var discount = parseInt(discountInput.val()) || 0;
+        var discount = parseFloat(discountInput.val()) || 0;
         var amount = calculateAmount(rate, quantity, discMode, discount);
 
         row.find('input[name^="amount"]').val(amount.toFixed(2));
@@ -1043,10 +1043,10 @@ var selectedSupplier;
     function calculateTotalAmount() {
         $('#customerTable tbody tr').each(function () {
             var row = $(this);
-            var amount = parseInt(row.find('input[name^="amount"]').val()) || 0;
-            var cgst = parseInt(row.find('input[name^="cgst"]').val()) || 0;
-            var sgst = parseInt(row.find('input[name^="sgst"]').val()) || 0;
-            var igst = parseInt(row.find('input[name^="igst"]').val()) || 0;
+            var amount = parseFloat(row.find('input[name^="amount"]').val()) || 0;
+            var cgst = parseFloat(row.find('input[name^="cgst"]').val()) || 0;
+            var sgst = parseFloat(row.find('input[name^="sgst"]').val()) || 0;
+            var igst = parseFloat(row.find('input[name^="igst"]').val()) || 0;
 
             var totalTax = cgst + sgst + igst; 
             var rowTotalAmount = amount + totalTax;   
@@ -1075,8 +1075,8 @@ var selectedSupplier;
     }
 
     function calculateTax(row, supplierState, companyState) {
-        var amount = parseInt(row.find('input[name^="amount"]').val()) || 0;
-        var taxRate = parseInt(row.find('input[name^="tax"]').val()) || 0;
+        var amount = parseFloat(row.find('input[name^="amount"]').val()) || 0;
+        var taxRate = parseFloat(row.find('input[name^="tax"]').val()) || 0;
 
         var isLocalSupply = supplierState && companyState && supplierState.toLowerCase() === companyState.toLowerCase();
 
@@ -1092,7 +1092,7 @@ var selectedSupplier;
             igst = (amount * taxRate / 100).toFixed(2);
         }
 
-        var totalTax = (parseInt(cgst) + parseInt(sgst) + parseInt(igst)).toFixed(2);
+        var totalTax = (parseFloat(cgst) + parseFloat(sgst) + parseFloat(igst)).toFixed(2);
 
         row.find('input[name^="cgst"]').val(cgst);
         row.find('input[name^="sgst"]').val(sgst);
@@ -1101,6 +1101,8 @@ var selectedSupplier;
 
         calculateTotalAmount();
     }
+
+
 
 $('.dropdown[name="suppliername"]').on('change', function () {
     var selectedSupplier = $(this).val(); 
@@ -1210,7 +1212,7 @@ fetchSupplierNames();
             console.log('Purchase ID from URL:', purchaseIdParam);
 
             if (purchaseIdParam) {
-                var purchaseIdInt = parseInt(purchaseIdParam);
+                var purchaseIdInt = parseFloat(purchaseIdParam);
 
                 $('.dropdown[name="Id"] option').each(function() {
                     var optionValue = $(this).val();
@@ -1276,7 +1278,7 @@ $('#pdiscount').val(rowDetails.discount);
         console.log('rowDetails.id:', rowDetails.id);
         console.log('Dropdown Options:', $(this).val());
 
-        var purchaseId = parseInt(rowDetails.id);
+        var purchaseId = parseFloat(rowDetails.id);
 
         if (isNaN(purchaseId)) {
             console.error('Invalid purchaseId:', purchaseId);

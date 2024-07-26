@@ -1123,8 +1123,8 @@ if (table.data().count() === 0) {
 
         $('#customerTable tbody').on('input', 'input[name^="rate"], input[name^="quantity"], select[name^="discMode"], input[name^="discount"]', function () {
             var row = $(this).closest('tr');
-            var rate = parseInt(row.find('input[name^="rate"]').val()) || 0;
-            var quantity = parseInt(row.find('input[name^="quantity"]').val()) || 0;
+            var rate = parseFloat(row.find('input[name^="rate"]').val()) || 0;
+            var quantity = parseFloat(row.find('input[name^="quantity"]').val()) || 0;
             var discMode = row.find('select[name^="discMode"]').val();
             var discountInput = row.find('input[name^="discount"]');
 
@@ -1132,7 +1132,7 @@ if (table.data().count() === 0) {
                 discountInput.val('0');
             }
 
-            var discount = parseInt(discountInput.val()) || 0;
+            var discount = parseFloat(discountInput.val()) || 0;
             var amount = calculateAmount(rate, quantity, discMode, discount);
 
             row.find('input[name^="amount"]').val(amount.toFixed(2));
@@ -1311,7 +1311,7 @@ if (table.data().count() === 0) {
             console.log('Purchase ID from URL:', purchaseIdParam);
 
             if (purchaseIdParam) {
-                var purchaseIdInt = parseInt(purchaseIdParam);
+                var purchaseIdInt = parseFloat(purchaseIdParam);
 
                 $('.dropdown[name="Id"] option').each(function () {
                     var optionValue = $(this).val();
@@ -1375,7 +1375,7 @@ if (table.data().count() === 0) {
             console.log('rowDetails.id:', rowDetails.id);
             console.log('Dropdown Options:', $(this).val());
 
-            var purchaseId = parseInt(rowDetails.id);
+            var purchaseId = parseFloat(rowDetails.id);
 
             if (isNaN(purchaseId)) {
                 console.error('Invalid purchaseId:', purchaseId);

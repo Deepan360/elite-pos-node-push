@@ -143,10 +143,6 @@
    {{>footer}}
   </main>
 
-  
- 
-
-
   <script>
     document.addEventListener('DOMContentLoaded', function () {
     // Wait for the DOM to be fully loaded
@@ -408,8 +404,8 @@ $.ajax({
         console.error('Error fetching options for Supplier Ledger(dr):', error);
     }
 });
-
-   {{!-- // Convert date objects to strings in the "YYYY-MM-DD" format
+{{!-- 
+   // Convert date objects to strings in the "YYYY-MM-DD" format
         $(".editForm #reciptdate").val(formatDate(data.reciptdate));
         $(".editForm #billdate").val(formatDate(data.billdate));
 
@@ -421,7 +417,7 @@ function formatDate(dateObject) {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${day}-${month}`;
-} --}}
+}  --}}
 </script>
 
 </body>

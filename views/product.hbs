@@ -397,8 +397,8 @@ $.ajax({
         if (options && options.length) {
             options.forEach(function (option) {
                 $('.dropdown[name="uom"]').append($('<option>', {
-                    value: option.shortname,
-                    text: option.shortname
+                    value: option.baseunit,
+                    text: option.baseunit
                 }));
             });
         } else {

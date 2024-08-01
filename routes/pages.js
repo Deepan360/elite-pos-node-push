@@ -604,9 +604,8 @@ router.get("/salesretailprint", (req, res) => {
   res.render("salesretailprint");
 });
 router.get('/menuaccesscontrol',(req,res)=>{
-  res.render('menuaccesscontrol');
+  res.render('menuaccesscontrol');  
 });
-
 router.get("/salesretail", (req, res) => {
   res.render("salesretail");
 });

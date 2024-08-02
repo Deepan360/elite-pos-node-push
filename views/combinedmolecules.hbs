@@ -108,19 +108,30 @@
             width: 100px;
             color: #8f8f8f !important;
         }
-  .molecule-list, .combination-container {
-      border: 1px solid #ccc;
-      min-height: 100px;
+  .molecule-list {
+            border: 1px solid #ccc;
+            min-height: 150px;
+            padding: 10px;
+            margin: 10px 0;
+            overflow: auto;
+        }
 
-    }
-    .molecule-item {
-      padding: 5px;
-      margin: 5px;
-      cursor: grab;
-    }
-    .molecule-item.dragging {
-      opacity: 0.5;
-    }
+        .molecule-item {
+            padding: 5px;
+            margin: 5px;
+            cursor: grab;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .molecule-item.dragging {
+            opacity: 0.5;
+        }
+
+        .combination-container {
+            background-color: #f8f9fa;
+            color: rgb(13, 13, 117);
+        }
     </style>
 </head>
 
@@ -435,8 +446,8 @@
                 <!-- Molecule Selection -->
                 <div class="row">
                     <div class="col">
-                    <h4>Available Molecules</h4>
-                    <div id="availableMolecules" class="molecule-list"></div>
+                        <h4>Available Molecules</h4>
+                        <div id="availableMolecules" class="molecule-list"></div>
                     </div>
                     <div class="col">
                         <h4>Combination Container</h4>
@@ -444,12 +455,10 @@
                     </div>
                 </div>
 
-             
-
                 <input type="text" placeholder="Combination Name" name="combinationname" id="combinationname" required>
             </div>
         </div>
-        <button type="submit" value="submit" class="btn btn-primary" id="saveManufacturer">Save</button>
+        <button type="submit" class="btn btn-primary" id="saveManufacturer">Save</button>
         <button type="button" class="btn btn-primary" id="closeForm">Close</button>
     </form>
 
@@ -479,6 +488,7 @@
         <button type="button" class="btn btn-primary" id="closeEditForm">Close</button>
     </form>
 </div>
+
 
 <script>
     $("#closeForm").click(function () {

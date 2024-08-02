@@ -236,4 +236,20 @@ router.get("/salesretail/customername", userController.customername);
 router.post("/salesretail/batchDetails/:selectedProductId",userController.batchDetails);
 
 
+
+
+router.get("/molecules", userController.molecules);
+router.post("/molecules", userController.moleculesadd);
+router.put("/moleculesedit/:id", userController.moleculesedit);
+router.delete("/moleculesdelete/:id", userController.moleculesdelete);
+
+router.get("/combinedmolecules", userController.combinedmolecules);
+router.post("/combinedmolecules", userController.combinedmoleculesadd);
+router.put("/combinedmoleculesedit/:id", userController.combinedmoleculesedit);
+router.delete(
+  "/combinedmoleculesdelete/:id",
+  userController.combinedmoleculesdelete
+);
+
+
 module.exports = router;

@@ -634,6 +634,29 @@ router.get("/salesretail", (req, res) => {
   res.render("batchDetails", { id: req.body });
 });
 
-
+router.get("/molecules", (req, res) => {
+  res.render("molecules");
+});
+router.post("/molecules", (req, res) => {
+  res.render("molecules");
+});
+router.put("/molecules", (req, res) => {
+  res.render("moleculesedit", { id: req.params.id });
+});
+router.get("/molecules", (req, res) => {
+  res.render("moleculesdelete", { id: req.params.id });
+});
+router.get("/combinedmolecules", (req, res) => {
+  res.render("combinedmolecules");
+});
+router.post("/combinedmolecules", (req, res) => {
+  res.render("combinedmolecules");
+});
+router.put("/combinedmolecules", (req, res) => {
+  res.render("combinedmoleculesedit", { id: req.params.id });
+});
+router.get("/combinedmolecules", (req, res) => {
+  res.render("combinedmoleculesdelete", { id: req.params.id });
+});
 
 module.exports=router;     

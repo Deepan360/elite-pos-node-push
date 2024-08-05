@@ -204,7 +204,6 @@
             "bBorders": true, // Show borders
         });
 
-
         if (table.rows().count() === 0) {
             $("#emptyMessage").show();
         }
@@ -232,8 +231,6 @@
                 console.error('Invalid or undefined data:', data);
             }
         });
-
-
 
         // Handle form submission for the edit form
         $(document).on('submit', '.editForm', function (event) {

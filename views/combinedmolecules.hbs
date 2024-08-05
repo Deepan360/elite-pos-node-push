@@ -195,6 +195,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Fetch and populate molecules as before
         async function fetchMolecules() {
             try {
                 const response = await fetch('/auth/molecules');
@@ -286,6 +287,7 @@
                     const editCombinationContainer = document.getElementById('editCombinationContainer');
                     editCombinationContainer.innerHTML = ''; // Clear existing items
 
+                    // Populate the combination container with molecules
                     const moleculeNames = (data.combinationname || '').split(' + ');
                     moleculeNames.forEach(moleculeName => {
                         const moleculeItem = document.createElement('div');
@@ -296,14 +298,23 @@
                         editCombinationContainer.appendChild(moleculeItem);
                     });
 
-                    updateCombinationName(editCombinationContainer, document.getElementById('editCombinationname'));
+                    // Reinitialize the drag and drop handlers
                     addDragAndDropHandlers();
+
+                    // Ensure the combination name field reflects the correct order
+                    updateCombinationName(editCombinationContainer, document.getElementById('editCombinationname'));
                 } else {
                     console.error('No valid data returned for ID:', combinationId);
                 }
             } catch (error) {
                 console.error('Error populating edit form:', error);
             }
+        }
+
+        function updateCombinationName(container, input) {
+            const items = container.querySelectorAll('.molecule-item');
+            const combinationName = Array.from(items).map(item => item.dataset.moleculename).join(' + ');
+            input.value = combinationName;
         }
 
         fetchMolecules();
@@ -383,6 +394,7 @@
                         var tableRow = table.row('#' + customerId); 
                         tableRow.data(response.updatedCustomerData); 
 
+                        // Optionally, you can hide the form after a successful update
                         $(".editForm").hide();
                        
                         table.ajax.reload();
@@ -402,6 +414,9 @@
                 }
             });
         });
+
+
+
 
         $(document).on('click', '#closeForm, #closeEditForm', function () {
             $("#manufacturerform, #editForm").hide();

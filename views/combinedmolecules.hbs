@@ -20,7 +20,7 @@
             border-radius: 10px;
         }
 
-        .editForm {
+        #editForm {
             display: none;
             position: fixed;
             top: 50%;
@@ -43,7 +43,6 @@
             background-color: rgba(50, 141, 168) !important;
             color: white !important;
             border: none !important;
-            border-radius: 3px !important;
             width: 80px !important;
             height: 30px;
 
@@ -55,8 +54,7 @@
             border: none !important;
             border-radius: 3px !important;
             width: 80px !important;
-            height: 30px;
-
+            height: 30px;     
         }
 
         button {
@@ -197,147 +195,16 @@
             }
         });
     </script>
-    <script>
-        // Add form button click event
-        $(document).on('click', '#addmanufacturer', function () {
-            $("#manufacturerform").show();
-            $("#id").val('');
-        });
-        var table = $("#customerTable").DataTable({
-            debug: true,
-            ajax: {
-                'url': '/auth/combinedmolecules',
-                'dataType': 'json',
-                'dataSrc': 'data',
-                type: 'GET', // Adjust 'rows' based on your server response structure
-            },
-            columns: [
-                { data: 'id' },
-                { data: 'combinationcode' },
-                { data: 'combinationname' },
-                {
-                    data: 'id',
-                    render: function (data) {
-                        return '<i class="fa-regular fa-pen-to-square editBtn" type="button" data-id="' + data + '"></i>' +
-                            ' <i class="fa-solid fa-trash deleteBtn" type="button" data-id="' + data + '"></i>';
-                    }
-                }
-            ],
-            dom: 'Bfrtip',
-            buttons: ['copy', 'excel', 'pdf', 'csv'],
-            paging: false,
-            scrollY: '350px',
-            scrollX: '100px',
-            scrollCollapse: true,
-            responsive: true,
-            "bInfo": true, // Show information (records, etc.)
-            "bBorders": true, // Show borders
-        });
 
 
-        if (table.rows().count() === 0) {
-            $("#emptyMessage").show();
-        }
-    </script>
-    <script>
- 
-
-        // Handle form submission for the edit form
-        $(document).on('submit', '.editForm', function (event) {
-            event.preventDefault();
-
-            var formData = $(this).serialize();
-            var customerId = $(".editForm #id").val();
-
-            console.log('Form Data:', formData);
-
-            $.ajax({
-                type: 'PUT',
-                url: '/auth/combinedmoleculesedit/' + customerId,
-                data: formData,
-                success: function (response) {
-                    console.log(response);
-
-                    if (response.success) {
-                        // Update the table row with the new data
-                        var tableRow = table.row('#' + customerId); // Assuming each row has a unique ID
-                        tableRow.data(response.updatedCustomerData); // Use the actual key from the response
-
-                        // Optionally, you can hide the form after a successful update
-                        $(".editForm").hide();
-                        alert('Customer Updated Successfully 🖋');
-                        table.ajax.reload();
-                    } else {
-                        alert('Failed to update customer');
-                    }
-                },
-                error: function (error) {
-                    console.error('Error:', error);
-
-                    if (error.status === 0) {
-                        alert('Failed to connect to the server. Check your server and network connection.');
-                    } else {
-                        alert('Failed to update customer. Check the console for more details.');
-                    }
-                }
-            });
-        });
-
-        // Handle form close button for the edit form
-        $(document).on('click', '.editForm #closeForm', function () {
-            $(".editForm").hide();
-        });
-
-
-        // Handle form close button for the add form
-        $(document).on('click', '#closeForm', function () {
-            $("#manufacturerform").hide();
-        });
-    </script>
-    <script>
-        // Handle form close button
-        $('#closeForm').click(function () {
-            // Hide the form when the close button is clicked
-            $("#manufacturerform").hide();
-        });
-
-        $('#customerTable').on('click', '.deleteBtn', function () {
-            var data = table.row($(this).parents('tr')).data();
-            var deleteButton = $(this);  // Store the reference to 'this' for later use
-
-            if (data && data.id) {
-                var deleteUrl = '/auth/combinedmoleculesdelete/' + data.id;
-                console.log('Data:', data);
-
-                $.ajax({
-                    type: 'DELETE',
-                    url: deleteUrl,
-                    success: function (response) {
-                        console.log(response);
-                        if (response.success) {
-                            alert('Successfully Deleted 🗑');
-                            table.ajax.reload();
-                        } else {
-                            alert("Failed to delete customer: " + response.error);
-                        }
-                    },
-                    error: function (error) {
-                        console.error('Error deleting customer:', error);
-                        alert("Failed to delete customer. Check console for details.");
-                    }
-                });
-            } else {
-                console.error('Invalid or undefined data:', data);
-            }
-        });
-
-    </script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Fetch and populate molecules as before
         async function fetchMolecules() {
             try {
                 const response = await fetch('/auth/molecules');
                 const data = await response.json();
+                console.log('Fetched molecules:', data); // Debugging
                 populateMoleculeSelect(data.data);
             } catch (error) {
                 console.error('Error fetching molecules:', error);
@@ -348,25 +215,21 @@
             const availableMolecules = document.getElementById('availableMolecules');
             const editAvailableMolecules = document.getElementById('editAvailableMolecules');
 
+            availableMolecules.innerHTML = '';
+            editAvailableMolecules.innerHTML = '';
+
             molecules.forEach(molecule => {
                 const moleculeItem = document.createElement('div');
                 moleculeItem.className = 'molecule-item';
                 moleculeItem.draggable = true;
                 moleculeItem.textContent = molecule.moleculename;
-                moleculeItem.dataset.moleculename = molecule.moleculename; // Store name for easy retrieval
+                moleculeItem.dataset.moleculename = molecule.moleculename;
 
-                // Clone and append for both available lists
                 availableMolecules.appendChild(moleculeItem.cloneNode(true));
                 editAvailableMolecules.appendChild(moleculeItem.cloneNode(true));
             });
 
             addDragAndDropHandlers();
-        }
-
-        function updateCombinationName(container, input) {
-            const items = container.querySelectorAll('.molecule-item');
-            const combinationName = Array.from(items).map(item => item.dataset.moleculename).join(' + ');
-            input.value = combinationName;
         }
 
         function addDragAndDropHandlers() {
@@ -394,44 +257,55 @@
                     if (dragging && !container.contains(dragging)) {
                         container.appendChild(dragging);
                         const form = container.closest('form');
-                        const input = form.querySelector('input[name="combinationname"]');
-                        updateCombinationName(container, input);
+                        const input = form.querySelector('input[name="combinationname"]') || form.querySelector('input[name="editCombinationname"]');
+                        if (container.classList.contains('combination-container')) {
+                            updateCombinationName(container, input);
+                        } else {
+                            const sourceContainer = document.querySelector('.combination-container');
+                            const sourceInput = form.querySelector('input[name="combinationname"]') || form.querySelector('input[name="editCombinationname"]');
+                            updateCombinationName(sourceContainer, sourceInput);
+                        }
                     }
                 });
             });
+        }
+
+        function updateCombinationName(container, input) {
+            const items = container.querySelectorAll('.molecule-item');
+            const combinationName = Array.from(items).map(item => item.dataset.moleculename).join(' + ');
+            input.value = combinationName;
         }
 
         async function populateEditForm(combinationId) {
             try {
                 const response = await fetch(`/auth/combinedmolecules/${combinationId}`);
                 const data = await response.json();
-                const editForm = document.getElementById('editForm');
-                const editCombinationContainer = document.getElementById('editCombinationContainer');
 
-                // Populate the edit form fields
-                document.getElementById('editId').value = data.id;
-                document.getElementById('editCombinationcode').value = data.combinationcode;
-                document.getElementById('editCombinationname').value = data.combinationname;
+                console.log("Fetched data for combination ID:", data); // Debug: Verify the fetched data
 
-                // Clear existing molecules in the combination container
-                while (editCombinationContainer.firstChild) {
-                    editCombinationContainer.removeChild(editCombinationContainer.firstChild);
+                if (data && data.combinationcode && data.combinationname) {
+                    document.getElementById('editId').value = data.id || '';
+                    document.getElementById('editCombinationcode').value = data.combinationcode || '';
+                    document.getElementById('editCombinationname').value = data.combinationname || '';
+
+                    const editCombinationContainer = document.getElementById('editCombinationContainer');
+                    editCombinationContainer.innerHTML = ''; // Clear existing items
+
+                    const moleculeNames = (data.combinationname || '').split(' + ');
+                    moleculeNames.forEach(moleculeName => {
+                        const moleculeItem = document.createElement('div');
+                        moleculeItem.className = 'molecule-item';
+                        moleculeItem.draggable = true;
+                        moleculeItem.textContent = moleculeName;
+                        moleculeItem.dataset.moleculename = moleculeName;
+                        editCombinationContainer.appendChild(moleculeItem);
+                    });
+
+                    updateCombinationName(editCombinationContainer, document.getElementById('editCombinationname'));
+                    addDragAndDropHandlers();
+                } else {
+                    console.error('No valid data returned for ID:', combinationId);
                 }
-
-                // Add the molecules to the combination container
-                data.molecules.forEach(moleculeName => {
-                    const moleculeItem = document.createElement('div');
-                    moleculeItem.className = 'molecule-item';
-                    moleculeItem.draggable = true;
-                    moleculeItem.textContent = moleculeName;
-                    moleculeItem.dataset.moleculename = moleculeName;
-                    editCombinationContainer.appendChild(moleculeItem);
-                });
-
-                // Update the combination name input
-                updateCombinationName(editCombinationContainer, document.getElementById('editCombinationname'));
-
-                addDragAndDropHandlers();
             } catch (error) {
                 console.error('Error populating edit form:', error);
             }
@@ -439,25 +313,155 @@
 
         fetchMolecules();
 
-        // Assuming there's a way to trigger the edit form population, like a button or link
-        // Example:
-        document.getElementById('editButton').addEventListener('click', function () {
-            const combinationId = this.dataset.combinationId; // Get the combination ID from the button's data attribute
-            populateEditForm(combinationId);
-            document.getElementById('editForm').style.display = 'block';
+        $(document).on('click', '#addmanufacturer', function () {
+            $("#manufacturerform").show();
+            $("#id").val('');
+            // Reset form fields if necessary
+            $("#manufacturerform")[0].reset();
+            document.getElementById('combinationContainer').innerHTML = ''; // Clear container
+        });
+
+        var table = $("#customerTable").DataTable({
+            debug: true,
+            ajax: {
+                'url': '/auth/combinedmolecules',
+                'dataType': 'json',
+                'dataSrc': 'data',
+                type: 'GET',
+            },
+            columns: [
+                { data: 'id' },
+                { data: 'combinationcode' },
+                { data: 'combinationname' },
+                {
+                    data: 'id',
+                    render: function (data) {
+                        return '<i class="fa-regular fa-pen-to-square editBtn" type="button" data-id="' + data + '"></i>' +
+                            ' <i class="fa-solid fa-trash deleteBtn" type="button" data-id="' + data + '"></i>';
+                    }
+                }
+            ],
+            dom: 'Bfrtip',
+            buttons: ['copy', 'excel', 'pdf', 'csv'],
+            paging: false,
+            scrollY: '350px',
+            scrollX: '100px',
+            scrollCollapse: true,
+            responsive: true,
+            "bInfo": true,
+            "bBorders": true,
+        });
+
+        if (table.rows().count() === 0) {
+            $("#emptyMessage").show();
+        }
+
+        $(document).on('click', '.editBtn', function () {
+            // Get the data associated with the clicked row
+            var data = table.row($(this).parents('tr')).data();
+
+            console.log('Data:', data);
+
+            // Check if the data is valid and an object
+            if (data && typeof data === 'object' && !Array.isArray(data)) {
+                // Populate the edit form fields with the data
+                $(".editForm #id").val(data.id);
+                $(".editForm #combinationcode").val(data.combinationcode);
+                $(".editForm #combinationname").val(data.combinationname);
+
+
+
+                // Show the edit form
+                $(".editForm").show();
+            } else {
+                console.error('Invalid or undefined data:', data);
+            }
+        });
+        
+
+
+        $(document).on('submit', '.editForm', function (event) {
+            event.preventDefault();
+
+            var formData = $(this).serialize();
+            var customerId = $(".editForm #editId").val();
+
+            console.log('Form Data:', formData);
+
+            $.ajax({
+                type: 'PUT',
+                url: '/auth/combinedmoleculesedit/' + customerId,
+                data: formData,
+                success: function (response) {
+                    console.log(response);
+
+                    if (response.success) {
+                        var tableRow = table.row(function (idx, data, node) {
+                            return data.id === customerId;
+                        });
+                        tableRow.data(response.updatedCustomerData).draw(); 
+
+                        $(".editForm").hide();
+                        alert('Customer Updated Successfully 🖋');
+                    } else {
+                        alert('Failed to update customer');
+                    }
+                },
+                error: function (error) {
+                    console.error('Error:', error);
+
+                    if (error.status === 0) {
+                        alert('Failed to connect to the server. Check your server and network connection.');
+                    } else {
+                        alert('Failed to update customer. Check the console for more details.');
+                    }
+                }
+            });
+        });
+
+        $(document).on('click', '#closeForm, #closeEditForm', function () {
+            $("#manufacturerform, #editForm").hide();
+        });
+
+        $(document).on('click', '.deleteBtn', function () {
+            var data = table.row($(this).parents('tr')).data();
+            var deleteButton = $(this);  
+
+            if (data && data.id) {
+                var deleteUrl = '/auth/combinedmoleculesdelete/' + data.id;
+                console.log('Data:', data);
+
+                $.ajax({
+                    type: 'DELETE',
+                    url: deleteUrl,
+                    success: function (response) {
+                        console.log(response);
+                        if (response.success) {
+                            alert('Successfully Deleted 🗑');
+                            table.ajax.reload();
+                        } else {
+                            alert("Failed to delete customer: " + response.error);
+                        }
+                    },
+                    error: function (error) {
+                        console.error('Error deleting customer:', error);
+                        alert("Failed to delete customer. Check console for details.");
+                    }
+                });
+            } else {
+                console.error('Invalid or undefined data:', data);
+            }
         });
     });
 </script>
+
 
 <div class="container mt-4">
     <form id="manufacturerform" style="display: none;" method="post" action="/auth/combinedmolecules">
         <div class="row">
             <div class="col-md-12">
-                <!-- First Column -->
                 <input type="hidden" name="id" id="id">
                 <input type="text" placeholder="Combination Code No" name="combinationcode" id="combinationcode">
-
-                <!-- Molecule Selection -->
                 <div class="row">
                     <div class="col">
                         <h4>Available Molecules</h4>
@@ -468,44 +472,37 @@
                         <div id="combinationContainer" class="molecule-list combination-container"></div>
                     </div>
                 </div>
-
             </div>
             <input type="text" placeholder="Combination Name" name="combinationname" id="combinationname" required>
-
         </div>
         <button type="submit" class="btn btn-primary" id="saveManufacturer">Save</button>
         <button type="button" class="btn btn-primary" id="closeForm">Close</button>
     </form>
 
-    <form class="editForm" method="post" action="/auth/combinedmoleculesedit/:id">
-        <div class="row">
-            <div class="col">
-                <!-- First Column -->
-                <input type="hidden" name="id" id="editId">
-                <input type="text" placeholder="Combination Code No" name="combinationcode" id="editCombinationcode">
-
-                <!-- Molecule Selection -->
-                <div class="row">
-                    <div class="col">
-                        <h4>Available Molecules</h4>
-                        <div id="editAvailableMolecules" class="molecule-list"></div>
-
-                    </div>
-                    <div class="col">
-                        <h4>Combination Container</h4>
-                        <div id="editCombinationContainer" class="molecule-list combination-container"></div>
-                    </div>
+<form id="editForm" class="editForm" style="display: none;" method="post" action="/auth/combinedmoleculesedit">
+    <div class="row">
+        <div class="col-md-12">
+            <input type="hidden" name="id" id="editId">
+            <input type="text" placeholder="Combination Code No" name="combinationcode" id="combinationcode">
+            <div class="row">
+                <div class="col">
+                    <h4>Available Molecules</h4>
+                    <div id="editAvailableMolecules" class="molecule-list"></div>
                 </div>
-
-
+                <div class="col">
+                    <h4>Combination Container</h4>
+                    <div id="editCombinationContainer" class="molecule-list combination-container"></div>
+                </div>
             </div>
-            <input type="text" placeholder="Combination Name" name="combinationname" id="editCombinationname" required>
         </div>
-        <button type="submit" class="btn btn-primary">Update</button>
-        <button type="button" class="btn btn-primary" id="closeForm">Close</button>
-    </form>
-</div>
+        <input type="text" placeholder="Combination Name" name="combinationname" id="combinationname" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+    <button type="button" class="btn btn-primary" id="closeEditForm">Close</button>
+</form>
 
+
+</div>
 
 <script>
     $("#closeForm").click(function () {

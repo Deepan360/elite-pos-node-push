@@ -183,23 +183,18 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Wait for the DOM to be fully loaded
             var messageElement = document.getElementById('message');
 
             if (messageElement) {
-                // If the message element exists
                 setTimeout(function () {
-                    // Set a timeout to hide the message after 2 seconds
                     messageElement.style.display = 'none';
-                }, 1000); // 2000 milliseconds = 2 seconds
+                }, 1000); 
             }
         });
     </script>
 
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Fetch and populate molecules as before
         async function fetchMolecules() {
             try {
                 const response = await fetch('/auth/molecules');
@@ -357,28 +352,18 @@
         }
 
         $(document).on('click', '.editBtn', function () {
-            // Get the data associated with the clicked row
             var data = table.row($(this).parents('tr')).data();
-
             console.log('Data:', data);
 
-            // Check if the data is valid and an object
             if (data && typeof data === 'object' && !Array.isArray(data)) {
-                // Populate the edit form fields with the data
-                $(".editForm #id").val(data.id);
+                $(".editForm #editId").val(data.id);
                 $(".editForm #combinationcode").val(data.combinationcode);
                 $(".editForm #combinationname").val(data.combinationname);
-
-
-
-                // Show the edit form
                 $(".editForm").show();
             } else {
                 console.error('Invalid or undefined data:', data);
             }
         });
-        
-
 
         $(document).on('submit', '.editForm', function (event) {
             event.preventDefault();
@@ -386,7 +371,6 @@
             var formData = $(this).serialize();
             var customerId = $(".editForm #editId").val();
 
-            console.log('Form Data:', formData);
 
             $.ajax({
                 type: 'PUT',
@@ -396,13 +380,13 @@
                     console.log(response);
 
                     if (response.success) {
-                        var tableRow = table.row(function (idx, data, node) {
-                            return data.id === customerId;
-                        });
-                        tableRow.data(response.updatedCustomerData).draw(); 
+                        var tableRow = table.row('#' + customerId); 
+                        tableRow.data(response.updatedCustomerData); 
 
                         $(".editForm").hide();
-                        alert('Customer Updated Successfully 🖋');
+                       
+                        table.ajax.reload();
+                         alert('Customer Updated Successfully 🖋');
                     } else {
                         alert('Failed to update customer');
                     }
@@ -453,6 +437,7 @@
             }
         });
     });
+    
 </script>
 
 
@@ -500,7 +485,6 @@
     <button type="submit" class="btn btn-primary">Update</button>
     <button type="button" class="btn btn-primary" id="closeEditForm">Close</button>
 </form>
-
 
 </div>
 

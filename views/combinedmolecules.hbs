@@ -30,7 +30,7 @@
             padding: 20px;
             z-index: 1000;
             border-radius: 10px;
-                      width: 500px;
+                      width: 900px;
             font-size: small;
         }
     </style>
@@ -122,6 +122,8 @@
             cursor: grab;
             border: 1px solid #ddd;
             border-radius: 5px;
+            color: black;
+            background-color: rgb(97, 97, 97);
         }
 
         .molecule-item.dragging {
@@ -129,7 +131,7 @@
         }
 
         .combination-container {
-            background-color: #f8f9fa;
+        
             color: rgb(13, 13, 117);
         }
     </style>
@@ -238,28 +240,7 @@
         }
     </script>
     <script>
-        // Handle click event for the "Edit" button
-        $(document).on('click', '.editBtn', function () {
-            // Get the data associated with the clicked row
-            var data = table.row($(this).parents('tr')).data();
-
-            console.log('Data:', data);
-
-            // Check if the data is valid and an object
-            if (data && typeof data === 'object' && !Array.isArray(data)) {
-                // Populate the edit form fields with the data
-                $(".editForm #id").val(data.id);
-                $(".editForm #combinationcode").val(data.combinationcode);
-                $(".editForm #combinationname").val(data.combinationname);
-
-
-
-                // Show the edit form
-                $(".editForm").show();
-            } else {
-                console.error('Invalid or undefined data:', data);
-            }
-        });
+ 
 
         // Handle form submission for the edit form
         $(document).on('submit', '.editForm', function (event) {
@@ -373,6 +354,8 @@
                 moleculeItem.draggable = true;
                 moleculeItem.textContent = molecule.moleculename;
                 moleculeItem.dataset.moleculename = molecule.moleculename; // Store name for easy retrieval
+
+                // Clone and append for both available lists
                 availableMolecules.appendChild(moleculeItem.cloneNode(true));
                 editAvailableMolecules.appendChild(moleculeItem.cloneNode(true));
             });
@@ -403,22 +386,13 @@
             containers.forEach(container => {
                 container.addEventListener('dragover', e => {
                     e.preventDefault();
-                    const dragging = document.querySelector('.dragging');
-                    if (!container.contains(dragging)) {
-                        container.appendChild(dragging);
-                        // Update combination name when items are dropped
-                        const form = container.closest('form');
-                        const input = form.querySelector('input[name="combinationname"]');
-                        updateCombinationName(container, input);
-                    }
                 });
 
                 container.addEventListener('drop', e => {
                     e.preventDefault();
                     const dragging = document.querySelector('.dragging');
-                    if (!container.contains(dragging)) {
+                    if (dragging && !container.contains(dragging)) {
                         container.appendChild(dragging);
-                        // Update combination name when items are dropped
                         const form = container.closest('form');
                         const input = form.querySelector('input[name="combinationname"]');
                         updateCombinationName(container, input);
@@ -427,13 +401,53 @@
             });
         }
 
+        async function populateEditForm(combinationId) {
+            try {
+                const response = await fetch(`/auth/combinedmolecules/${combinationId}`);
+                const data = await response.json();
+                const editForm = document.getElementById('editForm');
+                const editCombinationContainer = document.getElementById('editCombinationContainer');
+
+                // Populate the edit form fields
+                document.getElementById('editId').value = data.id;
+                document.getElementById('editCombinationcode').value = data.combinationcode;
+                document.getElementById('editCombinationname').value = data.combinationname;
+
+                // Clear existing molecules in the combination container
+                while (editCombinationContainer.firstChild) {
+                    editCombinationContainer.removeChild(editCombinationContainer.firstChild);
+                }
+
+                // Add the molecules to the combination container
+                data.molecules.forEach(moleculeName => {
+                    const moleculeItem = document.createElement('div');
+                    moleculeItem.className = 'molecule-item';
+                    moleculeItem.draggable = true;
+                    moleculeItem.textContent = moleculeName;
+                    moleculeItem.dataset.moleculename = moleculeName;
+                    editCombinationContainer.appendChild(moleculeItem);
+                });
+
+                // Update the combination name input
+                updateCombinationName(editCombinationContainer, document.getElementById('editCombinationname'));
+
+                addDragAndDropHandlers();
+            } catch (error) {
+                console.error('Error populating edit form:', error);
+            }
+        }
+
         fetchMolecules();
+
+        // Assuming there's a way to trigger the edit form population, like a button or link
+        // Example:
+        document.getElementById('editButton').addEventListener('click', function () {
+            const combinationId = this.dataset.combinationId; // Get the combination ID from the button's data attribute
+            populateEditForm(combinationId);
+            document.getElementById('editForm').style.display = 'block';
+        });
     });
 </script>
-
-</body>
-
-</html>
 
 <div class="container mt-4">
     <form id="manufacturerform" style="display: none;" method="post" action="/auth/combinedmolecules">
@@ -455,8 +469,9 @@
                     </div>
                 </div>
 
-                <input type="text" placeholder="Combination Name" name="combinationname" id="combinationname" required>
             </div>
+            <input type="text" placeholder="Combination Name" name="combinationname" id="combinationname" required>
+
         </div>
         <button type="submit" class="btn btn-primary" id="saveManufacturer">Save</button>
         <button type="button" class="btn btn-primary" id="closeForm">Close</button>
@@ -470,22 +485,24 @@
                 <input type="text" placeholder="Combination Code No" name="combinationcode" id="editCombinationcode">
 
                 <!-- Molecule Selection -->
-                <div>
-                    <h4>Available Molecules</h4>
-                    <div id="editAvailableMolecules" class="molecule-list"></div>
+                <div class="row">
+                    <div class="col">
+                        <h4>Available Molecules</h4>
+                        <div id="editAvailableMolecules" class="molecule-list"></div>
+
+                    </div>
+                    <div class="col">
+                        <h4>Combination Container</h4>
+                        <div id="editCombinationContainer" class="molecule-list combination-container"></div>
+                    </div>
                 </div>
 
-                <div>
-                    <h4>Combination Container</h4>
-                    <div id="editCombinationContainer" class="molecule-list combination-container"></div>
-                </div>
 
-                <input type="text" placeholder="Combination Name" name="combinationname" id="editCombinationname"
-                    required>
             </div>
+            <input type="text" placeholder="Combination Name" name="combinationname" id="editCombinationname" required>
         </div>
         <button type="submit" class="btn btn-primary">Update</button>
-        <button type="button" class="btn btn-primary" id="closeEditForm">Close</button>
+        <button type="button" class="btn btn-primary" id="closeForm">Close</button>
     </form>
 </div>
 
@@ -495,3 +512,7 @@
         $(".editForm").hide();
     });
 </script>
+</body>
+
+</html>
+

@@ -209,7 +209,6 @@ router.get('/purchaseoutstanding', userController.purchaseoutstanding);
 router.get('/salesprintpage/productdetails', userController.getSalesProductDetails);
 router.get('/salesprintpage/salesdetails', userController.salesdetails);
 
-
 router.get('/salesretailprint/productdetails', userController.getSalesretailProductDetails);
 router.get('/salesretailprint/salesdetails', userController.salesretaildetails);
 
@@ -222,8 +221,6 @@ router.post('/menuaccess/updateCheckbox/:id', userController.updateCheckbox);
 
 router.get('/sidebar', userController.sidebar);
 
-
-
 router.get("/salesretail/salesretailDetails", userController.salesretailDetails);
 router.post("/salesretail", userController.salesretailadd);
 router.put("/salesretailEdit/:id", userController.salesretailEdit); 
@@ -234,9 +231,6 @@ router.get("/salesretail/salesretailproductid",userController.salesretailproduct
 router.get("/salesretailregister", userController.salesretailregister);
 router.get("/salesretail/customername", userController.customername);
 router.post("/salesretail/batchDetails/:selectedProductId",userController.batchDetails);
-
-
-
 
 router.get("/molecules", userController.molecules);
 router.post("/molecules", userController.moleculesadd);
@@ -251,5 +245,9 @@ router.delete(
   userController.combinedmoleculesdelete
 );
 
+router.get("/package", userController.package);
+router.post("/package", userController.packageadd);
+router.put("/packageedit/:id", userController.packageedit);
+router.delete("/packagedelete/:id", userController.packagedelete);
 
 module.exports = router;

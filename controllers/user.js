@@ -42,12 +42,113 @@ const poolConnect = async () => {
    return dateString;   
  }   
 
+//package
 
+exports.packageadd = async (req, res) => {
+  const { packagename } = req.body;
 
+  try {
+    // Ensure the database connection is established before proceeding
+    await poolConnect();
 
+    const result = await pool.request()
+   
+      .input('packagename', sql.VarChar(255), packagename || null)
+      .execute('Addpackage');
 
+    console.log(result);
+    console.log(result.toString());
 
-//molecules
+    // Redirect to another route after processing
+    return res.redirect('/package');
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send('Internal Server Error');
+  }
+};
+
+exports.packagedelete = async (req, res) => {
+  const uomId = req.params.id;
+
+  try {
+    // Ensure the database connection is established before proceeding
+    await poolConnect();
+
+    const result = await pool.request()
+      .input('uomId', /* Assuming your parameter type is INT */ sql.Int, uomId)
+      .execute('Deletepackage');
+
+    if (result.rowsAffected[0] > 0) {
+      return res.json({ success: true, message: "uomId deleted successfully" });
+    } else {
+      return res.status(404).json({ success: false, error: "uomId not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+};
+
+exports.packageedit = async (req, res) => {
+  const uomId = req.params.id;
+
+  // Extract the product data from the request body
+  const { packagename } = req.body;
+
+  try {
+    // Ensure the database connection is established before proceeding
+    await poolConnect();
+
+    const result = await pool.query`
+      UPDATE [elite_pos].[dbo].[package]
+      SET
+     
+      packagename = ${packagename}
+      WHERE
+        id = ${uomId}
+    `;
+
+    console.log(result);
+    console.log(result.toString());
+
+    // Check if the update was successful (at least one row affected)
+    if (result.rowsAffected[0] > 0) {
+      return res.json({ success: true, message: "uomId Type updated successfully" });
+    } else {
+      // Handle the case where no rows were affected (e.g., product ID not found)
+      return res.status(404).json({ success: false, error: "uomId not found" });
+    }
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+};
+
+exports.package = (req, res) => {
+  pool.connect((err, connection) => {
+      if (err) {
+          console.error('Error getting connection from pool:', err);
+          return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      connection.query('EXEC Getpackage', (err, result) => {
+          connection.release(); // Release the connection back to the pool
+
+          if (err) {
+              console.error('Error in listing data:', err);
+              return res.status(500).json({ error: 'Internal Server Error' });
+          }
+
+          // Send the data as JSON response
+          res.json({ data: result.recordset });
+      });
+  });
+};
+
+//package
+
+//combinemolecules
 
 exports.combinedmoleculesadd = async (req, res) => {
   const {

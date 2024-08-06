@@ -659,4 +659,19 @@ router.get("/combinedmolecules", (req, res) => {
   res.render("combinedmoleculesdelete", { id: req.params.id });
 });
 
+
+router.get("/package", (req, res) => {
+  res.render("package");
+});
+router.post("/package", (req, res) => {
+  res.render("package");
+});
+router.put("/package", (req, res) => {
+  res.render("packageedit", { id: req.params.id });
+});
+router.get("/package", (req, res) => {
+  res.render("packagedelete", { id: req.params.id });
+});
+
+
 module.exports=router;     

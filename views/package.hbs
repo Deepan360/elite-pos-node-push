@@ -17,6 +17,7 @@
             /* Ensure it's above other elements */
             border-radius: 10px;
         }
+
         .editForm {
             display: none;
             position: fixed;
@@ -33,6 +34,7 @@
         .container {
             margin-left: 20%;
         }
+
         .updateManufacturer {
             background-color: rgba(50, 141, 168) !important;
             color: white !important;
@@ -42,6 +44,7 @@
             height: 30px;
 
         }
+
         .closeForm {
             background-color: rgba(50, 141, 168) !important;
             color: white !important;
@@ -50,9 +53,11 @@
             width: 80px !important;
             height: 30px;
         }
+
         button {
             margin: 1px;
         }
+
         #message {
             display: none;
             position: fixed;
@@ -77,17 +82,21 @@
             /* Optional: Add border-radius for rounded corners */
             overflow: hidden;
         }
+
         form input {
             margin: 2px;
         }
+
         form button {
             width: 100px !important;
             padding: 5px;
             margin: 5px;
         }
+
         .col input {
             width: 100%;
         }
+
         input[type=checkbox] {
             width: 100px;
             color: #8f8f8f !important;
@@ -102,17 +111,16 @@
 
         <div class="table-responsive container-fluid py-4  ">
             <div class=" form-control card ">
-                <h3>List Of Molecules</h3>
+                <h3>List Of package</h3>
 
-                <form action="/auth/molecules" method="get">
+                <form action="/auth/package" method="get">
                     <table id="customerTable" class="table-responsive justify-content-between align-items-end"
                         style="width:100% !important">
 
                         <thead>
                             <tr>
                                 <th>Id</th>
-                                <th>Molecules Code</th>
-                                <th>Molecules Name</th>
+                                <th>package Name</th>
                                 <th class="action">Action</th>
                             </tr>
                         </thead>
@@ -164,15 +172,14 @@
         var table = $("#customerTable").DataTable({
             debug: true,
             ajax: {
-                'url': '/auth/molecules',
+                'url': '/auth/package',
                 'dataType': 'json',
                 'dataSrc': 'data',
                 type: 'GET', // Adjust 'rows' based on your server response structure
             },
             columns: [
                 { data: 'id' },
-                { data: 'moleculecode' },
-                { data: 'moleculename' },
+                { data: 'packagename' },
                 {
                     data: 'id',
                     render: function (data) {
@@ -208,8 +215,7 @@
             if (data && typeof data === 'object' && !Array.isArray(data)) {
                 // Populate the edit form fields with the data
                 $(".editForm #id").val(data.id);
-                $(".editForm #moleculecode").val(data.moleculecode);
-                $(".editForm #moleculename").val(data.moleculename);
+                $(".editForm #packagename").val(data.packagename);
 
 
 
@@ -231,7 +237,7 @@
 
             $.ajax({
                 type: 'PUT',
-                url: '/auth/moleculesedit/' + customerId,
+                url: '/auth/packageedit/' + customerId,
                 data: formData,
                 success: function (response) {
                     console.log(response);
@@ -315,14 +321,13 @@
 </html>
 
 
-<form id="manufacturerform" style="display: none;" method="post" action="/auth/molecules">
+<form id="manufacturerform" style="display: none;" method="post" action="/auth/package">
     <div class="row">
         <div class="col">
             <!-- First Column -->
             <input type="hidden" placeholder="Id" name="id" id="id">
-            <input type="text" placeholder="Molecule Code No" name="moleculecode" id="moleculecode">
-            <input type="text" placeholder="Molecule name" name="moleculename" id="moleculename" required>
-           
+            <input type="text" placeholder="Package" name="packagename" id="packagename" required>
+
 
         </div>
     </div>
@@ -330,13 +335,12 @@
     <button type="button" class="btn btn-primary" id="closeForm">Close</button>
 </form>
 
-<form class="editForm" method="put" action="/auth/moleculesedit/:id">
+<form class="editForm" method="put" action="/auth/packageedit/:id">
     <div class="row">
         <div class="col">
             <!-- First Column -->
             <input type="hidden" placeholder="Id" name="id" id="id">
-            <input type="text" placeholder="Molecule Code No" name="moleculecode" id="moleculecode">
-            <input type="text" placeholder="Molecule name" name="moleculename" id="moleculename" required>
+            <input type="text" placeholder="Package" name="packagename" id="packagename" required>
 
 
         </div>

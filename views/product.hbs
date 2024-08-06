@@ -22,10 +22,9 @@
             transform: translate(-50%, -50%);
             background-color: #8f8f8f;
             padding: 20px;
-            z-index: 1000;
+            z-index: 1000;/* Ensure it's above other elements */
             border-radius: 10px;
         }
-           
           </style>
     <style>
         .container{
@@ -113,6 +112,9 @@
                         <th>HSN Code</th>
                         <th>product Category</th>
                         <th>Product Type</th>
+                        <th>Manufacturer</th>
+                        <th>Combination</th>
+                        <th>Package</th>
                         <th>UOM</th>
                         <th>Tax(%)</th>
                         <th>Active</th>
@@ -180,6 +182,9 @@
         { data: 'hsnCode' }, 
         { data: 'category' },
         { data: 'productType' },
+         { data: 'productType' },
+          { data: 'productType' },
+            { data: 'productType' },
         { data: 'uom' },
         { data: 'tax' },
  { data: 'active', render: function (data, type, row) {

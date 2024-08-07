@@ -182,9 +182,9 @@
         { data: 'hsnCode' }, 
         { data: 'category' },
         { data: 'productType' },
-         { data: 'productType' },
-          { data: 'productType' },
-            { data: 'productType' },
+         { data: 'manufacturer' },
+          { data: 'combination' },
+            { data: 'package' },
         { data: 'uom' },
         { data: 'tax' },
  { data: 'active', render: function (data, type, row) {
@@ -233,6 +233,9 @@ $(document).on('click', '.editBtn', function() {
         $(".editForm #hsnCode").val(data.hsnCode);
         $(".editForm #category").val(data.category);
         $(".editForm #productType").val(data.productType);
+        $(".editForm #manufacturer").val(data.manufacturer);
+        $(".editForm #combination").val(data.combination);
+        $(".editForm #package").val(data.package);
         $(".editForm #uom").val(data.uom);
         $(".editForm #tax").val(data.tax);
        
@@ -341,6 +344,8 @@ $('#customerTable').on('click', '.deleteBtn', function() {
 });
 </script>
 <script>
+
+
 // Fetch options for cash/bank Ledger(dr)
 $.ajax({
     url: '/auth/productcategory/category',
@@ -364,6 +369,76 @@ $.ajax({
         console.error('Error fetching options for cash/bank Ledger(cr):', error);
     }
 });
+
+    $.ajax({
+         url: '/auth/manufacturer',
+        method: 'GET',
+        success: function (response) {
+            console.log('Received response for category:', response);
+            var options = response.data;
+            if (options && options.length) {
+                options.forEach(function (option) {
+                    $('.dropdown[name="manufacturer"]').append($('<option>', {
+
+                        value: option.manufacturername,
+                        text: option.manufacturername
+                    }));
+                });
+            } else {
+                console.error('No options found for category');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Error fetching options for cash/bank Ledger(cr):', error);
+        }
+    });
+
+    $.ajax({
+            url: '/auth/package',
+            method: 'GET',
+            success: function (response) {
+                console.log('Received response for package:', response);
+                var options = response.data;
+                if (options && options.length) {
+                    options.forEach(function (option) {
+                        $('.dropdown[name="package"]').append($('<option>', {
+
+                            value: option.packagename,
+                            text: option.packagename
+                        }));
+                    });
+                } else {
+                    console.error('No options found for package');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching options for package:', error);
+            }
+        });
+
+        $.ajax({
+                url: '/auth/product/moleculescombination',
+                method: 'GET',
+                success: function (response) {
+                    console.log('Received response for category:', response);
+                    var options = response.data;
+                    if (options && options.length) {
+                        options.forEach(function (option) {
+                            $('.dropdown[name="combination"]').append($('<option>', {
+
+                                value: option.combined_name,
+                                text: option.combined_name
+                            }));
+                        });
+                    } else {
+                        console.error('No options found for combination');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching options for cash/bank Ledger(cr):', error);
+                }
+            });
+
 
 // Fetch options for customer Ledger(cr)
 $.ajax({
@@ -410,79 +485,155 @@ $.ajax({
         console.error('Error fetching options for Supplier Ledger(dr):', error);
     }
 });
-{{!-- 
-   // Convert date objects to strings in the "YYYY-MM-DD" format
-        $(".editForm #reciptdate").val(formatDate(data.reciptdate));
-        $(".editForm #billdate").val(formatDate(data.billdate));
 
-        $(".editForm #dr").val(data['cash/bankLedger(dr)']);
-        $(".editForm #cr").val(data['customerLedger(cr)']);
-function formatDate(dateObject) {
-    const date = new Date(dateObject);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${day}-${month}`;
-}  --}}
 </script>
 
 </body>
 </html>
  
-   
 <form id="manufacturerform" style="display: none;" method="post" action="/auth/product">
-    <div class="row">
-        <div class="col">
-            <!-- First Column -->
+    <div class="row " style="justify-content: space-around;">
+        <div class="col-md-5">
+            <div class="row">
+                <label class="h6" for="Code No">Code No</label>
+                <input type="text" placeholder="Code No" name="code" id="code">
+            </div>
+            <div class="row">
+                <label class="h6" for="Product name">Product name</label>
+                <input type="text" placeholder="Product name" name="productname" id="productname" required>
+            </div>
             <input type="hidden" placeholder="Id" name="id" id="id">
-            <input type="text" placeholder="Code No" name="code" id="code">
-            <input type="text" placeholder="Product name" name="productname" id="productname" required>
-            <input type="text" placeholder="Description" name="description" id="description">
-            <input type="text" placeholder="HSNCode" name="hsnCode" id="hsnCode">
-               <!-- Inside your form -->
-      <label class="h6" for="Category">Category:</label>
-      <select id="category" name="category"class="dropdown"  >
-        <option value="Disabled Select">Category</option>
-      </select>
-      <label class="h6" for="ProductType">ProductType:</label>
-      <select id="productType" class="dropdown" name="productType">
-        <option value="Disabled Select">Select Product Type</option>
-      </select>
-            {{!-- <input type="text" placeholder="Measurement" name="measurement" id="measurement"> --}}
-            <label class="h6" for="UOM">UOM:</label>
-      <select id="uom" class="dropdown" name="uom"></select>
-       
-            <input type="text" placeholder="Tax" name="tax" id="tax">
-            <label for="active" style="font-size: 14px;">Active<input type="checkbox" id="active" value="1" name="active" ></label>
-            
+            <div class="row">
+                <label class="h6" for="Description">Description</label>
+                <input type="text" placeholder="Description" name="description" id="description">
+            </div>
+            <div class="row">
+                <label class="h6" for="HSNCode">HSNCode</label>
+                <input type="text" placeholder="HSNCode" name="hsnCode" id="hsnCode">
+            </div>
+            <div class="row">
+                <label class="h6" for="Tax">Tax</label>
+                <input type="text" placeholder="Tax" name="tax" id="tax">
+            </div>
+            <div class="row">
+                <label class="h6" for="Active">Active</label>
+                <label for="active" style="font-size: 14px;">Active -> <input type="checkbox" id="active" value="1"
+                        name="active"></label>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="row">
+                <label class="h6" for="Category">Category:</label>
+                <select id="category" class="form-control dropdown" name="category">
+                    <option value="Disabled Select">Select Category</option>
+                </select>
+            </div>
+            <div class="row">
+                <label class="h6" for="ProductType">ProductType:</label>
+                <select id="productType" class="form-control dropdown" name="productType">
+                    <option value="Disabled Select">Select Product Type</option>
+                </select>
+            </div>
+            <div class="row">
+                <label class="h6" for="manufacturer">Manufacturer:</label>
+                <select id="manufacturer" class="form-control dropdown" name="manufacturer">
+                    <option value="Disabled Select">Select Manufacturer</option>
+                </select>
+            </div>
+            <div class="row">
+                <label class="h6" for="Combination">Combination:</label>
+                <select id="combination" class="form-control dropdown" name="combination">
+                    <option value="Disabled Select">Select Combination</option>
+                </select>
+            </div>
+            <div class="row">
+                <label class="h6" for="Package">Package:</label>
+                <select id="package" class="form-control dropdown" name="package">
+                    <option value="Disabled Select">Select Package</option>
+                </select>
+            </div>
+            <div class="row">
+                <label class="h6" for="UOM">UOM:</label>
+                <select id="uom" class="form-control dropdown" name="uom">
+                    <option value="Disabled Select">Select UOM</option>
+                </select>
+            </div>
         </div>
     </div>
     <button type="submit" value="submit" class="btn btn-primary" id="saveManufacturer">Save</button>
     <button type="button" class="btn btn-primary" id="closeForm">Close</button>
 </form>
+
   
 <form class="editForm" method="put" action="/auth/productedit/:id">
-    <div class="row">
-        <div class="col">
-            <!-- First Column -->
-            <input type="hidden" placeholder="Id" name="id" id="id">
+<div class="row " style="justify-content: space-around;">
+    <div class="col-md-5">
+        <div class="row">
+            <label class="h6" for="Code No">Code No</label>
             <input type="text" placeholder="Code No" name="code" id="code">
+        </div>
+        <div class="row">
+            <label class="h6" for="Product name">Product name</label>
             <input type="text" placeholder="Product name" name="productname" id="productname" required>
+        </div>
+        <input type="hidden" placeholder="Id" name="id" id="id">
+        <div class="row">
+            <label class="h6" for="Description">Description</label>
             <input type="text" placeholder="Description" name="description" id="description">
+        </div>
+        <div class="row">
+            <label class="h6" for="HSNCode">HSNCode</label>
             <input type="text" placeholder="HSNCode" name="hsnCode" id="hsnCode">
-               <!-- Inside your form -->
-      <label class="h6" for="Category">Category:</label>
-      <select id="category" name="category"class="dropdown"  ></select>
-      <label class="h6" for="ProductType">ProductType:</label>
-      <select id="productType" class="dropdown" name="productType"></select>
-            {{!-- <input type="text" placeholder="Measurement" name="measurement" id="measurement"> --}}
-             <label class="h6" for="UOM">UOM:</label>
-      <select id="uom" class="dropdown" name="uom"></select>
+        </div>
+        <div class="row">
+            <label class="h6" for="Tax">Tax</label>
             <input type="text" placeholder="Tax" name="tax" id="tax">
-            <label for="active" style="font-size: 14px;">Active<input type="checkbox" id="active" value="1" name="active" ></label>
-            
+        </div>
+        <div class="row">
+            <label class="h6" for="Active">Active</label>
+            <label for="active" style="font-size: 14px;">Active -> <input type="checkbox" id="active" value="1"
+                    name="active"></label>
         </div>
     </div>
+    <div class="col-md-5">
+        <div class="row">
+            <label class="h6" for="Category">Category:</label>
+            <select id="category" class="form-control dropdown" name="category">
+                <option value="Disabled Select">Select Category</option>
+            </select>
+        </div>
+        <div class="row">
+            <label class="h6" for="ProductType">ProductType:</label>
+            <select id="productType" class="form-control dropdown" name="productType">
+                <option value="Disabled Select">Select Product Type</option>
+            </select>
+        </div>
+        <div class="row">
+            <label class="h6" for="manufacturer">Manufacturer:</label>
+            <select id="manufacturer" class="form-control dropdown" name="manufacturer">
+                <option value="Disabled Select">Select Manufacturer</option>
+            </select>
+        </div>
+        <div class="row">
+            <label class="h6" for="Combination">Combination:</label>
+            <select id="combination" class="form-control dropdown" name="combination">
+                <option value="Disabled Select">Select Combination</option>
+            </select>
+        </div>
+        <div class="row">
+            <label class="h6" for="Package">Package:</label>
+            <select id="package" class="form-control dropdown" name="package">
+                <option value="Disabled Select">Select Package</option>
+            </select>
+        </div>
+        <div class="row">
+            <label class="h6" for="UOM">UOM:</label>
+            <select id="uom" class="form-control dropdown" name="uom">
+                <option value="Disabled Select">Select UOM</option>
+            </select>
+        </div>
+    </div>
+</div>
     <button type="submit" class="btn btn-primary">Update</button>
     <button type="button" class="btn btn-primary  " id="closeForm">Close</button>
 </form>

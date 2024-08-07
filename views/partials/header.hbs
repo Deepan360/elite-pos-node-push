@@ -115,9 +115,23 @@ h5{
 <script type="text/javascript" src="https://cdn.datatables.net/1.11.6/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.3.3/js/dataTables.fixedColumns.min.js"></script>
 
+
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.2/dist/css/select2.min.css" rel="stylesheet" />
+
+
+<!-- Select2 JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.2/dist/js/select2.min.js"></script>
+
+
 </head>
 
 <script>
+      $(document).ready(function () {
+        // Initialize Select2 on all dropdowns
+        $('.dropdown').select2();
+      });
+
 document.addEventListener("DOMContentLoaded", function() {
     var currentPageUrl = window.location.href;
 

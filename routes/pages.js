@@ -674,4 +674,8 @@ router.get("/package", (req, res) => {
 });
 
 
+router.get("/product", (req, res) => {
+  res.render("moleculescombination");
+});
+
 module.exports=router;     

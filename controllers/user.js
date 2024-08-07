@@ -42,6 +42,31 @@ const poolConnect = async () => {
    return dateString;   
  }   
 
+
+//moleculescombination
+exports.moleculescombination = async (req,res)=>{
+  pool.connect((err, connection) => {
+      if (err) {
+          console.error('Error getting connection from pool:', err);
+          return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      connection.query("EXEC Getmoleculescombination", (err, result) => {
+        connection.release(); // Release the connection back to the pool
+
+        if (err) {
+          console.error("Error in listing data:", err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+
+        // Send the data as JSON response
+        res.json({ data: result.recordset });
+      });
+  });
+}
+
+
+//moleculescombination
 //package
 
 exports.packageadd = async (req, res) => {
@@ -5854,7 +5879,7 @@ exports.productadd = async (req, res) => {
   console.log(req.body);
 
   const {
-    code, productname, description, hsnCode, category, productType, uom, tax, active
+    code, productname, description, hsnCode, category, productType, uom, tax, active,manufacturer,combination,package
   } = req.body;
 
   // Function to convert empty strings to null
@@ -5871,6 +5896,9 @@ exports.productadd = async (req, res) => {
       .input('hsnCode', sql.VarChar(50), convertToNull(hsnCode))
       .input('category', sql.VarChar(50), convertToNull(category))
       .input('productType', sql.VarChar(50), convertToNull(productType))
+      .input('manufacturer', sql.VarChar(50), convertToNull(manufacturer))
+      .input('combination', sql.VarChar(50), convertToNull(combination))
+      .input('package', sql.VarChar(50), convertToNull(package))
       .input('uom', sql.VarChar(50), convertToNull(uom))
       .input('tax', sql.Decimal(18, 2), tax !== '' ? tax : null) // Convert empty tax to null
       .input('active', sql.Bit, active) // No need to convert active to null
@@ -5914,7 +5942,7 @@ exports.productedit = async (req, res) => {
 
   // Extract the product data from the request body
   const {
-    code, productname, description, hsnCode, category, productType, uom, tax, active
+    code, productname, description, hsnCode, category, productType, uom, tax, active,manufacturer,combination,package
   } = req.body;
 
   // Function to convert empty strings to null
@@ -5932,6 +5960,9 @@ exports.productedit = async (req, res) => {
       .input('hsnCode', sql.VarChar(50), convertToNull(hsnCode))
       .input('category', sql.VarChar(50), convertToNull(category))
       .input('productType', sql.VarChar(50), convertToNull(productType))
+      .input('manufacturer', sql.VarChar(50), convertToNull(manufacturer))
+      .input('combination', sql.VarChar(50), convertToNull(combination))
+      .input('package', sql.VarChar(50), convertToNull(package))
       .input('uom', sql.VarChar(50), convertToNull(uom))
       .input('tax', sql.Decimal(18, 2), tax !== '' ? tax : null) // Convert empty tax to null
       .input('active', sql.Bit, active)

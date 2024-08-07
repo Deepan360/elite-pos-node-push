@@ -245,6 +245,11 @@ router.delete(
   userController.combinedmoleculesdelete
 );
 
+router.get(
+  "/product/moleculescombination",
+  userController.moleculescombination
+);
+
 router.get("/package", userController.package);
 router.post("/package", userController.packageadd);
 router.put("/packageedit/:id", userController.packageedit);

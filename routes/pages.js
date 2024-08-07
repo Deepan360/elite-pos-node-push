@@ -658,8 +658,6 @@ router.put("/combinedmolecules", (req, res) => {
 router.get("/combinedmolecules", (req, res) => {
   res.render("combinedmoleculesdelete", { id: req.params.id });
 });
-
-
 router.get("/package", (req, res) => {
   res.render("package");
 });
@@ -672,8 +670,6 @@ router.put("/package", (req, res) => {
 router.get("/package", (req, res) => {
   res.render("packagedelete", { id: req.params.id });
 });
-
-
 router.get("/product", (req, res) => {
   res.render("moleculescombination");
 });

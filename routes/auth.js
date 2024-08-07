@@ -141,7 +141,7 @@ router.put("/PurchasereturnEdit/:id", userController.PurchasereturnEdit);
 router.get('/Purchasereturn/Purchasereturnids', userController.Purchasereturnids);
 router.delete("/Purchasereturndelete/:id", userController.Purchasereturndelete);
 router.delete("/Purchasereturntransdelete/:id", userController.Purchasereturntransdelete);
-router.get("/Purchasereturn/PurchasereturnId",userController.PurchasereturnId);
+router.get("/Purchasereturn/PurchasereturnId",userController.PurchasereturnId);   
 router.get('/Purchasereturn/Purchasereturnids', userController.Purchasereturnids);
 router.get('/Purchasereturn/productreturnid',userController.productreturnid);
 router.get("/Purchasereturnregister",userController.Purchasereturnregister);

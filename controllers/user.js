@@ -3332,6 +3332,9 @@ exports.productid = (req, res) => {
     pt.batchNo,
     pt.tax,
     pt.quantity,
+     pt.package,
+      pt.retailQty,
+       pt.retailRate,
     pt.uom,
     pt.rate,
     pt.mrp,
@@ -3517,7 +3520,7 @@ exports.purchaseadd = async (req, res) => {
     console.log('Number of products:', parsedProducts.length);
 //inserting products
 for (const product of parsedProducts) { // Change 'products' to 'parsedProducts'
-  const { Id, productId, batchNo, tax, quantity, uom, rate,mrp, discMode, discount, amount, cgst, sgst, igst, totalAmount } = product;
+  const { Id, productId, batchNo, tax, quantity,package,retailQty,retailRate, uom, rate,mrp, discMode, discount, amount, cgst, sgst, igst, totalAmount } = product;
   if (Id) {
       // Update existing product in PurchaseTable_Trans
       await pool.query`
@@ -3527,6 +3530,9 @@ for (const product of parsedProducts) { // Change 'products' to 'parsedProducts'
               [batchNo] = ${batchNo},
               [tax] = ${tax},
               [quantity] = ${quantity},
+               [package] = ${package},
+                [retailQty] = ${retailQty},
+                 [retailRate] = ${retailRate},
               [uom] = ${uom},
               [rate] = ${rate},
                [mrp] = ${mrp},
@@ -3543,8 +3549,8 @@ for (const product of parsedProducts) { // Change 'products' to 'parsedProducts'
   } else {
       // Insert new product into PurchaseTable_Trans
       const insertProductResult = await pool.query`
-          INSERT INTO [elite_pos].[dbo].[PurchaseTable_Trans] ([purchaseId], [product], [batchNo], [tax], [quantity], [uom], [rate],[mrp], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
-          VALUES (${purchaseId}, ${productId}, ${batchNo}, ${tax}, ${quantity}, ${uom}, ${rate}, ${mrp},${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
+          INSERT INTO [elite_pos].[dbo].[PurchaseTable_Trans] ([purchaseId], [product], [batchNo], [tax], [quantity],[package],[retailQty],[retailRate], [uom], [rate],[mrp], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
+          VALUES (${purchaseId}, ${productId}, ${batchNo}, ${tax}, ${quantity},${package},${retailQty},${retailRate}, ${uom}, ${rate}, ${mrp},${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
           
           SELECT SCOPE_IDENTITY() AS insertedId;
       `;
@@ -3563,6 +3569,8 @@ for (const product of parsedProducts) { // Change 'products' to 'parsedProducts'
               SET 
                   [quantity] = ${quantity},
                   [op_quantity] = ${quantity},
+                  [retailQty]=${retailQty},
+                  [retailRate]=${retailRate},
                   [tax] = ${tax},
                   [product] = ${productId},
                   [batchNo] = ${batchNo},
@@ -3573,8 +3581,8 @@ for (const product of parsedProducts) { // Change 'products' to 'parsedProducts'
       } else {
           // Insert new record into stock_Ob
           await pool.query`
-              INSERT INTO [elite_pos].[dbo].[stock_Ob] (Id, product, batchNo, quantity, [op_quantity], tax, uom, rate,mrp)
-              VALUES (${purchaseTransId}, ${productId}, ${batchNo}, ${quantity}, ${quantity}, ${tax}, ${uom}, ${rate},${mrp});
+              INSERT INTO [elite_pos].[dbo].[stock_Ob] (Id, product, batchNo, quantity,retailQty,retailRate, [op_quantity], tax, uom, rate,mrp)
+              VALUES (${purchaseTransId}, ${productId}, ${batchNo}, ${quantity},${retailQty},${retailRate}, ${quantity} ,${tax}, ${uom}, ${rate},${mrp});
           `;
       }
   }
@@ -3619,7 +3627,7 @@ exports.purchaseEdit = async (req, res) => {
         [id] = ${purchaseDetails.id};
     `;
     for (const product of products) {
-      const { Id, productId, batchNo, tax, quantity, uom, rate,mrp, discMode, discount, amount, cgst, sgst, igst, totalAmount } = product;
+      const { Id, productId, batchNo, tax, quantity,package,retailQty,retailRate, uom, rate,mrp, discMode, discount, amount, cgst, sgst, igst, totalAmount } = product;
       let purchaseTransId;
       if (Id) {
         await pool.query`
@@ -3629,9 +3637,12 @@ exports.purchaseEdit = async (req, res) => {
               [batchNo] = ${batchNo},
               [tax] = ${tax},
               [quantity] = ${quantity},
+              [package] = ${package},
+              [retailQty] = ${retailQty},
+              [retailRate] = ${retailRate},
               [uom] = ${uom},
               [rate] = ${rate},
-               [mrp] = ${mrp},
+              [mrp] = ${mrp},
               [discMode] = ${discMode},
               [discount] = ${discount},
               [amount] = ${amount},
@@ -3645,8 +3656,8 @@ exports.purchaseEdit = async (req, res) => {
         purchaseTransId = Id;
       } else {
         const insertProductResult = await pool.query`
-          INSERT INTO [elite_pos].[dbo].[PurchaseTable_Trans] ([purchaseId], [product], [batchNo], [tax], [quantity], [uom], [rate],[mrp], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
-          VALUES (${purchaseDetails.id}, ${productId}, ${batchNo}, ${tax}, ${quantity}, ${uom}, ${rate},${mrp}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});  
+          INSERT INTO [elite_pos].[dbo].[PurchaseTable_Trans] ([purchaseId], [product], [batchNo], [tax], [quantity],[package],[retailQty],[retailRate], [uom], [rate],[mrp], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
+          VALUES (${purchaseDetails.id}, ${productId}, ${batchNo}, ${tax}, ${quantity},${package}, ${retailQty}, ${retailRate},  ${uom}, ${rate},${mrp}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});  
           SELECT SCOPE_IDENTITY() AS insertedId;
         `;
         purchaseTransId = insertProductResult.recordset[0].insertedId;
@@ -3660,6 +3671,8 @@ exports.purchaseEdit = async (req, res) => {
             batchNo=${batchNo},
             quantity = ${quantity},
             [op_quantity]=${quantity},
+            [retailQty]=${retailQty},
+                  [retailRate]=${retailRate},
             tax = ${tax},
             uom = ${uom},
             rate = ${rate},
@@ -3668,8 +3681,8 @@ exports.purchaseEdit = async (req, res) => {
         END
         ELSE
         BEGIN
-          INSERT INTO [elite_pos].[dbo].[stock_Ob] (Id, product, batchNo, quantity,[op_quantity], tax, uom, rate,mrp)
-          VALUES (${purchaseTransId}, ${productId}, ${batchNo}, ${quantity},${quantity}, ${tax}, ${uom}, ${rate},${mrp});
+          INSERT INTO [elite_pos].[dbo].[stock_Ob] (Id, product, batchNo, quantity,retailQty,retailRate, [op_quantity], tax, uom, rate,mrp)
+          VALUES (${purchaseTransId}, ${productId}, ${batchNo}, ${quantity},${retailQty},${retailRate} ,${quantity}, ${tax}, ${uom}, ${rate},${mrp});
         END
       `;
     }
@@ -3683,12 +3696,10 @@ exports.purchaseEdit = async (req, res) => {
 
 exports.purchaseDetails = async (req, res) => {
   try {
-    // Ensure the database connection is established before proceeding
     await poolConnect();
 
     const result = await pool.request().execute('GetPurchaseDetails');
 
-    // Send the data as JSON response
     res.json({ data: result.recordset });
   } catch (error) {
     console.error('Error in listing data:', error);
@@ -3698,12 +3709,11 @@ exports.purchaseDetails = async (req, res) => {
 
 exports.productname = async (req, res) => {
   try {
-    // Ensure the database connection is established before proceeding
     await poolConnect();
 
     const result = await pool.request().execute('GetProductName');
 
-    // Send the data as JSON response
+ 
     res.json({ data: result.recordset });
   } catch (error) {
     console.error('Error in listing data:', error);
@@ -3713,12 +3723,8 @@ exports.productname = async (req, res) => {
 
 exports.discmode = async (req, res) => {
   try {
-    // Ensure the database connection is established before proceeding
     await poolConnect();
-
     const result = await pool.request().execute('GetDiscModes');
-
-    // Send the data as JSON response
     res.json({ data: result.recordset });
   } catch (error) {
     console.error('Error in listing data:', error);
@@ -3728,11 +3734,8 @@ exports.discmode = async (req, res) => {
 
 exports.suppliername = async (req, res) => {
   try {
-    // Ensure the database connection is established before proceeding
     await poolConnect();
-
     const result = await pool.request().execute('GetSupplierNames');
-
     // Send the data as JSON response
     res.json({ data: result.recordset });
   } catch (error) {
@@ -3748,9 +3751,7 @@ exports.contraCr = async (req, res) => {
   try {
     // Ensure the database connection is established before proceeding
     await poolConnect();
-
     const result = await pool.request().execute('GetContraCr');
-
     // Send the data as JSON response
     res.json({ data: result.recordset });
   } catch (error) {
@@ -3763,9 +3764,7 @@ exports.contraDr = async (req, res) => {
   try {
     // Ensure the database connection is established before proceeding
     await poolConnect();
-
     const result = await pool.request().execute('GetContraDr');
-
     // Send the data as JSON response
     res.json({ data: result.recordset });
   } catch (error) {
@@ -3779,14 +3778,11 @@ exports.contraadd = async (req, res) => {
   const {
     contradate, cr, dr, billno, amount, discount, remarks
   } = req.body;
-
   // Handle date values
   const formattedcontraDate = contradate ? contradate : null;
-
   try {
     // Ensure the database connection is established before proceeding
     await poolConnect();
-
     const result = await pool.request()
       .input('contradate', sql.Date, formattedcontraDate)
       .input('cr', sql.VarChar(255), cr || null)
@@ -3796,11 +3792,9 @@ exports.contraadd = async (req, res) => {
       .input('discount', sql.Decimal(18, 2), discount || null)
       .input('remarks', sql.VarChar(255), remarks || null)
       .execute('AddContra');
-
     console.log('Formatted contra Date:', formattedcontraDate);
     console.log('DR Value:', dr);
     console.log(result);
-
     // Redirect to another route after processing
     return res.redirect('/contra');
   } catch (error) {

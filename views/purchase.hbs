@@ -203,9 +203,13 @@
                         <th>Batch No</th>
                         <th>Tax(%)</th>
                         <th>Quantity</th>
+                        <th>Package</th>
+                        <th>Retail.qty</th>
+                        <th>Retail.rate</th>
                         <th>UOM</th>
                         <th>Rate</th>
                         <th>MRP</th>
+                        <th>Retail.MRP</th>
                         <th>Disc.Mode</th>
                         <th>Disc</th>
                         <th>Amount</th>
@@ -365,25 +369,34 @@ $(document).on('click', '.editmasbtn', function() {
         var batchNo = row.find('td:eq(2)').text();
         var tax = row.find('td:eq(3)').text();
         var quantity = row.find('td:eq(4)').text();
-        var uom = row.find('td:eq(5)').text();
-        var rate = row.find('td:eq(6)').text();
-         var mrp = row.find('td:eq(7)').text();
-        var discMode = row.find('td:eq(8)').text();
-        var discount = row.find('td:eq(9)').text();
-        var amount = row.find('td:eq(10)').text();
-        var cgst = row.find('td:eq(11)').text();
-        var sgst = row.find('td:eq(12)').text();
-        var igst = row.find('td:eq(13)').text();
-        var totalAmount = row.find('td:eq(14)').text();
+          var package = row.find('td:eq(5)').text();
+            var retailQty = row.find('td:eq(6)').text();
+              var retailRate = row.find('td:eq(7)').text();
+        var uom = row.find('td:eq(8)').text();
+        var rate = row.find('td:eq(9)').text();
+         var mrp = row.find('td:eq(10)').text();
+          var retailMrp = row.find('td:eq(11)').text();
+        var discMode = row.find('td:eq(12)').text();
+        var discount = row.find('td:eq(13)').text();
+        var amount = row.find('td:eq(14)').text();
+        var cgst = row.find('td:eq(15)').text();
+        var sgst = row.find('td:eq(16)').text();
+        var igst = row.find('td:eq(17)').text();
+        var totalAmount = row.find('td:eq(18)').text();
         
     row.html("<td><input type='number' readonly name='Id' class='input-field  purchase-id' value='" + id + "'></td>" +
     "<td><select name='product' class='input-field product-name dropdown' id='productname_" + id + "'><option selected disabled>Select product</option></select></td>" +
     "<td><input type='text' name='batchNo' class='input-field' value='" + batchNo + "'></td>" +
     "<td><input type='text' name='tax' class='input-field' value='" + tax + "'></td>" +
     "<td><input type='number' name='quantity' class='input-field' value='" + quantity + "'></td>" +
+    "<td><input type='number' name='package' class='input-field' value='" + package + "'></td>" +
+     "<td><input type='number' name='retailQty' class='input-field' value='" + retailQty + "'></td>" +
+      "<td><input type='number' name='retailRate' class='input-field' value='" + retailRate + "'></td>" +
     "<td><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
     "<td><input type='number' name='rate' class='input-field' value='" + rate + "'></td>" +
     "<td><input type='number' name='mrp' class='input-field' value='" + mrp + "'></td>" +
+        "<td><input type='number' name='retailMrp' class='input-field' value='" + retailMrp + "'></td>" +
+
     "<td><select name='discMode' class='input-field disc-mode dropdown' id='discMode_" + id + "'><option selected disabled>Select Disc Mode</option></select></td>" +
     "<td><input type='number' name='discount' class='input-field' value='" + discount + "'></td>" +
     "<td><input type='number' name='amount' class='input-field' value='" + amount + "'></td>" +
@@ -519,9 +532,13 @@ function getUpdatedProductsData() {
             var batchNo = $(this).find('[name="batchNo"]').val(); 
             var tax = $(this).find('[name="tax"]').val();
             var quantity = $(this).find('[name="quantity"]').val();
+            var package = $(this).find('[name="package"]').val();
+            var retailQty = $(this).find('[name="retailQty"]').val();
+            var retailRate = $(this).find('[name="retailRate"]').val();
             var uom = $(this).find('[name="uom"]').val();
             var rate = $(this).find('[name="rate"]').val();
-             var mrp = $(this).find('[name="mrp"]').val();
+            var mrp = $(this).find('[name="mrp"]').val();
+              var retailMrp = $(this).find('[name="retailMrp"]').val();
             var discMode = $(this).find('[name="discMode"]').val();
             var discount = $(this).find('[name="discount"]').val();
             var amount = $(this).find('[name="amount"]').val();
@@ -536,9 +553,13 @@ function getUpdatedProductsData() {
                 batchNo: batchNo,
                 tax: tax,
                 quantity: quantity,
+                package:package,
+                retailQty:retailQty,
+                retailRate:retailRate,
                 uom: uom,
                 rate: rate,
                 mrp: mrp,
+                retailMrp:retailMrp,
                 discMode: discMode,
                 discount: discount,
                 amount: amount,
@@ -679,9 +700,14 @@ let newRow = $("<tr>" +
     "<td><input type='text' name='batchNo' class='input-field' id='batchNo_" + uniqueId + "' placeholder='Batch No'></td>" +
     "<td><input type='text' name='tax' class='input-field' id='tax_" + uniqueId + "' placeholder='Tax(%)'></td>" +
     "<td><input type='number' name='quantity' class='input-field' id='quantity_" + uniqueId + "' placeholder='Quantity'></td>" +
+       "<td><input type='number' name='package' class='input-field' id='package_" + uniqueId + "' placeholder='package'></td>" +
+    "<td><input type='number' name='retailQty' class='input-field' id='retailQty_" + uniqueId + "' placeholder='retailQty'></td>" +
+    "<td><input type='number' name='retailRate' class='input-field' id='retailRate_" + uniqueId + "' placeholder='retailRate'></td>" +
+
     "<td><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
     "<td><input type='number' name='rate' class='input-field' id='rate_" + uniqueId + "' placeholder='Rate'></td>" +
        "<td><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='MRP'></td>" +
+    "<td><input type='number' name='retailMrp' class='input-field' id='retailMrp_" + uniqueId + "' placeholder='Retail MRP'></td>" +
 
     "<td><select name='discMode' class='input-field product-name dropdown  ' id='discMode_" + uniqueId + "' placeholder='Disc.Mode'><option selected disabled>Select Disc Mode</option></select></td>" +
     "<td><input type='number' name='discount' class='input-field' id='discount_" + uniqueId + "' placeholder='Discount'></td>" +
@@ -726,6 +752,7 @@ $.ajax({
                     if (selectedProduct) {
                         $('#uom_' + uniqueId).val(selectedProduct.uom);
                         $('#tax_' + uniqueId).val(selectedProduct.tax);
+                          $('#package_' + uniqueId).val(selectedProduct.package);
                     }
                   
                 });
@@ -811,9 +838,13 @@ $(document).ready(function() {
                     batchNo: $('#batchNo_' + uniqueId).val() || "",
                     tax: $('#tax_' + uniqueId).val() || "",
                     quantity: $('#quantity_' + uniqueId).val() || "",
+                    package: $('#package_' + uniqueId).val() || "",
+                    retailQty: $('#retailQty_' + uniqueId).val() || "",
+                    retailRate: $('#retailRate_' + uniqueId).val() || "",
                     uom: $('#uom_' + uniqueId).val() || "",
                     rate: $('#rate_' + uniqueId).val() || "",
-                     mrp: $('#mrp_' + uniqueId).val() || "",
+                    mrp: $('#mrp_' + uniqueId).val() || "",
+                    retailMrp: $('#retailMrp_' + uniqueId).val() || "",
                     discMode: $('#discMode_' + uniqueId).val() || "",
                     discount: $('#discount_' + uniqueId).val() || "",
                     amount: $('#amount_' + uniqueId).val() || "",
@@ -939,7 +970,6 @@ function calculateTotals() {
 
     subtotal -= discount;
 
-    
     let roundOff = netAmount - subtotal;
 
     $('#psubtotal').text(subtotal.toFixed(2));
@@ -973,9 +1003,13 @@ $('#pdiscMode, #pdiscount').change(function() {
         { data: 'batchNo' },
         { data: 'tax' },
         { data: 'quantity' },
+         { data: 'package' },
+          { data: 'retailQty' },
+           { data: 'retailRate' },
         { data: 'uom' },     
         { data: 'rate' },
         { data: 'mrp' },
+        { data: 'retailMrp' },
         { data: 'discMode'},
         { data: 'discount' },
         { data: 'amount' },
@@ -1073,6 +1107,42 @@ var selectedSupplier;
 
         return calculatedAmount;
     }
+
+ function calculateRetailValues(packageSize, quantity, rate, mrp) {
+        console.log('Calculating Retail Values - Inputs:', { packageSize, quantity, rate, mrp });
+
+        var retailQty = packageSize * quantity;
+        var retailRate = (packageSize !== 0) ? rate / packageSize : 0;
+        var retailMrp = (packageSize !== 0) ? mrp / packageSize : 0;
+
+        console.log('Calculated Retail Values:', { retailQty, retailRate, retailMrp });
+
+        return { retailQty, retailRate, retailMrp };
+    }
+
+    // Add event listeners to trigger calculations
+    document.addEventListener('input', function (event) {
+        if (event.target.matches('.input-field')) {
+            var row = event.target.closest('tr');
+            var rate = parseFloat(row.querySelector('input[name="rate"]').value) || 0;
+            var quantity = parseFloat(row.querySelector('input[name="quantity"]').value) || 0;
+            var packageSize = parseFloat(row.querySelector('input[name="package"]').value) || 0;
+            var mrp = parseFloat(row.querySelector('input[name="mrp"]').value) || 0;
+            var discMode = row.querySelector('select[name="discMode"]').value || 'N/A';
+            var discount = parseFloat(row.querySelector('input[name="discount"]').value) || 0;
+
+            // Calculate amount
+            var amount = calculateAmount(rate, quantity, discMode, discount);
+            row.querySelector('input[name="amount"]').value = amount.toFixed(2);
+
+            // Calculate retail values
+            var retailValues = calculateRetailValues(packageSize, quantity, rate, mrp);
+            row.querySelector('input[name="retailQty"]').value = retailValues.retailQty.toFixed(2);
+            row.querySelector('input[name="retailRate"]').value = retailValues.retailRate.toFixed(2);
+            row.querySelector('input[name="retailMrp"]').value = retailValues.retailMrp.toFixed(2);
+        }
+    });
+
 
     function calculateTax(row, supplierState, companyState) {
         var amount = parseFloat(row.find('input[name^="amount"]').val()) || 0;
@@ -1232,7 +1302,6 @@ fetchSupplierNames();
         }
     });
 
-
 $('.dropdown[name="Id"]').change(function () {
     var selectedOption = $(this).find('option:selected');
 
@@ -1304,13 +1373,10 @@ $('#pdiscount').val(rowDetails.discount);
 
 });
 
-
-
 function updateCustomerTable(data) {
     var table = $('#customerTable').DataTable();
     table.clear().rows.add(data).draw();
 }
-
 
 function formatDate(dateObject) {
     const date = new Date(dateObject);
@@ -1320,14 +1386,11 @@ function formatDate(dateObject) {
     return `${year}-${month}-${day}`;
 }
 
-
 $(document).ready(function() {
     $('#new').click(function() {
        window.location.href = '/purchase'
     });
 });
-
-
 
 </script>
 

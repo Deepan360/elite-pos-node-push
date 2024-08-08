@@ -633,7 +633,6 @@ router.get("/salesretailregister", (req, res) => {
 router.get("/salesretail", (req, res) => {
   res.render("batchDetails", { id: req.body });
 });
-
 router.get("/molecules", (req, res) => {
   res.render("molecules");
 });

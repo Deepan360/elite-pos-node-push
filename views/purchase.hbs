@@ -14,6 +14,14 @@
     z-index: 1001; /* Ensure the popup is above the blurred background */
     border-radius: 10px;
 }
+.btn.disabled, .btn[disabled] {
+    background-color: #4e4e4e !important; /* Grey color for disabled state */
+    border-color: #afafaf !important;
+    cursor: not-allowed !important;
+    opacity: 0.6; /* Slightly transparent to indicate disabled state */
+    color: #000;
+    pointer-events: none !important;
+}
 .new-row {
         display: none;
     }
@@ -205,9 +213,9 @@
                         <th>Quantity</th>
                         <th>Package</th>
                         <th>Retail.qty</th>
-                        <th>Retail.rate</th>
                         <th>UOM</th>
                         <th>Rate</th>
+                        <th>Retail.rate</th>
                         <th>MRP</th>
                         <th>Retail.MRP</th>
                         <th>Disc.Mode</th>
@@ -242,9 +250,9 @@
     </form>
 <div class="col d-flex justify-content-end ms-auto">
     <div class="div">
-    <button type="submit"   class="btn btn-info updateBtn">Update</button>
-    <button type="button" class="btn btn-info " id="draftBtn">Draft</button>
-    <input type="hidden" name="is_Draft" id="is_Draft">
+        <button type="submit" class="btn updateBtn disabled disabled" id="not" >Update</button>
+        <button type="button" class="btn draftBtn disabled" id="draftBtn" >Draft</button>
+        <input type="hidden" name="is_Draft" id="is_Draft">
     </div>
     <button type="button" id="submitFormBtn" class="btn btn-primary custom-btn add">Submit</button>
     <input type="button" id="draftButton" value="Draft" class="btn btn-primary custom-btn add">
@@ -371,9 +379,10 @@ $(document).on('click', '.editmasbtn', function() {
         var quantity = row.find('td:eq(4)').text();
           var package = row.find('td:eq(5)').text();
             var retailQty = row.find('td:eq(6)').text();
-              var retailRate = row.find('td:eq(7)').text();
-        var uom = row.find('td:eq(8)').text();
-        var rate = row.find('td:eq(9)').text();
+             
+        var uom = row.find('td:eq(7)').text();
+        var rate = row.find('td:eq(8)').text();
+         var retailRate = row.find('td:eq(9)').text();
          var mrp = row.find('td:eq(10)').text();
           var retailMrp = row.find('td:eq(11)').text();
         var discMode = row.find('td:eq(12)').text();
@@ -391,9 +400,10 @@ $(document).on('click', '.editmasbtn', function() {
     "<td><input type='number' name='quantity' class='input-field' value='" + quantity + "'></td>" +
     "<td><input type='number' name='package' class='input-field' value='" + package + "'></td>" +
      "<td><input type='number' name='retailQty' class='input-field' value='" + retailQty + "'></td>" +
-      "<td><input type='number' name='retailRate' class='input-field' value='" + retailRate + "'></td>" +
     "<td><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
     "<td><input type='number' name='rate' class='input-field' value='" + rate + "'></td>" +
+          "<td><input type='number' name='retailRate' class='input-field' value='" + retailRate + "'></td>" +
+
     "<td><input type='number' name='mrp' class='input-field' value='" + mrp + "'></td>" +
         "<td><input type='number' name='retailMrp' class='input-field' value='" + retailMrp + "'></td>" +
 
@@ -628,8 +638,6 @@ function populateDropdown(selector, options, selectedOption) {
     });
 }
 
-
-
 $(document).ready(function() {
     $(document).on('click', '.deletemasBtn', function() {
         var id = getSelectedPurchaseId();
@@ -667,9 +675,11 @@ $(document).ready(function() {
         }
     }
 });
+
 $(document).ready(function () {
     $('.div').hide();
     $('.add').show();
+   $('.updateBtn, .draftBtn').addClass('disabled').prop('disabled', true);
     $('.dropdown[name="Id"]').change(function () {
         var selectedOption = $(this).find('option:selected');
         if (selectedOption.val() && selectedOption.val() !== 'view details') {
@@ -680,6 +690,17 @@ $(document).ready(function () {
             $('.div').hide();
             $('.add').show();
         }
+
+    });
+    
+
+    // When the edit button is clicked
+    $('.editmasbtn').click(function () {
+        $('.div').find('button').prop('disabled', false);
+        $('.updateBtn').removeClass('disabled').prop('disabled', false);
+        $('.draftBtn').removeClass('disabled').prop('disabled', false);
+         $('.updateBtn').addClass('btn-info').prop('disabled', false);
+        $('.draftBtn').addClass('btn-info').prop('disabled', false);
     });
 });
 
@@ -702,10 +723,11 @@ let newRow = $("<tr>" +
     "<td><input type='number' name='quantity' class='input-field' id='quantity_" + uniqueId + "' placeholder='Quantity'></td>" +
        "<td><input type='number' name='package' class='input-field' id='package_" + uniqueId + "' placeholder='package'></td>" +
     "<td><input type='number' name='retailQty' class='input-field' id='retailQty_" + uniqueId + "' placeholder='retailQty'></td>" +
-    "<td><input type='number' name='retailRate' class='input-field' id='retailRate_" + uniqueId + "' placeholder='retailRate'></td>" +
 
     "<td><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
     "<td><input type='number' name='rate' class='input-field' id='rate_" + uniqueId + "' placeholder='Rate'></td>" +
+        "<td><input type='number' name='retailRate' class='input-field' id='retailRate_" + uniqueId + "' placeholder='retailRate'></td>" +
+
        "<td><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='MRP'></td>" +
     "<td><input type='number' name='retailMrp' class='input-field' id='retailMrp_" + uniqueId + "' placeholder='Retail MRP'></td>" +
 
@@ -840,9 +862,10 @@ $(document).ready(function() {
                     quantity: $('#quantity_' + uniqueId).val() || "",
                     package: $('#package_' + uniqueId).val() || "",
                     retailQty: $('#retailQty_' + uniqueId).val() || "",
-                    retailRate: $('#retailRate_' + uniqueId).val() || "",
+                  
                     uom: $('#uom_' + uniqueId).val() || "",
                     rate: $('#rate_' + uniqueId).val() || "",
+                      retailRate: $('#retailRate_' + uniqueId).val() || "",
                     mrp: $('#mrp_' + uniqueId).val() || "",
                     retailMrp: $('#retailMrp_' + uniqueId).val() || "",
                     discMode: $('#discMode_' + uniqueId).val() || "",
@@ -872,7 +895,6 @@ $(document).ready(function() {
     }
 
 });
-
 
 function fetchDiscmodeOptions(uniqueId) {
     $.ajax({
@@ -912,7 +934,6 @@ function fetchDiscmodeOptions(uniqueId) {
     });
 
 }
-
 
 function calculateTotals() {
     let totalAmount = 0;
@@ -1005,9 +1026,10 @@ $('#pdiscMode, #pdiscount').change(function() {
         { data: 'quantity' },
          { data: 'package' },
           { data: 'retailQty' },
-           { data: 'retailRate' },
+        
         { data: 'uom' },     
         { data: 'rate' },
+           { data: 'retailRate' },
         { data: 'mrp' },
         { data: 'retailMrp' },
         { data: 'discMode'},
@@ -1020,7 +1042,7 @@ $('#pdiscMode, #pdiscount').change(function() {
        {
             data: 'Id',
             render: function (data) {
-                return '<i class="fa-solid fa-trash div deletetransBtn" type="button" data-id="' + data + '"></i>';
+                return '<i class="fa-solid fa-trash  deletetransBtn" type="button" data-id="' + data + '"></i>';
             }
        }
     ],
@@ -1031,6 +1053,18 @@ $('#pdiscMode, #pdiscount').change(function() {
       fixedColumns: {
             leftColumns: 1
         }
+        
+    });
+
+    table.column('.action').visible(false);
+
+
+    // Toggle visibility of the action column and buttons when Edit button is clicked
+    $('.editmasbtn').click(function () {
+        var isVisible = table.column('.action').visible();
+        table.column('.action').visible(!isVisible);
+       
+      
     });
 
     $('#purchaseId').on('change', function () {
@@ -1171,8 +1205,6 @@ var selectedSupplier;
 
         calculateTotalAmount();
     }
-
-
 
 $('.dropdown[name="suppliername"]').on('change', function () {
     var selectedSupplier = $(this).val(); 

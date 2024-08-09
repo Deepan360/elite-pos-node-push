@@ -219,7 +219,7 @@
                         <th>SGST</th>
                         <th>IGST</th>
                         <th>Total Amount</th>
-                        <th class="action">Action</th>
+                        <th class="action div">Action</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -396,13 +396,14 @@ $(document).on('click', '.editmasbtn', function() {
         var quantity = row.find('td:eq(4)').text();
         var uom = row.find('td:eq(5)').text();
         var rate = row.find('td:eq(6)').text();
-        var discMode = row.find('td:eq(7)').text();
-        var discount = row.find('td:eq(8)').text();
-        var amount = row.find('td:eq(9)').text();
-        var cgst = row.find('td:eq(10)').text();
-        var sgst = row.find('td:eq(11)').text();
-        var igst = row.find('td:eq(12)').text();
-        var totalAmount = row.find('td:eq(13)').text();
+         var mrp = row.find('td:eq(7)').text();
+        var discMode = row.find('td:eq(8)').text();
+        var discount = row.find('td:eq(9)').text();
+        var amount = row.find('td:eq(10)').text();
+        var cgst = row.find('td:eq(11)').text();
+        var sgst = row.find('td:eq(12)').text();
+        var igst = row.find('td:eq(13)').text();
+        var totalAmount = row.find('td:eq(14)').text();
         
     row.html("<td><input type='number' readonly name='Id' class='input-field  purchase-id' value='" + id + "'></td>" +
     "<td><select name='product' class='input-field product-name dropdown' id='productname_" + id + "'><option selected disabled>Select product</option></select></td>" +
@@ -674,21 +675,35 @@ $(document).ready(function() {
     }
 });
 
-$(document).ready(function () {
-    $('.div').hide();
-    $('.add').show();
-    $('.dropdown[name="Id"]').change(function () {
-        var selectedOption = $(this).find('option:selected');
-        if (selectedOption.val() && selectedOption.val() !== 'view details') {
-            $('.div').show();
-            $('.opener').hide();
-            $('.add').hide();
-        } else {
-            $('.div').hide();
-            $('.add').show();
-        }
+    $(document).ready(function () {
+        $('.div').hide();
+        $('.add').show();
+        $('.updateBtn, .draftBtn').addClass('disabled').prop('disabled', true);
+        $('.dropdown[name="Id"]').change(function () {
+            var selectedOption = $(this).find('option:selected');
+            if (selectedOption.val() && selectedOption.val() !== 'view details') {
+                $('.div').show();
+                $('.opener').hide();
+                $('.add').hide();
+            } else {
+                $('.div').hide();
+                $('.add').show();
+            }
+
+        });
+
+
+        // When the edit button is clicked
+        $('.editmasbtn').click(function () {
+            $('.div').find('button').prop('disabled', false);
+            $('.updateBtn').removeClass('disabled').prop('disabled', false);
+            $('.draftBtn').removeClass('disabled').prop('disabled', false);
+            $('.updateBtn').addClass('btn-info').prop('disabled', false);
+            $('.draftBtn').addClass('btn-info').prop('disabled', false);
+        });
     });
-});
+
+
 $(document).ready(function() {
     // Attach click event listener to the closebatch link
     $('.closebatch').on('click', function() {
@@ -961,7 +976,7 @@ $('#batchDetailsBody').on('click', 'tr', function() {
 
 });
 
-
+   
 function fetchDiscmodeOptions(uniqueId) {
     $.ajax({
         url: '/auth/purchase/discmode',
@@ -1124,7 +1139,16 @@ $('#pdiscMode, #pdiscount').change(function() {
                         left: 1,
                     },
     });
+        table.column('.action').visible(false);
 
+
+        // Toggle visibility of the action column and buttons when Edit button is clicked
+        $('.editmasbtn').click(function () {
+            var isVisible = table.column('.action').visible();
+            table.column('.action').visible(!isVisible);
+
+
+        });
 
     $('#purchaseId').on('change', function () {
         var selectedPurchaseId = $(this).val();

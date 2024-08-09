@@ -9,9 +9,9 @@
                   top: 50%;
                   left: 50%;
                   transform: translate(-50%, -50%);
-                  background-color: #8f8f8f; /* White background for the form */
+                  background-color: #8f8f8f; 
                   padding: 20px;
-                  z-index: 1000; /* Ensure it's above other elements */
+                  z-index: 1000; 
                   border-radius: 10px;
               }
             .editForm {
@@ -58,18 +58,18 @@
               top: 50%;
               left: 50%;
               transform: translate(-50%, -50%);
-              background-color: #ffffff; /* White background for the form */
+              background-color: #ffffff; 
               color: black;
               padding: 20px;
-              z-index: 1000; /* Ensure it's above other elements */
+              z-index: 1000; 
               size: 200px;
               font-weight: 700;
               justify-content: space-between;
               align-content: space-between;
               align-items: center;
               font-size: 14px;
-              box-shadow: 0px 0px 12px  rgba(0, 0, 0, 0.3) !important; /* Add a subtle box shadow */
-              border-radius: 8px; /* Optional: Add border-radius for rounded corners */
+              box-shadow: 0px 0px 12px  rgba(0, 0, 0, 0.3) !important; 
+              border-radius: 8px; 
               overflow: hidden; 
         }
     form input{
@@ -88,21 +88,17 @@
         width: 100px;
         color: #8f8f8f !important;
       }
-      
             </style> 
 </head>
 <body class="g-sidenav-show   bg-gray-100">
  {{>sidebar}}
   <main class="main-content position-relative border-radius-lg ">
       {{>navbar}}
-
     <div class="table-responsive container-fluid py-4  ">
         <div class=" form-control card ">
             <h3>Stock Opening</h3>
-        
            <form action="/auth/stockob" method="get">
              <table id="customerTable" class="table-responsive justify-content-between align-items-end" style="width:100% !important">
-         
                 <thead>
                     <tr>
                         <th>Product Name</th>
@@ -111,37 +107,24 @@
                         <th>UOM</th>
                         <th>Purc.Rate</th>
                          <th>Quantity</th>
-                        <th>Op.Qty</th>
-                        {{!-- <th class="action">Action</th> --}}
+                        <th>Available.Qty</th>
+                        <th>Retail.Qty</th>  
+                        <th>Retail Rate</th>
+                        <th>MRP</th>
+                        <th>Retail MRP</th>
                     </tr>
                 </thead>
-                <tbody>
-                   
+                <tbody>   
                 </tbody>
-               
             </table>
-             {{!-- <button type="button" value="button" class="btn btn-primary" id="addmanufacturer" >add</button> --}}
             </form>
-            
-
             </div>
-             
         </div>
-        
     </div>
-   
-    
    </div>
-
- 
 {{>footer}}
-  
   </main>
- 
   {{>color}}
-  
-
-
   <script>
     document.addEventListener('DOMContentLoaded', function () {
     // Wait for the DOM to be fully loaded
@@ -177,7 +160,11 @@
   { data: 'uom' },
   { data: 'rate' },
   { data: 'quantity' },
-  { data: 'op_quantity' }, // Adjusted to 'op.quantity'
+  { data: 'op_quantity' },
+   { data: 'retailQty' },
+    { data: 'retailRate' },
+    { data: 'mrp' },
+    { data: 'retailMrp' }, // Adjusted to 'op.quantity'
 ],
     dom: 'Bfrtip',
     buttons: ['copy', 'excel', 'pdf', 'csv'],
@@ -199,9 +186,7 @@
 $(document).on('click', '.editBtn', function() {
     // Get the data associated with the clicked row
     var data = table.row($(this).parents('tr')).data();
-
     console.log('Data:', data);
-
     // Check if the data is valid and an object
     if (data && typeof data === 'object' && !Array.isArray(data)) {
         // Populate the edit form fields with the data
@@ -212,9 +197,7 @@ $(document).on('click', '.editBtn', function() {
         $(".editForm #purcrate").val(data.purcrate);
         $(".editForm #mrp").val(data.mrp);
         $(".editForm #optQty").val(data.optQty);
-    
-       
-       
+
         // Check if 'active' property is true and set the checkbox accordingly
         if (data.active) {
             $(".editForm #active").prop('checked', true);
@@ -231,7 +214,6 @@ function formatDate(dateObject) {
     return `${year}-${day}-${month}`;
 }
 
-
         // Show the edit form
         $(".editForm").show();
     } else {
@@ -242,24 +224,19 @@ function formatDate(dateObject) {
 // Handle form submission for the edit form
 $(document).on('submit', '.editForm', function(event) {
     event.preventDefault();
-
     var formData = $(this).serialize();
     var customerId = $(".editForm #id").val();
-
     console.log('Form Data:', formData);
-
     $.ajax({
         type: 'PUT',
         url: '/auth/stockobedit/' + customerId,
         data: formData,
         success: function(response) {
             console.log(response);
-
             if (response.success) {
                 // Update the table row with the new data
                 var tableRow = table.row('#' + customerId); // Assuming each row has a unique ID
                 tableRow.data(response.updatedCustomerData); // Use the actual key from the response
-
                 // Optionally, you can hide the form after a successful update
                 $(".editForm").hide();
                 alert('Customer Updated Successfully 🖋');
@@ -270,7 +247,6 @@ $(document).on('submit', '.editForm', function(event) {
         },
         error: function(error) {
             console.error('Error:', error);
-
             if (error.status === 0) {
                 alert('Failed to connect to the server. Check your server and network connection.');
             } else {
@@ -279,13 +255,10 @@ $(document).on('submit', '.editForm', function(event) {
         }
     });
 });
-
 // Handle form close button for the edit form
 $(document).on('click', '.editForm #closeForm', function() {
     $(".editForm").hide();
 });
-
-
     // Handle form close button for the add form
     $(document).on('click', '#closeForm', function() {
         $("#manufacturerform").hide();
@@ -297,15 +270,12 @@ $('#closeForm').click(function() {
     // Hide the form when the close button is clicked
     $("#manufacturerform").hide();
 });
-
 $('#customerTable').on('click', '.deleteBtn', function() {
     var data = table.row($(this).parents('tr')).data();
     var deleteButton = $(this);  // Store the reference to 'this' for later use
-
     if (data && data.id) {
         var deleteUrl = '/auth/stockobdelete/' + data.id;
         console.log('Data:', data);
-
         $.ajax({
             type: 'DELETE',
             url: deleteUrl,
@@ -351,7 +321,6 @@ $.ajax({
 </script>
 </body>
 </html>
-
 <form id="manufacturerform" style="display: none;" method="post" action="/auth/stockob">
     <div class="row">
         <div class="col">
@@ -370,7 +339,6 @@ $.ajax({
     <button type="submit" value="submit" class="btn btn-primary" id="saveManufacturer">Save</button>
     <button type="button" class="btn btn-primary" id="closeForm">Close</button>
 </form>
-  
 <form class="editForm" method="put" action="/auth/stockobedit/:id">
      <div class="row">
         <div class="col">
@@ -389,12 +357,6 @@ $.ajax({
     <button type="submit" class="btn btn-primary">Update</button>
     <button type="button" class="btn btn-primary  " id="closeForm">Close</button>
 </form>
-
-
-
-
-
-  
     <script>
           $("#closeForm").click(function() {
             $(".editForm").hide();

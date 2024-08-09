@@ -3654,6 +3654,7 @@ textarea.form-control.is-invalid {
 fieldset:disabled .btn {
   color: var(--bs-btn-disabled-color);
   pointer-events: none;
+  cursor: not-allowed !important;
   background-color: var(--bs-btn-disabled-bg);
   border-color: var(--bs-btn-disabled-border-color);
   opacity: var(--bs-btn-disabled-opacity);

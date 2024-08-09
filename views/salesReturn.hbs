@@ -1091,6 +1091,17 @@ $('#pdiscMode, #pdiscount').change(function() {
         }
     });
 
+        table.column('.action').visible(false);
+
+
+        // Toggle visibility of the action column and buttons when Edit button is clicked
+        $('.editmasbtn').click(function () {
+            var isVisible = table.column('.action').visible();
+            table.column('.action').visible(!isVisible);
+
+
+        });
+
     $('#purchaseId').on('change', function () {
         var selectedPurchaseId = $(this).val();
 
@@ -1325,6 +1336,8 @@ $.ajax({
         console.error('Error fetching options for salesReturn IDs:', error);
     }
 });
+
+
 
 
 $('.dropdown[name="Id"]').change(function () {

@@ -158,110 +158,114 @@
 {{>color}}
         
     <script>
-      document.addEventListener('DOMContentLoaded', function () {
-          // Fetch billwise data from the server
-          fetch('/auth/billwise')
-              .then(response => response.json())
-              .then(data => {
-                  console.log(data); 
+  document.addEventListener('DOMContentLoaded', function () {
+    // Fetch billwise data from the server
+    fetch('/auth/billwise')
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
 
-                  var monthlyData = aggregateMonthlyData(data.data);
-                  console.log(monthlyData); 
+        var monthlyData = aggregateMonthlyData(data.data);
+        console.log(monthlyData);
 
-                  var months = Object.keys(monthlyData);
-                  console.log("Months before sorting:", months); // Check the months before sorting
-                              // Sort the months in ascending order based on year and month
-                                      months.sort((a, b) => {
-                      // Extract year and month
-                      var [aYear, aMonth] = a.split('-').map(Number);
-                      var [bYear, bMonth] = b.split('-').map(Number);
-                      
-                      // Sort by year first
-                      if (aYear !== bYear) {
-                          return bYear - aYear; // Sort by year in ascending order
-                          return bMonth - aMonth;
-                      } else {
-                          // If years are the same, sort by month in ascending order
-                          return aMonth - bMonth;
-                      }
-                  });
-                  console.log("Months after sorting:", months); // Check the months after sorting
+        var months = Object.keys(monthlyData);
+        console.log("Months before sorting:", months); // Check the months before sorting
 
-                  // Get sale and purchase amounts for the sorted months
-                  var saleAmounts = months.map(month => monthlyData[month].totalSaleAmount);
-                  var purchaseAmounts = months.map(month => monthlyData[month].totalPurchaseAmount);
+        // Sort the months in ascending order based on year and month
+        months.sort((a, b) => {
+          // Extract year and month
+          var [aMonth, aYear] = a.split('-').map(Number);
+          var [bMonth, bYear] = b.split('-').map(Number);
 
-                  // Update the chart with the received data
-                  updateChart(months, saleAmounts, purchaseAmounts);
-              })
-              .catch(error => {
-                  console.error('Error fetching billwise data:', error);
-              });
+          // Sort by year first in ascending order
+          if (aYear !== bYear) {
+            return aYear - bYear;
+          } else {
+            // If years are the same, sort by month in ascending order
+            return aMonth - bMonth;
+          }
+        });
+
+        console.log("Months after sorting:", months); // Check the months after sorting
+
+        // Get sale and purchase amounts for the sorted months
+        var saleAmounts = months.map(month => monthlyData[month].totalSaleAmount);
+        var purchaseAmounts = months.map(month => monthlyData[month].totalPurchaseAmount);
+
+        // Update the chart with the received data
+        updateChart(months, saleAmounts, purchaseAmounts);
+      })
+      .catch(error => {
+        console.error('Error fetching billwise data:', error);
       });
+  });
 
-      function aggregateMonthlyData(data) {
-          // Initialize an object to store aggregated data for each month
-          var monthlyData = {};
+  function aggregateMonthlyData(data) {
+    // Initialize an object to store aggregated data for each month
+    var monthlyData = {};
 
-          // Iterate over each data item and aggregate amounts for each month
-          data.forEach(item => {
-              // Extract month and year in the format MM-YYYY
-              var dateParts = item.saledate.split('-'); // Splitting the date string by '-'
-              var monthYear = dateParts[1] + '-' + dateParts[0]; // Reversing month and year and formatting as MM-YYYY
+    // Iterate over each data item and aggregate amounts for each month
+    data.forEach(item => {
+      if (item.saledate) {
+        // Splitting the date string by '-'
+        var dateParts = item.saledate.split('-');
+        var monthYear = dateParts[1] + '-' + dateParts[0]; // Formatting as MM-YYYY
 
-              if (!monthlyData[monthYear]) {
-                  // If monthYear key doesn't exist, initialize it with initial values
-                  monthlyData[monthYear] = {
-                      totalSaleAmount: 0,
-                      totalPurchaseAmount: 0
-                  };
-              }
+        if (!monthlyData[monthYear]) {
+          // If monthYear key doesn't exist, initialize it with initial values
+          monthlyData[monthYear] = {
+            totalSaleAmount: 0,
+            totalPurchaseAmount: 0
+          };
+        }
 
-              // Add sale and purchase amounts to the corresponding monthYear
-              monthlyData[monthYear].totalSaleAmount += parseFloat(item.sumRate);
-              monthlyData[monthYear].totalPurchaseAmount += parseFloat(item.totalPurcRate);
-          });
-
-          return monthlyData;
+        // Add sale and purchase amounts to the corresponding monthYear
+        monthlyData[monthYear].totalSaleAmount += parseFloat(item.sumRate);
+        monthlyData[monthYear].totalPurchaseAmount += parseFloat(item.totalPurcRate);
+      } else {
+        console.warn("saledate is null, skipping this item");
       }
+    });
 
-      function updateChart(months, saleAmounts, purchaseAmounts) {
-          var ctx = document.getElementById('myLineChart').getContext('2d');
+    return monthlyData;
+  }
 
-          // Format the sorted months for chart labels as MM-YYYY
-          var formattedLabels = months.map(month => {
-              var [year, monthNumber] = month.split('-');
-              return monthNumber + '-' + year; // Format as MM-YYYY
-          });
+  function updateChart(months, saleAmounts, purchaseAmounts) {
+    var ctx = document.getElementById('myLineChart').getContext('2d');
 
-          var myLineChart = new Chart(ctx, {
-              type: 'line',
-              data: {
-                  labels: formattedLabels, // Use the formatted labels with MM-YYYY format
-                  datasets: [{
-                      label: 'Total Sale Amount',
-                      data: saleAmounts,
-                      fill: false,
-                      borderColor: 'rgb(75, 192, 192)',
-                      tension: 0.1
-                  }, {
-                      label: 'Total Purchase Amount',
-                      data: purchaseAmounts,
-                      fill: false,
-                      borderColor: 'rgb(192, 75, 192)',
-                      tension: 0.1
-                  }]
-              },
-              options: {
-                  scales: {
-                      y: {
-                          beginAtZero: true
-                      }
-                  }
-              }
-          });
+    // Format the sorted months for chart labels as MM-YYYY
+    var formattedLabels = months.map(month => {
+      var [monthNumber, year] = month.split('-');
+      return monthNumber + '-' + year; // Format as MM-YYYY
+    });
+
+    var myLineChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: formattedLabels, // Use the formatted labels with MM-YYYY format
+        datasets: [{
+          label: 'Total Sale Amount',
+          data: saleAmounts,
+          fill: false,
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1
+        }, {
+          label: 'Total Purchase Amount',
+          data: purchaseAmounts,
+          fill: false,
+          borderColor: 'rgb(192, 75, 192)',
+          tension: 0.1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
       }
-
+    });
+  }
 
 
         document.addEventListener('DOMContentLoaded', function () {

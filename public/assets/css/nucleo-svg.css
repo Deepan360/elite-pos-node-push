@@ -848,3 +848,18 @@ tbody tr {
   }
 }
 
+.div .btn.disabled .updateBtn
+.btn[disabled] {
+  background-color: #4e4e4e !important;
+  /* Grey color for disabled state */
+  border-color: #afafaf !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
+  /* Slightly transparent to indicate disabled state */
+  color: #000;
+  pointer-events: none !important;
+}
+
+.new-row {
+  display: none;
+}

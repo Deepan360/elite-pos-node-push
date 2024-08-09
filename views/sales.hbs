@@ -412,8 +412,8 @@ $(document).on('click', '.editmasbtn', function() {
     "<td><input type='text' name='tax' class='input-field' value='" + tax + "'></td>" +
     "<td><input type='number' name='quantity' class='input-field' value='" + quantity + "'></td>" +
     "<td><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
-     "<td><input type='number' name='purcRate' class='input-field' value='" + rate + "'></td>" +
-        "<td><input type='number' name='mrp' class='input-field' value='" + rate + "'></td>" +
+    "<td><input type='number' name='purcRate' class='input-field' value='" + rate + "'></td>" +
+    "<td><input type='number' name='mrp' class='input-field' value='" + rate + "'></td>" +
     "<td><input type='number' name='rate' class='input-field' value='" + rate + "'></td>" +
     "<td><select name='discMode' class='input-field disc-mode dropdown' id='discMode_" + id + "'><option selected disabled>Select Disc Mode</option></select></td>" +
     "<td><input type='number' name='discount' class='input-field' value='" + discount + "'></td>" +
@@ -460,6 +460,7 @@ $(document).on('click', '.deletetransBtn', function() {
         }
     });
 });
+
 
 
 $(document).ready(function() {
@@ -576,6 +577,8 @@ function getUpdatedProductsData() {
 
     return products;
 }
+
+
 
 function fetchProductOptions(id, product) {
     $.ajax({
@@ -1088,6 +1091,19 @@ $('#pdiscMode, #pdiscount').change(function() {
             leftColumns: 1
         }
     });
+
+        table.column('.action').visible(false);
+
+
+        // Toggle visibility of the action column and buttons when Edit button is clicked
+        $('.editmasbtn').click(function () {
+            var isVisible = table.column('.action').visible();
+            table.column('.action').visible(!isVisible);
+
+
+        });
+
+
     $('#purchaseId').on('change', function () {
         var selectedPurchaseId = $(this).val();
        table.ajax.url('/auth/sales/saleproductid?purchaseId=' + selectedPurchaseId).load();

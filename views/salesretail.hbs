@@ -2,49 +2,43 @@
 <html lang="en">
 <head>
     {{>header}}
-
     <style>
    #purchaseFormContainer {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #8f8f8f;
-    padding: 20px;
-    z-index: 1001; /* Ensure the popup is above the blurred background */
-    border-radius: 10px;
-}
-
-
-.new-row {
-        display: none;
-    }
-.input-field.product-name {
-    width: 200px; /* Adjust the width as needed */
-    padding: 5px; ;
-}
-
-.input-field.disc-mode {
-    width: 200px; /* Adjust the width as needed */
-    padding: 5px; ;
-}
-        .editForm {
-              display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #8f8f8f;
-    padding: 20px;
-    z-index: 1001; /* Ensure the popup is above the blurred background */
-    border-radius: 10px;
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #8f8f8f;
+            padding: 20px;
+            z-index: 1001; /* Ensure the popup is above the blurred background */
+            border-radius: 10px;
         }
-
+         .new-row {
+            display: none;
+        }
+        .input-field.product-name {
+            width: 200px; /* Adjust the width as needed */
+            padding: 5px; ;
+        }
+        .input-field.disc-mode {
+            width: 200px; /* Adjust the width as needed */
+            padding: 5px; ;
+        }
+        .editForm {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #8f8f8f;
+            padding: 20px;
+            z-index: 1001; /* Ensure the popup is above the blurred background */
+            border-radius: 10px;
+        }
         .container {
             margin-left: 20%;
         }
-
         .updateManufacturer {
             background-color: rgba(50, 141, 168) !important;
             color: white !important;
@@ -53,7 +47,6 @@
             width: 80px !important;
             height: 30px;
         }
-
         .closeForm {
             background-color: rgba(50, 141, 168) !important;
             color: white !important;
@@ -62,11 +55,9 @@
             width: 80px !important;
             height: 30px;
         }
-
         button {
             margin: 1px;
         }
-
         #message {
             display: none;
             position: fixed;
@@ -87,30 +78,24 @@
             border-radius: 8px;
             overflow: hidden;
         }
-
         form input {
             margin: 2px;
         }
-
         form button {
             width: 100px !important;
             padding: 5px;
             margin: 5px;
         }
-
         .col input {
             width: 100%;
         }
-
         input[type=checkbox] {
             width: 100px;
             color: #8f8f8f !important;
         }
         #submitButton {
-    display: none;
-} 
-    </style>
-    <style>
+             display: none;
+        } 
         .align-right-top {
             position: absolute;
             top: 0;
@@ -772,6 +757,9 @@ $(document).ready(function () {
             });
         });
 
+
+
+
         // Get Product Data
         function getProductsData() {
             var products = [];
@@ -1107,6 +1095,17 @@ $('#pdiscMode, #pdiscount').change(function() {
         }
     });
 
+         table.column('.action').visible(false);
+
+
+            // Toggle visibility of the action column and buttons when Edit button is clicked
+            $('.editmasbtn').click(function () {
+                var isVisible = table.column('.action').visible();
+                table.column('.action').visible(!isVisible);
+
+
+            });
+
     $('#purchaseId').on('change', function () {
         var selectedPurchaseId = $(this).val();
           table.ajax.url('/auth/salesretail/salesretailproductid?purchaseId=' + selectedPurchaseId).load();
@@ -1241,7 +1240,6 @@ if (table.data().count() === 0) {
         initiateFetchCompanyState(selectedSupplier);
     });
 
-   
     function initiateFetchCompanyState(customerState) {
         fetchCompanyStateAndCalculateTax(customerState);
     }
@@ -1268,8 +1266,6 @@ if (table.data().count() === 0) {
             calculateTax(row, customerState, companyState);
         });
     }
-
-
 
     var rowDetails;
     $.ajax({
@@ -1330,7 +1326,6 @@ if (table.data().count() === 0) {
             console.error('Error fetching options for sales IDs:', error);
         }
     });
-
 
     $('.dropdown[name="Id"]').change(function () {
         var selectedOption = $(this).find('option:selected');
@@ -1399,12 +1394,10 @@ if (table.data().count() === 0) {
         }
     });
 
-
     function updateCustomerTable(data) {
         var table = $('#customerTable').DataTable();
         table.clear().rows.add(data).draw();
     }
-
 
 function updateCustomerTable(data) {
     var table = $('#customerTable').DataTable();
@@ -1424,8 +1417,6 @@ $(document).ready(function() {
        window.location.href = '/salesretail'
     });
 });
-
-
 
 </script>
 

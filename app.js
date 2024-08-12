@@ -43,12 +43,16 @@ const location = path.join(__dirname, "./public");
 app.use(express.static(location));
 app.set("view engine", "hbs");
 
-app.use(session({
+app.use(
+  session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 10 * 60 * 1000 } 
-}));
+    cookie: {
+      maxAge: parseInt(process.env.JWT_COOKIE_EXPIRES, 10) * 60 * 1000, // 10 minutes
+    },
+  })
+);
 
 const partialspath = path.join(__dirname, "./views/partials");
 hbs.registerPartials(partialspath);

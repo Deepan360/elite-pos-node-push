@@ -222,7 +222,7 @@
         setRole(userRole); // Ensure the role is set in storage
       } catch (error) {
         console.error('Error fetching user role:', error);
-        // Redirect or show an error message
+        // Optionally redirect or show an error message here
       }
     }
 
@@ -230,8 +230,15 @@
     async function getUserRole() {
       try {
         const response = await fetch(`/auth/sidebar?role=${getRole()}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
         const data = await response.json();
-        return data.role;
+        if (data && data.role) {
+          return data.role;
+        } else {
+          throw new Error('Invalid response structure');
+        }
       } catch (error) {
         console.error('Error fetching user role from server:', error);
         return null;
@@ -242,7 +249,13 @@
     async function fetchSidebarItems() {
       try {
         const response = await fetch(`/auth/sidebar?role=${getRole()}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
         const data = await response.json();
+        if (!data || !Array.isArray(data.sidebarItems)) {
+          throw new Error('Invalid sidebarItems structure');
+        }
         const sidebarItems = data.sidebarItems;
 
         const sidebarLinks = document.querySelectorAll('.sub-menu a');
@@ -277,14 +290,17 @@
   });
 
   $(document).ready(function () {
+    // Fetch company details and set up the logout functionality
     fetchCompanyDetails();
-    const logoutIcon = document.getElementById('logoutIcon');
 
-    logoutIcon.addEventListener('click', function () {
-      localStorage.removeItem('userRole'); // Clear role information upon logout
-      sessionStorage.removeItem('userRole'); // Clear role information upon logout
-      window.location.href = '/logout';
-    });
+    const logoutIcon = document.getElementById('logoutIcon');
+    if (logoutIcon) {
+      logoutIcon.addEventListener('click', function () {
+        localStorage.removeItem('userRole'); // Clear role information upon logout
+        sessionStorage.removeItem('userRole'); // Clear role information upon logout
+        window.location.href = '/logout';
+      });
+    }
 
     function fetchCompanyDetails() {
       $.ajax({
@@ -307,5 +323,6 @@
     }
   });
 </script>
+
   </aside>
 

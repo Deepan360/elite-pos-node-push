@@ -1606,7 +1606,6 @@ exports.masterdata = async (req, res) => {
   }
 };
 
-
 exports.salesData = async (req, res) => {
   try {
     const result = await pool.request().execute('GetSalesData');
@@ -1626,7 +1625,6 @@ exports.salesData = async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
-
 
 exports.supplierCount = async (req, res) => {
   try {
@@ -2407,7 +2405,6 @@ async function reduceStock(productId, quantity, batchNo) {
   }
 }
 
-
 exports.salesids = (req, res) => {
   pool.connect((err, connection) => {
     if (err) {
@@ -2548,7 +2545,6 @@ exports.salesdelete = async (req, res) => {
   }
 };
 
-
 exports.salestransdelete = async (req, res) => {
   const manufacturerId = req.params.id;
   try {
@@ -2613,6 +2609,7 @@ exports.salesregister = (req, res) => {
     });
   });
 };
+
  //sales
 
  //purchasereturn 
@@ -3903,7 +3900,6 @@ exports.contra = async (req, res) => {
   }
 };
 /*contra*/
-
 
 /*creditnotes*/
 exports.creditnoteparticulars = async (req, res) => {

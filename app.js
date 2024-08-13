@@ -63,6 +63,9 @@ app.use((req, res, next) => {
   next();
 });
 
+
+
+
 app.use("/", require("./routes/pages"));
 app.use("/auth", require("./routes/auth"));
 

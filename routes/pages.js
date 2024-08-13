@@ -631,7 +631,7 @@ router.get("/salesretailregister", (req, res) => {
   res.render("salesretailregister");
 });
 router.get("/salesretail", (req, res) => {
-  res.render("batchDetails", { id: req.body });
+  res.render("retailbatchDetails", { id: req.body });
 });
 router.get("/molecules", (req, res) => {
   res.render("molecules");

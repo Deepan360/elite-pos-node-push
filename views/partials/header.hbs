@@ -186,25 +186,75 @@ fetch('/auth/sidebar/companyTitle')
     })
     .catch(error => console.error('Error fetching company details:', error));
 </script>    
- <script type="text/javascript">
-    (function() {
-      var idleTime = 0;
-      var idleInterval = setInterval(timerIncrement, 60000); 
-      document.onmousemove = resetTimer;
-      document.onkeypress = resetTimer;
-      document.onscroll = resetTimer;
-      document.onclick = resetTimer;
-      function resetTimer() {
-        idleTime = 0;
+<script type="text/javascript">
+  (function () {
+    var idleTime = 0;
+    // Set the idle timeout period to 1 hour (in milliseconds)
+    var idleLimit = 60 * 60 * 1000; // 1 hour in milliseconds
+
+    // Set interval to check idle time every minute
+    var idleInterval = setInterval(timerIncrement, 60000);
+
+    // Reset timer on user interactions
+    document.onmousemove = resetTimer;
+    document.onkeypress = resetTimer;
+    document.onscroll = resetTimer;
+    document.onclick = resetTimer;
+
+    // Reset the idle timer
+    function resetTimer() {
+      idleTime = 0;
+    }
+
+    // Increment the idle timer and check if the limit has been reached
+    function timerIncrement() {
+      idleTime++;
+      if (idleTime * 60000 >= idleLimit) {
+        logoutUser(); // Log out user if idle limit is reached
       }
-      function timerIncrement() {
-        idleTime++;
-        if (idleTime >= 10) { 
-          window.location.href = '/logout'; 
-        }
+    }
+
+    // Log out the user
+    function logoutUser() {
+      // Clear role information upon logout
+      localStorage.removeItem('userRole');
+      sessionStorage.removeItem('userRole');
+      sessionStorage.setItem('isLoggedOut', 'true'); // Set logout status
+      window.location.href = '/logout'; // Redirect to logout route
+    }
+
+    // Prevent back button navigation on the logout page
+    function preventBackNavigation() {
+      if (sessionStorage.getItem('isLoggedOut') === 'true') {
+        window.location.replace('/logout'); // Ensure user stays on logout page
+        window.onpopstate = function () {
+          window.history.forward(); // Prevent back navigation
+        };
       }
-    })();
-  </script>
+    }
+
+    // Check if we are on the logout page to prevent back navigation
+    if (window.location.pathname === '/logout') {
+      preventBackNavigation();
+    }
+  })();
+
+  // Function to handle logout
+  function handleLogout() {
+    localStorage.removeItem('userRole');
+    sessionStorage.removeItem('userRole');
+    sessionStorage.setItem('isLoggedOut', 'true'); // Set logout status
+    window.location.href = '/logout'; // Redirect to logout route
+  }
+
+  // Attach event listener to logout button
+  const logoutIcon = document.getElementById('logoutIcon');
+  if (logoutIcon) {
+    logoutIcon.addEventListener('click', handleLogout);
+  }
+</script>
+
+
 
 
  

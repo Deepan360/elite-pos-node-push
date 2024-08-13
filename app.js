@@ -48,9 +48,9 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: {
-      maxAge: parseInt(process.env.JWT_COOKIE_EXPIRES, 10) * 60 * 1000, // 10 minutes
-    },
+    // cookie: {
+    //   maxAge: 60 * 60 * 1000, // 1 hour in milliseconds
+    // },
   })
 );
 
@@ -58,17 +58,15 @@ const partialspath = path.join(__dirname, "./views/partials");
 hbs.registerPartials(partialspath);
 
 app.use((req, res, next) => {
-    if (req.session.user) {             
-        req.session._garbage = Date(); 
-        req.session.touch();
-    }
-    next();                   
-});   
+  if (req.session) {
+    req.session._garbage = Date();
+    req.session.touch();
+  }
+  next();
+});
 
 app.use("/", require("./routes/pages"));
 app.use("/auth", require("./routes/auth"));
-
-
 
  app.get('/api/user/role', (req, res) => {
     res.json({ role: 'userRoleFromDatabase' });

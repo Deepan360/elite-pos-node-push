@@ -688,6 +688,7 @@ $(document).ready(function () {
                 "<td class='action new-row'><button class='btn btn-danger deleteRowBtn'>Delete Row</button></td>" +
                 "</tr>");
 
+
             $('#customerTable tbody').append(newRow);
             table.rows.add([newRow[0]]).draw();
 
@@ -801,7 +802,7 @@ $(document).ready(function () {
             };
 
             $.ajax({
-                url: '/auth/salesretail/batchDetails/' + selectedProductId,
+                url: '/auth/salesretail/retailbatchDetails/' + selectedProductId,
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(requestData),
@@ -810,13 +811,13 @@ $(document).ready(function () {
                         $('#batchDetailsBody').empty();
                         response.data.forEach(function (batch) {
                             $('#batchDetailsBody').append(
-                                `<tr data-uniqueId="${uniqueId}" data-batchNo="${batch.batchNo}" data-tax="${batch.tax}" data-quantity="${batch.quantity}" data-uom="${batch.uom}" data-rate="${batch.rate}" data-mrp="${batch.mrp}">
+                                `<tr data-uniqueId="${uniqueId}" data-batchNo="${batch.batchNo}" data-tax="${batch.tax}" data-quantity="${batch.retailQty}" data-uom="${batch.uom}" data-rate="${batch.retailRate}" data-mrp="${batch.retailMrp}">
                                 <td>${batch.batchNo}</td>
                                 <td>${batch.tax}</td>
-                                <td>${batch.op_quantity}</td>
+                                <td>${batch.retailQty}</td>
                                 <td>${batch.uom}</td>
-                                <td>${batch.rate}</td>
-                                 <td>${batch.mrp}</td>
+                                <td>${batch.retailRate}</td>
+                                <td>${batch.retailMrp}</td>
                             </tr>`
                             );
                         });
@@ -856,6 +857,7 @@ $(document).ready(function () {
         var quantity = $(this).find('td:eq(2)').text();
         var uom = $(this).find('td:eq(3)').text();
         var rate = $(this).find('td:eq(4)').text();
+        var mrp = $(this).find('td:eq(5)').text(); // Corrected: Ensure MRP value is fetched correctly
 
         // Update input fields in the customerTable with uniqueId
         $('#batchNo_' + uniqueId).val(batchNo);
@@ -863,12 +865,12 @@ $(document).ready(function () {
         $('#quantity_' + uniqueId).val(quantity);
         $('#uom_' + uniqueId).val(uom);
         $('#purcRate_' + uniqueId).val(rate);
+        $('#mrp_' + uniqueId).val(mrp); // Corrected: The selector should match the input field ID
 
         // Hide overlay and batch form
         $('#overlay').hide();
         $('#batchform').hide();
     });
-
 
         // Close Batch Form
         $('#closeBatchForm').on('click', function () {

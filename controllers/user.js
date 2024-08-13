@@ -478,7 +478,7 @@ exports.salesretailadd = async (req, res) => {
             (${salesId}, ${productId}, ${batchNo}, ${tax}, ${quantity}, ${uom},${purcRate},${mrp} ,${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
         `;
 
-        await reduceStock(productId, quantity, batchNo); 
+        await reduceretailStock(productId, quantity, batchNo); 
     }
     
 
@@ -488,6 +488,48 @@ exports.salesretailadd = async (req, res) => {
       res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
+
+async function reduceretailStock(productId, quantity, batchNo) {
+  try {
+    // Fetch the current stock and retail quantity for the given product and batch number
+    const result = await pool.query`
+      SELECT op_quantity AS stockQty, retailQty FROM [elite_pos].[dbo].[stock_Ob]
+      WHERE product = ${productId} AND batchNo = ${batchNo};
+    `;
+
+    if (result.recordset.length > 0) {
+      let { stockQty, retailQty } = result.recordset[0];
+
+      // Calculate the new retail and stock quantities
+      const newRetailQty = retailQty - quantity;
+      const stockReduction = (quantity * stockQty) / retailQty;
+      const newStockQty = stockQty - stockReduction;
+
+      if (newRetailQty < 0 || newStockQty < 0) {
+        console.error("Calculated stock or retail quantity is negative.");
+        return;
+      }
+
+      // Update the stock with new quantities
+      await pool.query`
+        UPDATE [elite_pos].[dbo].[stock_Ob]
+        SET retailQty = ${newRetailQty}, op_quantity = ${newStockQty}
+        WHERE product = ${productId} AND batchNo = ${batchNo};
+      `;
+
+      console.log(
+        `Stock updated: New Retail Qty = ${newRetailQty}, New Stock Qty = ${newStockQty}`
+      );
+    } else {
+      console.error("Product or Batch not found in stock_Ob");
+    }
+  } catch (error) {
+    console.error("Error updating stock:", error);
+  }
+}
+
+
+
 
 exports.salesretailEdit = async (req, res) => {
   const { purchaseId } = req.params;
@@ -544,7 +586,7 @@ exports.salesretailEdit = async (req, res) => {
           INSERT INTO [elite_pos].[dbo].[salesretail_Trans] ([salesId], [product], [batchNo], [tax], [quantity], [uom],[purcRate],[mrp], [rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
           VALUES ( ${purchaseDetails.id}, ${productId}, ${batchNo}, ${tax}, ${quantity}, ${uom},${purcRate},${mrp} ,${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
         `
-         await reduceStock(productId, quantity,batchNo);
+         await reduceretailStock(productId, quantity,batchNo);
         ;
       }
     }
@@ -568,6 +610,41 @@ exports.salesretailEdit = async (req, res) => {
 //     throw error;
 //   }
 // };
+
+async function increaseRetailStock(productId, quantity, batchNo) {
+  try {
+    // Fetch the current stock and retail quantity for the given product and batch number
+    const result = await pool.query`
+      SELECT op_quantity AS stockQty, retailQty FROM [elite_pos].[dbo].[stock_Ob]
+      WHERE product = ${productId} AND batchNo = ${batchNo};
+    `;
+
+    if (result.recordset.length > 0) {
+      let { stockQty, retailQty } = result.recordset[0];
+
+      // Calculate the new retail and stock quantities
+      const newRetailQty = retailQty + quantity;
+      const stockIncrease = (quantity * stockQty) / retailQty;
+      const newStockQty = stockQty + stockIncrease;
+
+      // Update the stock with new quantities
+      await pool.query`
+        UPDATE [elite_pos].[dbo].[stock_Ob]
+        SET retailQty = ${newRetailQty}, op_quantity = ${newStockQty}
+        WHERE product = ${productId} AND batchNo = ${batchNo};
+      `;
+
+      console.log(
+        `Stock updated: New Retail Qty = ${newRetailQty}, New Stock Qty = ${newStockQty}`
+      );
+    } else {
+      console.error("Product or Batch not found in stock_Ob");
+    }
+  } catch (error) {
+    console.error("Error updating stock:", error);
+  }
+}
+
 
 exports.salesretailids = (req, res) => {
   pool.connect((err, connection) => {
@@ -652,7 +729,7 @@ WHERE
 
 exports.salesretaildelete = async (req, res) => {
   const salesId = req.params.id; 
-  
+
   try {
     await poolConnect();
 
@@ -662,7 +739,7 @@ exports.salesretaildelete = async (req, res) => {
 
     // Fetch transaction details associated with the salesId
     const transDetailsResult = await pool.query`
-    SELECT Id, product, batchNo, quantity, tax, uom, rate
+      SELECT Id, product, batchNo, quantity, tax, uom, rate
       FROM [elite_pos].[dbo].[salesretail_Trans]
       WHERE [salesId] = ${salesId};
     `;
@@ -671,28 +748,10 @@ exports.salesretaildelete = async (req, res) => {
 
     // Iterate through each transaction
     for (const transaction of transactions) {
-      const { Id: transactionId, product, batchNo, quantity, tax, uom, rate } = transaction;
+      const { product, batchNo, quantity } = transaction;
 
-      // Check if the transaction exists in the stock_Ob table based on product and batch number
-      const stockResult = await pool.query`
-        SELECT Id FROM [elite_pos].[dbo].[stock_Ob] 
-        WHERE [product] = ${product} AND [batchNo] = ${batchNo};
-      `;
-
-      if (stockResult.recordset.length > 0) {
-        // If the transaction exists, update the op_quantity column
-        await pool.query`
-          UPDATE [elite_pos].[dbo].[stock_Ob] 
-          SET op_quantity = op_quantity + ${quantity} 
-          WHERE [product] = ${product} AND [batchNo] = ${batchNo};
-        `;
-      } else {
-        // If the transaction doesn't exist, insert a new record
-        await pool.query`
-          INSERT INTO [elite_pos].[dbo].[stock_Ob] (Id,product, batchNo, quantity, tax, uom, rate, op_quantity)
-          VALUES ( ${transactionId},${product}, ${batchNo}, ${quantity}, ${tax}, ${uom}, ${rate}, ${quantity});
-        `;
-      }
+      // Increase the stock quantities
+      await increaseRetailStock(product, quantity, batchNo);
     }
 
     // Delete from sales_Master
@@ -707,41 +766,35 @@ exports.salesretaildelete = async (req, res) => {
       WHERE [salesId] = ${salesId};
     `;
 
-    res.status(200).json({ success: true, message: 'salesretail and associated products deleted successfully' });
+    res.status(200).json({ success: true, message: 'Sales retail and associated products deleted successfully' });
   } catch (error) {
     console.error('Error during salesretail deletion:', error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
 
+
 exports.salesretailtransdelete = async (req, res) => {
-  const manufacturerId = req.params.id;
+  const transactionId = req.params.id;
   try {
-    // Ensure the database connection is established before proceeding
     await poolConnect();
 
     const { recordset } = await pool.request()
-      .input('manufacturerId', sql.Int, manufacturerId)
-      .query('SELECT quantity, Product, batchNo, uom, rate, tax FROM [elite_pos].[dbo].[salesretail_Trans] WHERE Id = @manufacturerId');
+      .input('transactionId', sql.Int, transactionId)
+      .query('SELECT quantity, Product, batchNo FROM [elite_pos].[dbo].[salesretail_Trans] WHERE Id = @transactionId');
 
-    // Check if a record was found
     if (recordset.length === 0) {
       return res.status(404).json({ success: false, error: "Purchased product not found" });
     }
 
-    // Extract the quantity, productId, batchNo, uom, rate, and tax values from the recordset
-    const { quantity, Product: productId, batchNo ,uom, rate, tax } = recordset[0];
+    const { quantity, Product: productId, batchNo } = recordset[0];
 
-    // Log the quantity to inspect its value
-    console.log('Quantity:', quantity);
-
-    // Delete the salesretail transaction
     const result = await pool.request()
-      .input('manufacturerId', sql.Int, manufacturerId)
-      .query('DELETE FROM [elite_pos].[dbo].[salesretail_Trans] WHERE Id = @manufacturerId');
+      .input('transactionId', sql.Int, transactionId)
+      .query('DELETE FROM [elite_pos].[dbo].[salesretail_Trans] WHERE Id = @transactionId');
 
     // Update the stock in the stock_Ob table based on the productId, batchNo, and retrieved quantity
-    await increaseStock(productId, batchNo, quantity, uom, rate, tax);
+    await increaseRetailStock(productId, quantity, batchNo);
 
     if (result.rowsAffected[0] > 0) {
       return res.json({ success: true, message: "Purchased product deleted successfully" });
@@ -753,6 +806,7 @@ exports.salesretailtransdelete = async (req, res) => {
     return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
+
 
 exports.salesretailregister = (req, res) => {
   pool.connect((err, connection) => {
@@ -1756,6 +1810,29 @@ exports.customername = (req, res) => {
   });
 };
 
+
+// exports.retailbatchDetails = async (req, res) => {
+//   const { selectedProductId } = req.body; 
+//   try {
+//       console.log('Selected Product ID:', selectedProductId); 
+//       const result = await pool.request()
+//         .input('selectedProductId', sql.Int, selectedProductId)
+//         .execute('GetretailBatchDetails');
+//       if (result.recordset.length > 0) {
+//           console.log('Batch details retrieved successfully:', result.recordset);
+//           res.status(200).json({ success: true, data: result.recordset });
+//       } else {
+//           // Return a 404 error if no batch details are found for the product ID
+//           console.log('No batch details found for the product ID:', selectedProductId);
+//           res.status(404).json({ success: false, message: 'No batch details found for the product ID.' });
+//       }
+//   } catch (error) {
+//       // Handle any errors that occur during database query or processing
+//       console.error('Error fetching batch details:', error);
+//       res.status(500).json({ success: false, message: 'Internal server error' });
+//   }
+// };
+
 exports.batchDetails = async (req, res) => {
   const { selectedProductId } = req.body; 
   try {
@@ -2181,6 +2258,40 @@ exports.customername = (req, res) => {
     });
   });
 };
+
+exports.retailbatchDetails = async (req, res) => {
+  const { selectedProductId } = req.body; 
+  try {
+      console.log('Selected Product ID:', selectedProductId); 
+      const result = await pool.query(`
+          SELECT 
+              [batchNo],
+              [tax],
+              [retailQty],
+              [uom],
+              [retailMrp] ,
+		          [retailRate]
+          FROM 
+              [elite_pos].[dbo].[stock_Ob]
+          WHERE 
+              product = ${selectedProductId};
+      `);
+      if (result.recordset.length > 0) {
+          console.log('Batch details retrieved successfully:', result.recordset);
+          res.status(200).json({ success: true, data: result.recordset });
+      } else {
+          // Return a 404 error if no batch details are found for the product ID
+          console.log('No batch details found for the product ID:', selectedProductId);
+          res.status(404).json({ success: false, message: 'No batch details found for the product ID.' });
+      }
+  } catch (error) {
+      // Handle any errors that occur during database query or processing
+      console.error('Error fetching batch details:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+
 
 exports.batchDetails = async (req, res) => {
   const { selectedProductId } = req.body; 
@@ -7050,6 +7161,8 @@ exports.sidebar = async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
 
 exports.login = async (req, res) => {
   try {

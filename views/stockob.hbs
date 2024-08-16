@@ -103,6 +103,7 @@
                     <tr>
                         <th>Product Name</th>
                         <th>Batch No</th>
+                        <th>Expiry Date</th>
                         <th>Tax</th>
                         <th>UOM</th>
                         <th>Purc.Rate</th>
@@ -156,6 +157,12 @@
     columns: [
   { data: 'productname' },
   { data: 'batchNo' },
+   {
+            data: 'expiryDate', render: function (data) {
+                const formattedDate = moment(data).format("DD-MM-YYYY");
+                return formattedDate;
+            }
+        },
   { data: 'tax' },
   { data: 'uom' },
   { data: 'rate' },
@@ -205,14 +212,14 @@ $(document).on('click', '.editBtn', function() {
             $(".editForm #active").prop('checked', false);
         }
 
-// Function to format date objects to "YYYY-MM-DD" strings
-function formatDate(dateObject) {
-    const date = new Date(dateObject);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${day}-${month}`;
-}
+        // Function to format date objects to "YYYY-MM-DD" strings
+        function formatDate(dateObject) {
+            const date = new Date(dateObject);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
 
         // Show the edit form
         $(".editForm").show();

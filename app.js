@@ -48,9 +48,11 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 10 * 60 * 1000 },
+  
   })
 );
+
+
 
 const partialspath = path.join(__dirname, "./views/partials");
 hbs.registerPartials(partialspath);

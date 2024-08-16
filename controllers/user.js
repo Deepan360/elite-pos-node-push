@@ -3460,6 +3460,7 @@ exports.productid = (req, res) => {
     p.productname,
     dm.discMode,
     pt.batchNo,
+    pt.expiryDate,
     pt.tax,
     pt.quantity,
      pt.package,
@@ -3651,7 +3652,7 @@ exports.purchaseadd = async (req, res) => {
     console.log('Number of products:', parsedProducts.length);
 //inserting products
 for (const product of parsedProducts) { // Change 'products' to 'parsedProducts'
-  const { Id, productId, batchNo, tax, quantity,package,retailQty,retailRate, uom, rate,mrp,retailMrp, discMode, discount, amount, cgst, sgst, igst, totalAmount } = product;
+  const { Id, productId, batchNo,expiryDate, tax, quantity,package,retailQty,retailRate, uom, rate,mrp,retailMrp, discMode, discount, amount, cgst, sgst, igst, totalAmount } = product;
   if (Id) {
       // Update existing product in PurchaseTable_Trans
       await pool.query`
@@ -3659,6 +3660,7 @@ for (const product of parsedProducts) { // Change 'products' to 'parsedProducts'
           SET
               [product] = ${productId},
               [batchNo] = ${batchNo},
+              [expiryDate]=${expiryDate},
               [tax] = ${tax},
               [quantity] = ${quantity},
                [package] = ${package},
@@ -3681,8 +3683,8 @@ for (const product of parsedProducts) { // Change 'products' to 'parsedProducts'
   } else {
       // Insert new product into PurchaseTable_Trans
       const insertProductResult = await pool.query`
-          INSERT INTO [elite_pos].[dbo].[PurchaseTable_Trans] ([purchaseId], [product], [batchNo], [tax], [quantity],[package],[retailQty],[retailRate], [uom], [rate],[mrp],[retailMrp], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
-          VALUES (${purchaseId}, ${productId}, ${batchNo}, ${tax}, ${quantity},${package},${retailQty},${retailRate}, ${uom}, ${rate}, ${mrp},${retailMrp},${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
+          INSERT INTO [elite_pos].[dbo].[PurchaseTable_Trans] ([purchaseId], [product], [batchNo],[expiryDate], [tax], [quantity],[package],[retailQty],[retailRate], [uom], [rate],[mrp],[retailMrp], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
+          VALUES (${purchaseId}, ${productId}, ${batchNo},${expiryDate}, ${tax}, ${quantity},${package},${retailQty},${retailRate}, ${uom}, ${rate}, ${mrp},${retailMrp},${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
           
           SELECT SCOPE_IDENTITY() AS insertedId;
       `;
@@ -3706,6 +3708,7 @@ for (const product of parsedProducts) { // Change 'products' to 'parsedProducts'
                   [tax] = ${tax},
                   [product] = ${productId},
                   [batchNo] = ${batchNo},
+                  [expiryDate]=${expiryDate},
                   [rate] = ${rate},
                   [mrp]=${mrp},
                   [retailMrp]=${retailMrp},
@@ -3715,8 +3718,8 @@ for (const product of parsedProducts) { // Change 'products' to 'parsedProducts'
       } else {
           // Insert new record into stock_Ob
           await pool.query`
-              INSERT INTO [elite_pos].[dbo].[stock_Ob] (Id, product, batchNo, quantity,retailQty,retailRate, [op_quantity], tax, uom, rate,mrp,retailMrp)
-              VALUES (${purchaseTransId}, ${productId}, ${batchNo}, ${quantity},${retailQty},${retailRate}, ${quantity} ,${tax}, ${uom}, ${rate},${mrp},${retailMrp});
+              INSERT INTO [elite_pos].[dbo].[stock_Ob] (Id, product, batchNo,expiryDate, quantity,retailQty,retailRate, [op_quantity], tax, uom, rate,mrp,retailMrp)
+              VALUES (${purchaseTransId}, ${productId}, ${batchNo},${expiryDate}, ${quantity},${retailQty},${retailRate}, ${quantity} ,${tax}, ${uom}, ${rate},${mrp},${retailMrp});
           `;
       }
   }
@@ -3761,7 +3764,7 @@ exports.purchaseEdit = async (req, res) => {
         [id] = ${purchaseDetails.id};
     `;
     for (const product of products) {
-      const { Id, productId, batchNo, tax, quantity,package,retailQty,retailRate, uom, rate,mrp,retailMrp, discMode, discount, amount, cgst, sgst, igst, totalAmount } = product;
+      const { Id, productId, batchNo,expiryDate, tax, quantity,package,retailQty,retailRate, uom, rate,mrp,retailMrp, discMode, discount, amount, cgst, sgst, igst, totalAmount } = product;
       let purchaseTransId;
       if (Id) {
         await pool.query`
@@ -3769,6 +3772,7 @@ exports.purchaseEdit = async (req, res) => {
           SET
               [product] = ${productId},
               [batchNo] = ${batchNo},
+              [expiryDate]=${expiryDate},
               [tax] = ${tax},
               [quantity] = ${quantity},
               [package] = ${package},
@@ -3791,8 +3795,8 @@ exports.purchaseEdit = async (req, res) => {
         purchaseTransId = Id;
       } else {
         const insertProductResult = await pool.query`
-          INSERT INTO [elite_pos].[dbo].[PurchaseTable_Trans] ([purchaseId], [product], [batchNo], [tax], [quantity],[package],[retailQty],[retailRate], [uom], [rate],[mrp],[retailMrp], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
-          VALUES (${purchaseDetails.id}, ${productId}, ${batchNo}, ${tax}, ${quantity},${package}, ${retailQty}, ${retailRate},  ${uom}, ${rate},${mrp}, ${discMode}, ${discount},${retailMrp}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});  
+          INSERT INTO [elite_pos].[dbo].[PurchaseTable_Trans] ([purchaseId], [product], [batchNo],[expiryDate], [tax], [quantity],[package],[retailQty],[retailRate], [uom], [rate],[mrp],[retailMrp], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
+          VALUES (${purchaseDetails.id}, ${productId}, ${batchNo},${expiryDate}, ${tax}, ${quantity},${package}, ${retailQty}, ${retailRate},  ${uom}, ${rate},${mrp}, ${discMode}, ${discount},${retailMrp}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});  
           SELECT SCOPE_IDENTITY() AS insertedId;
         `;
         purchaseTransId = insertProductResult.recordset[0].insertedId;
@@ -3804,6 +3808,7 @@ exports.purchaseEdit = async (req, res) => {
           UPDATE [elite_pos].[dbo].[stock_Ob]
           SET 
             batchNo=${batchNo},
+            expiryDate=${expiryDate},
             quantity = ${quantity},
             [op_quantity]=${quantity},
             [retailQty]=${retailQty},
@@ -3817,8 +3822,8 @@ exports.purchaseEdit = async (req, res) => {
         END
         ELSE
         BEGIN
-          INSERT INTO [elite_pos].[dbo].[stock_Ob] (Id, product, batchNo, quantity,retailQty,retailRate, [op_quantity], tax, uom, rate,mrp,retailMrp)
-          VALUES (${purchaseTransId}, ${productId}, ${batchNo}, ${quantity},${retailQty},${retailRate} ,${quantity}, ${tax}, ${uom}, ${rate},${mrp},${retailMrp});
+          INSERT INTO [elite_pos].[dbo].[stock_Ob] (Id, product, batchNo,expiryDate, quantity,retailQty,retailRate, [op_quantity], tax, uom, rate,mrp,retailMrp)
+          VALUES (${purchaseTransId}, ${productId}, ${batchNo},${expiryDate}, ${quantity},${retailQty},${retailRate} ,${quantity}, ${tax}, ${uom}, ${rate},${mrp},${retailMrp});
         END
       `;
     }
@@ -7128,77 +7133,95 @@ exports.company = async (req, res, next) => {
 
 async function getSidebarItemsForRole(roleName) {
   try {
-    console.log('Role name:', roleName); 
+    console.log("Role name:", roleName);
     if (!roleName) {
-      throw new Error('Role name is undefined or empty.');
+      throw new Error("Role name is undefined or empty.");
     }
 
-    const result = await pool.request()
-      .input('roleName', sql.NVarChar, roleName)
-      .query(`
+    const result = await pool
+      .request()
+      .input("roleName", sql.NVarChar, roleName).query(`
         SELECT title, href,  menu
         FROM [elite_pos].[dbo].[menu_access_rights]
         WHERE [${roleName}] = 1`);
 
     return result.recordset;
   } catch (error) {
-    console.error('Error fetching sidebar items for role:', error.message);
-    return []; 
+    console.error("Error fetching sidebar items for role:", error.message);
+    return [];
   }
-};
+}
 
 exports.sidebar = async (req, res) => {
   try {
     const roleName = req.session.userRole;
-    console.log('Received role name:', roleName);
+    console.log("Received role name:", roleName);
     if (!roleName) {
-      throw new Error('Role name is undefined or empty.');
+      throw new Error("Role name is undefined or empty.");
     }
     const sidebarItems = await getSidebarItemsForRole(roleName);
-    res.status(200).json({ sidebarItems, role: roleName }); 
+    res.status(200).json({ sidebarItems, role: roleName });
   } catch (error) {
-    console.error('An error occurred while fetching sidebar items:', error.message);
+    console.error(
+      "An error occurred while fetching sidebar items:",
+      error.message
+    );
     return res.status(500).json({ error: "Internal server error" });
   }
 };
 
-
-
 exports.login = async (req, res) => {
   try {
     await poolConnect();
-    const emailid = req.body.emailid;  
+    const emailid = req.body.emailid;
     const password = req.body.password;
-    console.log('Checking if email is already taken');
-    const emailCheckResult = await pool.query`SELECT ID, emailid, password, role FROM [elite_pos].[dbo].[registeration] WHERE emailid = ${emailid}`;
-    console.log('Email check result:', emailCheckResult);
+    console.log("Checking if email is already taken");
+    const emailCheckResult =
+      await pool.query`SELECT ID, emailid, password, role FROM [elite_pos].[dbo].[registeration] WHERE emailid = ${emailid}`;
+    console.log("Email check result:", emailCheckResult);
     if (emailCheckResult.recordset.length <= 0) {
-      return res.status(401).render("login", { msg: "Email or password incorrect", msg_type: "error" });
+      return res
+        .status(401)
+        .render("login", {
+          msg: "Email or password incorrect",
+          msg_type: "error",
+        });
     }
     const user = emailCheckResult.recordset[0];
     const hashedPasswordFromDB = user.password;
-    console.log('Hashed Password from the Database:', hashedPasswordFromDB);
-    console.log('Given Password:', password);
-    const isPasswordValid = await bcrypt.compare(password, hashedPasswordFromDB);
+    console.log("Hashed Password from the Database:", hashedPasswordFromDB);
+    console.log("Given Password:", password);
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      hashedPasswordFromDB
+    );
     if (!password || !isPasswordValid) {
-      return res.status(401).render("login", { msg: "Email or password incorrect", msg_type: "error" });
+      return res
+        .status(401)
+        .render("login", {
+          msg: "Email or password incorrect",
+          msg_type: "error",
+        });
     }
     const roleId = user.role;
     if (!roleId) {
-      throw new Error('Role ID not found for the user.');
+      throw new Error("Role ID not found for the user.");
     }
-    const roleResult = await pool.request()
-      .input('roleId', sql.Int, roleId)
-      .query('SELECT role FROM [role] WHERE id = @roleId');
+    const roleResult = await pool
+      .request()
+      .input("roleId", sql.Int, roleId)
+      .query("SELECT role FROM [role] WHERE id = @roleId");
     const roleName = roleResult.recordset[0].role;
-    console.log('User Role:', roleName);
-    req.session.userRole = roleName; 
+    console.log("User Role:", roleName);
+    req.session.userRole = roleName;
     req.session.save(() => {
       res.redirect(`/index`);
     });
   } catch (error) {
-    console.error('An error occurred:', error.message);
-    return res.status(500).render("login", { msg: "Internal server error", msg_type: "error" });
+    console.error("An error occurred:", error.message);
+    return res
+      .status(500)
+      .render("login", { msg: "Internal server error", msg_type: "error" });
   }
 };
 
@@ -7245,7 +7268,7 @@ exports.registration = async (req, res) => {
   } catch (error) {
     console.error('An error occurred:', error.message);
     return res.status(500).json({ msg: "An error occurred", msg_type: "error" });
-  }
+  } 
 };
-
+    
 /*registration*/

@@ -609,6 +609,10 @@ router.get('/menuaccesscontrol',(req,res)=>{
 router.get("/salesretail", (req, res) => {
   res.render("salesretail");
 });
+router.get("/restricted", (req, res) => {
+  res.render("restricted");
+});
+
 router.post("/salesretail", (req, res) => {
   res.render("salesretail");
 });
@@ -636,7 +640,7 @@ router.get("/salesretail", (req, res) => {
 router.get("/molecules", (req, res) => {
   res.render("molecules");
 });
-router.post("/molecules", (req, res) => {
+router.post("/molecules", (req, res) => {  
   res.render("molecules");
 });
 router.put("/molecules", (req, res) => {

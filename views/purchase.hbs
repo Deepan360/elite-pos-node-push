@@ -376,7 +376,7 @@ $(document).on('click', '.editmasbtn', function() {
         var id = row.find('td:eq(0)').text();
         var product = row.find('td:eq(1)').text();
         var batchNo = row.find('td:eq(2)').text();
-         var expiryDate = row.find('td:eq(3)').date();
+         var expiryDate = row.find('td:eq(3)').text();
         var tax = row.find('td:eq(4)').text();
         var quantity = row.find('td:eq(5)').text();
           var package = row.find('td:eq(6)').text();
@@ -1029,7 +1029,7 @@ $('#pdiscMode, #pdiscount').change(function() {
         { data: 'Id' },
         { data: 'product' },
         { data: 'batchNo' },
-        {data:'expiryDate',render: function (data) {
+        {data:'expiryDate', render: function (data) {
                     const formattedDate = moment(data).format("DD-MM-YYYY");
                     return formattedDate;
                 }

@@ -3460,7 +3460,7 @@ exports.productid = (req, res) => {
     p.productname,
     dm.discMode,
     pt.batchNo,
-    pt.expiryDate,
+    FORMAT(pt.expiryDate,'yyyy-MM-dd') AS expiryDate,
     pt.tax,
     pt.quantity,
      pt.package,

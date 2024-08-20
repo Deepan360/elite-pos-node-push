@@ -115,14 +115,11 @@ h5{
 <script type="text/javascript" src="https://cdn.datatables.net/1.11.6/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.3.3/js/dataTables.fixedColumns.min.js"></script>
 
-
 <!-- Select2 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.2/dist/css/select2.min.css" rel="stylesheet" />
 
-
 <!-- Select2 JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.2/dist/js/select2.min.js"></script>
-
 
 </head>
 
@@ -189,69 +186,25 @@ fetch('/auth/sidebar/companyTitle')
 <script type="text/javascript">
   (function () {
     var idleTime = 0;
-    // Set the idle timeout period to 1 hour (in milliseconds)
-    var idleLimit = 60 * 60 * 1000; // 1 hour in milliseconds
+    var idleInterval = setInterval(timerIncrement, 60000); // 1 minute
 
-    // Set interval to check idle time every minute
-    var idleInterval = setInterval(timerIncrement, 60000);
-
-    // Reset timer on user interactions
     document.onmousemove = resetTimer;
     document.onkeypress = resetTimer;
     document.onscroll = resetTimer;
     document.onclick = resetTimer;
 
-    // Reset the idle timer
-    function resetTimer() {
+    function resetTimer() { 
       idleTime = 0;
     }
 
-    // Increment the idle timer and check if the limit has been reached
     function timerIncrement() {
       idleTime++;
-      if (idleTime * 60000 >= idleLimit) {
-        logoutUser(); // Log out user if idle limit is reached
+      if (idleTime >= 60) { // 60 minutes
+        window.location.href = '/logout';
       }
-    }
-
-    // Log out the user
-    function logoutUser() {
-      // Clear role information upon logout
-      localStorage.removeItem('userRole');
-      sessionStorage.removeItem('userRole');
-      sessionStorage.setItem('isLoggedOut', 'true'); // Set logout status
-      window.location.href = '/logout'; // Redirect to logout route
-    }
-
-    // Prevent back button navigation on the logout page
-    function preventBackNavigation() {
-      if (sessionStorage.getItem('isLoggedOut') === 'true') {
-        window.location.replace('/logout'); // Ensure user stays on logout page
-        window.onpopstate = function () {
-          window.history.forward(); // Prevent back navigation
-        };
-      }
-    }
-
-    // Check if we are on the logout page to prevent back navigation
-    if (window.location.pathname === '/logout') {
-      preventBackNavigation();
     }
   })();
 
-  // Function to handle logout
-  function handleLogout() {
-    localStorage.removeItem('userRole');
-    sessionStorage.removeItem('userRole');
-    sessionStorage.setItem('isLoggedOut', 'true'); // Set logout status
-    window.location.href = '/logout'; // Redirect to logout route
-  }
-
-  // Attach event listener to logout button
-  const logoutIcon = document.getElementById('logoutIcon');
-  if (logoutIcon) {
-    logoutIcon.addEventListener('click', handleLogout);
-  }
 </script>
 
 

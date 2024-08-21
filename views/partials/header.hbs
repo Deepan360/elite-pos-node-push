@@ -124,10 +124,7 @@ h5{
 </head>
 
 <script>
-      $(document).ready(function () {
-        // Initialize Select2 on all dropdowns
-        $('.dropdown').select2();
-      });
+
 
 document.addEventListener("DOMContentLoaded", function() {
     var currentPageUrl = window.location.href;
@@ -193,19 +190,22 @@ fetch('/auth/sidebar/companyTitle')
     document.onscroll = resetTimer;
     document.onclick = resetTimer;
 
-    function resetTimer() { 
+    function resetTimer() {
       idleTime = 0;
     }
 
     function timerIncrement() {
       idleTime++;
+       console.log('Idle time (minutes):', idleTime);
       if (idleTime >= 60) { // 60 minutes
         window.location.href = '/logout';
       }
     }
+
   })();
 
 </script>
+
 
 
 

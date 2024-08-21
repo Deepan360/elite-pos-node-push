@@ -60,7 +60,7 @@ hbs.registerPartials(partialspath);
 app.use((req, res, next) => {
   if (req.session.user) {
     req.session._garbage = Date();
-    req.session.touch();
+    req.session.touch(); 
   }
   next();
 });

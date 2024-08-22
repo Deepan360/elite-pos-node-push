@@ -135,55 +135,57 @@
             </div>
              
 <form id="purchaseDetails" class="form-control" style="display: block; align-item: start;" method="post">
-    <div class="row">
-        <div class="col">
-    <div class="custom-input-container ma">
+    <div class="row mt-2">
+        
+    <div class="col-md-3 custom-input-container ma">
     <select name="Id" class="dropdown" id="Id" >
         <option selected>view details</option>
     </select>
     <label for="purchaseId">Purchase Id</label>
     <input type="hidden" name="id" id="id">
 </div>
-            <div class="custom-input-container ma">
+<div class="col-md-3 custom-input-container ma">
+    <select id="supplierSelect" class="dropdown" name="suppliername">
+        <option selected="disabled">Select Supplier</option>
+    </select>
+    <label for="suppliername">Supplier Name</label>
+</div>
+        <div class="col-md-3 custom-input-container ma">
+            <input type="text" placeholder=" " name="supplierinvoiceno" id="supplierinvoiceno">
+            <label for="supplierinvoiceno">Supplier Invoice No</label>
+        </div>
+                <div class="col-md-3 custom-input-container ma">
+                    <input type="date" placeholder=" " name="supplierinvoicedate" id="supplierinvoicedate">
+                    <label for="supplierinvoicedate">Supplier Invoice Date</label>
+                </div>
+            <div class="col-md-3 custom-input-container ma">
                 <input type="date" placeholder=" " name="purchasedate" id="purchasedate">
                 <label for="purchasedate">Purchase Date</label>
             </div>
-            <div class="custom-input-container ma">
+     
+            <div class="col-md-3 custom-input-container ma">
+                <input type="text" name="supplierinvoiceamount" id="supplierinvoiceamount">
+                <label for="supplierinvoiceamount">Supp.Invoice Amount</label>
+            </div>
+            <div class="col-md-3 custom-input-container ma">
                 <input type="text" placeholder=" " name="paymentmode" id="paymentmode">
                 <label for="paymentmode">Payment Mode</label>
             </div>
-        </div>
-        <div class="col">
-            <div class="custom-input-container ma">
-                <input type="date" placeholder=" " name="supplierinvoicedate" id="supplierinvoicedate">
-                <label for="supplierinvoicedate">Supplier Invoice Date</label>
-            </div>
-            <div class="custom-input-container ma">
+    
+            <div class="col-md-3 custom-input-container ma">
                 <input type="text" placeholder=" " name="modeoftransport" id="modeoftransport">
                 <label for="modeoftransport">Mode Of Transport</label>
             </div>
-            <div class="custom-input-container ma">
+            <div class="col-md-3 custom-input-container ma">
                 <input type="text" placeholder=" " name="transportno" id="transportno">
                 <label for="transportno">Transport No</label>
             </div>
+     
+       
+  
+         
         </div>
-        <div class="col" >
-            <div class="custom-input-container ma">
-                <input type="text"  name="supplierinvoiceamount" id="supplierinvoiceamount">
-                <label for="supplierinvoiceamount">Supp.Invoice Amount</label>
-            </div>
-            <div class="custom-input-container ma">
-                <input type="text" placeholder=" " name="supplierinvoiceno" id="supplierinvoiceno">
-                <label for="supplierinvoiceno">Supplier Invoice No</label>
-            </div>
-            <div class="custom-input-container ma">
-                <select id="supplierSelect" class="dropdown" name="suppliername">
-                    <option selected="disabled">Select Supplier</option>
-                </select>
-                <label for="suppliername">Supplier Name</label>
-            </div>
-        </div>
-    </div>
+ 
     <div style="display: none;">
         <input type="hidden" id="pamount_" name="pamount" value="0.00">
         <input type="hidden" id="pigst_" name="pigst" value="0.00">
@@ -205,9 +207,9 @@
                 <table id="customerTable"
                        class="table-responsive justify-content-between align-items-end" style="width:100% !important">
                     <thead>
-                    <tr>
+                    <tr>                     
                         <th>Id</th>
-                        <th>Product Name</th>
+                        <th >Product Name</th>
                         <th>Batch No</th>
                         <th>Expiry Date</th>
                         <th>Tax(%)</th>
@@ -744,7 +746,7 @@ let newRow = $("<tr>" +
     "<td><input type='number' name='sgst' class='input-field' id='sgst_" + uniqueId + "' placeholder='SGST'></td>" +
     "<td><input type='number' name='igst' class='input-field' id='igst_" + uniqueId + "' placeholder='IGST'></td>" +
     "<td><input type='number' name='totalAmount' class='input-field' id='totalAmount_" + uniqueId + "' placeholder='Total Amount'></td>" +
-"<td class='action new-row'><button class='btn btn-danger deleteRowBtn'>Delete Row</button></td>" +
+"<td class='action new-row'><i class='fa-solid fa-trash deleteRowBtn text-danger' type='button'></i></td>" +
 
     "</tr>");
             $('#customerTable tbody').append(newRow);
@@ -799,7 +801,7 @@ $.ajax({
         }
     });
 
-    $('#customerTable tbody').on('click', 'button.deleteRowBtn', function () {
+    $('#customerTable tbody').on('click', 'i.deleteRowBtn', function () {
         let row = $(this).closest("tr");
         if (row) {
             table.row(row).remove().draw(false);
@@ -1029,10 +1031,7 @@ $('#pdiscMode, #pdiscount').change(function() {
         { data: 'Id' },
         { data: 'product' },
         { data: 'batchNo' },
-        {data:'expiryDate', render: function (data) {
-                    const formattedDate = moment(data).format("DD-MM-YYYY");
-                    return formattedDate;
-                }
+        {data:'expiryDate'
 },
         { data: 'tax' },
         { data: 'quantity' },

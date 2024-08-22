@@ -137,46 +137,45 @@
              
 <form id="purchaseDetails" class="form-control" style="display: block; align-item: start;" method="post">
     <div class="row">
-        <div class="col">
-    <div class="custom-input-container">
+     
+    <div class="custom-input-container col-md-3">
     <select name="Id" class="dropdown" id="Id" >
         <option selected>view details</option>
     </select>
     <label for="purchaseId">Sale Id</label>
     <input type="hidden" name="id" id="id">
 </div>
-            <div class="custom-input-container">
+    <div class="custom-input-container col-md-3">
+        <select id="supplierSelect" class="dropdown" name="customername">
+            <option selected="disabled">Select Customer</option>
+        </select>
+        <label for="customername">Customer Name</label>
+    </div>
+            <div class="custom-input-container col-md-3">
                 <input type="text" placeholder=" " name="customermobileno" id="customermobileno">
                 <label for="customermobileno">Customer Mobile No</label>
             </div>
-            <div class="custom-input-container">
+                    <div class="custom-input-container col-md-3">
+                        <input type="date" placeholder=" " name="saledate" id="saledate">
+                        <label for="saledate">Sale Date</label>
+                    </div>
+            <div class="custom-input-container col-md-3">
                 <input type="text" placeholder=" " name="paymentmode" id="paymentmode">
                 <label for="paymentmode">Payment Mode</label>
             </div>
-        </div>
-        <div class="col">
-            <div class="custom-input-container">
-                <input type="date" placeholder=" " name="saledate" id="saledate">
-                <label for="saledate">Sale Date</label>
-            </div>
-            <div class="custom-input-container">
+       
+    
+            <div class="custom-input-container col-md-3">
                 <input type="text" placeholder=" " name="referno" id="referno">
                 <label for="referno">Refer No</label>
             </div>
          
-        </div>
-        <div class="col">
-    <div class="custom-input-container">
-                <select id="supplierSelect" class="dropdown" name="customername" >
-                    <option selected="disabled">Select Customer</option>
-                </select>
-                <label for="customername">Customer Name</label>
-            </div>
-               <div class="custom-input-container">
+
+               <div class="custom-input-container col-md-3">
                 <input type="text" placeholder=" " name="transportno" id="transportno">
                 <label for="transportno">Transport No</label>
             </div>
-        </div>
+       
     </div>
     <div style="display: none;">
         <input type="hidden" id="pamount_" name="pamount" value="0.00">
@@ -693,7 +692,7 @@ $(document).ready(function () {
             let purchaseId = generateUniqueId();
             $('#purchaseId').val(purchaseId);
             let uniqueId = generateUniqueId();              
-let newRow = $("<tr data-uniqueId='" + uniqueId + "'>" +
+        let newRow = $("<tr data-uniqueId='" + uniqueId + "'>" +
     "<td><input type='hidden' name='purchaseId' class='input-field purchase-id' value='" + purchaseId + "'></td>" +
     "<td><select name='productname' class='input-field product-name dropdown' id='productname_" + uniqueId + "' placeholder='Product Name'><option selected disabled>Select product</option></select></td>" +
     "<td><input type='text' name='batchNo' class='input-field' id='batchNo_" + uniqueId + "' placeholder='Batch No'></td>" +
@@ -711,7 +710,8 @@ let newRow = $("<tr data-uniqueId='" + uniqueId + "'>" +
     "<td><input type='number' name='sgst' class='input-field' id='sgst_" + uniqueId + "' placeholder='SGST'></td>" +
     "<td><input type='number' name='igst' class='input-field' id='igst_" + uniqueId + "' placeholder='IGST'></td>" +
     "<td><input type='number' name='totalAmount' class='input-field' id='totalAmount_" + uniqueId + "' placeholder='Total Amount'></td>" +
-"<td class='action new-row'><button class='btn btn-danger deleteRowBtn'>Delete Row</button></td>" +
+"<td class='action new-row'><i class='fa-solid fa-trash deleteRowBtn text-danger' type='button'></i></td>" +
+            
     "</tr>");
             $('#customerTable tbody').append(newRow);
             table.rows.add([newRow[0]]).draw();
@@ -764,7 +764,7 @@ $('#productname_' + uniqueId).on('change', function () {
     });
 
 
-    $('#customerTable tbody').on('click', 'button.deleteRowBtn', function () {
+    $('#customerTable tbody').on('click', 'i.deleteRowBtn', function () {
         let row = $(this).closest("tr");
         if (row) {
             table.row(row).remove().draw(false);

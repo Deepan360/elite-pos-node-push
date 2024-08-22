@@ -52,8 +52,6 @@ app.use(
   })
 );
 
-
-
 const partialspath = path.join(__dirname, "./views/partials");
 hbs.registerPartials(partialspath);
 
@@ -64,9 +62,6 @@ app.use((req, res, next) => {
   }
   next();
 });
-
-
-
 
 app.use("/", require("./routes/pages"));
 app.use("/auth", require("./routes/auth"));

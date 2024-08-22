@@ -864,4 +864,16 @@ tbody tr {
   display: none;
 }
 
+/* General input and select field styling */
+/* tr td input.input-field,
+tr td select.input-field {
+  width:100px !important;
+  /* Make input and select fields take the full width of the td */
+  /* box-sizing: border-box; */
+  /* Ensure padding and borders are included in the element's width */
+  /* padding: 5px ; */
+  /* Add some padding for better appearance */
+  /* margin: 0; */
+  /* Remove any default margin */
+/* } */ 
 

@@ -685,7 +685,7 @@ $(document).ready(function () {
                 "<td><input type='number' name='sgst' class='input-field' id='sgst_" + uniqueId + "' placeholder='SGST'></td>" +
                 "<td><input type='number' name='igst' class='input-field' id='igst_" + uniqueId + "' placeholder='IGST'></td>" +
                 "<td><input type='number' name='totalAmount' class='input-field' id='totalAmount_" + uniqueId + "' placeholder='Total Amount'></td>" +
-                "<td class='action new-row'><button class='btn btn-danger deleteRowBtn'>Delete Row</button></td>" +
+                "<td class='action new-row'><i class='fa-solid fa-trash deleteRowBtn text-danger' type='button'></i></td>" +
                 "</tr>");
 
 
@@ -729,7 +729,7 @@ $(document).ready(function () {
         });
 
         // Delete Row
-        $('#customerTable tbody').on('click', 'button.deleteRowBtn', function () {
+        $('#customerTable tbody').on('click', 'i.deleteRowBtn', function () {
             let row = $(this).closest("tr");
             if (row) {
                 table.row(row).remove().draw(false);

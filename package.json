@@ -2,14 +2,17 @@
   "name": "elite_pos_node",
   "version": "1.0.0",
   "main": "app.js",
-  "scripts": {
-    "start": "nodemon app.js"
-  },
+ "scripts": {
+  "start": "node app.js",
+  "dev": "nodemon app.js",
+  "postinstall": "chmod +x node_modules/.bin/nodemon || true"
+}
+,
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.1.4"
   },
   "dependencies": {
     "@azure/identity": "^4.4.1",

@@ -2,12 +2,9 @@
   "name": "elite_pos_node",
   "version": "1.0.0",
   "main": "app.js",
- "scripts": {
-  "start": "node app.js",
-  "dev": "nodemon app.js",
-  "postinstall": "chmod +x node_modules/.bin/nodemon || true"
-}
-,
+  "scripts": {
+    "start": "node app.js"
+  },
   "author": "",
   "license": "ISC",
   "description": "",

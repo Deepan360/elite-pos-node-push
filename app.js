@@ -7,6 +7,9 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const methodOverride = require("method-override");
 const session = require("express-session");
+const { logger } = require("@azure/logger");
+
+
 
 const app = express();
 dotenv.config({ path: "./.env" });

@@ -877,3 +877,42 @@ tr td select.input-field {
   /* Remove any default margin */
 /* } */ 
 
+.modal-content {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.modal-header {
+  border-bottom: 1px solid #ddd;
+}
+
+.modal-footer {
+  border-top: 1px solid #ddd;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #004085;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+}
+table tbody tr td {
+  text-align: left !important;
+}
+
+table thead th {
+  text-align: left !important;
+}

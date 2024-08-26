@@ -176,28 +176,26 @@ exports.package = (req, res) => {
 //combinemolecules
 
 exports.combinedmoleculesadd = async (req, res) => {
-  const {
-    combinationcode, combinationname
-  } = req.body;
+  const { combinationcode, combinationname } = req.body;
 
   try {
     // Ensure the database connection is established before proceeding
     await poolConnect();
 
-    const result = await pool.request()
-      .input('combinationcode', sql.NVarChar(100), combinationcode || null)
-      .input('combinationname', sql.NVarChar(50), combinationname || null)
-
-      .execute('Addcombinedmolecules');
+    const result = await pool
+      .request()
+      .input("combinationcode", sql.NVarChar(100), combinationcode || null)
+      .input("combinationname", sql.NVarChar(sql.MAX), combinationname || null)
+      .execute("Addcombinedmolecules");
 
     console.log(result);
     console.log(result.toString());
 
     // Redirect to another route after processing
-    return res.redirect('/combinedmolecules');
+    return res.redirect("/combinedmolecules");
   } catch (error) {
     console.error(error);
-    return res.status(500).send('Internal Server Error');
+    return res.status(500).send("Internal Server Error");
   }
 };
 
@@ -2771,7 +2769,7 @@ exports.Purchasereturnadd = async (req, res) => {
     pdiscount,
     psubtotal,
     proundOff,
-    isDraft,
+    
     products: productsString,  
   } = req.body;
 
@@ -2788,9 +2786,9 @@ exports.Purchasereturnadd = async (req, res) => {
 
     const result = await pool.query`
       INSERT INTO [elite_pos].[dbo].[PurchaseTableReturn_Master]
-      ([purchasedate], [paymentmode], [supplierinvoicedate], [modeoftransport], [transportno], [supplierinvoiceamount], [supplierinvoiceno], [suppliername],[amount],[cgst],[sgst],[igst],[netAmount],[cess],[tcs],[discMode],[discount],[subtotal],[roundoff],[isDraft])
+      ([purchasedate], [paymentmode], [supplierinvoicedate], [modeoftransport], [transportno], [supplierinvoiceamount], [supplierinvoiceno], [suppliername],[amount],[cgst],[sgst],[igst],[netAmount],[cess],[tcs],[discMode],[discount],[subtotal],[roundoff])
       VALUES
-      (${formattedPurchaseDate}, ${paymentmode}, ${formattedsupplierinvoicedate}, ${modeoftransport}, ${transportno}, ${supplierinvoiceamount}, ${supplierinvoiceno}, ${suppliername},${pamount},${pcgst},${psgst},${pigst},${pnetAmount},${pcess},${ptcs},${pdiscMode_},${pdiscount},${psubtotal},${proundOff},${isDraft});
+      (${formattedPurchaseDate}, ${paymentmode}, ${formattedsupplierinvoicedate}, ${modeoftransport}, ${transportno}, ${supplierinvoiceamount}, ${supplierinvoiceno}, ${suppliername},${pamount},${pcgst},${psgst},${pigst},${pnetAmount},${pcess},${ptcs},${pdiscMode_},${pdiscount},${psubtotal},${proundOff});
 
       SELECT SCOPE_IDENTITY() as purchaseId;`;
 
@@ -2848,8 +2846,7 @@ exports.PurchasereturnEdit = async (req, res) => {
         [discMode] = ${purchaseDetails.pdiscMode_},
         [discount] = ${purchaseDetails.pdiscount},
         [subtotal] = ${purchaseDetails.pSubtotal},
-        [roundoff] = ${purchaseDetails.proundOff},
-        [isDraft] = ${purchaseDetails.isDraft}
+        [roundoff] = ${purchaseDetails.proundOff}
     WHERE
         [id] = ${purchaseDetails.id};
     
@@ -3460,7 +3457,7 @@ exports.productid = (req, res) => {
     p.productname,
     dm.discMode,
     pt.batchNo,
-    FORMAT(pt.expiryDate,'yyyy-MM-dd') AS expiryDate,
+    FORMAT(pt.expiryDate,'MM-yyyy') AS expiryDate,
     pt.tax,
     pt.quantity,
     pt.package,
@@ -3653,6 +3650,7 @@ exports.purchaseadd = async (req, res) => {
 //inserting products
 for (const product of parsedProducts) { // Change 'products' to 'parsedProducts'
   const { Id, productId, batchNo,expiryDate, tax, quantity,package,retailQty,retailRate, uom, rate,mrp,retailMrp, discMode, discount, amount, cgst, sgst, igst, totalAmount } = product;
+  const formattedExpiryDate = expiryDate ? new Date(expiryDate + '-01') : null; 
   if (Id) {
       // Update existing product in PurchaseTable_Trans
       await pool.query`
@@ -3660,7 +3658,7 @@ for (const product of parsedProducts) { // Change 'products' to 'parsedProducts'
           SET
               [product] = ${productId},
               [batchNo] = ${batchNo},
-              [expiryDate]=${expiryDate},
+              [expiryDate]=${formattedExpiryDate},
               [tax] = ${tax},
               [quantity] = ${quantity},
                [package] = ${package},
@@ -3684,7 +3682,7 @@ for (const product of parsedProducts) { // Change 'products' to 'parsedProducts'
       // Insert new product into PurchaseTable_Trans
       const insertProductResult = await pool.query`
           INSERT INTO [elite_pos].[dbo].[PurchaseTable_Trans] ([purchaseId], [product], [batchNo],[expiryDate], [tax], [quantity],[package],[retailQty],[retailRate], [uom], [rate],[mrp],[retailMrp], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
-          VALUES (${purchaseId}, ${productId}, ${batchNo},${expiryDate}, ${tax}, ${quantity},${package},${retailQty},${retailRate}, ${uom}, ${rate}, ${mrp},${retailMrp},${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
+          VALUES (${purchaseId}, ${productId}, ${batchNo},${formattedExpiryDate}, ${tax}, ${quantity},${package},${retailQty},${retailRate}, ${uom}, ${rate}, ${mrp},${retailMrp},${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
           
           SELECT SCOPE_IDENTITY() AS insertedId;
       `;
@@ -3708,7 +3706,7 @@ for (const product of parsedProducts) { // Change 'products' to 'parsedProducts'
                   [tax] = ${tax},
                   [product] = ${productId},
                   [batchNo] = ${batchNo},
-                  [expiryDate]=${expiryDate},
+                  [expiryDate]=${formattedExpiryDate},
                   [rate] = ${rate},
                   [mrp]=${mrp},
                   [retailMrp]=${retailMrp},
@@ -3719,7 +3717,7 @@ for (const product of parsedProducts) { // Change 'products' to 'parsedProducts'
           // Insert new record into stock_Ob
           await pool.query`
               INSERT INTO [elite_pos].[dbo].[stock_Ob] (Id, product, batchNo,expiryDate, quantity,retailQty,retailRate, [op_quantity], tax, uom, rate,mrp,retailMrp)
-              VALUES (${purchaseTransId}, ${productId}, ${batchNo},${expiryDate}, ${quantity},${retailQty},${retailRate}, ${quantity} ,${tax}, ${uom}, ${rate},${mrp},${retailMrp});
+              VALUES (${purchaseTransId}, ${productId}, ${batchNo},${formattedExpiryDate}, ${quantity},${retailQty},${retailRate}, ${quantity} ,${tax}, ${uom}, ${rate},${mrp},${retailMrp});
           `;
       }
   }
@@ -3764,7 +3762,9 @@ exports.purchaseEdit = async (req, res) => {
         [id] = ${purchaseDetails.id};
     `;
     for (const product of products) {
+       
       const { Id, productId, batchNo,expiryDate, tax, quantity,package,retailQty,retailRate, uom, rate,mrp,retailMrp, discMode, discount, amount, cgst, sgst, igst, totalAmount } = product;
+     const formattedExpiryDate = expiryDate ? new Date(expiryDate + '-01') : null; 
       let purchaseTransId;
       if (Id) {
         await pool.query`
@@ -3772,7 +3772,7 @@ exports.purchaseEdit = async (req, res) => {
           SET
               [product] = ${productId},
               [batchNo] = ${batchNo},
-              [expiryDate]=${expiryDate},
+              [expiryDate]=${formattedExpiryDate},
               [tax] = ${tax},
               [quantity] = ${quantity},
               [package] = ${package},
@@ -3796,7 +3796,7 @@ exports.purchaseEdit = async (req, res) => {
       } else {
         const insertProductResult = await pool.query`
           INSERT INTO [elite_pos].[dbo].[PurchaseTable_Trans] ([purchaseId], [product], [batchNo],[expiryDate], [tax], [quantity],[package],[retailQty],[retailRate], [uom], [rate],[mrp],[retailMrp], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
-          VALUES (${purchaseDetails.id}, ${productId}, ${batchNo},${expiryDate}, ${tax}, ${quantity},${package}, ${retailQty}, ${retailRate},  ${uom}, ${rate},${mrp}, ${discMode}, ${discount},${retailMrp}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});  
+          VALUES (${purchaseDetails.id}, ${productId}, ${batchNo},${formattedExpiryDate}, ${tax}, ${quantity},${package}, ${retailQty}, ${retailRate},  ${uom}, ${rate},${mrp}, ${discMode}, ${discount},${retailMrp}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});  
           SELECT SCOPE_IDENTITY() AS insertedId;
         `;
         purchaseTransId = insertProductResult.recordset[0].insertedId;
@@ -3808,7 +3808,7 @@ exports.purchaseEdit = async (req, res) => {
           UPDATE [elite_pos].[dbo].[stock_Ob]
           SET 
             batchNo=${batchNo},
-            expiryDate=${expiryDate},
+            expiryDate=${formattedExpiryDate},
             quantity = ${quantity},
             [op_quantity]=${quantity},
             [retailQty]=${retailQty},
@@ -3823,7 +3823,7 @@ exports.purchaseEdit = async (req, res) => {
         ELSE
         BEGIN
           INSERT INTO [elite_pos].[dbo].[stock_Ob] (Id, product, batchNo,expiryDate, quantity,retailQty,retailRate, [op_quantity], tax, uom, rate,mrp,retailMrp)
-          VALUES (${purchaseTransId}, ${productId}, ${batchNo},${expiryDate}, ${quantity},${retailQty},${retailRate} ,${quantity}, ${tax}, ${uom}, ${rate},${mrp},${retailMrp});
+          VALUES (${purchaseTransId}, ${productId}, ${batchNo},${formattedExpiryDate}, ${quantity},${retailQty},${retailRate} ,${quantity}, ${tax}, ${uom}, ${rate},${mrp},${retailMrp});
         END
       `;
     }

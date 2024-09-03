@@ -146,7 +146,7 @@
 </div>
 <div class="col-md-3 custom-input-container ma">
     <select id="supplierSelect" class="dropdown" name="suppliername">
-        <option selected="disabled">Select Supplier</option>
+        <option value="" disabled selected>Select Supplier</option>
     </select>
     <label for="suppliername">Supplier Name</label>
 </div>
@@ -214,6 +214,7 @@
                         <th>Expiry Date</th>
                         <th>Tax(%)</th>
                         <th>Quantity</th>
+                        <th>Free</th>
                         <th>Package</th>
                         <th>Retail.qty</th>
                         <th>UOM</th>
@@ -390,65 +391,72 @@ $(document).ready(function() {
 });
 
 
-$(document).on('click', '.editmasbtn', function() {
-   $('.opener').show();
-    alert("IF YOU GONNA EDIT IN QUANTITY OF THE PURCHASE PLEASE DELETE THE PRODUCT TRANS AND RE-ENTER ");
-    $('#customerTable tbody tr').each(function() {
-        var row = $(this);
-        var id = row.find('td:eq(0)').text();
-        var product = row.find('td:eq(1)').text();
-        var batchNo = row.find('td:eq(2)').text();
-         var expiryDate = row.find('td:eq(3)').text();
-        var tax = row.find('td:eq(4)').text();
-        var quantity = row.find('td:eq(5)').text();
-          var package = row.find('td:eq(6)').text();
-            var retailQty = row.find('td:eq(7)').text();
-             
-        var uom = row.find('td:eq(8)').text();
-        var rate = row.find('td:eq(9)').text();
-         var retailRate = row.find('td:eq(10)').text();
-         var mrp = row.find('td:eq(11)').text();
-          var retailMrp = row.find('td:eq(12)').text();
-        var discMode = row.find('td:eq(13)').text();
-        var discount = row.find('td:eq(14)').text();
-        var amount = row.find('td:eq(15)').text();
-        var cgst = row.find('td:eq(16)').text();
-        var sgst = row.find('td:eq(17)').text();
-        var igst = row.find('td:eq(18)').text();
-        var totalAmount = row.find('td:eq(19)').text();
-        
-    row.html("<td><input type='number' readonly name='Id' class='input-field  purchase-id' value='" + id + "'></td>" +
-    "<td><select name='product' class='input-field product-name dropdown' id='productname_" + id + "'><option selected disabled>Select product</option></select></td>" +
-    "<td><input type='text' name='batchNo' class='input-field' value='" + batchNo + "'></td>" +
-    "<td><input type='month' name='expiryDate' class='input-field' value='" + expiryDate + "'></td>" +
-    "<td><input type='text' name='tax' class='input-field' value='" + tax + "'></td>" +
-    "<td><input type='number' name='quantity' class='input-field' value='" + quantity + "'></td>" +
-    "<td><input type='number' name='package' class='input-field' value='" + package + "'></td>" +
-     "<td><input type='number' name='retailQty' class='input-field' value='" + retailQty + "'></td>" +
-    "<td><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
-    "<td><input type='number' name='rate' class='input-field' value='" + rate + "'></td>" +
-          "<td><input type='number' name='retailRate' class='input-field' value='" + retailRate + "'></td>" +
+    $(document).on('click', '.editmasbtn', function () {
+        $('.opener').show();
+        alert("IF YOU GONNA EDIT IN QUANTITY OF THE PURCHASE PLEASE DELETE THE PRODUCT TRANS AND RE-ENTER ");
+        $('#customerTable tbody tr').each(function () {
+            var row = $(this);
+            var id = row.find('td:eq(0)').text();
+            var product = row.find('td:eq(1)').text();
+            var batchNo = row.find('td:eq(2)').text();
+            var expiryDate = row.find('td:eq(3)').text();
+            var tax = row.find('td:eq(4)').text();
+            var quantity = row.find('td:eq(5)').text();
+            var free = row.find('td:eq(6)').text();
+            var package = row.find('td:eq(7)').text();
+            var retailQty = row.find('td:eq(8)').text();
+            var uom = row.find('td:eq(9)').text();
+            var rate = row.find('td:eq(10)').text();
+            var retailRate = row.find('td:eq(11)').text();
+            var mrp = row.find('td:eq(12)').text();
+            var retailMrp = row.find('td:eq(13)').text();
+            var discMode = row.find('td:eq(14)').text();
+            var discount = row.find('td:eq(15)').text();
+            var amount = row.find('td:eq(16)').text();
+            var cgst = row.find('td:eq(17)').text();
+            var sgst = row.find('td:eq(18)').text();
+            var igst = row.find('td:eq(19)').text();
+            var totalAmount = row.find('td:eq(20)').text();
 
-    "<td><input type='number' name='mrp' class='input-field' value='" + mrp + "'></td>" +
-        "<td><input type='number' name='retailMrp' class='input-field' value='" + retailMrp + "'></td>" +
+            // Check if expiryDate is valid and not empty
+   var formattedExpiryDate = '';
+            if (expiryDate) {
+                var [mm, yyyy] = expiryDate.split('-');
+                formattedExpiryDate = `${yyyy}-${mm}`;
+            }
 
-    "<td><select name='discMode' class='input-field disc-mode dropdown' id='discMode_" + id + "'><option selected disabled>Select Disc Mode</option></select></td>" +
-    "<td><input type='number' name='discount' class='input-field' value='" + discount + "'></td>" +
-    "<td><input type='number' name='amount' class='input-field' value='" + amount + "'></td>" +
-    "<td><input type='number' name='cgst' class='input-field' value='" + cgst + "'></td>" +
-    "<td><input type='number' name='sgst' class='input-field' value='" + sgst + "'></td>" +
-    "<td><input type='number' name='igst' class='input-field' value='" + igst + "'></td>" +
-    "<td><input type='number' name='totalAmount' class='input-field' value='" + totalAmount + "'></td>" +
-    "<td><i class='fa-solid fa-trash deletetransBtn' type='button' data-id='" + id + "'></i></td>");
+            row.html("<td><input type='number' readonly name='Id' class='input-field purchase-id' value='" + id + "'></td>" +
+                "<td><select name='product' class='input-field product-name dropdown' id='productname_" + id + "'><option selected disabled>Select product</option></select></td>" +
+                "<td><input type='text' name='batchNo' class='input-field' value='" + batchNo + "'></td>" +
+                "<td><input type='month' name='expiryDate' class='input-field' value='" + formattedExpiryDate + "'></td>" +
+                "<td><input type='text' name='tax' class='input-field' value='" + tax + "'></td>" +
+                "<td><input type='number' name='quantity' class='input-field' value='" + quantity + "' readonly></td>" +
+                "<td><input type='number' name='free' class='input-field' value='" + free + "' readonly></td>" +
+                "<td><input type='number' name='package' class='input-field' value='" + package + "'></td>" +
+                "<td><input type='number' name='retailQty' class='input-field' value='" + retailQty + "'></td>" +
+                "<td><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
+                "<td><input type='number' name='rate' class='input-field' value='" + rate + "'></td>" +
+                "<td><input type='number' name='retailRate' class='input-field' value='" + retailRate + "'></td>" +
+                "<td><input type='number' name='mrp' class='input-field' value='" + mrp + "'></td>" +
+                "<td><input type='number' name='retailMrp' class='input-field' value='" + retailMrp + "'></td>" +
+                "<td><select name='discMode' class='input-field disc-mode dropdown' id='discMode_" + id + "'><option selected disabled>Select Disc Mode</option></select></td>" +
+                "<td><input type='number' name='discount' class='input-field' value='" + discount + "'></td>" +
+                "<td><input type='number' name='amount' class='input-field' value='" + amount + "'></td>" +
+                "<td><input type='number' name='cgst' class='input-field' value='" + cgst + "'></td>" +
+                "<td><input type='number' name='sgst' class='input-field' value='" + sgst + "'></td>" +
+                "<td><input type='number' name='igst' class='input-field' value='" + igst + "'></td>" +
+                "<td><input type='number' name='totalAmount' class='input-field' value='" + totalAmount + "'></td>" +
+                "<td><i class='fa-solid fa-trash deletetransBtn' type='button' data-id='" + id + "'></i></td>");
 
-    
-        fetchProductOptions(id, product); 
-        fetchDiscModeOptions(id, discMode); 
+            fetchProductOptions(id, product);
+            fetchDiscModeOptions(id, discMode);
+        });
+
+        calculateTotals();
+        adjustColumnWidths();
     });
 
-    calculateTotals();
-    adjustColumnWidths();    
-});
+
 function adjustColumnWidths() {
     $('#customerTable').DataTable().columns.adjust().draw();
 }
@@ -566,6 +574,7 @@ function getUpdatedProductsData() {
             var expiryDate = $(this).find('[name="expiryDate"]').val(); 
             var tax = $(this).find('[name="tax"]').val();
             var quantity = $(this).find('[name="quantity"]').val();
+            var free = $(this).find('[name="free"]').val();
             var package = $(this).find('[name="package"]').val();
             var retailQty = $(this).find('[name="retailQty"]').val();
             var retailRate = $(this).find('[name="retailRate"]').val();
@@ -588,6 +597,7 @@ function getUpdatedProductsData() {
                 expiryDate: expiryDate,
                 tax: tax,
                 quantity: quantity,
+                free:free,
                 package:package,
                 retailQty:retailQty,
                 retailRate:retailRate,
@@ -613,6 +623,8 @@ function getUpdatedProductsData() {
 
     return products;
 }
+
+
 
 // Function to fetch product options and populate dropdown
 function fetchProductOptions(id, product) {
@@ -747,6 +759,8 @@ let newRow = $("<tr>" +
     "<td><input type='month' name='expiryDate' class='input-field' id='expiryDate_" + uniqueId + "' placeholder='Expiry Date'></td>" +
     "<td><input type='text' name='tax' class='input-field' id='tax_" + uniqueId + "' placeholder='Tax(%)'></td>" +
     "<td><input type='number' name='quantity' class='input-field' id='quantity_" + uniqueId + "' placeholder='Quantity'></td>" +
+        "<td><input type='number' name='free' class='input-field' id='free_" + uniqueId + "' placeholder='free'></td>" +
+
        "<td><input type='number' name='package' class='input-field' id='package_" + uniqueId + "' placeholder='package'></td>" +
     "<td><input type='number' name='retailQty' class='input-field' id='retailQty_" + uniqueId + "' placeholder='retailQty'></td>" +
 
@@ -757,8 +771,8 @@ let newRow = $("<tr>" +
        "<td><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='MRP'></td>" +
     "<td><input type='number' name='retailMrp' class='input-field' id='retailMrp_" + uniqueId + "' placeholder='Retail MRP'></td>" +
 
-    "<td><select name='discMode' class='input-field product-name dropdown  ' id='discMode_" + uniqueId + "' placeholder='Disc.Mode'><option selected disabled>Select Disc Mode</option></select></td>" +
-    "<td><input type='number' name='discount' class='input-field' id='discount_" + uniqueId + "' placeholder='Discount'></td>" +
+    "<td><select name='discMode' class='input-field product-name dropdown  ' id='discMode_" + uniqueId + "' placeholder='Disc.Mode' required><option selected disabled>Select Disc Mode</option></select></td>" +
+    "<td><input type='number' name='discount' class='input-field' id='discount_" + uniqueId + "' placeholder='Discount' required></td>" +
     "<td><input type='number' name='amount' class='input-field' id='amount_" + uniqueId + "' placeholder='Amount'></td>" +
     "<td><input type='number' name='cgst' class='input-field' id='cgst_" + uniqueId + "' placeholder='CGST'></td>" +
     "<td><input type='number' name='sgst' class='input-field' id='sgst_" + uniqueId + "' placeholder='SGST'></td>" +
@@ -845,7 +859,7 @@ calculateTotals();
         });
 
         $('#confirmSubmitBtn').on('click', function () {
-            $('#is_Draft').val('0'); // Ensure it's set to submit
+            $('#is_Draft').val('1'); // Ensure it's set to submit
             submitForm(); // Submit form
             $('#confirmationModal').modal('hide'); // Hide the modal
         });
@@ -892,6 +906,7 @@ calculateTotals();
                     expiryDate: $('#expiryDate_' + uniqueId).val() || "",
                     tax: $('#tax_' + uniqueId).val() || "",
                     quantity: $('#quantity_' + uniqueId).val() || "",
+                    free: $('#free_' + uniqueId).val() || "",
                     package: $('#package_' + uniqueId).val() || "",
                     retailQty: $('#retailQty_' + uniqueId).val() || "",
                   
@@ -900,8 +915,8 @@ calculateTotals();
                       retailRate: $('#retailRate_' + uniqueId).val() || "",
                     mrp: $('#mrp_' + uniqueId).val() || "",
                     retailMrp: $('#retailMrp_' + uniqueId).val() || "",
-                    discMode: $('#discMode_' + uniqueId).val() || "",
-                    discount: $('#discount_' + uniqueId).val() || "",
+                    discMode: $('#discMode_' + uniqueId).val() || 3,
+                    discount: $('#discount_' + uniqueId).val() || 0,
                     amount: $('#amount_' + uniqueId).val() || "",
                     cgst: $('#cgst_' + uniqueId).val() || "",
                     sgst: $('#sgst_' + uniqueId).val() || "",
@@ -1036,6 +1051,8 @@ function calculateTotals() {
     $('#pdiscount_').val($('#pdiscount').val());
 }
 
+
+
 $('#pdiscMode, #pdiscount').change(function() {
     calculateTotals();
 });
@@ -1054,10 +1071,10 @@ $('#pdiscMode, #pdiscount').change(function() {
         { data: 'Id' },
         { data: 'product' },
         { data: 'batchNo' },
-        {data:'expiryDate'
-},
+        {data:'expiryDate'},
         { data: 'tax' },
         { data: 'quantity' },
+        {data:'free'},
          { data: 'package' },
           { data: 'retailQty' },
         
@@ -1142,6 +1159,8 @@ var selectedSupplier;
         calculateTotalAmount(); 
     });
 
+
+
     function calculateTotalAmount() {
         $('#customerTable tbody tr').each(function () {
             var row = $(this);
@@ -1176,12 +1195,24 @@ var selectedSupplier;
         return calculatedAmount;
     }
 
- function calculateRetailValues(packageSize, quantity, rate, mrp) {
-        console.log('Calculating Retail Values - Inputs:', { packageSize, quantity, rate, mrp });
+    function calculateRetailValues(packageSize, quantity, rate, mrp, free) {
+        console.log('Calculating Retail Values - Inputs:', { packageSize, quantity, rate, mrp, free });
 
-        var retailQty = packageSize * quantity;
+        // Calculate overall quantity
+        var overallQuantity = quantity + free;
+        console.log('Overall Quantity:', overallQuantity);
+
+        // Calculate retail quantity
+        var retailQty = packageSize * overallQuantity;
+        console.log('Retail Quantity:', retailQty);
+
+        // Calculate retail rate
         var retailRate = (packageSize !== 0) ? rate / packageSize : 0;
+        console.log('Retail Rate:', retailRate);
+
+        // Calculate retail MRP
         var retailMrp = (packageSize !== 0) ? mrp / packageSize : 0;
+        console.log('Retail MRP:', retailMrp);
 
         console.log('Calculated Retail Values:', { retailQty, retailRate, retailMrp });
 
@@ -1194,6 +1225,7 @@ var selectedSupplier;
             var row = event.target.closest('tr');
             var rate = parseFloat(row.querySelector('input[name="rate"]').value) || 0;
             var quantity = parseFloat(row.querySelector('input[name="quantity"]').value) || 0;
+            var free = parseFloat(row.querySelector('input[name="free"]').value) || 0;
             var packageSize = parseFloat(row.querySelector('input[name="package"]').value) || 0;
             var mrp = parseFloat(row.querySelector('input[name="mrp"]').value) || 0;
             var discMode = row.querySelector('select[name="discMode"]').value || 'N/A';
@@ -1204,13 +1236,12 @@ var selectedSupplier;
             row.querySelector('input[name="amount"]').value = amount.toFixed(2);
 
             // Calculate retail values
-            var retailValues = calculateRetailValues(packageSize, quantity, rate, mrp);
+            var retailValues = calculateRetailValues(packageSize, quantity, rate, mrp, free); // Corrected order and removed extra comma
             row.querySelector('input[name="retailQty"]').value = retailValues.retailQty.toFixed(2);
             row.querySelector('input[name="retailRate"]').value = retailValues.retailRate.toFixed(2);
             row.querySelector('input[name="retailMrp"]').value = retailValues.retailMrp.toFixed(2);
         }
     });
-
 
     function calculateTax(row, supplierState, companyState) {
         var amount = parseFloat(row.find('input[name^="amount"]').val()) || 0;
@@ -1276,6 +1307,7 @@ function fetchSupplierNames() {
         }
     });
 }
+
 
 function initiateFetchCompanyState(supplierState) {
     fetchCompanyStateAndCalculateTax(supplierState);
@@ -1451,6 +1483,8 @@ function formatDate(dateObject) {
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
+
+
 
 $(document).ready(function() {
     $('#new').click(function() {

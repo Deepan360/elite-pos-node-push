@@ -258,4 +258,6 @@ router.post("/package", userController.packageadd);
 router.put("/packageedit/:id", userController.packageedit);
 router.delete("/packagedelete/:id", userController.packagedelete);
 
+router.get("/index/dashboardinfo", userController.dashboardinfo);
+
 module.exports = router;

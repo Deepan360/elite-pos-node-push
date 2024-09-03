@@ -22,6 +22,7 @@ Icon colors
   /* icon secondary color - stroke */
   stroke: #7ea6f6;
 }
+
 /* --------------------------------
 
 Change icon size
@@ -31,18 +32,22 @@ Change icon size
   height: 0.5em;
   width: 0.5em;
 }
+
 .icon-sm {
   height: 0.8em;
   width: 0.8em;
 }
+
 .icon-lg {
   height: 1.6em;
   width: 1.6em;
 }
+
 .icon-xl {
   height: 2em;
   width: 2em;
 }
+
 /* -------------------------------- 
 
 Align icon and text 
@@ -53,17 +58,21 @@ Align icon and text
   display: flex;
   align-items: center;
 }
+
 .icon-text-aligner .icon {
   color: inherit;
   margin-right: 0.4em;
 }
+
 .icon-text-aligner .icon use {
   color: inherit;
   fill: currentColor;
 }
+
 .icon-text-aligner .icon.icon-outline use {
   stroke: currentColor;
 }
+
 /* -------------------------------- 
 
 Icon reset values - used to enable color customizations
@@ -73,16 +82,20 @@ Icon reset values - used to enable color customizations
   fill: currentColor;
   stroke: none;
 }
+
 .icon.icon-outline {
   fill: none;
   stroke: currentColor;
 }
+
 .icon use {
   stroke: none;
 }
+
 .icon.icon-outline use {
   fill: none;
 }
+
 /* -------------------------------- 
 
 Stroke effects - Nucleo outline icons
@@ -96,15 +109,19 @@ Stroke effects - Nucleo outline icons
 .icon-outline.icon-stroke-1 {
   stroke-width: 1px;
 }
+
 .icon-outline.icon-stroke-2 {
   stroke-width: 2px;
 }
+
 .icon-outline.icon-stroke-3 {
   stroke-width: 3px;
 }
+
 .icon-outline.icon-stroke-4 {
   stroke-width: 4px;
 }
+
 .icon-outline.icon-stroke-1 use,
 .icon-outline.icon-stroke-3 use {
   -webkit-transform: translateX(0.5px) translateY(0.5px);
@@ -113,10 +130,14 @@ Stroke effects - Nucleo outline icons
   -o-transform: translateX(0.5px) translateY(0.5px);
   transform: translateX(0.5px) translateY(0.5px);
 }
+
 /* Style the individual buttons */
-.buttons-copy ,.buttons-excel,.buttons-pdf,.buttons-csv{
-  background-color: #5e72e4 !important;
-  border-color: #5e72e4 !important;
+.buttons-copy,
+.buttons-excel,
+.buttons-pdf,
+.buttons-csv {
+  background-color: #34495E !important;
+  border-color: #34495E !important;
   font-family: 'Open Sans' !important;
   font-size: 14px !important;
   font-weight: 700 !important;
@@ -129,24 +150,33 @@ Stroke effects - Nucleo outline icons
   cursor: pointer;
   transition: all 0.60s ease;
 }
-.fa-file-circle-plus{
-  color: #5e72e4 !important;
+
+.fa-file-circle-plus {
+  color: #34495E !important;
   border-color: #e2e2e2 !important;
 }
-.buttons-copy:hover ,.buttons-excel:hover,.buttons-pdf:hover,.buttons-csv:hover{
+
+.buttons-copy:hover,
+.buttons-excel:hover,
+.buttons-pdf:hover,
+.buttons-csv:hover {
   transform: rotateY(2deg) rotateX(1deg) translateY(-2px);
 
 }
-.table-responsive  .row .col-date{
+
+.table-responsive .row .col-date {
   float: inline-end !important;
   /* font-size: 14px !important; */
 }
-input,select{
+
+input,
+select {
   border-radius: 5px;
   border: 1px solid gray;
   /* font-size: 14px; */
 }
-.datebar{
+
+.datebar {
   align-items: center !important;
   justify-content: end !important;
   float: right !important;
@@ -163,109 +193,153 @@ input,select{
   align-content: end;
   justify-items: end;
 }
+
 .datebar label {
   font-size: 14px !important;
   font-weight: 700;
-  display: block; 
+  display: block;
   margin-top: 5px;
 }
-aside .sidebar{
+
+aside .sidebar {
   height: 100vh !important;
   border-color: #111111 1px solid !important;
 }
+
 .min-height-300 .bg-primary {
-    min-height: 100px !important;
-    background-color: #767885  !important;
+  min-height: 100px !important;
+  background-color: #767885 !important;
 }
-.container-fluid .card{
-  box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.5); /* Add a box shadow */
+
+.container-fluid .card {
+  box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.5);
+  /* Add a box shadow */
   border-radius: 10px;
 }
- .cards{
-  transition:  all  0.3s; /* Corrected timing function and added 's' for seconds */
+
+.cards {
+  transition: all 0.3s;
+  /* Corrected timing function and added 's' for seconds */
   /* Add other styling properties for your .card class */
 }
+
 .cards:hover {
-  transform:  scale(1.05);
+  transform: scale(1.05);
   /* You can also add other styles for the hover state */
 }
- .sidenav{
-  box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.5); /* Add a box shadow */
+
+.sidenav {
+  box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.5);
+  /* Add a box shadow */
   background-color: #111111;
 }
-#fnav{
+
+.form-control {
+  border: 1px solid #c0c0c0 !important;
+  /* Changed 'groove' to 'solid' for a classic look */
+
+  /* Subtle shadow for depth */
+}
+
+.card {
+
+  box-shadow: 10px 1px 10px 1px rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid #c0c0c0 !important;
+}
+
+#fnav {
   background: none !important;
   color: #111111 !important;
 }
- #navbar span{
-  color: #8f8686 !important;
-  }
-  #navbar .fa {
-    color: #8f8686 !important;
-  }
-  #navbar span{
-    color: #8f8686 !important;
-    top: 0% !important;
-    margin: 0%;
-    padding: 0%;
-  }
-  #sidenav-main{
-    box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.5); /* Add a box shadow */
-  }
-.nav-item .fa{
-  color: #8f8686 !important;  
-}
-.nav-item span{
+
+#navbar span {
   color: #8f8686 !important;
 }
- #iconNavbarSidenav .sidenav-toggler-line{
+
+#navbar .fa {
   color: #8f8686 !important;
-  background-color:#8f8686 !important ;
 }
+
+#navbar span {
+  color: #8f8686 !important;
+  top: 0% !important;
+  margin: 0%;
+  padding: 0%;
+}
+
+#sidenav-main {
+  box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.5);
+  /* Add a box shadow */
+}
+
+.nav-item .fa {
+  color: #8f8686 !important;
+}
+
+.nav-item span {
+  color: #8f8686 !important;
+}
+
+#iconNavbarSidenav .sidenav-toggler-line {
+  color: #8f8686 !important;
+  background-color: #8f8686 !important;
+}
+
 .navbar-brand-img {
-    transition: all 0.3s ease !important; 
+  transition: all 0.3s ease !important;
 }
+
 .navbar-brand-img:hover {
-    transform: translateX(-10%) scaleX(1.3) !important; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important; 
+  transform: translateX(-10%) scaleX(1.3) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
 }
+
 .navbar-brand-img:hover::before {
-    content: url("/assets/img/Untitled\ design\ \(11\)-modified.png"); 
-    color: #fff;
-    background-color: #111111;
-    position: absolute !important;
-    left: -25px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
+  content: url("/assets/img/Untitled\ design\ \(11\)-modified.png");
+  color: #fff;
+  background-color: #111111;
+  position: absolute !important;
+  left: -25px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
 }
-.card-plain{
-  box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.5); 
+
+.card-plain {
+  box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.5);
 }
-table thead tr th{
+
+table thead tr th {
   text-wrap: nowrap !important;
 }
-table tbody tr td{
- text-align: center !important;
+
+table tbody tr td {
+  text-align: center !important;
 }
+
 .editBtn {
-  color: #800080; 
+  color: #800080;
 }
 
 .deleteBtn {
-  color: #ff8800; 
+  color: #ff8800;
 }
-table thead th{
+
+table thead th {
   text-align: center;
 }
-th, td {
+
+th,
+td {
   border: 0px solid #dddddd;
   text-align: center;
   padding: 5px;
 }
-table tbody tr td{
+
+table tbody tr td {
   text-wrap: nowrap !important;
 }
-#filter-button{
+
+#filter-button {
   width: 100px !important;
 }
 
@@ -274,7 +348,7 @@ table tbody tr.even {
 }
 
 table tbody tr.odd {
-  background-color: #dadada !important; 
+  background-color: #dadada !important;
 }
 
 table tbody tr {
@@ -284,40 +358,41 @@ table tbody tr {
 }
 
 .align-right-top label {
-  display: inline !important; 
-  font-size: 16px !important; 
+  display: inline !important;
+  font-size: 16px !important;
 }
 
 
 .dark-version .sidenav.bg-white {
   background-color: #051139 !important;
 }
+
 input {
   border: 1px solid #ccc;
   position: relative;
-  padding: 5px; 
-  box-sizing: border-box; 
-  line-height: 0.3; 
+  padding: 5px;
+  box-sizing: border-box;
+  line-height: 0.3;
 }
 
 input::placeholder {
   color: gray;
   position: absolute;
   transition: color 0.3s ease-out, transform 0.3s ease-out;
-  transform-origin: right center; 
+  transform-origin: right center;
 }
 
 input:focus::placeholder,
 input:not(:placeholder-shown)::placeholder {
   color: #3498db;
-  transform: translateY(-100%) translateY(5px); 
+  transform: translateY(-100%) translateY(5px);
 }
 
 input:not(:placeholder-shown)::placeholder {
   transform: translateY(-100%) translateY(5px);
 }
 
-input::placeholder  {
+input::placeholder {
   position: absolute;
   top: 50%;
   left: 10px;
@@ -341,7 +416,7 @@ input:focus::placeholder {
   overflow: auto;
 }
 
- 
+
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -351,6 +426,7 @@ input:focus::placeholder {
   flex: 1;
   padding: 2px;
 }
+
 .custom-input-container {
   position: relative;
   margin-bottom: 20px;
@@ -360,10 +436,11 @@ input:focus::placeholder {
   position: relative;
   margin-bottom: 20px;
 }
+
 .custom-input-container label {
   position: absolute !important;
   top: 0%;
- 
+
   pointer-events: none;
   transition: 0.3s;
   color: #555;
@@ -376,135 +453,150 @@ input:focus::placeholder {
 .custom-input-container input {
   width: 100%;
   padding: 10px;
-align-items: end;
+  align-items: end;
   box-sizing: border-box;
-  border: 1px solid #ddd; 
+  border: 1px solid #ddd;
   border-radius: 4px;
   outline: none;
 }
 
 
 
-.custom-input-container input:not(:focus):not(:placeholder-shown) + label {
+.custom-input-container input:not(:focus):not(:placeholder-shown)+label {
   top: 0%;
-  color: #555; 
+  color: #555;
 }
 
 
-.dark-version .card{
+.dark-version .card {
   color: white !important;
 }
 
-.dark-version .custom-input-container input{
+.dark-version .custom-input-container input {
   background-color: #051139 !important;
   color: rgba(253, 253, 253, 0.8) !important;
 }
+
 .dark-version label {
   color: rgba(253, 253, 253, 0.8) !important;
- 
+
 }
-.dark-version .custom-input-container label{
+
+.dark-version .custom-input-container label {
   color: rgba(255, 255, 255, 0.8) !important;
   background-color: #051139 !important;
- 
-} 
-.dark-version .custom-input-container input:focus + label,
-.dark-version .custom-input-container input:not(:placeholder-shown) + label {
+
+}
+
+.dark-version .custom-input-container input:focus+label,
+.dark-version .custom-input-container input:not(:placeholder-shown)+label {
   top: 0;
   color: #ffffff !important;
 }
- 
-.dark-version .form-control{
+
+.dark-version .form-control {
   background-color: #051139;
   color: white;
 }
-.dark-version  table tbody tr.even {
-  background-color: #051139!important;
+
+.dark-version table tbody tr.even {
+  background-color: #051139 !important;
 }
+
 .dark-version table tbody tr.odd {
-  background-color:#202e5c !important; 
+  background-color: #202e5c !important;
 }
+
 .dark-version .btn {
   background-color: #051139;
-  border: 1px solid #051139!important;
+  border: 1px solid #051139 !important;
 }
+
 .dark-version .buttons-copy,
 .dark-version .buttons-excel,
 .dark-version .buttons-pdf,
 .dark-version .buttons-csv {
   background-color: #051139 !important;
-  border: 1px solid #051139!important;
+  border: 1px solid #051139 !important;
   color: #fff !important;
 }
+
 .dark-version .ps .fixed-plugin {
   color: #fff !important;
   background-color: #051139 !important;
 }
-.dark-version #manufacturerform{
+
+.dark-version #manufacturerform {
   background-color: #202e5c !important;
 }
-.dark-version .dataTables_info{
+
+.dark-version .dataTables_info {
   color: white !important;
 }
 
 .dark-version #sidenav-main {
-  background-color:#111C44 !important;
-  background: #111C44!important;
+  background-color: #111C44 !important;
+  background: #111C44 !important;
 }
+
 .custom-inputs-container select {
-  width: 100% !important; 
-    border: 1px solid #ccc !important ; 
-    box-sizing: border-box !important; 
-    padding: 10px !important; 
+  width: 100% !important;
+  border: 1px solid #ccc !important;
+  box-sizing: border-box !important;
+  padding: 10px !important;
 }
-  .custom-input-container {
-    position: relative !important;
-    margin-bottom: 20px !important; 
+
+.custom-input-container {
+  position: relative !important;
+  margin-bottom: 20px !important;
 
 }
-        .custom-input-container label {
-    position: absolute !important;
-    top: -20px !important; 
-    left: 10px !important; 
-    background-color: #fff; 
-    padding: 0 5px !important;
+
+.custom-input-container label {
+  position: absolute !important;
+  top: -20px !important;
+  left: 10px !important;
+  background-color: #fff;
+  padding: 0 5px !important;
 }
 
 .custom-input-container input {
-    width: 100%; 
-    border: 1px solid #ccc; 
-    box-sizing: border-box !important; 
-    padding: 10px !important;
+  width: 100%;
+  border: 1px solid #ccc;
+  box-sizing: border-box !important;
+  padding: 10px !important;
 }
+
 .custom-input-container select {
-    width: 100%; 
-    border: 1px solid #ccc; 
-    box-sizing: border-box !important; 
-    padding: 10px !important;
+  width: 100%;
+  border: 1px solid #ccc;
+  box-sizing: border-box !important;
+  padding: 10px !important;
 }
 
-.custom-input-container select  label{
-position: absolute !important;
+.custom-input-container select label {
+  position: absolute !important;
 }
-.dark-version .custom-inputs-container select  {
+
+.dark-version .custom-inputs-container select {
   color: white;
   background-color: #051139;
 }
 
 
-.dark-version .custom-inputs-container label{
+.dark-version .custom-inputs-container label {
   color: white;
   background-color: #051139;
 }
 
 
 
-.dark-version .modal-content{
+.dark-version .modal-content {
   color: white;
   background-color: #051139;
 }
 
-.cell{
+.cell {
   width: 200px;
   display: flex;
   align-items: end;
@@ -512,6 +604,7 @@ position: absolute !important;
   border-color: #051139;
   color: #555;
 }
+
 #special-pop {
   width: 100% !important;
 }
@@ -527,7 +620,7 @@ position: absolute !important;
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 100% !important; 
+  max-width: 100% !important;
   color: var(--bs-modal-color);
   pointer-events: auto;
   background-color: var(--bs-modal-bg);
@@ -538,24 +631,29 @@ position: absolute !important;
 }
 
 .modal-body {
-  flex: 1; 
+  flex: 1;
 }
-.col .cell{
+
+.col .cell {
   padding: 0% !important;
   margin: 0% !important;
   column-gap: 1px !important;
 }
-label input[type="text"]{
+
+label input[type="text"] {
   background-color: none !important;
   background: transparent !important;
 }
+
 .dark-version #purchaseFormContainer {
   background-color: #202e5c !important;
 }
+
 .dark-version input {
   background-color: #202e5c !important;
   color: white !important;
 }
+
 .dark-version .ui-datepicker table {
   width: 100%;
   font-size: .9em;
@@ -563,68 +661,75 @@ label input[type="text"]{
   margin: 0 0 0.4em;
   color: #202e5c;
 }
+
 .dark-version .ui-state-default {
   border: 1px solid #c5c5c5;
-  background:#202e5c !important;
+  background: #202e5c !important;
   font-weight: normal;
   color: #000000;
 }
 
 .dark-version #filter-button {
-  background:#202e5c !important;
+  background: #202e5c !important;
   border-color: rgb(255, 255, 255) !important;
 }
+
 .dark-version .fa-heart {
-  color: #ae3a94!important;
+  color: #ae3a94 !important;
 }
+
 .fa-heart {
   color: #ae3a94 !important;
 }
+
 optgroup {
   font-weight: bold;
   background-color: #f0f0f0;
 }
 
-select .dropdown option{
- 
+select .dropdown option {
+
   height: 200px !important;
   overflow-y: scroll !important;
- scroll-behavior: smooth !important;
+  scroll-behavior: smooth !important;
 }
+
 .labels {
   display: flex;
   flex-wrap: wrap;
-  align-items:  start !important;
+  align-items: start !important;
   justify-content: space-around;
 }
 
 .custom {
   margin: 5px;
-  padding: 5px; 
- align-items:  start !important;
- justify-content: space-evenly;
+  padding: 5px;
+  align-items: start !important;
+  justify-content: space-evenly;
 }
+
 .custom-btn {
-  width: 100px !important; 
+  width: 100px !important;
   height: 41px !important;
 }
+
 .scrollbtn-container {
-  height: 150px; 
-  overflow-y: auto; 
-  position: relative; 
+  height: 150px;
+  overflow-y: auto;
+  position: relative;
 }
 
 .buttons-wrapper {
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
 }
 
 .fixed-buttons {
-  position: absolute; 
+  position: absolute;
   top: 0;
   right: 0;
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
 }
 
 #batchDetailsModal table {
@@ -633,7 +738,8 @@ select .dropdown option{
   border: 1px solid #ddd;
 }
 
-#batchDetailsModal th, #batchDetailsModal td {
+#batchDetailsModal th,
+#batchDetailsModal td {
   padding: 8px;
   border: 1px solid #ddd;
 }
@@ -650,34 +756,38 @@ select .dropdown option{
 #batchDetailsModal tbody tr:hover {
   background-color: #ddd;
 }
+
 #batchDetailsBody tr:nth-child(odd) {
-  background-color: #f2f2f2; 
+  background-color: #f2f2f2;
 }
 
 #batchDetailsBody tr:nth-child(even) {
-  background-color: #ffffff; 
+  background-color: #ffffff;
 }
 
-#batchDetailsBody tr:nth-child(odd):hover{
+#batchDetailsBody tr:nth-child(odd):hover {
   background-color: #5785a3 !important;
   color: white !important;
 }
-#batchDetailsBody tr:nth-child(even):hover{
+
+#batchDetailsBody tr:nth-child(even):hover {
   background-color: #5785a3 !important;
   color: white !important;
-} 
+}
+
 tbody tr {
- 
+
   padding: 0;
 }
 
-.dark-version .dt-buttons>.dt-button, div.dt-buttons>div.dt-button-split .dt-button {
+.dark-version .dt-buttons>.dt-button,
+div.dt-buttons>div.dt-button-split .dt-button {
   border-color: #8f8686 !important;
   color: white !important;
 
 }
 
-.dark-version .nav-link-text{
+.dark-version .nav-link-text {
   color: white !important;
 }
 
@@ -692,43 +802,46 @@ tbody tr {
   padding: 0%;
   text-align: center;
   justify-content: center;
-  font-size: 14px!important;
+  font-size: 14px !important;
   color: dimgrey;
-  animation: pulse 1s ease infinite alternate; /* Apply the animation */
+  animation: pulse 1s ease infinite alternate;
+  /* Apply the animation */
 }
 
 @keyframes pulse {
   0% {
     font-size: 14px;
   }
+
   100% {
     font-size: 16px;
-   }
+  }
 }
 
-.heading{
+.heading {
   margin: 0px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   padding: 0px !important;
   text-align: start !important;
-  animation: fadeOut 1s ease infinite alternate; /* Apply the animation */
+  animation: fadeOut 1s ease infinite alternate;
+  /* Apply the animation */
 }
 
-.dark-version .chart-container{
+.dark-version .chart-container {
   color: white !important;
-  text-emphasis-color: white  !important;
- 
+  text-emphasis-color: white !important;
+
 }
 
-.dark-version i .fa-print  {
-    color: #f0f0f0 !important;
+.dark-version i .fa-print {
+  color: #f0f0f0 !important;
 }
 
-.dark-version table thead th  {
-    background: #111C44;
-    color: white;
+.dark-version table thead th {
+  background: #111C44;
+  color: white;
 }
 
 .dark-version table tbody tr.odd {
@@ -740,23 +853,23 @@ tbody tr {
 }
 
 .dark-version table.dataTable.display tbody tr.odd {
-  background-color: #202e5c !important; 
+  background-color: #202e5c !important;
 }
 
 .dark-version table.dataTable.display tbody tr.even {
-  background-color: #051139 !important; 
+  background-color: #051139 !important;
 }
 
 .dataTables_scrollBody .dropdown-menu {
-  min-width: 200px; 
+  min-width: 200px;
 }
 
 .dark-version .active {
-  background-color: #40465d !important;
+  background-color: #34495E !important;
 }
 
-.dark-version .sub-menu .active{
-  background-color: #40465d !important;
+.dark-version .sub-menu .active {
+  background-color: #34495E !important;
   color: white;
 }
 
@@ -765,91 +878,91 @@ tbody tr {
   color: white;
 }
 
-#logoutIcon{
+#logoutIcon {
   cursor: pointer;
 }
 
 .loading-line {
-  display: block; 
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 4px; 
-  background: linear-gradient(to right, #4e54c8, #5e72e4);
-  z-index: 9999; 
-  animation: loading-animation 2s ease-in-out; 
-}
-
-.dark-version .loading-line {
-  display: block; 
+  display: block;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 4px;
-  background:  linear-gradient(to right, #f1f1f1, #ffffff);
+  background: linear-gradient(to right, #4e54c8, #5e72e4);
   z-index: 9999;
-  animation: loading-animation 2s ease-in-out; 
+  animation: loading-animation 2s ease-in-out;
+}
+
+.dark-version .loading-line {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(to right, #f1f1f1, #ffffff);
+  z-index: 9999;
+  animation: loading-animation 2s ease-in-out;
 }
 
 @keyframes loading-animation {
   0% {
-      left: -100%; 
+    left: -100%;
   }
+
   100% {
-      left: 100%; 
+    left: 100%;
   }
 }
 
-#navbarBlur{
-  box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.5) !important; 
+#navbarBlur {
+  box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.5) !important;
   border-radius: 10px !important;
-  margin-top:20px !important ;
+  margin-top: 20px !important;
   align-items: center !important;
   padding: 5px !important;
   justify-content: space-evenly !important;
 }
 
-.dark-version  #navbarBlur{
+.dark-version #navbarBlur {
   background: #111C44;
 }
 
-.text-dark{
+.text-dark {
   color: #051139 !important;
 }
 
-.dark-version .text-dark{
+.dark-version .text-dark {
   color: #ffffff !important;
 }
 
 @media (max-width: 768px) {
   .row {
-      flex-direction: column;
-      gap: 10px;
+    flex-direction: column;
+    gap: 10px;
   }
 
   .col {
-      min-width: 100%;
+    min-width: 100%;
   }
 
   .custom-input-container {
-      margin-bottom: 5px;
+    margin-bottom: 5px;
   }
 
   .custom-input-container input,
   .custom-input-container select {
-      padding: 12px;
-      font-size: 16px;
+    padding: 12px;
+    font-size: 16px;
   }
 
   .custom-input-container label {
-      font-size: 14px;
+    font-size: 14px;
   }
 }
 
-.div .btn.disabled .updateBtn
-.btn[disabled] {
+.div .btn.disabled .updateBtn .btn[disabled] {
   background-color: #4e4e4e !important;
   /* Grey color for disabled state */
   border-color: #afafaf !important;
@@ -869,13 +982,13 @@ tbody tr {
 tr td select.input-field {
   width:100px !important;
   /* Make input and select fields take the full width of the td */
-  /* box-sizing: border-box; */
-  /* Ensure padding and borders are included in the element's width */
-  /* padding: 5px ; */
-  /* Add some padding for better appearance */
-  /* margin: 0; */
-  /* Remove any default margin */
-/* } */ 
+/* box-sizing: border-box; */
+/* Ensure padding and borders are included in the element's width */
+/* padding: 5px ; */
+/* Add some padding for better appearance */
+/* margin: 0; */
+/* Remove any default margin */
+/* } */
 
 .modal-content {
   border-radius: 8px;
@@ -891,8 +1004,8 @@ tr td select.input-field {
 }
 
 .btn-primary {
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: #34495E !important;
+  border-color: #34495E;
 }
 
 .btn-primary:hover {
@@ -909,10 +1022,21 @@ tr td select.input-field {
   background-color: #5a6268;
   border-color: #545b62;
 }
+
 table tbody tr td {
   text-align: left !important;
 }
 
-table thead th {
+table th {
+  background-color: #34495E;
+  /* Dark Gray Background */
+  color: #ECF0F1;
+  /* Light Gray Text */
+  padding: 10px;
   text-align: left !important;
+  font-weight: bold;
+}
+
+.bg-alter {
+  background-color: #34495E;
 }

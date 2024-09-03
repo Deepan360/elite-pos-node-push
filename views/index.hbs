@@ -1,397 +1,656 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
- 
- {{>header}}
+
+  {{>header}}
   <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.css">
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
- <style>
-  #barChart{
-    height: 200px;
-  }
- </style>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+  <style>
+    #barChart {
+      height: 200px;
+    }
+  </style>
 </head>
-<body class="g-sidenav-show   bg-gray-100">
+
+<body class="g-sidenav-show   bg-ind">
   <!-- <div class="min-height-1 bg-primary position-absolute w-100"></div> -->
-{{>sidebar}}
- 
+  {{>sidebar}}
   <main class="main-content position-relative border-radius-lg ">
-     {{>navbar}}
+    {{>navbar}}
     <!-- Navbar -->
-      <div class="container-fluid py-1 px-3">
-     
-    <!-- End Navbar -->
-    <div class="container-fluid py-4 ">
-       <span> <h3 >Dashboard</h3></span>
-      <div class="row">
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4 cards">
-          <div class="card ">
-            <div class="card-body p-3">
-              <div class="row">
-                <div class="col-8">
-                  <div class="numbers">
-                    <p class="text-sm mb-0 text-uppercase font-weight-bold">Supplier</p>
-                    <h5 class="font-weight-bolder" id="supplierCount">
-                    
-                    </h5>
-                    {{!-- <p class="mb-0">
-                      <span class="text-success text-sm font-weight-bolder">+55%</span>
-                      since yesterday
-                    </p> --}}
+    <div class="container-fluid py-1 px-3">
+      <!-- End Navbar -->
+      <div class="container-fluid py-4 ">
+        <span>
+          <h3>Dashboard</h3>
+        </span>
+        <div class="row">
+          <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4 cards">
+            <div class="card ">
+              <div class="card-body p-3">
+                <div class="row">
+                  <div class="col-8">
+                    <div class="numbers">
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold">Supplier</p>
+                      <h5 class="font-weight-bolder" id="supplierCount">
+
+                      </h5>
+                      {{!-- <p class="mb-0">
+                        <span class="text-success text-sm font-weight-bolder">+55%</span>
+                        since yesterday
+                      </p> --}}
+                    </div>
+                  </div>
+                  <div class="col-4 text-end">
+                    <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                      <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                    </div>
                   </div>
                 </div>
-                <div class="col-4 text-end">
-                  <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
-                    <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4 cards">
+            <div class="card">
+              <div class="card-body p-3">
+                <div class="row">
+                  <div class="col-8">
+                    <div class="numbers">
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold">Customer</p>
+                      <h5 class="font-weight-bolder" id="customerCount">
+
+                      </h5>
+                      {{!-- <p class="mb-0">
+                        <span class="text-success text-sm font-weight-bolder">+3%</span>
+                        since last yesterday
+                      </p> --}}
+                    </div>
+                  </div>
+                  <div class="col-4 text-end">
+                    <div class="icon icon-shape bg-gradient-primary shadow-danger text-center rounded-circle">
+                      <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4 cards">
+            <div class="card">
+              <div class="card-body p-3">
+                <div class="row">
+                  <div class="col-8">
+                    <div class="numbers">
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold">Products</p>
+                      <h5 class="font-weight-bolder" id="productCount">
+
+                      </h5>
+                      {{!-- <p class="mb-0">
+                        <span class="text-danger text-sm font-weight-bolder">-2%</span>
+                        since last quarter
+                      </p> --}}
+                    </div>
+                  </div>
+                  <div class="col-4 text-end">
+                    <div class="icon icon-shape bg-gradient-primary shadow-success text-center rounded-circle">
+                      <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-sm-6 cards">
+            <div class="card">
+              <div class="card-body p-3">
+                <div class="row">
+                  <div class="col-8">
+                    <div class="numbers">
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold">Purchase</p>
+                      <h5 class="font-weight-bolder" id="purchaseCount">
+
+                      </h5>
+                      {{!-- <p class="mb-0">
+                        <span class="text-success text-sm font-weight-bolder">+5%</span> than last month
+                      </p> --}}
+                    </div>
+                  </div>
+                  <div class="col-4 text-end">
+                    <div class="icon icon-shape bg-gradient-primary shadow-warning text-center rounded-circle">
+                      <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-sm-6 mt-2 mb-xl-0 mb-4 cards">
+            <div class="card ">
+              <div class="card-body p-3">
+                <div class="row">
+                  <div class="col-8">
+                    <div class="numbers">
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold">Sales Retail Outstanding</p>
+                      <h5 class="font-weight-bolder" id="RSaO">
+
+                      </h5>
+                      {{!-- <p class="mb-0">
+                        <span class="text-success text-sm font-weight-bolder">+55%</span>
+                        since yesterday
+                      </p> --}}
+                    </div>
+                  </div>
+                  <div class="col-4 text-end">
+                    <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                      <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-sm-6 mt-2 mb-xl-0 mb-4 cards">
+            <div class="card ">
+              <div class="card-body p-3">
+                <div class="row">
+                  <div class="col-8">
+                    <div class="numbers">
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold">Supplier Outstanding</p>
+                      <h5 class="font-weight-bolder" id="SuO">
+
+                      </h5>
+                      {{!-- <p class="mb-0">
+                        <span class="text-success text-sm font-weight-bolder">+55%</span>
+                        since yesterday
+                      </p> --}}
+                    </div>
+                  </div>
+                  <div class="col-4 text-end">
+                    <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                      <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-sm-6 mt-2 mb-xl-0 mb-4 cards">
+            <div class="card ">
+              <div class="card-body p-3">
+                <div class="row">
+                  <div class="col-8">
+                    <div class="numbers">
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold">Sales Outstanding</p>
+                      <h5 class="font-weight-bolder" id="SaO">
+
+                      </h5>
+                      {{!-- <p class="mb-0">
+                        <span class="text-success text-sm font-weight-bolder">+55%</span>
+                        since yesterday
+                      </p> --}}
+                    </div>
+                  </div>
+                  <div class="col-4 text-end">
+                    <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                      <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-sm-6 mt-2 mb-xl-0 mb-4 cards">
+            <div class="card ">
+              <div class="card-body p-3">
+                <div class="row">
+                  <div class="col-8">
+                    <div class="numbers">
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold">Supplier payment</p>
+                      <h5 class="font-weight-bolder" id="SuP">
+
+                      </h5>
+                      {{!-- <p class="mb-0">
+                        <span class="text-success text-sm font-weight-bolder">+55%</span>
+                        since yesterday
+                      </p> --}}
+                    </div>
+                  </div>
+                  <div class="col-4 text-end">
+                    <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                      <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-sm-6 mt-2 mb-xl-0 mb-4 cards">
+            <div class="card ">
+              <div class="card-body p-3">
+                <div class="row">
+                  <div class="col-8">
+                    <div class="numbers">
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold">Stock Alert</p>
+                      <h5 class="font-weight-bolder" id="StAltCnt">
+                        0
+                      </h5>
+                      {{!-- <p class="mb-0">
+                        <span class="text-success text-sm font-weight-bolder">+55%</span>
+                        since yesterday
+                      </p> --}}
+                    </div>
+                  </div>
+                  <div class="col-4 text-end">
+                    <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                      <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-sm-6 mt-2 mb-xl-0 mb-4 cards">
+            <div class="card ">
+              <div class="card-body p-3">
+                <div class="row">
+                  <div class="col-8">
+                    <div class="numbers">
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold">Stock Expiry</p>
+                      <h5 class="font-weight-bolder" id="StExpCnt">
+                        0
+                      </h5>
+                      {{!-- <p class="mb-0">
+                        <span class="text-success text-sm font-weight-bolder">+55%</span>
+                        since yesterday
+                      </p> --}}
+                    </div>
+                  </div>
+                  <div class="col-4 text-end">
+                    <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                      <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4 cards">
-          <div class="card">
-            <div class="card-body p-3">
-              <div class="row">
-                <div class="col-8">
-                  <div class="numbers">
-                    <p class="text-sm mb-0 text-uppercase font-weight-bold">Customer</p>
-                    <h5 class="font-weight-bolder" id="customerCount">
-                  
-                    </h5>
-                    {{!-- <p class="mb-0">
-                      <span class="text-success text-sm font-weight-bolder">+3%</span>
-                      since last  yesterday
-                    </p> --}}
+        <div class="row mt-2 gap-0 ">
+          <div class="col-6">
+            <div class="card">
+              <div class="card-header bg-primary text-white p-2" style="border-radius: 5px;">
+                <h4 class="mb-0  text-white">Purchase Reports</h4>
+              </div>
+              <div class="card-body">
+                <div class="row mb-2">
+                  <div class="col-6">
+                    <span class="font-weight-bold">Total Purchase:</span>
+                  </div>
+                  <div class="col-6 text-right ms-auto">
+                    <span class="font-weight-bold">₹ <span id="TPuAmt">0.00</span></span>
                   </div>
                 </div>
-                <div class="col-4 text-end">
-                  <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
-                    <i class="ni ni-world text-lg opacity-10" aria-hidden="true"></i>
+                <div class="row">
+                  <div class="col-6">
+                    <span class="font-weight-bold">Today's Purchase:</span>
+                  </div>
+                  <div class="col-6 text-right">
+                    <span class="font-weight-bold">₹ <span id="ToPuAmt">0.00</span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="card">
+              <div class="card-header bg-primary text-white p-2" style="border-radius: 5px;">
+                <h4 class="mb-0  text-white">Sales Reports</h4>
+              </div>
+              <div class="card-body">
+                <div class="row mb-2">
+                  <div class="col-6">
+                    <span class="font-weight-bold">Total Sales:</span>
+                  </div>
+                  <div class="col-6 text-right">
+                    <span class="font-weight-bold">₹ <span id="TSaAmt">0.00</span></span>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-6">
+                    <span class="font-weight-bold">Today's Sales:</span>
+                  </div>
+                  <div class="col-6 text-right">
+                    <span class="font-weight-bold">₹ <span id="ToSaAmt">0.00</span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 mt-2">
+            <div class="card">
+              <div class="card-header bg-primary text-white p-2" style="border-radius: 5px;">
+                <h4 class="mb-0  text-white">Retails Sales Reports</h4>
+              </div>
+              <div class="card-body">
+                <div class="row mb-2">
+                  <div class="col-6">
+                    <span class="font-weight-bold">Total Sales Retail:</span>
+                  </div>
+                  <div class="col-6 text-right ms-auto">
+                    <span class="font-weight-bold">₹ <span id="TRSaAmt">0.00</span></span>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-6">
+                    <span class="font-weight-bold">Today's Sales Retail:</span>
+                  </div>
+                  <div class="col-6 text-right">
+                    <span class="font-weight-bold">₹ <span id="ToRSaAmt">0.00</span></span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4 cards">
-          <div class="card">
-            <div class="card-body p-3">
-              <div class="row">
-                <div class="col-8">
-                  <div class="numbers">
-                    <p class="text-sm mb-0 text-uppercase font-weight-bold">Products</p>
-                    <h5 class="font-weight-bolder" id="productCount">
-                
-                    </h5>
-                    {{!-- <p class="mb-0">
-                      <span class="text-danger text-sm font-weight-bolder">-2%</span>
-                      since last quarter
-                    </p> --}}
-                  </div>
-                </div>
-                <div class="col-4 text-end">
-                  <div class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle">
-                    <i class="ni ni-paper-diploma text-lg opacity-10" aria-hidden="true"></i>
-                  </div>
-                </div>
+        <div class="row mt-2">
+          <div class="col-lg-6 mb-lg-0 mb-4 ">
+            <div class="card z-index-2 h-100">
+              <div class="card-header pb-0 pt-3 bg-transparent">
+                <h6 class="text-capitalize">Sales overview</h6>
+                <p>Month Wise</p>
               </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 cards">
-          <div class="card">
-            <div class="card-body p-3">
-              <div class="row">
-                <div class="col-8">
-                  <div class="numbers">
-                    <p class="text-sm mb-0 text-uppercase font-weight-bold">Purchase</p>
-                    <h5 class="font-weight-bolder" id="purchaseCount">
-                    
-                    </h5>
-                    {{!-- <p class="mb-0">
-                      <span class="text-success text-sm font-weight-bolder">+5%</span> than last month
-                    </p> --}}
-                  </div>
-                </div>
-                <div class="col-4 text-end">
-                  <div class="icon icon-shape bg-gradient-warning shadow-warning text-center rounded-circle">
-                    <i class="ni ni-cart text-lg opacity-10" aria-hidden="true"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row mt-4" >
-        <div class="col-lg-6 mb-lg-0 mb-4 ">
-          <div class="card z-index-2 h-100">
-            <div class="card-header pb-0 pt-3 bg-transparent">
-              <h6 class="text-capitalize">Sales overview</h6>
-              <p >Month Wise</p>
-            </div>
-            <div class="card-body p-3">
-              <div class="chart-container">
-                <canvas id="myLineChart"></canvas>
-            </div>
-            </div>
-          </div>
-        </div>
- <div class="col-lg-6 " style="height: 300px !important;">
-        <div class="card">
-            <div class="card-header pb-0 p-3 ">
-                <h6 class="mb-0">Account Master</h6>
-            </div>
-            <div class="card-body p-3">
+              <div class="card-body p-3">
                 <div class="chart-container">
-                    <canvas id="barChart"></canvas>
+                  <canvas id="myLineChart"></canvas>
                 </div>
+              </div>
             </div>
+          </div>
+          <div class="col-lg-6 " style="height: 300px !important;">
+            <div class="card">
+              <div class="card-header pb-0 p-3 ">
+                <h6 class="mb-0">Account Master</h6>
+              </div>
+              <div class="card-body p-3">
+                <div class="chart-container">
+                  <canvas id="barChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
         </div>
-    </div>
-
-
-    </div>
-     {{>footer}}
+        {{>footer}}
   </main>
-{{>color}}
-        
-    <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    // Fetch billwise data from the server
-    fetch('/auth/billwise')
+  {{>color}}
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('/auth/index/dashboardinfo')
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Populate the data into the respective elements
+            document.getElementById('SaO').textContent = data.data.SaO || '0.00';
+            document.getElementById('SuO').textContent = data.data.SuO || '0.00';
+            document.getElementById('SuP').textContent = data.data.SuP || '0.00';
+            document.getElementById('RSaO').textContent = data.data.RSaO || '0.00';
+            document.getElementById('TPuAmt').textContent = data.data.TPuAmt || '0.00';
+            document.getElementById('TSaAmt').textContent = data.data.TSaAmt || '0.00';
+            document.getElementById('TRSaAmt').textContent = data.data.TRSaAmt || '0.00';
+            document.getElementById('ToPuAmt').textContent = data.data.ToPuAmt || '0.00';
+            document.getElementById('ToSaAmt').textContent = data.data.ToSaAmt || '0.00';
+            document.getElementById('ToRSaAmt').textContent = data.data.ToRSaAmt || '0.00';
+            document.getElementById('StAltCnt').textContent = data.data.StAltCnt || '0.00';
+            document.getElementById('StExpCnt').textContent = data.data.StExpCnt || '0.00';
+          } else {
+            console.error('Failed to fetch dashboard data:', data.message);
+          }
+        })
+        .catch(error => console.error('Error fetching dashboard data:', error));
+    });
+
+  </script>
+
+  <script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+      // Fetch billwise data from the server
+      fetch('/auth/billwise')
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+
+          var monthlyData = aggregateMonthlyData(data.data);
+          console.log(monthlyData);
+
+          var months = Object.keys(monthlyData);
+          console.log("Months before sorting:", months); // Check the months before sorting
+
+          // Sort the months in ascending order based on year and month
+          months.sort((a, b) => {
+            // Extract year and month
+            var [aMonth, aYear] = a.split('-').map(Number);
+            var [bMonth, bYear] = b.split('-').map(Number);
+
+            // Sort by year first in ascending order
+            if (aYear !== bYear) {
+              return aYear - bYear;
+            } else {
+              // If years are the same, sort by month in ascending order
+              return aMonth - bMonth;
+            }
+          });
+
+          console.log("Months after sorting:", months); // Check the months after sorting
+
+          // Get sale and purchase amounts for the sorted months
+          var saleAmounts = months.map(month => monthlyData[month].totalSaleAmount);
+          var purchaseAmounts = months.map(month => monthlyData[month].totalPurchaseAmount);
+
+          // Update the chart with the received data
+          updateChart(months, saleAmounts, purchaseAmounts);
+        })
+        .catch(error => {
+          console.error('Error fetching billwise data:', error);
+        });
+    });
+
+    function aggregateMonthlyData(data) {
+      // Initialize an object to store aggregated data for each month
+      var monthlyData = {};
+
+      // Iterate over each data item and aggregate amounts for each month
+      data.forEach(item => {
+        if (item.saledate) {
+          // Splitting the date string by '-'
+          var dateParts = item.saledate.split('-');
+          var monthYear = dateParts[1] + '-' + dateParts[0]; // Formatting as MM-YYYY
+
+          if (!monthlyData[monthYear]) {
+            // If monthYear key doesn't exist, initialize it with initial values
+            monthlyData[monthYear] = {
+              totalSaleAmount: 0,
+              totalPurchaseAmount: 0
+            };
+          }
+
+          // Add sale and purchase amounts to the corresponding monthYear
+          monthlyData[monthYear].totalSaleAmount += parseFloat(item.sumRate);
+          monthlyData[monthYear].totalPurchaseAmount += parseFloat(item.totalPurcRate);
+        } else {
+          console.warn("saledate is null, skipping this item");
+        }
+      });
+
+      return monthlyData;
+    }
+
+    function updateChart(months, saleAmounts, purchaseAmounts) {
+      var ctx = document.getElementById('myLineChart').getContext('2d');
+
+      // Format the sorted months for chart labels as MM-YYYY
+      var formattedLabels = months.map(month => {
+        var [monthNumber, year] = month.split('-');
+        return monthNumber + '-' + year; // Format as MM-YYYY
+      });
+
+      var myLineChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: formattedLabels, // Use the formatted labels with MM-YYYY format
+          datasets: [{
+            label: 'Total Sale Amount',
+            data: saleAmounts,
+            fill: false,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+          }, {
+            label: 'Total Purchase Amount',
+            data: purchaseAmounts,
+            fill: false,
+            borderColor: 'rgb(192, 75, 192)',
+            tension: 0.1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+      fetch('/auth/index/masterdata')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Data received:', data); // Check the structure of the received data
+
+          // Extract counts from the data
+          const customerCount = data.customer_count;
+          const supplierCount = data.supplier_count;
+          const salesmanCount = data.salesman_count;
+          const ledgerCount = data.ledger_count;
+
+          // Create chart data
+          const chartData = {
+            labels: ['Customer', 'Supplier', 'Salesman', 'Ledger'],
+            datasets: [
+              {
+                label: 'Counts',
+                data: [customerCount, supplierCount, salesmanCount, ledgerCount], // Data for four lines from left to right
+                borderColor: ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99'],
+                borderWidth: 2,
+                fill: false
+              }
+            ]
+          };
+
+          // Chart options
+          const options = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: 'Distribution of Categories'
+              }
+            },
+            scales: {
+              x: {
+                display: true,
+                title: {
+                  display: true,
+                  text: 'Categories'
+                }
+              },
+              y: {
+                display: true,
+                title: {
+                  display: true,
+                  text: 'Counts'
+                }
+              }
+            }
+          };
+
+          // Get the chart context
+          const ctx = document.getElementById('barChart').getContext('2d');
+
+          // Create a new line chart
+          const lineChart = new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: options
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching master data:', error);
+          // Handle error
+        });
+    });
+
+    // Fetch supplier count
+    fetch('/auth/index/supplierCount')
       .then(response => response.json())
       .then(data => {
-        console.log(data);
-
-        var monthlyData = aggregateMonthlyData(data.data);
-        console.log(monthlyData);
-
-        var months = Object.keys(monthlyData);
-        console.log("Months before sorting:", months); // Check the months before sorting
-
-        // Sort the months in ascending order based on year and month
-        months.sort((a, b) => {
-          // Extract year and month
-          var [aMonth, aYear] = a.split('-').map(Number);
-          var [bMonth, bYear] = b.split('-').map(Number);
-
-          // Sort by year first in ascending order
-          if (aYear !== bYear) {
-            return aYear - bYear;
-          } else {
-            // If years are the same, sort by month in ascending order
-            return aMonth - bMonth;
-          }
-        });
-
-        console.log("Months after sorting:", months); // Check the months after sorting
-
-        // Get sale and purchase amounts for the sorted months
-        var saleAmounts = months.map(month => monthlyData[month].totalSaleAmount);
-        var purchaseAmounts = months.map(month => monthlyData[month].totalPurchaseAmount);
-
-        // Update the chart with the received data
-        updateChart(months, saleAmounts, purchaseAmounts);
+        if (data.success) {
+          document.getElementById('supplierCount').textContent = data.supplierCount; // Use the correct key
+        } else {
+          console.error('Error fetching supplier count:', data.message);
+        }
       })
-      .catch(error => {
-        console.error('Error fetching billwise data:', error);
-      });
-  });
+      .catch(error => console.error('Error fetching supplier count:', error));
 
-  function aggregateMonthlyData(data) {
-    // Initialize an object to store aggregated data for each month
-    var monthlyData = {};
-
-    // Iterate over each data item and aggregate amounts for each month
-    data.forEach(item => {
-      if (item.saledate) {
-        // Splitting the date string by '-'
-        var dateParts = item.saledate.split('-');
-        var monthYear = dateParts[1] + '-' + dateParts[0]; // Formatting as MM-YYYY
-
-        if (!monthlyData[monthYear]) {
-          // If monthYear key doesn't exist, initialize it with initial values
-          monthlyData[monthYear] = {
-            totalSaleAmount: 0,
-            totalPurchaseAmount: 0
-          };
-        }
-
-        // Add sale and purchase amounts to the corresponding monthYear
-        monthlyData[monthYear].totalSaleAmount += parseFloat(item.sumRate);
-        monthlyData[monthYear].totalPurchaseAmount += parseFloat(item.totalPurcRate);
-      } else {
-        console.warn("saledate is null, skipping this item");
-      }
-    });
-
-    return monthlyData;
-  }
-
-  function updateChart(months, saleAmounts, purchaseAmounts) {
-    var ctx = document.getElementById('myLineChart').getContext('2d');
-
-    // Format the sorted months for chart labels as MM-YYYY
-    var formattedLabels = months.map(month => {
-      var [monthNumber, year] = month.split('-');
-      return monthNumber + '-' + year; // Format as MM-YYYY
-    });
-
-    var myLineChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: formattedLabels, // Use the formatted labels with MM-YYYY format
-        datasets: [{
-          label: 'Total Sale Amount',
-          data: saleAmounts,
-          fill: false,
-          borderColor: 'rgb(75, 192, 192)',
-          tension: 0.1
-        }, {
-          label: 'Total Purchase Amount',
-          data: purchaseAmounts,
-          fill: false,
-          borderColor: 'rgb(192, 75, 192)',
-          tension: 0.1
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-  }
-
-
-        document.addEventListener('DOMContentLoaded', function () {
-            fetch('/auth/index/masterdata')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Data received:', data); // Check the structure of the received data
-
-                    // Extract counts from the data
-                    const customerCount = data.customer_count;
-                    const supplierCount = data.supplier_count;
-                    const salesmanCount = data.salesman_count;
-                    const ledgerCount = data.ledger_count;
-
-                    // Create chart data
-                    const chartData = {
-                        labels: ['Customer', 'Supplier', 'Salesman', 'Ledger'],
-                        datasets: [
-                            {
-                                label: 'Counts',
-                                data: [customerCount, supplierCount, salesmanCount, ledgerCount], // Data for four lines from left to right
-                                borderColor: ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99'],
-                                borderWidth: 2,
-                                fill: false
-                            }
-                        ]
-                    };
-
-                    // Chart options
-                    const options = {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: 'Distribution of Categories'
-                            }
-                        },
-                        scales: {
-                            x: {
-                                display: true,
-                                title: {
-                                    display: true,
-                                    text: 'Categories'
-                                }
-                            },
-                            y: {
-                                display: true,
-                                title: {
-                                    display: true,
-                                    text: 'Counts'
-                                }
-                            }
-                        }
-                    };
-
-                    // Get the chart context
-                    const ctx = document.getElementById('barChart').getContext('2d');
-
-                    // Create a new line chart
-                    const lineChart = new Chart(ctx, {
-                        type: 'line',
-                        data: chartData,
-                        options: options
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching master data:', error);
-                    // Handle error
-                });
-        });
-
-// Fetch supplier count
-fetch('/auth/index/supplierCount')
-    .then(response => response.json())
-    .then(data => {
+    // Fetch customer count
+    fetch('/auth/index/customerCount')
+      .then(response => response.json())
+      .then(data => {
         if (data.success) {
-            document.getElementById('supplierCount').textContent = data.supplierCount; // Use the correct key
+          document.getElementById('customerCount').textContent = data.customerCount; // Use the correct key
         } else {
-            console.error('Error fetching supplier count:', data.message);
+          console.error('Error fetching customer count:', data.message);
         }
-    })
-    .catch(error => console.error('Error fetching supplier count:', error));
-
-// Fetch customer count
-fetch('/auth/index/customerCount')
-    .then(response => response.json())
-    .then(data => {
+      })
+      .catch(error => console.error('Error fetching customer count:', error));
+    // Fetch product count
+    // Fetch product count
+    fetch('/auth/index/productCount')
+      .then(response => response.json())
+      .then(data => {
         if (data.success) {
-            document.getElementById('customerCount').textContent = data.customerCount; // Use the correct key
+          document.getElementById('productCount').textContent = data.row_count; // Access 'row_count' instead of 'productCount'
         } else {
-            console.error('Error fetching customer count:', data.message);
+          console.error('Error fetching product count:', data.message);
         }
-    })
-    .catch(error => console.error('Error fetching customer count:', error));
-// Fetch product count
-// Fetch product count
-fetch('/auth/index/productCount')
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            document.getElementById('productCount').textContent = data.row_count; // Access 'row_count' instead of 'productCount'
-        } else {
-            console.error('Error fetching product count:', data.message);
-        }
-    })
-    .catch(error => console.error('Error fetching product count:', error));
+      })
+      .catch(error => console.error('Error fetching product count:', error));
 
-// Fetch purchase count
-fetch('/auth/index/purchaseCount')
-    .then(response => response.json())
-    .then(data => {
+    // Fetch purchase count
+    fetch('/auth/index/purchaseCount')
+      .then(response => response.json())
+      .then(data => {
         if (data.success) {
-            document.getElementById('purchaseCount').textContent = data.row_count; // Access 'row_count' instead of 'companyName'
+          document.getElementById('purchaseCount').textContent = data.row_count; // Access 'row_count' instead of 'companyName'
         } else {
-            console.error('Error fetching purchase count:', data.message);
+          console.error('Error fetching purchase count:', data.message);
         }
-    })
-    .catch(error => console.error('Error fetching purchase count:', error));
+      })
+      .catch(error => console.error('Error fetching purchase count:', error));
 
-    </script>
+  </script>
   <!--   Core JS Files   -->
   <script src="./assets/js/core/popper.min.js"></script>
   <script src="./assets/js/core/bootstrap.min.js"></script>
@@ -401,87 +660,89 @@ fetch('/auth/index/purchaseCount')
 
 
 </body>
+
 </html>
-  {{!-- <script>
-    var ctx1 = document.getElementById("chart-line").getContext("2d");
+{{!--
+<script>
+  var ctx1 = document.getElementById("chart-line").getContext("2d");
 
-    var gradientStroke1 = ctx1.createLinearGradient(0, 230, 0, 50);
+  var gradientStroke1 = ctx1.createLinearGradient(0, 230, 0, 50);
 
-    gradientStroke1.addColorStop(1, 'rgba(94, 114, 228, 0.2)');
-    gradientStroke1.addColorStop(0.2, 'rgba(94, 114, 228, 0.0)');
-    gradientStroke1.addColorStop(0, 'rgba(94, 114, 228, 0)');
-    new Chart(ctx1, {
-      type: "line",
-      data: {
-        labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-        datasets: [{
-          label: "Mobile apps",
-          tension: 0.4,
-          borderWidth: 0,
-          pointRadius: 0,
-          borderColor: "#5e72e4",
-          backgroundColor: gradientStroke1,
-          borderWidth: 3,
-          fill: true,
-          data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
-          maxBarThickness: 6
+  gradientStroke1.addColorStop(1, 'rgba(94, 114, 228, 0.2)');
+  gradientStroke1.addColorStop(0.2, 'rgba(94, 114, 228, 0.0)');
+  gradientStroke1.addColorStop(0, 'rgba(94, 114, 228, 0)');
+  new Chart(ctx1, {
+    type: "line",
+    data: {
+      labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      datasets: [{
+        label: "Mobile apps",
+        tension: 0.4,
+        borderWidth: 0,
+        pointRadius: 0,
+        borderColor: "#5e72e4",
+        backgroundColor: gradientStroke1,
+        borderWidth: 3,
+        fill: true,
+        data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
+        maxBarThickness: 6
 
-        }],
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false,
+        }
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
+      interaction: {
+        intersect: false,
+        mode: 'index',
+      },
+      scales: {
+        y: {
+          grid: {
+            drawBorder: false,
+            display: true,
+            drawOnChartArea: true,
+            drawTicks: false,
+            borderDash: [5, 5]
+          },
+          ticks: {
+            display: true,
+            padding: 10,
+            color: '#fbfbfb',
+            font: {
+              size: 11,
+              family: "Open Sans",
+              style: 'normal',
+              lineHeight: 2
+            },
           }
         },
-        interaction: {
-          intersect: false,
-          mode: 'index',
-        },
-        scales: {
-          y: {
-            grid: {
-              drawBorder: false,
-              display: true,
-              drawOnChartArea: true,
-              drawTicks: false,
-              borderDash: [5, 5]
-            },
-            ticks: {
-              display: true,
-              padding: 10,
-              color: '#fbfbfb',
-              font: {
-                size: 11,
-                family: "Open Sans",
-                style: 'normal',
-                lineHeight: 2
-              },
-            }
+        x: {
+          grid: {
+            drawBorder: false,
+            display: false,
+            drawOnChartArea: false,
+            drawTicks: false,
+            borderDash: [5, 5]
           },
-          x: {
-            grid: {
-              drawBorder: false,
-              display: false,
-              drawOnChartArea: false,
-              drawTicks: false,
-              borderDash: [5, 5]
+          ticks: {
+            display: true,
+            color: '#ccc',
+            padding: 20,
+            font: {
+              size: 11,
+              family: "Open Sans",
+              style: 'normal',
+              lineHeight: 2
             },
-            ticks: {
-              display: true,
-              color: '#ccc',
-              padding: 20,
-              font: {
-                size: 11,
-                family: "Open Sans",
-                style: 'normal',
-                lineHeight: 2
-              },
-            }
-          },
+          }
         },
       },
-    });
-  </script> --}}
+    },
+  });
+</script> --}}

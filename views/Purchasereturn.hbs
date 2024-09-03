@@ -209,6 +209,7 @@
                         <th>Batch No</th>
                         <th>Tax(%)</th>
                         <th>Quantity</th>
+                        <th>Free</th>
                         <th>UOM</th>
                         <th>Rate</th>
                         <th>MRP</th>
@@ -394,22 +395,25 @@ $(document).on('click', '.editmasbtn', function() {
         var batchNo = row.find('td:eq(2)').text();
         var tax = row.find('td:eq(3)').text();
         var quantity = row.find('td:eq(4)').text();
-        var uom = row.find('td:eq(5)').text();
-        var rate = row.find('td:eq(6)').text();
-         var mrp = row.find('td:eq(7)').text();
-        var discMode = row.find('td:eq(8)').text();
-        var discount = row.find('td:eq(9)').text();
-        var amount = row.find('td:eq(10)').text();
-        var cgst = row.find('td:eq(11)').text();
-        var sgst = row.find('td:eq(12)').text();
-        var igst = row.find('td:eq(13)').text();
-        var totalAmount = row.find('td:eq(14)').text();
+        var free = row.find('td:eq(5)').text();
+        var uom = row.find('td:eq(6)').text();
+        var rate = row.find('td:eq(7)').text();
+         var mrp = row.find('td:eq(8)').text();
+        var discMode = row.find('td:eq(9)').text();
+        var discount = row.find('td:eq(10)').text();
+        var amount = row.find('td:eq(11)').text();
+        var cgst = row.find('td:eq(12)').text();
+        var sgst = row.find('td:eq(13)').text();
+        var igst = row.find('td:eq(14)').text();
+        var totalAmount = row.find('td:eq(15)').text();
         
     row.html("<td><input type='number' readonly name='Id' class='input-field  purchase-id' value='" + id + "'></td>" +
     "<td><select name='product' class='input-field product-name dropdown' id='productname_" + id + "'><option selected disabled>Select product</option></select></td>" +
     "<td><input type='text' name='batchNo' class='input-field' value='" + batchNo + "'></td>" +
     "<td><input type='text' name='tax' class='input-field' value='" + tax + "'></td>" +
     "<td><input type='number' name='quantity' class='input-field' value='" + quantity + "'></td>" +
+                  "<td><input type='number' name='free' class='input-field' value='" + free + "' readonly></td>" +
+
     "<td><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
     "<td><input type='number' name='rate' class='input-field' value='" + rate + "'></td>" +
        "<td><input type='number' name='mrp' class='input-field' value='" + mrp + "'></td>" +
@@ -546,6 +550,7 @@ function getUpdatedProductsData() {
             var batchNo = $(this).find('[name="batchNo"]').val(); 
             var tax = $(this).find('[name="tax"]').val();
             var quantity = $(this).find('[name="quantity"]').val();
+                  var free = $(this).find('[name="free"]').val();
             var uom = $(this).find('[name="uom"]').val();
             var rate = $(this).find('[name="rate"]').val();
             var mrp = $(this).find('[name="mrp"]').val();
@@ -563,6 +568,7 @@ function getUpdatedProductsData() {
                 batchNo: batchNo,
                 tax: tax,
                 quantity: quantity,
+                free: free,
                 uom: uom,
                 rate: rate,
                  mrp: mrp,
@@ -729,6 +735,8 @@ let newRow = $("<tr>" +
     "<td><input type='text' name='batchNo' class='input-field' id='batchNo_" + uniqueId + "' placeholder='Batch No'></td>" +
     "<td><input type='text' name='tax' class='input-field' id='tax_" + uniqueId + "' placeholder='Tax(%)'></td>" +
     "<td><input type='number' name='quantity' class='input-field' id='quantity_" + uniqueId + "' placeholder='Quantity'></td>" +
+           "<td><input type='number' name='free' class='input-field' id='free_" + uniqueId + "' placeholder='free'></td>" +
+
     "<td><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
     "<td><input type='number' name='rate' class='input-field' id='rate_" + uniqueId + "' placeholder='Rate'></td>" +
        "<td><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='MRP'></td>" +
@@ -860,11 +868,12 @@ $(document).ready(function() {
                     batchNo: $('#batchNo_' + uniqueId).val() || "",
                     tax: $('#tax_' + uniqueId).val() || "",
                     quantity: $('#quantity_' + uniqueId).val() || "",
+                     free: $('#free_' + uniqueId).val() || "",
                     uom: $('#uom_' + uniqueId).val() || "",
                     rate: $('#rate_' + uniqueId).val() || "",
                     mrp: $('#mrp_' + uniqueId).val() || "",
-                    discMode: $('#discMode_' + uniqueId).val() || "",
-                    discount: $('#discount_' + uniqueId).val() || "",
+                    discMode: $('#discMode_' + uniqueId).val() || 3,
+                    discount: $('#discount_' + uniqueId).val() || 0,
                     amount: $('#amount_' + uniqueId).val() || "",
                     cgst: $('#cgst_' + uniqueId).val() || "",
                     sgst: $('#sgst_' + uniqueId).val() || "",
@@ -1114,6 +1123,7 @@ $('#pdiscMode, #pdiscount').change(function() {
         { data: 'batchNo' },
         { data: 'tax' },
         { data: 'quantity' },
+        { data: 'free' },
         { data: 'uom' },  
         { data: 'rate' },
         { data: 'mrp' },

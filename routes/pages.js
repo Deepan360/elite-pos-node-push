@@ -613,6 +613,10 @@ router.get("/restricted", (req, res) => {
   res.render("restricted");
 });
 
+router.get("/index", (req, res) => {
+  res.render("/index/dashboardinfo");
+});
+
 router.post("/salesretail", (req, res) => {
   res.render("salesretail");
 });

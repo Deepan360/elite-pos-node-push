@@ -555,7 +555,7 @@
                     var batchNo = $(this).find('[name="batchNo"]').val();
                     var tax = $(this).find('[name="tax"]').val();
                     var quantity = $(this).find('[name="quantity"]').val();
-                    var free = $(this).find('[name="free"]').val() || '';
+                    var free = $(this).find('[name="free"]').val() || 0;
                     var uom = $(this).find('[name="uom"]').val();
                     var purcRate = $(this).find('[name="purcRate"]').val();
                     var mrp = $(this).find('[name="mrp"]').val();
@@ -840,7 +840,7 @@
                                 batchNo: $('#batchNo_' + uniqueId).val() || "",
                                 tax: $('#tax_' + uniqueId).val() || "",
                                 quantity: $('#quantity_' + uniqueId).val() || "",
-                                free: $('#free_' + uniqueId).val() || "",
+                                free: $('#free_' + uniqueId).val() || 0,
                                 uom: $('#uom_' + uniqueId).val() || "",
                                 purcRate: $('#purcRate_' + uniqueId).val() || "",
                                 mrp: $('#mrp_' + uniqueId).val() || "",

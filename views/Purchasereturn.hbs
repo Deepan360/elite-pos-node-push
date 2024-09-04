@@ -382,7 +382,6 @@ $(document).ready(function() {
     });
 });
 
-
 $(document).on('click', '.editmasbtn', function() {
  alert("If You Gonna Edit  Quantity Of Transaction,Delete The Transaction And Add  Correct Quantity.👍");
 
@@ -550,12 +549,12 @@ function getUpdatedProductsData() {
             var batchNo = $(this).find('[name="batchNo"]').val(); 
             var tax = $(this).find('[name="tax"]').val();
             var quantity = $(this).find('[name="quantity"]').val();
-                  var free = $(this).find('[name="free"]').val();
+            var free = $(this).find('[name="free"]').val() || 0;
             var uom = $(this).find('[name="uom"]').val();
             var rate = $(this).find('[name="rate"]').val();
             var mrp = $(this).find('[name="mrp"]').val();
-            var discMode = $(this).find('[name="discMode"]').val();
-            var discount = $(this).find('[name="discount"]').val();
+            var discMode = $(this).find('[name="discMode"]').val() || 3;
+            var discount = $(this).find('[name="discount"]').val() || 0;
             var amount = $(this).find('[name="amount"]').val();
             var cgst = $(this).find('[name="cgst"]').val();
             var sgst = $(this).find('[name="sgst"]').val();
@@ -681,7 +680,7 @@ $(document).ready(function() {
     }
 });
 
-    $(document).ready(function () {
+$(document).ready(function () {
         $('.div').hide();
         $('.add').show();
         $('.updateBtn, .draftBtn').addClass('disabled').prop('disabled', true);
@@ -708,7 +707,6 @@ $(document).ready(function() {
             $('.draftBtn').addClass('btn-info').prop('disabled', false);
         });
     });
-
 
 $(document).ready(function() {
     // Attach click event listener to the closebatch link
@@ -868,7 +866,7 @@ $(document).ready(function() {
                     batchNo: $('#batchNo_' + uniqueId).val() || "",
                     tax: $('#tax_' + uniqueId).val() || "",
                     quantity: $('#quantity_' + uniqueId).val() || "",
-                     free: $('#free_' + uniqueId).val() || "",
+                     free: $('#free_' + uniqueId).val() || 0,
                     uom: $('#uom_' + uniqueId).val() || "",
                     rate: $('#rate_' + uniqueId).val() || "",
                     mrp: $('#mrp_' + uniqueId).val() || "",
@@ -985,7 +983,6 @@ $('#batchDetailsBody').on('click', 'tr', function() {
 
 });
 
-   
 function fetchDiscmodeOptions(uniqueId) {
     $.ajax({
         url: '/auth/purchase/discmode',
@@ -1024,7 +1021,6 @@ function fetchDiscmodeOptions(uniqueId) {
     });
 
 }
-
 
 function calculateTotals() {
     let totalAmount = 0;
@@ -1151,7 +1147,6 @@ $('#pdiscMode, #pdiscount').change(function() {
     });
         table.column('.action').visible(false);
 
-
         // Toggle visibility of the action column and buttons when Edit button is clicked
         $('.editmasbtn').click(function () {
             var isVisible = table.column('.action').visible();
@@ -1165,7 +1160,6 @@ $('#pdiscMode, #pdiscount').change(function() {
 
          table.ajax.url('/auth/Purchasereturn/productreturnid?purchaseId=' + selectedPurchaseId).load();
     });
-
 
 if (table.data().count() === 0) {
    
@@ -1459,13 +1453,10 @@ $('#pdiscount').val(rowDetails.discount);
 
 });
 
-
-
 function updateCustomerTable(data) {
     var table = $('#customerTable').DataTable();
     table.clear().rows.add(data).draw();
 }
-
 
 function formatDate(dateObject) {
     const date = new Date(dateObject);
@@ -1475,14 +1466,11 @@ function formatDate(dateObject) {
     return `${year}-${month}-${day}`;
 }
 
-
 $(document).ready(function() {
     $('#new').click(function() {
        window.location.href = '/purchasereturn'
     });
 });
-
-
 
 </script>
 

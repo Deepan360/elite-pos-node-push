@@ -296,10 +296,10 @@
                                     <label for="ptcs">TCS:</label>
                                     <span id="ptcs" name="ptcs">0.00</span>
                                 </div>
-                                <div class="custom">
+                                {{!-- <div class="custom">
                                     <label for="proundOff">Round Off:</label>
                                     <span id="proundOff" name="proundOff">0.00</span>
-                                </div>
+                                </div> --}}
                             </div>
                             {{!-- <div class="col">
                                 <div class="custom">
@@ -542,7 +542,7 @@
                     var batchNo = $(this).find('[name="batchNo"]').val();
                     var tax = $(this).find('[name="tax"]').val();
                     var quantity = $(this).find('[name="quantity"]').val();
-                    var free = $(this).find('[name="free"]').val();
+                    var free = $(this).find('[name="free"]').val() || 0;
                     var uom = $(this).find('[name="uom"]').val();
                     var purcRate = $(this).find('[name="purcRate"]').val();
                     var mrp = $(this).find('[name="mrp"]').val();

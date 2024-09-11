@@ -112,6 +112,7 @@
                         <th>HSN Code</th>
                         <th>product Category</th>
                         <th>Product Type</th>
+                        <th>Drug Type</th>
                         <th>Manufacturer</th>
                         <th>Combination</th>
                         <th>Package</th>
@@ -183,6 +184,7 @@
         { data: 'hsnCode' }, 
         { data: 'category' },
         { data: 'productType' },
+        { data: 'drugtype' },
          { data: 'manufacturer' },
           { data: 'combination' },
             { data: 'package' },
@@ -201,7 +203,52 @@
         }
     ],
     dom: 'Bfrtip',
-    buttons: ['copy', 'excel', 'pdf', 'csv'],
+           buttons: [
+               'copy', 'excel', 'csv',
+               {
+                   extend: 'pdf',
+                   text: 'PDF',
+                   pageSize: 'A4',  // Default page size
+                   exportOptions: {
+                       columns: ':visible'
+                   },
+                   customize: function (doc) {
+                       var totalColumns = doc.content[1].table.body[0].length;
+                       doc.content[1].table.widths = Array(totalColumns + 1).join('*').split('');
+
+                       // Auto switch between portrait and landscape based on column count
+                       if (totalColumns > 8) { // If the table is wide
+                           doc.pageSize = 'A3';  // Switch to A3 for wider tables
+                           doc.pageOrientation = 'landscape';
+                       } else {
+                           doc.pageSize = 'A4';  // Use A4 for smaller tables
+                           doc.pageOrientation = 'portrait';
+                       }
+                   },
+                   action: function (e, dt, button, config) {
+                       // Store old scrolling settings
+                       var oldScrollX = table.settings()[0].oScroll.sX;
+                       var oldScrollY = table.settings()[0].oScroll.sY;
+
+                       // Disable scrolling to export the full table
+                       table.settings()[0].oScroll.sX = '';
+                       table.settings()[0].oScroll.sY = '';
+
+                       // Redraw the table
+                       table.draw(false);
+
+                       // Trigger the default PDF export
+                       $.fn.DataTable.ext.buttons.pdfHtml5.action.call(this, e, dt, button, config);
+
+                       // Restore scrolling settings after export
+                       table.settings()[0].oScroll.sX = oldScrollX;
+                       table.settings()[0].oScroll.sY = oldScrollY;
+
+                       // Redraw the table again with original settings
+                       table.draw(false);
+                   }
+               }
+           ],
     paging: false,
     scrollY: '480px',
     scrollX: '100px',
@@ -232,6 +279,7 @@ $(document).on('click', '.editBtn', function() {
         $(".editForm #hsnCode").val(data.hsnCode);
         $(".editForm #category").val(data.category);
         $(".editForm #productType").val(data.productType);
+        $(".editForm #drugtype").val(data.drugtype);
         $(".editForm #manufacturer").val(data.manufacturer);
         $(".editForm #combination").val(data.combination);
         $(".editForm #package").val(data.package);
@@ -462,6 +510,29 @@ $.ajax({
     }
 });
 
+
+    $.ajax({
+        url: '/auth/drugtype/getdrugtype',
+        method: 'GET',
+        success: function (response) {
+            console.log('Received response fortype:', response);
+            var options = response.data;
+            if (options && options.length) {
+                options.forEach(function (option) {
+                    $('.dropdown[name="drugtype"]').append($('<option>', {
+                        value: option.drugtype,
+                        text: option.drugtype
+                    }));
+                });
+            } else {
+                console.error('No options found for Supplier Ledger(dr)');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Error fetching options for Supplier Ledger(dr):', error);
+        }
+    });
+
 // Fetch options for customer Ledger(cr)
 $.ajax({
     url: '/auth/uom/getuom',
@@ -533,6 +604,12 @@ $.ajax({
                     <option value="Disabled Select">Select Product Type</option>
                 </select>
             </div>
+                <div class="row">
+                    <label class="h6" for="drugtype">Drugtype:</label>
+                    <select id="drugtype" class="form-control dropdown" name="drugtype">
+                        <option value="Disabled Select">Select Drug Type</option>
+                    </select>
+                </div>
             <div class="row">
                 <label class="h6" for="manufacturer">Manufacturer:</label>
                 <select id="manufacturer" class="form-control dropdown" name="manufacturer">
@@ -607,6 +684,12 @@ $.ajax({
                 <option value="Disabled Select">Select Product Type</option>
             </select>
         </div>
+            <div class="row">
+                <label class="h6" for="drugtype">Drugtype:</label>
+                <select id="drugtype" class="form-control dropdown" name="drugtype">
+                    <option value="Disabled Select">Select Drug Type</option>
+                </select>
+            </div>
         <div class="row">
             <label class="h6" for="manufacturer">Manufacturer:</label>
             <select id="manufacturer" class="form-control dropdown" name="manufacturer">

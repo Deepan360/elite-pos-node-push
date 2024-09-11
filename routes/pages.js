@@ -104,6 +104,21 @@ router.get("/producttype", (req, res) => {
 router.get('/producttype/type', (req, res) => {
   res.render('gettype'); 
 });
+router.get("/drugtype", (req, res) => {
+  res.render("drugtype");
+});
+router.post("/drugtype", (req, res) => {
+  res.render("drugtypeadd");
+});
+router.put("/drugtype", (req, res) => {
+  res.render("drugtypeedit", { id: req.params.id });
+});
+router.get("/drugtype", (req, res) => {
+  res.render("drugtypedelete", { id: req.params.id });
+});
+router.get("/drugtype/getdrugtype", (req, res) => {
+  res.render("getdrugtype");
+});
 router.get('/productcategory/category', (req, res) => {
   res.render('getcategory'); 
 });
@@ -609,6 +624,9 @@ router.get('/menuaccesscontrol',(req,res)=>{
 router.get("/salesretail", (req, res) => {
   res.render("salesretail");
 });
+router.get("/salesdraftregister", (req, res) => {
+  res.render("salesdraftregister");
+});
 router.get("/restricted", (req, res) => {
   res.render("restricted");
 });
@@ -634,6 +652,9 @@ router.get("/salesretail", (req, res) => {
 });
 router.get("/salesretail", (req, res) => {
   res.render("salesretailtransdelete", { id: req.params.id });
+});
+router.get("/salesretaildraft", (req, res) => {
+  res.render("salesretaildraft");
 });
 router.get("/salesretailregister", (req, res) => {
   res.render("salesretailregister");
@@ -680,5 +701,45 @@ router.get("/package", (req, res) => {
 router.get("/product", (req, res) => {
   res.render("moleculescombination");
 });
+router.get("/salesreturnretail", (req, res) => {
+  res.render("salesreturnretail");
+});
+router.get("/salesretailreturn", (req, res) => {
+  res.render("salesretailreturn");
+});
+router.post("/salesretailreturn", (req, res) => {
+  res.render("salesretailreturn");
+});
+router.put("/salesretailreturn", (req, res) => {
+  res.render("salesretailreturnEdit", { id: req.params.id });
+});
+router.get("/editsalesretailreturn", (req, res) => {
+  res.render("editsalesretailreturn", { id: req.params.id });
+});
+router.get("/editsalesretailreturn/salesretailreturnEdit", (req, res) => {
+  res.render("salesretailreturnEdit", { id: req.params.id });
+});
+router.get("/salesretailreturn", (req, res) => {
+  res.render("salesretailreturndelete", { id: req.params.id });
+});
+router.get("/salesretailreturn", (req, res) => {
+  res.render("salesretailreturntransdelete", { id: req.params.id });
+});
+router.get("/salesretailreturndraft", (req, res) => {
+  res.render("salesretailreturndraft");
+});
+router.get("/salesretailreturnregister", (req, res) => {
+  res.render("salesretailreturnregister");
+});
+router.get("/salesretailreturn", (req, res) => {
+  res.render("retailbatchDetails", { id: req.body });
+});
+router.get("/salesretailreturn/salesretailreturnproductid", (req, res) => {
+  res.render("salesretailreturnDetails");
+});
+router.get("/salesretailreturn/salesretailreturnDetails", (req, res) => {
+  res.render("salesretailreturnproductid");
+});
+
 
 module.exports=router;     

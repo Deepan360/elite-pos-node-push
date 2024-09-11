@@ -723,10 +723,11 @@ $(document).ready(function () {
      calculateTotals();
     $('#openPurchaseForm').on('click', function () {
         let selectedSupplier = $('#supplierSelect').val();
-        if (selectedSupplier !== 'Select Supplier') {
+        if (selectedSupplier && selectedSupplier !== '' && selectedSupplier !== 'Select Supplier') {
             let purchaseId = generateUniqueId();
             $('#purchaseId').val(purchaseId);
             let uniqueId = generateUniqueId();      
+      
 let newRow = $("<tr>" +
     "<td><input type='hidden' name='purchaseId' class='input-field purchase-id' value='" + purchaseId + "'></td>" +
     "<td><select name='productname' class='input-field product-name dropdown' id='productname_" + uniqueId + "' placeholder='Product Name'><option selected disabled>Select product</option></select></td>" +

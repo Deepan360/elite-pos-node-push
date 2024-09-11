@@ -127,6 +127,14 @@
             right: 0;
             margin: 10px;
         }
+        .btn.disabled, .btn[disabled] {
+    background-color: #4e4e4e !important;
+    border-color: #afafaf !important;
+    cursor: not-allowed !important;
+    opacity: 0.6;
+    color: #000;
+    pointer-events: none !important;
+}
     </style>
 </head>
 
@@ -250,12 +258,17 @@
                             </div>
                         </div>
                     </form>
-                    <div class="col d-flex justify-content-end ms-auto">
-                        <div class="div">
-                            <button type="submit" class="btn btn-info updateBtn">Update</button>
-                        </div>
-                        <button type="button" id="submitFormBtn" class="btn btn-primary custom-btn add">Submit</button>
-                    </div>
+<div class="col d-flex justify-content-end ms-auto">
+    <div class="div">
+        <button type="submit" class="btn updateBtn disabled disabled" id="not">Update</button>
+        <button type="button" class="btn draftBtn disabled" id="draftBtn">Draft</button>
+        <input type="hidden" name="is_Draft" id="is_Draft">
+    </div>
+    <button type="button" id="submitFormBtn" class="btn btn-primary custom-btn add">Submit</button>
+    <input type="button" id="draftButton" value="Draft" class="btn btn-primary custom-btn add">
+    <input type="hidden" name="is_Draft" id="is_Draft" value="0">
+
+</div>
 
 
                 </div>
@@ -304,10 +317,10 @@
                                     <label for="ptcs">TCS:</label>
                                     <span id="ptcs" name="ptcs">0.00</span>
                                 </div>
-                                <div class="custom">
+                                {{!-- <div class="custom">
                                     <label for="proundOff">Round Off:</label>
                                     <span id="proundOff" name="proundOff">0.00</span>
-                                </div>
+                                </div> --}}
                             </div>
                             {{!-- <div class="col">
                                 <div class="custom">
@@ -348,11 +361,28 @@
 
         {{>footer}}
         </div>
+        <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmationModalLabel">Confirm Submission</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>There is a mismatch in the round-off amount. Do you want to proceed with submission?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="confirmSubmitBtn">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
     {{>color}}
 
     <script>
-
         $(document).ready(function () {
             // Attach click event listener to the closebatch link
             $('.closebatch').on('click', function () {
@@ -442,7 +472,6 @@
                     "<td><input type='number' name='totalAmount' class='input-field' value='" + totalAmount + "'></td>" +
                     "<td><i class='fa-solid fa-trash deletetransBtn' type='button' data-id='" + id + "'></i></td>");
 
-
                 fetchProductOptions(id, product);
                 fetchDiscModeOptions(id, discMode);
             });
@@ -479,9 +508,15 @@
             });
         });
 
-
-
         $(document).ready(function () {
+               $('#draftBtn').on('click', function () {
+                // Set the value of is_Draft to 1
+                $('#is_Draft').val('1');
+                console.log('Draft button clicked, is_Draft value set to 1');
+
+                // Trigger the click event of the update button
+                $('.updateBtn').click();
+            });
             $(document).on('click', '.updateBtn', function (event) {
                 event.preventDefault();
 
@@ -510,7 +545,8 @@
                     proundOff: parseFloat($('#proundOff_').val()),
                     pnetAmount: parseFloat($('#pnetAmount_').val()),
                     pdiscMode_: parseFloat($('#pdiscMode_').val()), // Make sure this ID matches the discount mode field ID in the HTML
-                    pdiscount: parseFloat($('#pdiscount_').val()) // Make sure this ID matches the discount field ID in the HTML
+                    pdiscount: parseFloat($('#pdiscount_').val()) ,
+                     isDraft: $('#is_Draft').val()// Make sure this ID matches the discount field ID in the HTML
                 };
 
                 console.log('Purchase Details:', purchaseDetails);
@@ -598,8 +634,6 @@
             return products;
         }
 
-
-
         function fetchProductOptions(id, product) {
             $.ajax({
                 url: '/auth/purchase/productname',
@@ -686,21 +720,33 @@
             }
         });
 
-        $(document).ready(function () {
-            $('.div').hide();
-            $('.add').show();
-            $('.dropdown[name="Id"]').change(function () {
-                var selectedOption = $(this).find('option:selected');
-                if (selectedOption.val() && selectedOption.val() !== 'view details') {
-                    $('.div').show();
-                    $('.opener').hide();
-                    $('.add').hide();
-                } else {
-                    $('.div').hide();
-                    $('.add').show();
-                }
-            });
+    $(document).ready(function () {
+        $('.div').hide();
+        $('.add').show();
+        $('.updateBtn, .draftBtn').addClass('disabled').prop('disabled', true);
+        $('.dropdown[name="Id"]').change(function () {
+            var selectedOption = $(this).find('option:selected');
+            if (selectedOption.val() && selectedOption.val() !== 'view details') {
+                $('.div').show();
+                $('.opener').hide();
+                $('.add').hide();
+            } else {
+                $('.div').hide();
+                $('.add').show();
+            }
+
         });
+
+
+        // When the edit button is clicked
+        $('.editmasbtn').click(function () {
+            $('.div').find('button').prop('disabled', false);
+            $('.updateBtn').removeClass('disabled').prop('disabled', false);
+            $('.draftBtn').removeClass('disabled').prop('disabled', false);
+            $('.updateBtn').addClass('btn-info').prop('disabled', false);
+            $('.draftBtn').addClass('btn-info').prop('disabled', false);
+        });
+    });
 
         $(document).ready(function () {
             let table = $('#customerTable').DataTable();
@@ -708,24 +754,26 @@
             let uniqueId = generateUniqueId();
             calculateTotals();
             $('#openPurchaseForm').on('click', function () {
-                let selectedSupplier = $('#supplierSelect').val();
-                if (selectedSupplier !== 'Select Customer') {
+
+                 $('#customerTable').parent().scrollLeft(0); 
+     let selectedSupplier = $('#supplierSelect').val();
+                if (selectedSupplier && selectedSupplier !== '' && selectedSupplier !== 'Select Customer') {
                     let purchaseId = generateUniqueId();
                     $('#purchaseId').val(purchaseId);
-                    let uniqueId = generateUniqueId();
+                    let uniqueId = generateUniqueId(); 
                     let newRow = $("<tr data-uniqueId='" + uniqueId + "'>" +
                         "<td><input type='hidden' name='purchaseId' class='input-field purchase-id' value='" + purchaseId + "'></td>" +
-                        "<td><select name='productname' class='input-field product-name dropdown' id='productname_" + uniqueId + "' placeholder='Product Name'><option selected disabled>Select product</option></select></td>" +
+                        "<td><select name='productname' class='input-field product-name dropdown' id='productname_" + uniqueId + "' placeholder='Product Name' required><option selected disabled>Select product</option></select></td>" +
                         "<td><input type='text' name='batchNo' class='input-field' id='batchNo_" + uniqueId + "' placeholder='Batch No'></td>" +
                         "<td><input type='text' name='tax' class='input-field' id='tax_" + uniqueId + "' placeholder='Tax(%)'></td>" +
-                        "<td><input type='number' name='quantity' class='input-field' id='quantity_" + uniqueId + "' placeholder='Quantity'></td>" +
+                        "<td><input type='number' name='quantity' class='input-field' id='quantity_" + uniqueId + "' placeholder='Quantity' required></td>" +
                         "<td><input type='number' name='free' class='input-field' id='free_" + uniqueId + "' placeholder='Free'></td>" +
 
                         "<td><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
                         "<td><input type='number' name='purcRate' class='input-field' id='purcRate_" + uniqueId + "' placeholder='purcRate'></td>" +
                         "<td><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='mrp'></td>" +
 
-                        "<td><input type='number' name='rate' class='input-field' id='rate_" + uniqueId + "' placeholder='Rate'></td>" +
+                        "<td><input type='number' name='rate' class='input-field' id='rate_" + uniqueId + "' placeholder='Rate' required></td>" +
                         "<td><select name='discMode' class='input-field product-name dropdown  ' id='discMode_" + uniqueId + "' placeholder='Disc.Mode'><option selected disabled>Select Disc Mode</option></select></td>" +
                         "<td><input type='number' name='discount' class='input-field' id='discount_" + uniqueId + "' placeholder='Discount'></td>" +
                         "<td><input type='number' name='amount' class='input-field' id='amount_" + uniqueId + "' placeholder='Amount'></td>" +
@@ -796,18 +844,43 @@
             });
 
             $(document).ready(function () {
+                $('#draftButton').on('click', function () {
+                    $('#is_Draft').val('1'); // Set is_Draft to 1 for draft
+                    submitForm(); // Submit directly without validation
+                });
 
                 $('#submitFormBtn').on('click', function () {
+                    // Validate rows when submit button is clicked
+                    if (!validateRows()) {
+                        alert('Please fill out all required fields before submitting.');
+                        return; // Stop form submission if validation fails
+                    }
+
+                    let roundOff = parseFloat($('#proundOff').text()) || 0;
+
+                    if (roundOff === 0) {
+                        submitForm(); // Submit directly if no round-off value
+                    } else {
+                        $('#confirmationModal').modal('show'); // Show modal if round-off is not zero
+                    }
+                });
+
+                $('#confirmSubmitBtn').on('click', function () {
+                    $('#is_Draft').val('1'); // Ensure it's set to submit
+                    submitForm(); // Submit form
+                    $('#confirmationModal').modal('hide'); // Hide the modal
+                });
+
+
+                function submitForm() {
                     let formData = $('#purchaseDetails').serializeArray();
-                    products = getProductsData();
+                    let products = getProductsData();
 
                     formData.push({ name: 'products', value: JSON.stringify(products) });
+                    formData.push({ name: 'isDraft', value: $('#is_Draft').val() });
 
                     console.log('Data being sent to the server:', formData);
-                    console.log('Received products:', products);
-                    console.log('Number of received products:', products.length);
 
-                    // Send AJAX request to the server
                     $.ajax({
                         url: '/auth/sales',
                         method: 'POST',
@@ -821,8 +894,63 @@
                             console.error("Error submitting form:", error);
                         }
                     });
+                }
+
+                $(document).on('input', 'input, select', function () {
+                    validateRows(); // Validate rows as inputs change
                 });
+
+                function validateRows() {
+                    let isValid = true;
+                    let rows = $('#customerTable tbody tr');
+
+                    // Check if there are any rows
+                    if (rows.length === 0) {
+                        alert('No rows found. Please add at least one row.');
+                        return false;
+                    }
+
+                    rows.each(function () {
+                        let uniqueId = $(this).find('select[name="productname"]').attr('id').split('_')[1];
+
+                        // Define the required fields
+                        let requiredFields = [
+                            '#productname_' + uniqueId,
+                            '#batchNo_' + uniqueId,
+                            '#quantity_' + uniqueId,
+                            '#rate_' + uniqueId
+                            
+                        ];
+
+                        let isRowValid = true;
+
+                        // Validate required fields
+                        requiredFields.forEach(function (selector) {
+                            let $field = $(selector);
+                            if (!$field.val()) {
+                                isRowValid = false;
+                                $field.addClass('error'); // Add error class to invalid fields
+                            } else {
+                                $field.removeClass('error'); // Remove error class if valid
+                            }
+                        });
+
+                        if (!isRowValid) {
+                            isValid = false;
+                            // Scroll to the first invalid field
+                            $('html, body').animate({
+                                scrollTop: $(this).find('.error').first().offset().top
+                            }, 500);
+                        }
+                    });
+
+                    return isValid;
+                }
+
+
+
             });
+    
 
 
             function getProductsData() {
@@ -958,7 +1086,6 @@
 
 
         });
-
 
         function fetchDiscmodeOptions(uniqueId) {
             $.ajax({
@@ -1119,7 +1246,6 @@
 
         table.column('.action').visible(false);
 
-
         // Toggle visibility of the action column and buttons when Edit button is clicked
         $('.editmasbtn').click(function () {
             var isVisible = table.column('.action').visible();
@@ -1127,7 +1253,6 @@
 
 
         });
-
 
         $('#purchaseId').on('change', function () {
             var selectedPurchaseId = $(this).val();

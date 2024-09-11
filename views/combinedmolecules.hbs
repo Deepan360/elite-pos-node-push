@@ -102,8 +102,8 @@
             cursor: grab;
             border: 1px solid #ddd;
             border-radius: 5px;
-            color: black;
-            background-color: rgb(97, 97, 97);
+            color: rgb(255, 255, 255);
+            background-color: #34495E;
         }
         .molecule-item.dragging {
             opacity: 0.5;
@@ -309,10 +309,10 @@
                 {
                     data: 'id',
                     render: function (data) {
-                        return '<i class="fa-regular fa-pen-to-square editBtn" type="button" data-id="' + data + '"></i>' +
-                            ' <i class="fa-solid fa-trash deleteBtn" type="button" data-id="' + data + '"></i>';
+                        return '<i class="fa-solid fa-trash deleteBtn" type="button" data-id="' + data + '"></i>';
                     }
                 }
+
             ],
             dom: 'Bfrtip',
             buttons: ['copy', 'excel', 'pdf', 'csv'],
@@ -438,7 +438,7 @@
                     </div>
                 </div>
             </div>
-            <input type="text" placeholder="Combination Name" name="combinationname" id="combinationname" required>
+            <input type="text" placeholder="Combination Name" name="combinationname" id="combinationname" readonly required>
         </div>
         <button type="submit" class="btn btn-primary" id="saveManufacturer">Save</button>
         <button type="button" class="btn btn-primary" id="closeForm">Close</button>

@@ -1040,3 +1040,25 @@ table th {
 .bg-alter {
   background-color: #34495E;
 }
+.btn.disabled,
+.btn[disabled] {
+  background-color: #4e4e4e !important;
+  /* Grey color for disabled state */
+  border-color: #afafaf !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
+  /* Slightly transparent to indicate disabled state */
+  color: #000;
+  pointer-events: none !important;
+}
+
+.error {
+  border: 1px solid red;
+
+}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+*{
+  font-family:"Poppins",
+    sans-serif;
+}

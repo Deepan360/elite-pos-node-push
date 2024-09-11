@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const userController = require('../controllers/user');
 
+
+
 router.post('/registration', userController.registration);
 router.post('/login', userController.login);
 router.post('/company', userController.company);
@@ -27,6 +29,11 @@ router.delete("/productdelete/:id", userController.productdelete);
 router.get("/producttype", userController.producttype);
 router.get("/productcategory/category", userController.getcategory);
 router.get("/uom/getuom", userController.getuom);
+router.get("/drugtype", userController.drugtype);
+router.get("/drugtype/getdrugtype", userController.getdrugtype);
+router.post("/drugtype", userController.drugtypeadd);
+router.put("/drugtypeedit/:id", userController.drugtypeedit);
+router.delete("/drugtypedelete/:id", userController.drugtypedelete);
 router.get("/producttype/type", userController.gettype);
 router.post("/producttype", userController.producttypeadd);    
 router.put("/producttypeedit/:id", userController.producttypeedit);
@@ -154,6 +161,7 @@ router.delete("/salesdelete/:id", userController.salesdelete);
 router.delete("/salestransdelete/:id", userController.salestransdelete);
 router.get('/sales/saleproductid',userController.saleproductid);
 router.get("/salesregister",userController.salesregister);
+router.get("/salesdraftregister", userController.salesdraftregister);
 router.get("/sales/customername",userController.customername);
 router.post('/sales/batchDetails/:selectedProductId', userController.batchDetails);
 
@@ -229,11 +237,14 @@ router.delete("/salesretaildelete/:id", userController.salesretaildelete);
 router.delete( "/salesretailtransdelete/:id",userController.salesretailtransdelete);
 router.get("/salesretail/salesretailproductid",userController.salesretailproductid);
 router.get("/salesretailregister", userController.salesretailregister);
+router.get("/salesretaildraft", userController.salesretaildraft);
 router.get("/salesretail/customername", userController.customername);
 router.post(
   "/salesretail/retailbatchDetails/:selectedProductId",
   userController.retailbatchDetails
 );
+
+
 
 router.get("/molecules", userController.molecules);
 router.post("/molecules", userController.moleculesadd);
@@ -253,6 +264,9 @@ router.get(
   userController.moleculescombination
 );
 
+
+
+router.get("/salesretailreturn", userController.salesretailreturn);
 router.get("/package", userController.package);
 router.post("/package", userController.packageadd);
 router.put("/packageedit/:id", userController.packageedit);
@@ -260,4 +274,50 @@ router.delete("/packagedelete/:id", userController.packagedelete);
 
 router.get("/index/dashboardinfo", userController.dashboardinfo);
 
+
+router.get(
+  "/salesretailreturn/salesretailreturnDetails",
+  userController.salesretailDetails
+);
+router.post("/salesretailreturn", userController.salesretailreturnadd);
+router.put("/salesretailreturnEdit/:id", userController.salesretailreturnEdit);
+router.get(
+  "/salesretailreturn/salesretailreturnids",
+  userController.salesretailreturnids
+);
+router.delete(
+  "/salesretailreturndelete/:id",
+  userController.salesretailreturndelete
+);
+router.delete(
+  "/salesretailreturntransdelete/:id",
+  userController.salesretailreturntransdelete
+);
+
+router.get(
+  "/salesretailreturn/salesretailreturnproductid",
+  userController.salesretailreturnproductid
+);
+router.get(
+  "/salesretailreturnregister",
+  userController.salesretailreturnregister
+);
+
+router.get("/salesretailreturn/customername", userController.customername);
+router.post(
+  "/salesretailreturn/retailbatchDetails/:selectedProductId",
+  userController.retailbatchDetails
+);
+
+
+router.get(
+  "/salesretailreturn/salesretailreturnDetails",
+  userController.salesretailreturnDetails
+);
+router.get(
+  "/salesretailreturn/salesretailreturnproductid",
+  userController.salesretailreturnproductid
+);
+
 module.exports = router;
+ 

@@ -22,6 +22,11 @@
     color: #000;
     pointer-events: none !important;
 }
+.error {
+    border: 1px solid red;
+  
+}
+
 .new-row {
         display: none;
     }
@@ -252,7 +257,7 @@
     <form action="/auth/purchase" method="post" id="purchaseDetails" style="display: contents;">
     <div class="col-2 custom">
         <div class="custom-input-container">
-            <select id="pdiscMode" class="dropdown" name="pdiscMode">
+            <select id="pdiscMode" class="dropdown" name="pdiscMode" required>
                 <option selected="disabled">Select Discount Mode</option>
             </select>
             <label for="discMode">discMode</label>
@@ -575,7 +580,6 @@ $(document).ready(function() {
     });
 });
 
-
 function getUpdatedProductsData() {
     var products = [];
 
@@ -636,8 +640,6 @@ function getUpdatedProductsData() {
 
     return products;
 }
-
-
 
 // Function to fetch product options and populate dropdown
 function fetchProductOptions(id, product) {
@@ -759,41 +761,40 @@ $(document).ready(function () {
     let products = [];
      calculateTotals();
     $('#openPurchaseForm').on('click', function () {
-      
-        let selectedSupplier = $('#supplierSelect').val();
-        if (selectedSupplier !== 'Select Supplier') {
+    
+      $('#customerTable').parent().scrollLeft(0);  // Reset x-axis scroll position to 0
+
+   let selectedSupplier = $('#supplierSelect').val();
+        if (selectedSupplier && selectedSupplier !== '' && selectedSupplier !== 'Select Supplier') {
             let purchaseId = generateUniqueId();
             $('#purchaseId').val(purchaseId);
             let uniqueId = generateUniqueId();      
-let newRow = $("<tr>" +
-    "<td><input type='hidden' name='purchaseId' class='input-field purchase-id' value='" + purchaseId + "'></td>" +
-    "<td><select name='productname' class='input-field product-name dropdown' id='productname_" + uniqueId + "' placeholder='Product Name'><option selected disabled>Select product</option></select></td>" +
-    "<td><input type='text' name='batchNo' class='input-field' id='batchNo_" + uniqueId + "' placeholder='Batch No'></td>" +
-    "<td><input type='month' name='expiryDate' class='input-field' id='expiryDate_" + uniqueId + "' placeholder='Expiry Date'></td>" +
-    "<td><input type='text' name='tax' class='input-field' id='tax_" + uniqueId + "' placeholder='Tax(%)'></td>" +
-    "<td><input type='number' name='quantity' class='input-field' id='quantity_" + uniqueId + "' placeholder='Quantity'></td>" +
-        "<td><input type='number' name='free' class='input-field' id='free_" + uniqueId + "' placeholder='free'></td>" +
+    
+            let newRow = $("<tr>" +
+                "<td><input type='hidden' name='purchaseId' class='input-field purchase-id' value='" + purchaseId + "'></td>" +
+                "<td><select name='productname' class='input-field product-name dropdown' id='productname_" + uniqueId + "' placeholder='Product Name'><option selected disabled>Select product</option></select></td>" +
+                "<td><input type='text' name='batchNo' class='input-field' id='batchNo_" + uniqueId + "' placeholder='Batch No'></td>" +
+                "<td><input type='month' name='expiryDate' class='input-field' id='expiryDate_" + uniqueId + "' placeholder='Expiry Date'></td>" +
+                "<td><input type='text' name='tax' class='input-field' id='tax_" + uniqueId + "' placeholder='Tax(%)'></td>" +
+                "<td><input type='number' name='quantity' class='input-field' id='quantity_" + uniqueId + "' placeholder='Quantity'></td>" +
+                "<td><input type='number' name='free' class='input-field' id='free_" + uniqueId + "' placeholder='free'></td>" +
+                "<td><input type='number' name='package' class='input-field' id='package_" + uniqueId + "' placeholder='package'></td>" +
+                "<td><input type='number' name='retailQty' class='input-field' id='retailQty_" + uniqueId + "' placeholder='retailQty'></td>" +
+                "<td><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
+                "<td><input type='number' name='rate' class='input-field' id='rate_" + uniqueId + "' placeholder='Rate' required></td>" +
+                "<td><input type='number' name='retailRate' class='input-field' id='retailRate_" + uniqueId + "' placeholder='retailRate'></td>" +
+                "<td><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='MRP' required></td>" + // Ensure 'required' attribute
+                "<td><input type='number' name='retailMrp' class='input-field' id='retailMrp_" + uniqueId + "' placeholder='Retail MRP'></td>" +
+                "<td><select name='discMode' class='input-field product-name dropdown' id='discMode_" + uniqueId + "' placeholder='Disc.Mode' required><option selected disabled>Select Disc Mode</option></select></td>" +
+                "<td><input type='number' name='discount' class='input-field' id='discount_" + uniqueId + "' placeholder='Discount' required></td>" +
+                "<td><input type='number' name='amount' class='input-field' id='amount_" + uniqueId + "' placeholder='Amount'></td>" +
+                "<td><input type='number' name='cgst' class='input-field' id='cgst_" + uniqueId + "' placeholder='CGST'></td>" +
+                "<td><input type='number' name='sgst' class='input-field' id='sgst_" + uniqueId + "' placeholder='SGST'></td>" +
+                "<td><input type='number' name='igst' class='input-field' id='igst_" + uniqueId + "' placeholder='IGST'></td>" +
+                "<td><input type='number' name='totalAmount' class='input-field' id='totalAmount_" + uniqueId + "' placeholder='Total Amount'></td>" +
+                "<td class='action new-row'><i class='fa-solid fa-trash deleteRowBtn text-danger' type='button'></i></td>" +
+                "</tr>");
 
-       "<td><input type='number' name='package' class='input-field' id='package_" + uniqueId + "' placeholder='package'></td>" +
-    "<td><input type='number' name='retailQty' class='input-field' id='retailQty_" + uniqueId + "' placeholder='retailQty'></td>" +
-
-    "<td><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
-    "<td><input type='number' name='rate' class='input-field' id='rate_" + uniqueId + "' placeholder='Rate'></td>" +
-        "<td><input type='number' name='retailRate' class='input-field' id='retailRate_" + uniqueId + "' placeholder='retailRate'></td>" +
-
-       "<td><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='MRP'></td>" +
-    "<td><input type='number' name='retailMrp' class='input-field' id='retailMrp_" + uniqueId + "' placeholder='Retail MRP'></td>" +
-
-    "<td><select name='discMode' class='input-field product-name dropdown  ' id='discMode_" + uniqueId + "' placeholder='Disc.Mode' required><option selected disabled>Select Disc Mode</option></select></td>" +
-    "<td><input type='number' name='discount' class='input-field' id='discount_" + uniqueId + "' placeholder='Discount' required></td>" +
-    "<td><input type='number' name='amount' class='input-field' id='amount_" + uniqueId + "' placeholder='Amount'></td>" +
-    "<td><input type='number' name='cgst' class='input-field' id='cgst_" + uniqueId + "' placeholder='CGST'></td>" +
-    "<td><input type='number' name='sgst' class='input-field' id='sgst_" + uniqueId + "' placeholder='SGST'></td>" +
-    "<td><input type='number' name='igst' class='input-field' id='igst_" + uniqueId + "' placeholder='IGST'></td>" +
-    "<td><input type='number' name='totalAmount' class='input-field' id='totalAmount_" + uniqueId + "' placeholder='Total Amount'></td>" +
-"<td class='action new-row'><i class='fa-solid fa-trash deleteRowBtn text-danger' type='button'></i></td>" +
-
-    "</tr>");
             $('#customerTable tbody').append(newRow);
             table.rows.add([newRow[0]]).draw();
              
@@ -862,6 +863,12 @@ calculateTotals();
         });
 
         $('#submitFormBtn').on('click', function () {
+            // Validate rows when submit button is clicked
+            if (!validateRows()) {
+                alert('Please fill out all required fields before submitting.');
+                return; // Stop form submission if validation fails
+            }
+
             let roundOff = parseFloat($('#proundOff').text()) || 0;
 
             if (roundOff === 0) {
@@ -876,6 +883,7 @@ calculateTotals();
             submitForm(); // Submit form
             $('#confirmationModal').modal('hide'); // Hide the modal
         });
+
 
         function submitForm() {
             let formData = $('#purchaseDetails').serializeArray();
@@ -900,6 +908,61 @@ calculateTotals();
                 }
             });
         }
+
+        $(document).on('input', 'input, select', function () {
+            validateRows(); // Validate rows as inputs change
+        });
+
+        function validateRows() {
+            let isValid = true;
+            let rows = $('#customerTable tbody tr');
+
+            // Check if there are any rows
+            if (rows.length === 0) {
+                alert('No rows found. Please add at least one row.');
+                return false;
+            }
+
+            rows.each(function () {
+                let uniqueId = $(this).find('select[name="productname"]').attr('id').split('_')[1];
+
+                // Define the required fields
+                let requiredFields = [
+                    '#productname_' + uniqueId,
+                    '#batchNo_' + uniqueId,
+                    '#expiryDate_' + uniqueId,
+                    '#quantity_' + uniqueId,
+                    '#rate_' + uniqueId,
+                    '#mrp_' + uniqueId // Ensure this is included
+                ];
+
+                let isRowValid = true;
+
+                // Validate required fields
+                requiredFields.forEach(function (selector) {
+                    let $field = $(selector);
+                    if (!$field.val()) {
+                        isRowValid = false;
+                        $field.addClass('error'); // Add error class to invalid fields
+                    } else {
+                        $field.removeClass('error'); // Remove error class if valid
+                    }
+                });
+
+                if (!isRowValid) {
+                    isValid = false;
+                    // Scroll to the first invalid field
+                    $('html, body').animate({
+                        scrollTop: $(this).find('.error').first().offset().top
+                    }, 500);
+                }
+            });
+
+            return isValid;
+        }
+  
+
+  
     });
 
 
@@ -955,6 +1018,8 @@ calculateTotals();
     }
 
 });
+
+
 
 function fetchDiscmodeOptions(uniqueId) {
     $.ajax({
@@ -1063,6 +1128,7 @@ function calculateTotals() {
     $('#pdiscMode_').val(discModeId);
     $('#pdiscount_').val($('#pdiscount').val());
 }
+
 
 
 

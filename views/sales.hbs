@@ -178,10 +178,16 @@
                             <input type="date" placeholder=" " name="saledate" id="saledate">
                             <label for="saledate">Sale Date</label>
                         </div>
-                        <div class="custom-input-container col-md-3">
-                            <input type="text" placeholder=" " name="paymentmode" id="paymentmode">
-                            <label for="paymentmode">Payment Mode</label>
-                        </div>
+        <div class="col-md-3 custom-input-container ">
+            <label for="paymentmode">Payment Mode</label>
+            <select name="paymentmode" id="paymentmode">
+                <option value="" disabled selected hidden>Choose Payment Mode</option>
+                <option value="cash">Cash</option>
+                <option value="credit">Credit</option>
+                <option value="cash-credit">Cash/Credit</option>
+            </select>
+        
+        </div>
 
 
                         <div class="custom-input-container col-md-3">

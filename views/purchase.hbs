@@ -150,18 +150,18 @@
     <input type="hidden" name="id" id="id">
 </div>
 <div class="col-md-3 custom-input-container ma">
-    <select id="supplierSelect" class="dropdown" name="suppliername">
+    <select id="supplierSelect" class="dropdown" name="suppliername" required>
         <option value="" disabled selected>Select Supplier</option>
     </select>
-    <label for="suppliername">Supplier Name</label>
+    <label for="suppliername">Supplier Name*</label>
 </div>
         <div class="col-md-3 custom-input-container ma">
-            <input type="text" placeholder=" " name="supplierinvoiceno" id="supplierinvoiceno">
-            <label for="supplierinvoiceno">Supplier Invoice No</label>
+            <input type="text" placeholder=" " name="supplierinvoiceno" id="supplierinvoiceno" required>
+            <label for="supplierinvoiceno">Supplier Invoice No*</label>
         </div>
                 <div class="col-md-3 custom-input-container ma">
                     <input type="date" placeholder=" " name="supplierinvoicedate" id="supplierinvoicedate">
-                    <label for="supplierinvoicedate">Supplier Invoice Date</label>
+                    <label for="supplierinvoicedate">Supplier Invoice Date*</label>
                 </div>
             <div class="col-md-3 custom-input-container ma">
                 <input type="date" placeholder=" " name="purchasedate" id="purchasedate">
@@ -169,12 +169,12 @@
             </div>
      
             <div class="col-md-3 custom-input-container ma">
-                <input type="text" name="supplierinvoiceamount" id="supplierinvoiceamount">
-                <label for="supplierinvoiceamount">Supp.Invoice Amount</label>
+                <input type="text" name="supplierinvoiceamount" id="supplierinvoiceamount" required>
+                <label for="supplierinvoiceamount">Supp.Invoice Amount*</label>
             </div>
             <div class="col-md-3 custom-input-container ma">
-                <label for="paymentmode">Payment Mode</label>
-                <select name="paymentmode" id="paymentmode">
+                <label for="paymentmode">Payment Mode*</label>
+                <select name="paymentmode" id="paymentmode" required>
                     <option value="" disabled selected hidden>Choose Payment Mode</option>
                     <option value="cash">Cash</option>
                     <option value="credit">Credit</option>
@@ -185,7 +185,7 @@
     
             <div class="col-md-3 custom-input-container ma">
                 <label for="modeoftransport">Mode Of Transport</label>
-                <select name="modeoftransport" id="modeoftransport">
+                <select name="modeoftransport" id="modeoftransport" >
                     <option value="" disabled selected hidden>Choose Mode of Transport</option>
                     <option value="roadways">Roadways</option>
                     <option value="railways">Railways</option>
@@ -367,7 +367,23 @@
 
 </main>
 {{>color}}
+<script>
+    // Get the current date
+    const today = new Date();
 
+    // Format the date to YYYY-MM-DD for the input field
+    const formattedDate = formatDate(today);
+
+    // Set the value of the input to the formatted date
+    document.getElementById('purchasedate').value = formattedDate;
+    function formatDate(dateObject) {
+            const date = new Date(dateObject);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+</script>
 <script>
 
 $(document).ready(function() {

@@ -169,10 +169,16 @@
                             </div>
                         </div>
                         <div class="col-md-2">
-                            <div class="custom-input-container">
-                                <input type="text" placeholder=" " name="paymentmode" id="paymentmode">
-                                <label for="paymentmode">Payment Mode</label>
-                            </div>
+        <div class=" custom-input-container ">
+            <label for="paymentmode">Payment Mode</label>
+            <select name="paymentmode" id="paymentmode">
+                <option value="" disabled selected hidden>Choose Payment Mode</option>
+                <option value="cash">Cash</option>
+                <option value="credit">Credit</option>
+                <option value="cash-credit">Cash/Credit</option>
+            </select>
+        
+        </div>
                         </div>
                         <div class="col-md-2">
                             <div class="custom-input-container">

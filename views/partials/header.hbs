@@ -141,7 +141,29 @@ h5{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.19/jspdf.plugin.autotable.min.js"></script>
 
 </head>
+<script>
+  // Wait for the DOM to fully load before running the script
+  document.addEventListener('DOMContentLoaded', function () {
+    // Get the current date
+    const today = new Date();
 
+    // Format the date to YYYY-MM-DD for the input field
+    const formattedDate = formatDate(today);
+
+    // Set the value of the input to the formatted date
+    document.getElementById('saledate').value = formattedDate;
+  });
+
+  function formatDate(dateObject) {
+    const date = new Date(dateObject);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');  // Add 1 to get correct month
+    const day = String(date.getDate()).padStart(2, '0');
+
+    // Return the date in DD-MM-YYYY format
+    return `${day}-${month}-${year}`;
+  }
+</script>
 <script>
   $(document).ready(function () {
     $('.dropdown2').each(function () {

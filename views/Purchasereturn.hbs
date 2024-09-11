@@ -147,18 +147,32 @@
                 <label for="purchasedate">Purchase Return Date</label>
             </div>
             <div class="custom-input-container">
-                <input type="text" placeholder=" " name="paymentmode" id="paymentmode">
-                <label for="paymentmode">Payment Mode</label>
+            <label for="paymentmode">Payment Mode</label>
+            <select name="paymentmode" id="paymentmode">
+                <option value="" disabled selected hidden>Choose Payment Mode</option>
+                <option value="cash">Cash</option>
+                <option value="credit">Credit</option>
+                <option value="cash-credit">Cash/Credit</option>
+            </select>
             </div>
         </div>
+             
+                
+        
         <div class="col">
             <div class="custom-input-container">
                 <input type="date" placeholder=" " name="supplierinvoicedate" id="supplierinvoicedate">
                 <label for="supplierinvoicedate">Supplier Invoice Date</label>
             </div>
             <div class="custom-input-container">
-                <input type="text" placeholder=" " name="modeoftransport" id="modeoftransport">
                 <label for="modeoftransport">Mode Of Transport</label>
+                <select name="modeoftransport" id="modeoftransport">
+                    <option value="" disabled selected hidden>Choose Mode of Transport</option>
+                    <option value="roadways">Roadways</option>
+                    <option value="railways">Railways</option>
+                    <option value="airways">Airways</option>
+                    <option value="seaways">Seaways</option>
+                </select>
             </div>
             <div class="custom-input-container">
                 <input type="text" placeholder=" " name="transportno" id="transportno">
@@ -341,7 +355,23 @@
 </div>
 </main>
 {{>color}}
+<script>
+    // Get the current date
+    const today = new Date();
 
+    // Format the date to YYYY-MM-DD for the input field
+    const formattedDate = formatDate(today);
+
+    // Set the value of the input to the formatted date
+    document.getElementById('purchasedate').value = formattedDate;
+    function formatDate(dateObject) {
+        const date = new Date(dateObject);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+</script>
 <script>
 
 $(document).ready(function() {

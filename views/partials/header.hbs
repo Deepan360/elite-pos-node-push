@@ -44,22 +44,22 @@
     background-color: #303030;
     color: rgb(255, 255, 255) !important;
 }
-        .nav-item:hover .sub-menu {
+.nav-item:hover .sub-menu {
             display: block;
         }
-        .sidenav .sub-menu a:hover {
+.sidenav .sub-menu a:hover {
             color: #f1f1f1;
             border-radius: 10px;
             background-color: black;
         }
-        .navbar-vertical.navbar-expand-xs .navbar-collapse {
+.navbar-vertical.navbar-expand-xs .navbar-collapse {
     height: calc(100vh - 100px);
 }
 h5{
   margin-left: 5px;
   padding: 2px;
 }
-  .position-relative {
+ .position-relative {
       position: relative;
     }
     .position-absolute {
@@ -100,6 +100,8 @@ h5{
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link rel="stylesheet" type="text/html" href="assets/vendors/fontawesome/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -120,18 +122,13 @@ h5{
   <link rel="stylesheet" type="text/html" href="/resources/demos/style.css">
   <script type="text/javascript" src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/uuid@8.3.2/dist/umd/uuidv4.min.js"></script>
-
 <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-LdixNwFokTj/1pyvMzqp+6E5B8wBDsg4Qf38dltEsunHFRXvZWY8ij20pZg8r59EGzdpW0a3xFui2KYNH5oajw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.6/css/jquery.dataTables.css">
-    
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.3/css/fixedColumns.dataTables.min.css">
-
 <script type="text/javascript" src="https://cdn.datatables.net/1.11.6/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.3.3/js/dataTables.fixedColumns.min.js"></script>
-
 <!-- Select2 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.2/dist/css/select2.min.css" rel="stylesheet" />
-
 <!-- Select2 JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.2/dist/js/select2.min.js"></script>
 <!-- Select2 CSS -->
@@ -139,7 +136,6 @@ h5{
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.19/jspdf.plugin.autotable.min.js"></script>
-
 </head>
 <script>
   // Wait for the DOM to fully load before running the script
@@ -163,7 +159,52 @@ h5{
     // Return the date in DD-MM-YYYY format
     return `${day}-${month}-${year}`;
   }
+
+  // Toggle function for truncating and expanding text
+  function toggleText(element) {
+    if (element.classList.contains('truncated')) {
+      element.classList.remove('truncated');
+      element.classList.add('full-text');
+    } else {
+      element.classList.remove('full-text');
+      element.classList.add('truncated');
+    }
+  }
+
+  // Attach this function to each dynamically generated product name cell
+  document.querySelectorAll('#customerTable td:nth-child(2)').forEach(function (cell) {
+    cell.onclick = function () {
+      toggleText(this);
+    };
+  });
+
+
+
 </script>
+<script>
+  // Wait for the DOM to fully load before running the script
+  document.addEventListener('DOMContentLoaded', function () {
+    // Get the current date
+    const today = new Date();
+
+    // Format the date to YYYY-MM-DD for the input field
+    const formattedDate = formatDate(today);
+
+    // Set the value of the input to the formatted date
+    document.getElementById('supplierinvoicedate').value = formattedDate;
+  });
+
+  function formatDate(dateObject) {
+    const date = new Date(dateObject);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');  // Add 1 to get correct month
+    const day = String(date.getDate()).padStart(2, '0');
+
+    // Return the date in DD-MM-YYYY format
+    return `${day}-${month}-${year}`;
+  }
+</script>
+
 <script>
   $(document).ready(function () {
     $('.dropdown2').each(function () {

@@ -142,8 +142,8 @@
 <form id="purchaseDetails" class="form-control" style="display: block; align-item: start;" method="post">
     <div class="row mt-2">
         
-    <div class="col-md-3 custom-input-container ma">
-    <select name="Id" class="dropdown" id="Id" >
+    <div class="col-md-3 custom-input-container ma d-none">
+    <select name="Id" class="dropdown"  id="Id" >
         <option selected>view details</option>
     </select>
     <label for="purchaseId">Purchase Id</label>
@@ -153,27 +153,33 @@
     <select id="supplierSelect" class="dropdown" name="suppliername" required>
         <option value="" disabled selected>Select Supplier</option>
     </select>
-    <label for="suppliername">Supplier Name*</label>
+    <label for="suppliername">Supplier Name<span class="text-danger text-2x " style="font-size: medium !important;">*</span></label>
 </div>
-        <div class="col-md-3 custom-input-container ma">
-            <input type="text" placeholder=" " name="supplierinvoiceno" id="supplierinvoiceno" required>
-            <label for="supplierinvoiceno">Supplier Invoice No*</label>
-        </div>
+<div class="col-md-3 custom-input-container ma">
+    <div class="input-wrapper">
+        <input type="text" placeholder=" " name="supplierinvoiceno" id="supplierinvoiceno" required>
+        <label for="supplierinvoiceno">Supplier Invoice No<span class="text-danger text-2x"
+                style="font-size: medium !important;">*</span></label>
+        <!-- Validation Icon (Empty by default) -->
+        <span class="validation-icon"></span>
+    </div>
+</div>
+
                 <div class="col-md-3 custom-input-container ma">
                     <input type="date" placeholder=" " name="supplierinvoicedate" id="supplierinvoicedate">
-                    <label for="supplierinvoicedate">Supplier Invoice Date*</label>
+                    <label for="supplierinvoicedate">Supplier Invoice Date<span class="text-danger text-2x " style="font-size: medium !important;">*</span></label>
                 </div>
             <div class="col-md-3 custom-input-container ma">
                 <input type="date" placeholder=" " name="purchasedate" id="purchasedate">
-                <label for="purchasedate">Purchase Date</label>
+                <label for="purchasedate">Purchase Date<span class="text-danger text-2x " style="font-size: medium !important;">*</span></label>
             </div>
      
             <div class="col-md-3 custom-input-container ma">
                 <input type="text" name="supplierinvoiceamount" id="supplierinvoiceamount" required>
-                <label for="supplierinvoiceamount">Supp.Invoice Amount*</label>
+                <label for="supplierinvoiceamount">Supp.Invoice Amount<span class="text-danger text-2x " style="font-size: medium !important;">*</span></label>
             </div>
             <div class="col-md-3 custom-input-container ma">
-                <label for="paymentmode">Payment Mode*</label>
+                <label for="paymentmode">Payment Mode<span class="text-danger text-2x " style="font-size: medium !important;">*</span></label>
                 <select name="paymentmode" id="paymentmode" required>
                     <option value="" disabled selected hidden>Choose Payment Mode</option>
                     <option value="cash">Cash</option>
@@ -198,10 +204,6 @@
                 <input type="text" placeholder=" " name="transportno" id="transportno">
                 <label for="transportno">Transport No</label>
             </div>
-     
-       
-  
-         
         </div>
  
     <div style="display: none;">
@@ -227,7 +229,7 @@
                     <thead>
                     <tr>                     
                         <th>Id</th>
-                        <th >Product Name</th>
+                        <th class="foldwords">Product Name</th>
                         <th>Batch No</th>
                         <th>Expiry Date</th>
                         <th>Tax(%)</th>
@@ -260,13 +262,13 @@
             <select id="pdiscMode" class="dropdown" name="pdiscMode" required>
                 <option selected="disabled">Select Discount Mode</option>
             </select>
-            <label for="discMode">discMode</label>
+            <label for="discMode">discMode<span class="text-danger text-2x " style="font-size: medium !important;">*</span></label>
         </div>
     </div>
     <div class="col-2 custom">
         <div class="custom-input-container">
             <input type="text" placeholder=" " name="pdiscount" id="pdiscount">
-            <label for="pdiscount">discount</label>
+            <label for="pdiscount">discount<span class="text-danger text-2x " style="font-size: medium !important;">*</span></label>
         </div>
     </div>
     </form>
@@ -808,8 +810,7 @@ $(document).ready(function () {
                 "<td><input type='number' name='sgst' class='input-field' id='sgst_" + uniqueId + "' placeholder='SGST'></td>" +
                 "<td><input type='number' name='igst' class='input-field' id='igst_" + uniqueId + "' placeholder='IGST'></td>" +
                 "<td><input type='number' name='totalAmount' class='input-field' id='totalAmount_" + uniqueId + "' placeholder='Total Amount'></td>" +
-                "<td class='action new-row'><i class='fa-solid fa-trash deleteRowBtn text-danger' type='button'></i></td>" +
-                "</tr>");
+                "<td class='action new-row'><i class='fa-solid fa-trash deleteRowBtn text-danger' type='button'></i> <i class='fa-solid fa-plus addRowBtn text-success' type='button'></i></td>" +                "</tr>");
 
             $('#customerTable tbody').append(newRow);
             table.rows.add([newRow[0]]).draw();
@@ -849,6 +850,7 @@ $.ajax({
                   
                 });
   fetchDiscmodeOptions(uniqueId);
+   disableOpener();
         } else {
             console.error('No options found for product name');
         }
@@ -863,6 +865,10 @@ $.ajax({
         }
     });
 
+    function disableOpener() {
+        $('#openPurchaseForm').prop('disabled', true);
+    }
+
     $('#customerTable tbody').on('click', 'i.deleteRowBtn', function () {
         let row = $(this).closest("tr");
         if (row) {
@@ -871,6 +877,10 @@ calculateTotals();
         }
     });
  
+    $('#customerTable tbody').on('click', 'i.addRowBtn', function () {
+        // Call the function that adds a new row (the same logic you have for adding rows)
+        $('#openPurchaseForm').click();
+    });
 
     $(document).ready(function () {
         $('#draftButton').on('click', function () {
@@ -1204,7 +1214,6 @@ $('#pdiscMode, #pdiscount').change(function() {
 
     table.column('.action').visible(false);
 
-
     // Toggle visibility of the action column and buttons when Edit button is clicked
     $('.editmasbtn').click(function () {
         var isVisible = table.column('.action').visible();
@@ -1253,8 +1262,6 @@ var selectedSupplier;
         calculateTotals();
         calculateTotalAmount(); 
     });
-
-
 
     function calculateTotalAmount() {
         $('#customerTable tbody tr').each(function () {
@@ -1366,42 +1373,78 @@ var selectedSupplier;
         calculateTotalAmount();
     }
 
-$('.dropdown[name="suppliername"]').on('change', function () {
-    var selectedSupplier = $(this).val(); 
-    console.log('Selected Supplier:', selectedSupplier);
-    initiateFetchCompanyState(selectedSupplier); 
-});
+    $(document).ready(function () {
+        // Fetch supplier names when the document is ready
+        fetchSupplierNames();
 
-function fetchSupplierNames() {
-    $.ajax({
-        url: '/auth/purchase/suppliername',
-        method: 'GET',
-        success: function (response) {
-            console.log('Received response for Supplier Ledger(dr):', response);
-            var options = response.data;
-            if (options && options.length) {
-                options.forEach(function (option) {
-                    var $option = $('<option>', {
-                        value: option.id,
-                        text: option.ledgername,
-                        'data-state': option.state
-                    });
-                    $('.dropdown[name="suppliername"]').append($option);
+        $('#supplierinvoiceno').on('input', function () {
+            var invoiceNo = $(this).val();
+            var $this = $(this);
+            var $wrapper = $this.closest('.input-wrapper');
+            var $icon = $wrapper.find('.validation-icon');
 
-                    if (option.ledgername === selectedSupplier) {
-                        $option.prop('selected', true); // Set selected attribute
-                        calculateTotals();
+            if (invoiceNo) {
+                // Perform AJAX request to check if invoice number exists
+                $.ajax({
+                    url: '/auth/purchase/checkInvoiceNumber', // Update to your endpoint
+                    method: 'GET',
+                    data: { invoiceNo: invoiceNo },
+                    success: function (response) {
+                        if (response.exists) {
+                            $this.removeClass('input-valid').addClass('input-invalid');
+                            $icon.removeClass('input-valid').addClass('input-invalid').css('color', 'red');
+                        } else {
+                            $this.removeClass('input-invalid').addClass('input-valid');
+                            $icon.removeClass('input-invalid').addClass('input-valid').css('color', 'green');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error checking invoice number:', error);
                     }
                 });
             } else {
-                console.error('No options found for Supplier Ledger(dr)');
+                // Clear validation if input is empty
+                $this.removeClass('input-invalid input-valid');
+                $icon.removeClass('input-invalid input-valid').css('color', '');
             }
-        },
-        error: function (xhr, status, error) {
-            console.error('Error fetching options for Supplier Ledger(dr):', error);
-        }
+        });
+
+        // Event handler for the supplier dropdown
+        $('.dropdown[name="suppliername"]').on('change', function () {
+            var selectedSupplier = $(this).val();
+            console.log('Selected Supplier:', selectedSupplier);
+            initiateFetchCompanyState(selectedSupplier);
+            fetchSupplierInvoiceNo(selectedSupplier);
+        });
     });
-}
+
+
+    function fetchSupplierNames() {
+        $.ajax({
+            url: '/auth/purchase/suppliername', // Update to your endpoint
+            method: 'GET',
+            success: function (response) {
+                var options = response.data;
+                if (options && options.length) {
+                    var $dropdown = $('#supplierSelect');
+                    $dropdown.empty(); // Clear existing options
+                    $dropdown.append('<option value="" disabled selected>Select Supplier</option>');
+                    options.forEach(function (option) {
+                        var $option = $('<option>', {
+                            value: option.id,
+                            text: option.ledgername
+                        });
+                        $dropdown.append($option);
+                    });
+                } else {
+                    console.error('No options found for Supplier Ledger(dr)');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching options for Supplier Ledger(dr):', error);
+            }
+        });
+    }
 
 
 function initiateFetchCompanyState(supplierState) {
@@ -1578,8 +1621,6 @@ function formatDate(dateObject) {
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
-
-
 
 $(document).ready(function() {
     $('#new').click(function() {

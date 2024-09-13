@@ -436,6 +436,12 @@ router.get('/purchase', (req, res) => {
 router.get('purchase/purchaseDetails',(req,res)=>{
 res.render('purchaseDetails');
 });
+router.get("purchase/GetSupplierInvoiceData", (req, res) => {
+  res.render("GetSupplierInvoiceData");
+});
+router.get("purchase/checkInvoiceNumber", (req, res) => {
+  res.render("checkInvoiceNumber");
+});
 router.get('/city',(req,res)=>{
 res.render('city')
 })

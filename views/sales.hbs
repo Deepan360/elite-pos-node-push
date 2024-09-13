@@ -155,9 +155,9 @@
 
                 <form id="purchaseDetails" class="form-control" style="display: block; align-item: start;"
                     method="post">
-                    <div class="row">
+                    <div class="row mt-2">
 
-                        <div class="custom-input-container col-md-3">
+                        <div class="custom-input-container d-none col-md-3">
                             <select name="Id" class="dropdown" id="Id">
                                 <option selected>view details</option>
                             </select>
@@ -168,7 +168,7 @@
                             <select id="supplierSelect" class="dropdown" name="customername">
                                 <option value="" disabled selected>Select Customer</option>
                             </select>
-                            <label for="customername">Customer Name</label>
+                            <label for="customername">Customer Name<span class="text-danger text-2x " style="font-size: medium !important;">*</span></label>
                         </div>
                         <div class="custom-input-container col-md-3">
                             <input type="text" placeholder=" " name="customermobileno" id="customermobileno">
@@ -176,10 +176,10 @@
                         </div>
                         <div class="custom-input-container col-md-3">
                             <input type="date" placeholder=" " name="saledate" id="saledate">
-                            <label for="saledate">Sale Date</label>
+                            <label for="saledate">Sale Date<span class="text-danger text-2x " style="font-size: medium !important;">*</span></label>
                         </div>
         <div class="col-md-3 custom-input-container ">
-            <label for="paymentmode">Payment Mode</label>
+            <label for="paymentmode">Payment Mode<span class="text-danger text-2x " style="font-size: medium !important;">*</span></label>
             <select name="paymentmode" id="paymentmode">
                 <option value="" disabled selected hidden>Choose Payment Mode</option>
                 <option value="cash">Cash</option>
@@ -254,13 +254,13 @@
                                 <select id="pdiscMode" class="dropdown" name="pdiscMode">
                                     <option selected="disabled">Select Discount Mode</option>
                                 </select>
-                                <label for="discMode">discMode</label>
+                                <label for="discMode">discMode<span class="text-danger text-2x " style="font-size: medium !important;">*</span></label>
                             </div>
                         </div>
                         <div class="col-2 custom">
                             <div class="custom-input-container">
                                 <input type="text" placeholder=" " name="pdiscount" id="pdiscount">
-                                <label for="pdiscount">discount</label>
+                                <label for="pdiscount">discount<span class="text-danger text-2x " style="font-size: medium !important;">*</span></label>
                             </div>
                         </div>
                     </form>
@@ -787,7 +787,7 @@
                         "<td><input type='number' name='sgst' class='input-field' id='sgst_" + uniqueId + "' placeholder='SGST'></td>" +
                         "<td><input type='number' name='igst' class='input-field' id='igst_" + uniqueId + "' placeholder='IGST'></td>" +
                         "<td><input type='number' name='totalAmount' class='input-field' id='totalAmount_" + uniqueId + "' placeholder='Total Amount'></td>" +
-                        "<td class='action new-row'><i class='fa-solid fa-trash deleteRowBtn text-danger' type='button'></i></td>" +
+                        "<td class='action new-row'><i class='fa-solid fa-trash deleteRowBtn text-danger' type='button'></i> <i class='fa-solid fa-plus addRowBtn text-success' type='button'></i></td>" +
 
                         "</tr>");
                     $('#customerTable tbody').append(newRow);
@@ -825,6 +825,7 @@
 
 
                                 fetchDiscmodeOptions(uniqueId);
+                                disableOpener();
                             } else {
                                 console.error('No options found for product name');
                             }
@@ -841,12 +842,21 @@
             });
 
 
+             function disableOpener() {
+                $('#openPurchaseForm').prop('disabled', true);
+            }
+
             $('#customerTable tbody').on('click', 'i.deleteRowBtn', function () {
                 let row = $(this).closest("tr");
                 if (row) {
                     table.row(row).remove().draw(false);
                     calculateTotals();
                 }
+            });
+
+            $('#customerTable tbody').on('click', 'i.addRowBtn', function () {
+                // Call the function that adds a new row (the same logic you have for adding rows)
+                $('#openPurchaseForm').click();
             });
 
             $(document).ready(function () {

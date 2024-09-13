@@ -5032,6 +5032,55 @@ exports.purchaseDetails = async (req, res) => {
   }
 };
 
+exports.GetSupplierInvoiceData = async (req, res) => {
+  try {
+    await poolConnect();
+
+    // Extract the suppliername from the query parameters
+    const suppliername = parseInt(req.query.suppliername, 10);
+
+    // Ensure suppliername is a number
+    if (isNaN(suppliername)) {
+      return res.status(400).json({ error: "Invalid suppliername" });
+    }
+
+    const result = await pool
+      .request()
+      .input("suppliername", sql.Numeric, suppliername) // Pass the parameter to the stored procedure
+      .execute("GetSupplierInvoiceData");
+
+    res.json({ data: result.recordset });
+  } catch (error) {
+    console.error("Error in listing data:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+exports.checkInvoiceNumber = async (req, res) => {
+    const invoiceNo = req.query.invoiceNo;
+    const query = `
+        SELECT COUNT(1) AS count 
+        FROM [elite_pos].[dbo].[PurchaseTable_Master] 
+        WHERE supplierinvoiceno = @invoiceNo
+    `;
+
+    try {
+        // Use pool.request() for parameterized queries
+        const result = await pool.request()
+            .input('invoiceNo', invoiceNo) // Bind the parameter
+            .query(query);
+        
+        const exists = result.recordset[0].count > 0;
+        res.json({ exists: exists });
+    } catch (error) {
+        console.error('Database query error:', error);
+        res.status(500).json({ exists: false });
+    }
+};
+
+
+
 exports.productname = async (req, res) => {
   try {
     await poolConnect();
@@ -9118,7 +9167,7 @@ exports.registration = async (req, res) => {
         });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 8);
+    const hashedPassword = await bcrypt.hash(password, 8); 
 
     console.log("Inserting user into the database");
     await pool.query`INSERT INTO [elite_pos].[dbo].[registeration] (userid, emailid, password, role) VALUES (${userid}, ${emailid}, ${hashedPassword}, 6)`;

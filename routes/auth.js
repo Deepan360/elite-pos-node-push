@@ -126,6 +126,11 @@ router.delete("/purchasetransdelete/:id", userController.purchasetransdelete);
 router.get("/purchase/PurchaseId",userController.PurchaseId);
 router.get('/purchase/purchaseids', userController.purchaseids);
 router.get('/purchase/purchaseDetails', userController.purchaseDetails);
+router.get(
+  "/purchase/GetSupplierInvoiceData",
+  userController.GetSupplierInvoiceData
+);
+router.get("/purchase/checkInvoiceNumber", userController.checkInvoiceNumber);
 router.get('/city',userController.city);
 router.get('/purchase/productid',userController.productid);
 router.get('/purchase/companystate',userController.companystate);

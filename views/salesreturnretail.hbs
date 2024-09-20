@@ -272,87 +272,102 @@
 
 
                 </div>
+<form id="purchaseDetails" class="form-control p-0" style="display: block; align-item: start;" action="auth/salesretail"
+    method="post">
+    <div class="row d-flex justify-content-between  mb-0 gx-0 w-100 ">
+        <div class="labels">
 
-                <form id="purchaseDetails" class="form-control" style="display: block; align-item: start;"
-                    action="auth/purchase" method="post">
-                    <div class="row">
-                        <div class="labels">
-                            <div class="col">
-                                <div class="custom">
-                                    <label for="pamount">Amount:</label>
-                                    <span id="pamount" name="pamount">0.00</span>
-                                </div>
+            <div class="custom col-md-1">
+                <label for="pamount">Amount:</label>
+                <span id="pamount" name="pamount">0.00</span>
+            </div>
 
-                                <div class="custom">
-                                    <label for="pigst">IGST:</label>
-                                    <span id="pigst" name="pigts">0.00</span>
-                                </div>
-                            </div>
+            <div class="custom col-md-1">
+                <label for="pigst">IGST:</label>
+                <span id="pigst" name="pigts">0.00</span>
+            </div>
 
-                            <div class="col">
-                                <div class="custom">
-                                    <label for="pcgst">CGST:</label>
-                                    <span id="pcgst" name="pcgst">0.00</span>
-                                </div>
+            <div class="custom col-md-1">
+                <label for="pcgst">CGST:</label>
+                <span id="pcgst" name="pcgst">0.00</span>
+            </div>
 
-                                <div class="custom">
-                                    <label for="psgst">SGST:</label>
-                                    <span id="psgst" name="psgst">0.00</span>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="custom">
-                                    <label for="psubtotal">Sub Total:</label>
-                                    <span id="psubtotal" name="psubtotal">0.00</span>
-                                </div>
+            <div class="custom col-md-1">
+                <label for="psgst">SGST:</label>
+                <span id="psgst" name="psgst">0.00</span>
+            </div>
 
-                                <div class="custom">
-                                    <label for="pcess">CESS:</label>
-                                    <span id="pcess" name="pcess">0.00</span>
-                                </div>
-                            </div>
+            <div class="custom col-md-1">
+                <label for="psubtotal">Sub Total:</label>
+                <span id="psubtotal" name="psubtotal">0.00</span>
+            </div>
 
-                            <div class="col">
-                                <div class="custom">
-                                    <label for="ptcs">TCS:</label>
-                                    <span id="ptcs" name="ptcs">0.00</span>
-                                </div>
-                                {{!-- <div class="custom">
-                                    <label for="proundOff">Round Off:</label>
-                                    <span id="proundOff" name="proundOff">0.00</span>
-                                </div> --}}
-                            </div>
-                            {{!-- <div class="col">
-                                <div class="custom">
-                                    <label for="pnetAmount">Net Amount:</label>
-                                    <span id="pnetAmount" name="pnetAmount">0.00</span>
-                                </div>
-                            </div> --}}
-                        </div>
-                    </div>
-                    <div id="overlay"
-                        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; overflow: auto;">
-                        <div id="batchform"
-                            style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border: 1px solid #ccc; max-height: 200px; overflow-y: auto;">
-                            <table id="batchDetailsTable" border="1px" class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Batch No</th>
-                                        <th>Tax</th>
-                                        <th>Quantity</th>
-                                        <th>UOM</th>
-                                        <th>Rate</th>
-                                        <th>MRP</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="batchDetailsBody"></tbody>
-                            </table>
-                            <a class="closebatch" style="position: absolute; top: 5px; right: 5px;"><i
-                                    class="fa-solid fa-circle-xmark"></i></a>
-                        </div>
-                    </div>
+            {{!-- <div class="custom">
+                <label for="pcess">CESS:</label>
+                <span id="pcess" name="pcess">0.00</span>
+            </div> --}}
 
-                </form>
+
+
+            {{!-- <div class="custom">
+                <label for="ptcs">TCS:</label>
+                <span id="ptcs" name="ptcs">0.00</span>
+            </div> --}}
+            {{!-- <div class="custom">
+                <label for="proundOff">Round Off:</label>
+                <span id="proundOff" name="proundOff">0.00</span>
+            </div> --}}
+
+            {{!-- <div class="col">
+                <div class="custom">
+                    <label for="pnetAmount">Net Amount:</label>
+                    <span id="pnetAmount" name="pnetAmount">0.00</span>
+                </div>
+            </div> --}}
+        </div>
+    </div>
+    <div id="overlay"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; overflow: auto;">
+        <div id="batchform"
+            style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #ccc; width: 80%; max-width: 800px;">
+            <a class="closebatch" style="position: absolute; top: 0px; right: -2px;"><i
+                    class="fa-solid fa-circle-xmark fa-2x"></i></a>
+
+            <!-- Scrollable table container with fixed header -->
+            <div style="max-height: 200px; overflow-y: auto; position: relative;">
+                <table id="batchDetailsTable" class="table"
+                    style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+                    <thead class="bg-primary"
+                        style="position: sticky; top: 0; z-index: 1; background-color: #007bff; color: white;">
+                        <tr>
+                            <th>Batch No</th>
+                            <th>Expiry Date</th>
+                            <th>Tax</th>
+                            <th>Quantity</th>
+                            <th>UOM</th>
+                            <th>Rate</th>
+                            <th>MRP</th>
+                        </tr>
+                    </thead>
+                    <tbody id="batchDetailsBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Fixed Color Legend below the scrollable table -->
+            <div style="margin-top: 10px;">
+                <strong>Color Legend:</strong>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li><span style="background-color: red; color: white; padding: 2px 5px;">&nbsp;&nbsp;&nbsp;</span>
+                        Already expired</li>
+                    <li><span
+                            style="background-color: orange; color: white; padding: 2px 5px;">&nbsp;&nbsp;&nbsp;</span>
+                        Expiring in Three Months</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</form>
             </div>
             <div id="selectedRowDetails"></div>
 
@@ -1159,75 +1174,79 @@
 
         }
 
-        function calculateTotals() {
-            let totalAmount = 0;
-            let totalCGST = 0;
-            let totalSGST = 0;
-            let totalIGST = 0;
+            function calculateTotals() {
+                let totalAmount = 0;
+                let totalCGST = 0;
+                let totalSGST = 0;
+                let totalIGST = 0;
 
-            let totalNetAmount = parseFloat($('#supplierinvoiceamount').val()) || 0;
+                let totalNetAmount = parseFloat($('#supplierinvoiceamount').val()) || 0;
 
-            $('#customerTable tbody tr').each(function () {
-                let row = $(this);
-                let amount = parseFloat(row.find('input[name="amount"]').val()) || 0;
-                let cgst = parseFloat(row.find('input[name="cgst"]').val()) || 0;
-                let sgst = parseFloat(row.find('input[name="sgst"]').val()) || 0;
-                let igst = parseFloat(row.find('input[name="igst"]').val()) || 0;
+                $('#customerTable tbody tr').each(function () {
+                    let row = $(this);
+                    let amount = parseFloat(row.find('input[name="amount"]').val()) || 0;
+                    let cgst = parseFloat(row.find('input[name="cgst"]').val()) || 0;
+                    let sgst = parseFloat(row.find('input[name="sgst"]').val()) || 0;
+                    let igst = parseFloat(row.find('input[name="igst"]').val()) || 0;
 
-                totalAmount += amount;
-                totalCGST += cgst;
-                totalSGST += sgst;
-                totalIGST += igst;
-            });
+                    totalAmount += amount;
+                    totalCGST += cgst;
+                    totalSGST += sgst;
+                    totalIGST += igst;
+                });
 
-            let totalTax = totalCGST + totalSGST + totalIGST;
+                let totalTax = totalCGST + totalSGST + totalIGST;
 
-            $('#pamount').text(totalAmount.toFixed(2));
-            $('#pcgst').text(totalCGST.toFixed(2));
-            $('#psgst').text(totalSGST.toFixed(2));
-            $('#pigst').text(totalIGST.toFixed(2));
-            $('#pnetAmount').text(totalNetAmount.toFixed(2));
-            $('#psubtotal').text((totalAmount + totalTax).toFixed(2));
+                $('#pamount').text(totalAmount.toFixed(2));
+                $('#pcgst').text(totalCGST.toFixed(2));
+                $('#psgst').text(totalSGST.toFixed(2));
+                $('#pigst').text(totalIGST.toFixed(2));
+                $('#pnetAmount').text(totalNetAmount.toFixed(2));
+                $('#psubtotal').text((totalAmount + totalTax).toFixed(2));
 
-            $('#pamount_').val(totalAmount.toFixed(2));
-            $('#pcgst_').val(totalCGST.toFixed(2));
-            $('#psgst_').val(totalSGST.toFixed(2));
-            $('#pigst_').val(totalIGST.toFixed(2));
-            $('#pnetAmount_').val(totalNetAmount.toFixed(2));
-            $('#psubtotal_').val((totalAmount + totalTax).toFixed(2));
+                $('#pamount_').val(totalAmount.toFixed(2));
+                $('#pcgst_').val(totalCGST.toFixed(2));
+                $('#psgst_').val(totalSGST.toFixed(2));
+                $('#pigst_').val(totalIGST.toFixed(2));
+                $('#pnetAmount_').val(totalNetAmount.toFixed(2));
+                $('#psubtotal_').val((totalAmount + totalTax).toFixed(2));
 
-            let subtotal = parseFloat($('#psubtotal').text()) || 0;
-            let netAmount = parseFloat($('#pnetAmount').text()) || 0;
+                let subtotal = parseFloat($('#psubtotal').text()) || 0;
+                let netAmount = parseFloat($('#pnetAmount').text()) || 0;
 
-            var discMode = $('#pdiscMode').val();
-            var discount = parseFloat($('#pdiscount').val()) || 0;
+                let discMode = $('#pdiscMode').val() || "3";
+                let discount = parseFloat($('#pdiscount').val()) || 0;
 
-            if (isNaN(discount)) {
-                discount = 0;
+                if (isNaN(discount)) {
+                    discount = 0;
+                }
+
+                if (discMode === "3" || discMode === "N/A") {
+                    discount = 0;
+                    $('#pdiscount').val('0');
+                } else if (discMode === "percentage" || discMode === "1") {
+                    discount = (subtotal * discount) / 100;
+                }
+
+                subtotal -= discount;
+
+                // Implement rounding rule for subtotal
+                let roundedSubtotal = Math.round(subtotal);
+
+                // Calculate roundOff
+                let roundOff = netAmount - roundedSubtotal;
+
+                // Update values with rounded subtotal
+                $('#psubtotal').text(roundedSubtotal.toFixed(2));
+                $('#psubtotal_').val(roundedSubtotal.toFixed(2));
+
+                $('#proundOff').text(roundOff.toFixed(2));
+                $('#proundOff_').val(roundOff.toFixed(2));
+
+                var discModeId = $('#pdiscMode').val();
+                $('#pdiscMode_').val(discMode);
+                $('#pdiscount_').val(discount.toFixed(2));
             }
-
-            if (discMode === 'N/A' || discMode === '3') {
-                discount = 0;
-                $('#pdiscount').val('0');
-            } else if (discMode === 'percentage' || discMode === '1') {
-                discount = (subtotal * discount) / 100;
-            }
-
-            subtotal -= discount;
-
-            let roundOff = netAmount - subtotal;
-
-            $('#psubtotal').text(subtotal.toFixed(2));
-
-            $('#psubtotal_').val(subtotal.toFixed(2));
-
-            $('#proundOff').text(roundOff.toFixed(2));
-            $('#proundOff_').val(roundOff.toFixed(2));
-
-            var discModeId = $('#pdiscMode').val();
-            $('#pdiscMode_').val(discModeId);
-            $('#pdiscount_').val($('#pdiscount').val());
-        }
 
         $('#pdiscMode, #pdiscount').change(function () {
             calculateTotals();

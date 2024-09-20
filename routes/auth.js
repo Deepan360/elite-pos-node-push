@@ -168,6 +168,7 @@ router.get('/sales/saleproductid',userController.saleproductid);
 router.get("/salesregister",userController.salesregister);
 router.get("/salesdraftregister", userController.salesdraftregister);
 router.get("/sales/customername",userController.customername);
+router.get("/sales/salesmanname", userController.salesmanname);
 router.post('/sales/batchDetails/:selectedProductId', userController.batchDetails);
 
 router.get('/salesReturn/salesReturnDetails', userController.salesReturnDetails);

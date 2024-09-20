@@ -1467,7 +1467,6 @@ exports.salesretailreturn = (req, res) => {
   });
 };
 
-
 exports.salesretaildraft = (req, res) => {
   pool.connect((err, connection) => {
     if (err) {
@@ -2610,36 +2609,36 @@ exports.customername = (req, res) => {
 //   }
 // };
 
-exports.batchDetails = async (req, res) => {
-  const { selectedProductId } = req.body;
-  try {
-    console.log("Selected Product ID:", selectedProductId);
-    const result = await pool
-      .request()
-      .input("selectedProductId", sql.Int, selectedProductId)
-      .execute("GetBatchDetails");
-    if (result.recordset.length > 0) {
-      console.log("Batch details retrieved successfully:", result.recordset);
-      res.status(200).json({ success: true, data: result.recordset });
-    } else {
-      // Return a 404 error if no batch details are found for the product ID
-      console.log(
-        "No batch details found for the product ID:",
-        selectedProductId
-      );
-      res
-        .status(404)
-        .json({
-          success: false,
-          message: "No batch details found for the product ID.",
-        });
-    }
-  } catch (error) {
-    // Handle any errors that occur during database query or processing
-    console.error("Error fetching batch details:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
-  }
-};
+// exports.batchDetails = async (req, res) => {
+//   const { selectedProductId } = req.body;
+//   try {
+//     console.log("Selected Product ID:", selectedProductId);
+//     const result = await pool
+//       .request()
+//       .input("selectedProductId", sql.Int, selectedProductId)
+//       .execute("GetBatchDetails");
+//     if (result.recordset.length > 0) {
+//       console.log("Batch details retrieved successfully:", result.recordset);
+//       res.status(200).json({ success: true, data: result.recordset });
+//     } else {
+//       // Return a 404 error if no batch details are found for the product ID
+//       console.log(
+//         "No batch details found for the product ID:",
+//         selectedProductId
+//       );
+//       res
+//         .status(404)
+//         .json({
+//           success: false,
+//           message: "No batch details found for the product ID.",
+//         });
+//     }
+//   } catch (error) {
+//     // Handle any errors that occur during database query or processing
+//     console.error("Error fetching batch details:", error);
+//     res.status(500).json({ success: false, message: "Internal server error" });
+//   }
+// };
 
 exports.salesReturnDetails = async (req, res) => {
   pool.connect((err, connection) => {
@@ -2735,6 +2734,7 @@ exports.salesReturnadd = async (req, res) => {
     transportno,
     customermobileno,
     customername,
+    salesmanname,
     pamount,
     pigst,
     pcgst,
@@ -2762,9 +2762,9 @@ exports.salesReturnadd = async (req, res) => {
     // Insert salesReturn master record
     const result = await pool.query`
           INSERT INTO [elite_pos].[dbo].[salesReturn_Master]
-          ([saledate], [paymentmode], [referno], [transportno], [customermobileno], [customer], [amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff])
+          ([saledate], [paymentmode], [referno], [transportno], [customermobileno], [customer],[salesman], [amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff])
           VALUES
-          (${formattedSaleDate}, ${paymentmode}, ${referno}, ${transportno}, ${customermobileno}, ${customername}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff});
+          (${formattedSaleDate}, ${paymentmode}, ${referno}, ${transportno}, ${customermobileno}, ${customername},${salesmanname}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff});
 
           SELECT SCOPE_IDENTITY() as salesReturnId;
       `;
@@ -2828,6 +2828,7 @@ exports.salesReturnEdit = async (req, res) => {
             [transportno] = ${purchaseDetails.transportno},
             [customermobileno] = ${purchaseDetails.customermobileno},
             [customer] = ${purchaseDetails.customername},
+            [salesman] = ${purchaseDetails.salesman},
             [amount] = ${purchaseDetails.pamount},
             [cgst] = ${purchaseDetails.pcgst},
             [sgst] = ${purchaseDetails.psgst},
@@ -3096,9 +3097,9 @@ exports.salesReturnregister = (req, res) => {
 
     pool.query(
       `
-      SELECT *
-      FROM [elite_pos].[dbo].[salesReturn_Master] 
-   ;
+      SELECT s.*, c.ledgername as customername
+    FROM [elite_pos].[dbo].[salesReturn_Master] s
+    JOIN [elite_pos].[dbo].[customer] c ON s.customer = c.id;
     `,
       (err, result) => {
         connection.release();
@@ -3115,6 +3116,32 @@ exports.salesReturnregister = (req, res) => {
 //salesReturn
 
 //sales
+
+exports.salesmanname = (req, res) => {
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    pool.query(
+      "SELECT [id], [ledgername] FROM [elite_pos].[dbo].[salesman]",
+      (err, result) => {
+        connection.release(); // Release the connection back to the pool
+
+        if (err) {
+          console.error("Error in listing data:", err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+
+        // Send the data as JSON response
+        res.json({ data: result.recordset });
+      }
+    );
+  });
+};
+
+
 exports.customername = (req, res) => {
   pool.connect((err, connection) => {
     if (err) {
@@ -3148,6 +3175,7 @@ exports.retailbatchDetails = async (req, res) => {
               [batchNo],
               [tax],
               [retailQty],
+               [expiryDate],
               [uom],
               [retailMrp] ,
 		          [retailRate]
@@ -3188,6 +3216,7 @@ exports.batchDetails = async (req, res) => {
               [batchNo],
               [tax],
               [op_quantity],
+              [expiryDate],
               [uom],
               [rate] ,
               [mrp]
@@ -3252,6 +3281,7 @@ exports.salesadd = async (req, res) => {
     transportno,
     customermobileno,
     customername,
+    salesmanname,
     pamount,
     pigst,
     pcgst,
@@ -3280,9 +3310,9 @@ exports.salesadd = async (req, res) => {
     // Insert sales master record
     const result = await pool.query`
           INSERT INTO [elite_pos].[dbo].[sales_Master]
-          ([saledate], [paymentmode], [referno], [transportno], [customermobileno], [customer], [amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft])
+          ([saledate], [paymentmode], [referno], [transportno], [customermobileno], [customer],[salesman] ,[amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft])
           VALUES
-          (${formattedSaleDate}, ${paymentmode}, ${referno}, ${transportno}, ${customermobileno}, ${customername}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft});
+          (${formattedSaleDate}, ${paymentmode}, ${referno}, ${transportno}, ${customermobileno}, ${customername},${salesmanname}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft});
 
           SELECT SCOPE_IDENTITY() as salesId;
       `;
@@ -3346,6 +3376,7 @@ exports.salesEdit = async (req, res) => {
             [transportno] = ${purchaseDetails.transportno},
             [customermobileno] = ${purchaseDetails.customermobileno},
             [customer] = ${purchaseDetails.customername},
+            [salesman] = ${purchaseDetails.salesmanname},
             [amount] = ${purchaseDetails.pamount},
             [cgst] = ${purchaseDetails.pcgst},
             [sgst] = ${purchaseDetails.psgst},
@@ -3471,7 +3502,8 @@ exports.salesids = (req, res) => {
               FROM 
                   [elite_pos].[dbo].[sales_Master] pt
               JOIN
-                  [elite_pos].[dbo].[customer] s ON pt.[customer] = s.[id];
+                  [elite_pos].[dbo].[customer] s ON pt.[customer] = s.[id]
+;
               
               `;
     pool.query(query, (err, result) => {
@@ -4240,37 +4272,49 @@ async function increaseStock(
     }
 
     const packageValue = Number(packageResult.recordset[0].package);
-    console.log(`Package value for product ${productId}: ${packageValue}`);
-
-    // Step 2: Calculate the retail quantity increase
     const retailQtyIncrease = totalQuantity * packageValue;
-    console.log(`Retail quantity increase calculated: ${retailQtyIncrease}`);
 
-    // Step 3: Update existing row - Focus on retailQty
-    const updateQuery = `
-      UPDATE [elite_pos].[dbo].[stock_Ob]
-      SET 
-        [op_quantity] = [op_quantity] + @totalQuantity,
-        [retailQty] = ISNULL([retailQty], 0) + @retailQtyIncrease
+    // Step 2: Check if the record exists
+    const checkQuery = `
+      SELECT 1 FROM [elite_pos].[dbo].[stock_Ob]
       WHERE [product] = @productId AND [batchNo] = @batchNo;
     `;
 
-    const updateResult = await pool
+    const checkResult = await pool
       .request()
       .input("productId", sql.Int, productId)
       .input("batchNo", sql.VarChar, batchNo)
-      .input("totalQuantity", sql.Decimal, totalQuantity)
-      .input("retailQtyIncrease", sql.Decimal, retailQtyIncrease)
-      .query(updateQuery);
+      .query(checkQuery);
 
-    console.log(`Rows affected by update: ${updateResult.rowsAffected[0]}`);
-
-    if (updateResult.rowsAffected[0] === 0) {
+    if (checkResult.recordset.length > 0) {
+      // Step 3: If record exists, update the row
       console.log(
-        `No existing stock found for product ${productId} with batch ${batchNo}. Inserting new record.`
+        `Updating stock for productId: ${productId}, batchNo: ${batchNo}`
       );
 
-      // Step 4: Insert new row if update failed
+      const updateQuery = `
+        UPDATE [elite_pos].[dbo].[stock_Ob]
+        SET 
+          [op_quantity] = [op_quantity] + @totalQuantity,
+          [retailQty] = ISNULL([retailQty], 0) + @retailQtyIncrease
+        WHERE [product] = @productId AND [batchNo] = @batchNo;
+      `;
+
+      const updateResult = await pool
+        .request()
+        .input("productId", sql.Int, productId)
+        .input("batchNo", sql.VarChar, batchNo)
+        .input("totalQuantity", sql.Decimal, totalQuantity)
+        .input("retailQtyIncrease", sql.Decimal, retailQtyIncrease)
+        .query(updateQuery);
+
+      console.log(`Rows affected by update: ${updateResult.rowsAffected[0]}`);
+    } else {
+      // Step 4: If record doesn't exist, insert a new row
+      console.log(
+        `Inserting new stock for productId: ${productId}, batchNo: ${batchNo}`
+      );
+
       const insertQuery = `
         INSERT INTO [elite_pos].[dbo].[stock_Ob] 
         ([product], [batchNo], [quantity], [uom], [rate], [mrp], [tax], [op_quantity], [retailQty])
@@ -4278,7 +4322,7 @@ async function increaseStock(
         (@productId, @batchNo, @totalQuantity, @uom, @rate, @mrp, @tax, @totalQuantity, @retailQtyIncrease); 
       `;
 
-      await pool
+      const insertResult = await pool
         .request()
         .input("productId", sql.Int, productId)
         .input("batchNo", sql.VarChar, batchNo)
@@ -4291,17 +4335,13 @@ async function increaseStock(
         .query(insertQuery);
 
       console.log("New stock record inserted.");
-    } else {
-      console.log(
-        "Stock record updated successfully for productId:",
-        productId
-      );
     }
   } catch (error) {
     console.error("Error increasing stock:", error);
     throw error;
   }
 }
+
 
 exports.Purchasereturnregister = (req, res) => {
   pool.connect((err, connection) => {
@@ -4512,26 +4552,26 @@ exports.purchaseids = (req, res) => {
       console.error("Error getting connection from pool:", err);
       return res.status(500).json({ error: "Internal Server Error" });
     }
+
     const query = `
-          SELECT 
-          pt.*,
-          s.ledgername as ledgername
+      SELECT 
+        pt.*
       FROM 
-          [elite_pos].[dbo].[PurchaseTable_Master] pt
-      JOIN
-          [elite_pos].[dbo].[supplier] s ON pt.[suppliername] = s.[id];
-`;
+        [elite_pos].[dbo].[PurchaseTable_Master] pt;
+    `;
+
     pool.query(query, (err, result) => {
       connection.release();
       if (err) {
         console.error("Error in fetching purchase IDs:", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
-      res.header("Content-Type", "application/json"); // Set Content-Type header
+      res.header("Content-Type", "application/json");
       res.json({ data: result.recordset });
     });
   });
 };
+
 
 exports.PurchaseId = (req, res) => {
   pool.connect((err, connection) => {
@@ -4751,7 +4791,6 @@ exports.purchase = (req, res) => {
 };
 
 exports.purchaseadd = async (req, res) => {
-  console.log(req.body);
   const {
     purchasedate,
     paymentmode,
@@ -4776,23 +4815,18 @@ exports.purchaseadd = async (req, res) => {
     products: productsString,
   } = req.body;
 
-  let parsedProducts = [];
-
-  const formattedPurchaseDate = purchasedate ? purchasedate : null;
-  const formattedsupplierinvoicedate = supplierinvoicedate
-    ? supplierinvoicedate
-    : null;
+  const formattedPurchaseDate = purchasedate || null;
+  const formattedsupplierinvoicedate = supplierinvoicedate || null;
 
   try {
     await poolConnect();
 
-    parsedProducts = JSON.parse(productsString);
+    const parsedProducts = JSON.parse(productsString);
 
-    // Begin transaction
     const result = await pool.query`
       BEGIN TRANSACTION;
       DECLARE @purchaseId INT;
-      
+
       INSERT INTO [elite_pos].[dbo].[PurchaseTable_Master]
       ([purchasedate], [paymentmode], [supplierinvoicedate], [modeoftransport], [transportno], [supplierinvoiceamount], [supplierinvoiceno], [suppliername], [amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft])
       VALUES
@@ -4806,9 +4840,8 @@ exports.purchaseadd = async (req, res) => {
     `;
 
     const purchaseId = result.recordset[0].purchaseId;
-    console.log("Number of products:", parsedProducts.length);
 
-    for (const product of parsedProducts) {
+    for (const product of JSON.parse(productsString)) {
       const {
         productId,
         batchNo,
@@ -4838,22 +4871,13 @@ exports.purchaseadd = async (req, res) => {
         ? new Date(expiryDate + "-01")
         : null;
 
-      // Insert new product into PurchaseTable_Trans
       await pool.query`
         INSERT INTO [elite_pos].[dbo].[PurchaseTable_Trans]
         ([purchaseId], [product], [batchNo], [expiryDate], [tax], [quantity], [free], [package], [retailQty], [retailRate], [uom], [rate], [mrp], [retailMrp], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
         VALUES
         (${purchaseId}, ${productId}, ${batchNo}, ${formattedExpiryDate}, ${tax}, ${quantityValue}, ${freeValue}, ${package}, ${retailQty}, ${retailRate}, ${uom}, ${rate}, ${mrp}, ${retailMrp}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
-        SELECT SCOPE_IDENTITY() AS insertedId;
       `;
 
-      const purchaseTransId = (
-        await pool.query`
-        SELECT SCOPE_IDENTITY() AS insertedId;
-      `
-      ).recordset[0].insertedId;
-
-      // Insert new record into stock_Ob
       await pool.query`
         INSERT INTO [elite_pos].[dbo].[stock_Ob]
         (product, batchNo, expiryDate, quantity, retailQty, retailRate, [op_quantity], tax, uom, rate, mrp, retailMrp)
@@ -5056,20 +5080,22 @@ exports.GetSupplierInvoiceData = async (req, res) => {
   }
 };
 
-
 exports.checkInvoiceNumber = async (req, res) => {
     const invoiceNo = req.query.invoiceNo;
+    const supplierId = req.query.supplierId;
     const query = `
         SELECT COUNT(1) AS count 
         FROM [elite_pos].[dbo].[PurchaseTable_Master] 
-        WHERE supplierinvoiceno = @invoiceNo
+        WHERE supplierinvoiceno = @invoiceNo and suppliername=@supplierId
     `;
 
     try {
         // Use pool.request() for parameterized queries
-        const result = await pool.request()
-            .input('invoiceNo', invoiceNo) // Bind the parameter
-            .query(query);
+        const result = await pool
+          .request()
+          .input("invoiceNo", invoiceNo)
+          .input("supplierId", supplierId) // Bind the parameter
+          .query(query);
         
         const exists = result.recordset[0].count > 0;
         res.json({ exists: exists });
@@ -5078,8 +5104,6 @@ exports.checkInvoiceNumber = async (req, res) => {
         res.status(500).json({ exists: false });
     }
 };
-
-
 
 exports.productname = async (req, res) => {
   try {
@@ -9187,4 +9211,4 @@ exports.registration = async (req, res) => {
   }
 };
 
-/*registration*/
+/*registration*/  

@@ -147,7 +147,7 @@
                 <form id="purchaseDetails" class="form-control" style="display: block; align-item: start;"
                     method="post">
                     <div class="row">
-                        <div class="col">
+                        
                             <div class="custom-input-container d-none">
                                 <select name="Id" class="dropdown" id="Id">
                                     <option selected>view details</option>
@@ -155,39 +155,48 @@
                                 <label for="purchaseId">Purchase Return Id</label>
                                 <input type="hidden" name="id" id="id">
                             </div>
-                            <div class="custom-input-container">
-                                <select id="supplierSelect" class="dropdown" name="suppliername">
+                            <div class="custom-input-container col-md-3">
+                                <select id="supplierSelect" class="dropdown" name="suppliername" required>
                                     <option selected="disabled">Select Supplier</option>
                                 </select>
                                 <label for="suppliername">Supplier Name<span class="text-danger text-2x "
                                         style="font-size: medium !important;">*</span></label>
                             </div>
-                            <div class="custom-input-container">
-                                <input type="date" placeholder=" " name="purchasedate" id="purchasedate">
+                                    <div class="custom-input-container col-md-3">
+                                        <input type="text" placeholder=" " name="supplierinvoiceno" id="supplierinvoiceno">
+                                        <label for="supplierinvoiceno">Supplier Invoice No<span class="text-danger text-2x "
+                                                style="font-size: medium !important;">*</span></label>
+                                    </div>
+                            <div class="custom-input-container col-md-3">
+                                <input type="date" placeholder=" " name="supplierinvoicedate" id="supplierinvoicedate" required>
+                                <label for="supplierinvoicedate">Supplier Invoice Date<span class="text-danger text-2x "
+                                        style="font-size: medium !important;">*</span></label>
+                            </div>
+                            <div class="custom-input-container col-md-3">
+                                <input type="text" name="supplierinvoiceamount" id="supplierinvoiceamount">
+                                <label for="supplierinvoiceamount">Supp.Invoice Amount<span class="text-danger text-2x "
+                                        style="font-size: medium !important;">*</span></label>
+                            </div>
+                            <div class="custom-input-container col-md-3">
+                                <input type="date" placeholder=" " name="purchasedate" id="purchasedate" required>
                                 <label for="purchasedate">Purchase Return Date<span class="text-danger text-2x "
                                         style="font-size: medium !important;">*</span></label>
                             </div>
-                            <div class="custom-input-container">
+                            <div class="custom-input-container col-md-3">
                                 <label for="paymentmode">Payment Mode<span class="text-danger text-2x "
                                         style="font-size: medium !important;">*</span></label>
-                                <select name="paymentmode" id="paymentmode">
+                                <select name="paymentmode" id="paymentmode" required>
                                     <option value="" disabled selected hidden>Choose Payment Mode</option>
                                     <option value="cash">Cash</option>
                                     <option value="credit">Credit</option>
                                     <option value="cash-credit">Cash/Credit</option>
                                 </select>
                             </div>
-                        </div>
+                      
 
 
 
-                        <div class="col">
-                            <div class="custom-input-container">
-                                <input type="date" placeholder=" " name="supplierinvoicedate" id="supplierinvoicedate">
-                                <label for="supplierinvoicedate">Supplier Invoice Date<span class="text-danger text-2x "
-                                        style="font-size: medium !important;">*</span></label>
-                            </div>
-                            <div class="custom-input-container">
+                            <div class="custom-input-container col-md-3">
                                 <label for="modeoftransport">Mode Of Transport</label>
                                 <select name="modeoftransport" id="modeoftransport">
                                     <option value="" disabled selected hidden>Choose Mode of Transport</option>
@@ -197,24 +206,14 @@
                                     <option value="seaways">Seaways</option>
                                 </select>
                             </div>
-                            <div class="custom-input-container">
+                            <div class="custom-input-container col-md-3">
                                 <input type="text" placeholder=" " name="transportno" id="transportno">
                                 <label for="transportno">Transport No</label>
                             </div>
-                        </div>
-                        <div class="col">
-                            <div class="custom-input-container">
-                                <input type="text" name="supplierinvoiceamount" id="supplierinvoiceamount">
-                                <label for="supplierinvoiceamount">Supp.Invoice Amount<span class="text-danger text-2x "
-                                        style="font-size: medium !important;">*</span></label>
-                            </div>
-                            <div class="custom-input-container">
-                                <input type="text" placeholder=" " name="supplierinvoiceno" id="supplierinvoiceno">
-                                <label for="supplierinvoiceno">Supplier Invoice No<span class="text-danger text-2x "
-                                        style="font-size: medium !important;">*</span></label>
-                            </div>
+                    
+                         
+                 
 
-                        </div>
                     </div>
                     <div style="display: none;">
                         <input type="hidden" id="pamount_" name="pamount" value="0.00">
@@ -272,7 +271,7 @@
                         </div>
                         <div class="col-2 custom">
                             <div class="custom-input-container">
-                                <input type="text" placeholder=" " name="pdiscount" id="pdiscount">
+                                <input type="text" placeholder=" " name="pdiscount" id="pdiscount" disabled>
                                 <label for="pdiscount">discount<span class="text-danger text-2x " style="font-size: medium !important;">*</span></label>
                             </div>
                         </div>
@@ -293,63 +292,55 @@
 
                 </div>
 
-                <form id="purchaseDetails" class="form-control" style="display: block; align-item: start;"
+                <form id="purchaseDetails" class="form-control p-0" style="display: block; align-item: start;"
                     action="auth/Purchasereturn" method="post">
-                    <div class="row">
-                        <div class="labels">
-                            <div class="col">
-                                <div class="custom">
-                                    <label for="pamount">Amount:</label>
-                                    <span id="pamount" name="pamount">0.00</span>
-                                </div>
-
-                                <div class="custom">
-                                    <label for="pigst">IGST:</label>
-                                    <span id="pigst" name="pigts">0.00</span>
-                                </div>
-                            </div>
-
-                            <div class="col">
-                                <div class="custom">
-                                    <label for="pcgst">CGST:</label>
-                                    <span id="pcgst" name="pcgst">0.00</span>
-                                </div>
-
-                                <div class="custom">
-                                    <label for="psgst">SGST:</label>
-                                    <span id="psgst" name="psgst">0.00</span>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="custom">
-                                    <label for="psubtotal">Sub Total:</label>
-                                    <span id="psubtotal" name="psubtotal">0.00</span>
-                                </div>
-
-                                <div class="custom">
-                                    <label for="pcess">CESS:</label>
-                                    <span id="pcess" name="pcess">0.00</span>
-                                </div>
-                            </div>
-
-                            <div class="col">
-                                <div class="custom">
-                                    <label for="ptcs">TCS:</label>
-                                    <span id="ptcs" name="ptcs">0.00</span>
-                                </div>
-                                <div class="custom">
-                                    <label for="proundOff">Round Off:</label>
-                                    <span id="proundOff" name="proundOff">0.00</span>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="custom">
-                                    <label for="pnetAmount">Net Amount:</label>
-                                    <span id="pnetAmount" name="pnetAmount">0.00</span>
-                                </div>
-
-                            </div>
+                    <div class="row d-flex justify-content-between  mb-0 gx-0 w-100 ">
+                    
+                    
+                        <div class="custom col-md-1">
+                            <label for="pamount">Amount:</label>
+                            <span id="pamount" name="pamount">0.00</span>
                         </div>
+                    
+                        <div class="custom col-md-1">
+                            <label for="pigst">IGST:</label>
+                            <span id="pigst" name="pigts">0.00</span>
+                        </div>
+                    
+                        <div class="custom col-md-1">
+                            <label for="pcgst">CGST:</label>
+                            <span id="pcgst" name="pcgst">0.00</span>
+                        </div>
+                    
+                        <div class="custom col-md-1">
+                            <label for="psgst">SGST:</label>
+                            <span id="psgst" name="psgst">0.00</span>
+                        </div>
+                    
+                        <div class="custom col-md-1">
+                            <label for="psubtotal">Total Amount:</label>
+                            <span id="psubtotal" name="psubtotal">0.00</span>
+                        </div>
+                        {{!--
+                        <div class="custom">
+                            <label for="pcess">CESS:</label>
+                            <span id="pcess" name="pcess">0.00</span>
+                        </div>
+                    
+                        <div class="custom">
+                            <label for="ptcs">TCS:</label>
+                            <span id="ptcs" name="ptcs">0.00</span>
+                        </div> --}}
+                        <div class="custom col-md-1">
+                            <label for="proundOff">Round Off:</label>
+                            <span id="proundOff" name="proundOff">0.00</span>
+                        </div>
+                    
+                        <div class="custom col-md-1">
+                            <label for="pnetAmount">Net Amount:</label>
+                            <span id="pnetAmount" name="pnetAmount">0.00</span>
+                        </div>
+                    
                     </div>
                 </form>
 
@@ -357,14 +348,22 @@
             <div id="selectedRowDetails"></div>
             {{>footer}}
         </div>
-        <div id="overlay"
-            style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; overflow: auto;">
-            <div id="batchform"
-                style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border: 1px solid #ccc; max-height: 200px; overflow-y: auto;">
-                <table id="batchDetailsTable" border="1px" class="table">
-                    <thead>
+    <div id="overlay"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; overflow: auto;">
+        <div id="batchform"
+            style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #ccc; width: 80%; max-width: 800px;">
+            <a class="closebatch" style="position: absolute; top: 0px; right: -2px;"><i
+                    class="fa-solid fa-circle-xmark fa-2x"></i></a>
+    
+            <!-- Scrollable table container with fixed header -->
+            <div style="max-height: 200px; overflow-y: auto; position: relative;">
+                <table id="batchDetailsTable" class="table"
+                    style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+                    <thead class="bg-primary"
+                        style="position: sticky; top: 0; z-index: 1; background-color: #007bff; color: white;">
                         <tr>
                             <th>Batch No</th>
+                            <th>Expiry Date</th>
                             <th>Tax</th>
                             <th>Quantity</th>
                             <th>UOM</th>
@@ -374,10 +373,20 @@
                     </thead>
                     <tbody id="batchDetailsBody"></tbody>
                 </table>
-                <a class="closebatch" style="position: absolute; top: 5px; right: 5px;"><i
-                        class="fa-solid fa-circle-xmark"></i></a>
+            </div>
+    
+            <!-- Fixed Color Legend below the scrollable table -->
+            <div style="margin-top: 10px;">
+                <strong>Color Legend:</strong>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li><span style="background-color: red; color: white; padding: 2px 5px;">&nbsp;&nbsp;&nbsp;</span>
+                        Already expired</li>
+                    <li><span style="background-color: orange; color: white; padding: 2px 5px;">&nbsp;&nbsp;&nbsp;</span>
+                        Expiring in Three Months</li>
+                </ul>
             </div>
         </div>
+    </div>
     </main>
     {{>color}}
     <script>
@@ -398,6 +407,25 @@
         }
     </script>
     <script>
+    $(document).ready(function () {
+        // Disable the discount input initially
+        $('#pdiscount').prop('disabled', true);
+
+        // Listen to change event on the discount mode dropdown
+        $('#pdiscMode').change(function () {
+            var selectedValue = $(this).val();
+
+            if (selectedValue) {
+                // Enable discount input if a discount mode is selected
+                $('#pdiscount').prop('disabled', false);
+            } else {
+                // Disable discount input if no discount mode is selected
+                $('#pdiscount').prop('disabled', true);
+            }
+        });
+    });
+
+
 
         $(document).ready(function () {
             $.ajax({
@@ -751,6 +779,33 @@
                 }
 
             });
+            $(document).ready(function () {
+                // Initially hide the opener
+                $('#openPurchaseForm').hide();
+
+                function checkRequiredFields() {
+                    let isValid = true;
+
+                    // Iterate over all required fields and check their validity
+                    $('#purchaseDetails').find('input[required], select[required]').each(function () {
+                        if ($(this).val() === '' || $(this).val() === null) {
+                            isValid = false;
+                        }
+                    });
+
+                    // Show the opener if all fields are valid, else hide it
+                    if (isValid) {
+                        $('#openPurchaseForm').show();
+                    } else {
+                        $('#openPurchaseForm').hide();
+                    }
+                }
+
+                // Bind input and change events to validate on the fly
+                $('#purchaseDetails').find('input, select').on('input change', function () {
+                    checkRequiredFields();
+                });
+            });
 
 
             // When the edit button is clicked
@@ -857,7 +912,7 @@
             });
 
            
-            function disableOpener() {
+              function disableOpener() {
                 $('#openPurchaseForm').prop('disabled', true);
             }
 
@@ -961,6 +1016,7 @@
 
 
 
+
             function fetchBatchDetails(selectedProductId, uniqueId) {
                 console.log('Selected Product ID:', selectedProductId);
 
@@ -976,20 +1032,89 @@
                     success: function (response) {
                         console.log('Received response for batch details:', response);
                         if (response.success) {
-                            $('#batchDetailsBody').empty();
-                            response.data.forEach(function (batch) {
-                                $('#batchDetailsBody').append(
-                                    `<tr data-uniqueId="${uniqueId}" data-batchNo="${batch.batchNo}" data-tax="${batch.tax}" data-quantity="${batch.quantity}" data-uom="${batch.uom}" data-rate="${batch.rate}" data-mrp="${batch.mrp}">
-        <td>${batch.batchNo}</td>
-        <td>${batch.tax}</td>
-        <td>${batch.op_quantity}</td>
-        <td>${batch.uom}</td>
-        <td>${batch.rate}</td>
-         <td>${batch.mrp}</td>
-    </tr>`
-                                );
+                            let rows = [];
 
+                            response.data.forEach(function (batch) {
+                                // Parse expiryDate and format it to MM-YYYY
+                                let expiryDate = new Date(batch.expiryDate);
+                                let formattedExpiry = expiryDate.getFullYear() !== 1970 // Handle null or invalid dates
+                                    ? expiryDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
+                                    : 'N/A';
+
+                                let now = new Date();
+                                let currentMonth = new Date(now.getFullYear(), now.getMonth(), 1); // First day of current month
+                                let threeMonthsAhead = new Date(now.getFullYear(), now.getMonth() + 3, 1); // First day of three months ahead
+
+                                // Set default background and color
+                                let backgroundColor = '';
+                                let color = '';
+                                let selectable = true;
+
+                                if (expiryDate < currentMonth) {
+                                    // Already expired, set red background and make it non-selectable
+                                    backgroundColor = 'red';
+                                    color = 'white';
+                                    selectable = true;
+                                } else if (expiryDate >= currentMonth && expiryDate < threeMonthsAhead) {
+                                    // This month and next two months, set orange background
+                                    backgroundColor = 'orange';
+                                    color = 'white'; // Change to black for better readability
+                                } else {
+                                    // Normal, default background
+                                    backgroundColor = '';
+                                    color = '';
+                                }
+
+                                // Store row with color information
+                                rows.push({
+                                    uniqueId: uniqueId,
+                                    batchNo: batch.batchNo,
+                                    expiryDate: batch.expiryDate,
+                                    tax: batch.tax,
+                                    quantity: batch.op_quantity,
+                                    uom: batch.uom,
+                                    rate: batch.rate,
+                                    mrp: batch.mrp,
+                                    backgroundColor: backgroundColor,
+                                    color: color,
+                                    selectable: selectable,
+                                    formattedExpiry: formattedExpiry
+                                });
                             });
+
+                            // Sort rows by color priority
+                            // Sort rows by color priority: Orange first, Normal second, Red last
+                            rows.sort(function (a, b) {
+                                let colorOrder = { 'orange': 1, '': 2, 'red': 3 };
+                                return colorOrder[a.backgroundColor] - colorOrder[b.backgroundColor];
+                            });
+
+
+                            // Clear existing rows and append sorted rows
+                            $('#batchDetailsBody').empty();
+                            rows.forEach(function (row) {
+                                $('#batchDetailsBody').append(
+                                    `<tr data-uniqueId="${row.uniqueId}" 
+                            data-batchNo="${row.batchNo}" 
+                            data-expiryDate="${row.expiryDate}" 
+                            data-tax="${row.tax}" 
+                            data-quantity="${row.quantity}" 
+                            data-uom="${row.uom}" 
+                            data-rate="${row.rate}" 
+                            data-mrp="${row.mrp}" 
+                            style="background-color: ${row.backgroundColor}; color: ${row.color};" 
+                            ${row.selectable ? '' : 'class="non-selectable"'}>
+                            <td>${row.batchNo}</td>
+                            <td>${row.formattedExpiry}</td>
+                            <td>${row.tax}</td>
+                            <td>${row.quantity}</td>
+                            <td>${row.uom}</td>
+                            <td>${row.rate}</td>
+                            <td>${row.mrp}</td>
+                        </tr>`
+                                );
+                            });
+
                             $('#overlay').show();
                             $('#batchform').show();
                         } else {
@@ -998,15 +1123,9 @@
                     },
                     error: function (xhr, status, error) {
                         console.error('Error fetching batch details:', error);
-                        console.error('XHR Status:', status);
-                        console.error('XHR Response:', xhr.responseText);
-                        $('#batchDetailsBody').empty();
-                        $('#batchDetailsBody').append(
-                            `<tr>
-                    <td colspan="5">Error fetching batch details: ${error}</td>
-                </tr>`
+                        $('#batchDetailsBody').empty().append(
+                            `<tr><td colspan="7">Error fetching batch details: ${error}</td></tr>`
                         );
-                        // Show the overlay and batch form
                         $('#overlay').show();
                         $('#batchform').show();
                     }
@@ -1014,6 +1133,12 @@
             }
 
             $('#batchDetailsBody').on('click', 'tr', function () {
+                // Check if the row has the class "non-selectable"
+                {{!-- if ($(this).hasClass('non-selectable')) {
+                    console.log('This row is not selectable');
+                    return; // Prevent further actions if the row is not selectable
+                } --}}
+
                 // Retrieve uniqueId from the clicked row
                 var uniqueId = $(this).attr('data-uniqueId');
                 console.log('Retrieved uniqueId:', uniqueId);
@@ -1024,30 +1149,41 @@
 
                 // Retrieve values from the clicked row
                 var batchNo = $(this).find('td:eq(0)').text();
-                var tax = $(this).find('td:eq(1)').text();
-                var quantity = $(this).find('td:eq(2)').text();
-                var uom = $(this).find('td:eq(3)').text();
-                var rate = $(this).find('td:eq(4)').text();
-                var mrp = $(this).find('td:eq(5)').text();
+                var tax = $(this).find('td:eq(2)').text();
+                var quantity = $(this).find('td:eq(3)').text();
+                var uom = $(this).find('td:eq(4)').text();
+                var rate = $(this).find('td:eq(5)').text();
+                var mrp = $(this).find('td:eq(6)').text();
 
                 // Update input fields in the customerTable with uniqueId
                 $('#batchNo_' + uniqueId).val(batchNo);
                 $('#tax_' + uniqueId).val(tax);
                 $('#quantity_' + uniqueId).val(quantity);
                 $('#uom_' + uniqueId).val(uom);
-                $('#rate_' + uniqueId).val(rate);
+                $('#purcRate_' + uniqueId).val(rate);
                 $('#mrp_' + uniqueId).val(mrp);
 
                 // Hide overlay and batch form
                 $('#overlay').hide();
                 $('#batchform').hide();
             });
-
-
+         
             function generateUniqueId() {
                 return uuidv4();
             }
+           
+            $(document).on('change', "select[name='discMode']", function () {
+                var uniqueId = $(this).attr('id').split('_')[1]; // Get the unique id
+                var discountInput = $('#discount_' + uniqueId);   // Find the corresponding discount input
 
+                if ($(this).val() !== null) {
+                    // Enable the discount input if a valid option is selected
+                    discountInput.prop('disabled', false);
+                } else {
+                    // Disable the discount input if no valid option is selected
+                    discountInput.prop('disabled', true);
+                }
+            });
         });
 
         function fetchDiscmodeOptions(uniqueId) {
@@ -1089,12 +1225,11 @@
 
         }
 
-        function calculateTotals() {
+    function calculateTotals() {
             let totalAmount = 0;
             let totalCGST = 0;
             let totalSGST = 0;
             let totalIGST = 0;
-
             let totalNetAmount = parseFloat($('#supplierinvoiceamount').val()) || 0;
 
             $('#customerTable tbody tr').each(function () {
@@ -1129,41 +1264,40 @@
             let subtotal = parseFloat($('#psubtotal').text()) || 0;
             let netAmount = parseFloat($('#pnetAmount').text()) || 0;
 
-            var discMode = $('#pdiscMode').val();
-            var discount = parseFloat($('#pdiscount').val()) || 0;
+            let discMode = $('#pdiscMode').val() || "3";
+            let discount = parseFloat($('#pdiscount').val()) || 0;
 
             if (isNaN(discount)) {
                 discount = 0;
             }
 
-            if (discMode === 'N/A' || discMode === '3') {
-                discount = 0; // Reset discount to 0 if discMode is 'N/A' or '3'
-                $('#pdiscount').val('0'); // Update discount input field to show '0'
-            } else if (discMode === 'percentage' || discMode === '1') {
-                // Calculate the discounted amount based on the percentage
+            if (discMode === "3" || discMode === "N/A") {
+                discount = 0;
+                $('#pdiscount').val('0');
+            } else if (discMode === "percentage" || discMode === "1") {
                 discount = (subtotal * discount) / 100;
             }
 
             subtotal -= discount;
 
-            // Calculate round-off
-            let roundOff = netAmount - subtotal;
+            // Implement rounding rule for subtotal
+            let roundedSubtotal = Math.round(subtotal);
 
-            // Update the subtotal value on the page
-            $('#psubtotal').text(subtotal.toFixed(2));
+            // Calculate roundOff
+            let roundOff = netAmount - roundedSubtotal;
 
-            // Update hidden input values
-            $('#psubtotal_').val(subtotal.toFixed(2));
+            // Update values with rounded subtotal
+            $('#psubtotal').text(roundedSubtotal.toFixed(2));
+            $('#psubtotal_').val(roundedSubtotal.toFixed(2));
 
-            // Update round-off value on the page
             $('#proundOff').text(roundOff.toFixed(2));
             $('#proundOff_').val(roundOff.toFixed(2));
 
-            // Get the name of the selected discount mode
             var discModeId = $('#pdiscMode').val();
-            $('#pdiscMode_').val(discModeId);
-            $('#pdiscount_').val($('#pdiscount').val());
+            $('#pdiscMode_').val(discMode);
+            $('#pdiscount_').val(discount.toFixed(2));
         }
+    
 
         // Bind event listeners to recalculate totals when discount mode or discount amount changes
         $('#pdiscMode, #pdiscount').change(function () {

@@ -148,55 +148,61 @@
                 <form id="purchaseDetails" class="form-control" style="display: block; align-item: start;"
                     method="post">
                     <div class="row">
-                        <div class="col">
-                            <div class="custom-input-container d-none">
-                                <select name="Id" class="dropdown" id="Id">
-                                    <option selected>view details</option>
-                                </select>
-                                <label for="purchaseId">Purchase Id</label>
-                                <input type="hidden" name="id" id="id">
-                            </div>
-                                            <div class="custom-input-container">
-                                                <select id="supplierSelect" class="dropdown" name="customername">
-                                                    <option value="" disabled selected>Select Customer</option>
-                                                </select>
-                                                <label for="customername">Customer Name<span class="text-danger text-2x " style="font-size: medium !important;">*</span></label>
-                                            </div>
-                            <div class="custom-input-container">
-                                <input type="text" placeholder=" " name="customermobileno" id="customermobileno">
-                                <label for="customermobileno">Customer Mobile No</label>
-                            </div>
+
+                        <div class="custom-input-container d-none">
+                            <select name="Id" class="dropdown" id="Id">
+                                <option selected>view details</option>
+                            </select>
+                            <label for="purchaseId">Purchase Id</label>
+                            <input type="hidden" name="id" id="id">
+                        </div>
+                        <div class="custom-input-container col-md-3">
+                            <select id="supplierSelect" class="dropdown" name="customername" required>
+                                <option value="" disabled selected>Select Customer</option>
+                            </select>
+                            <label for="customername">Customer Name<span class="text-danger text-2x "
+                                    style="font-size: medium !important;">*</span></label>
+                        </div>
+                        <div class="custom-input-container col-md-3">
+                            <input type="text" placeholder=" " name="customermobileno" id="customermobileno">
+                            <label for="customermobileno">Customer Mobile No</label>
+                        </div>
+
+
+                        <div class="custom-input-container col-md-3">
+                            <input type="date" placeholder=" " name="saledate" id="saledate" required>
+                            <label for="saledate">Sale Date<span class="text-danger text-2x "
+                                    style="font-size: medium !important;">*</span></label>
+                        </div>
+
+
+                        <div class="custom-input-container ma col-md-3">
+                            <label for="paymentmode">Payment Mode<span class="text-danger text-2x "
+                                    style="font-size: medium !important;">*</span></label>
+                            <select name="paymentmode" id="paymentmode" required>
+                                <option value="" disabled selected hidden>Choose Payment Mode</option>
+                                <option value="cash">Cash</option>
+                                <option value="credit">Credit</option>
+                                <option value="cash-credit">Cash/Credit</option>
+                            </select>
 
                         </div>
-                        <div class="col">
-                            <div class="custom-input-container">
-                                <input type="date" placeholder=" " name="saledate" id="saledate">
-                                <label for="saledate">Sale Date<span class="text-danger text-2x " style="font-size: medium !important;">*</span></label>
-                            </div>
-                            <div class="custom-input-container">
-                                <input type="text" placeholder=" " name="referno" id="referno">
-                                <label for="referno">Refer No</label>
-                            </div>
-
+                        <div class="custom-input-container ma col-md-3">
+                            <select id="salesmannameSelect" class="dropdown" name="salesmanname">
+                                <option value="" disabled selected>Select Salesman</option>
+                            </select>
+                            <label for="Salesman">Salesman </label>
                         </div>
-                        <div class="col">
-                <div class="custom-input-container ma">
-                    <label for="paymentmode">Payment Mode<span class="text-danger text-2x "
-                            style="font-size: medium !important;">*</span></label>
-                    <select name="paymentmode" id="paymentmode">
-                        <option value="" disabled selected hidden>Choose Payment Mode</option>
-                        <option value="cash">Cash</option>
-                        <option value="credit">Credit</option>
-                        <option value="cash-credit">Cash/Credit</option>
-                    </select>
-                
-                </div>
-                            <div class="custom-input-container">
-                                <input type="text" placeholder=" " name="transportno" id="transportno">
-                                <label for="transportno">Transport No</label>
-                            </div>
+                        <div class="custom-input-container col-md-3">
+                            <input type="text" placeholder=" " name="referno" id="referno">
+                            <label for="referno">Refer No</label>
+                        </div>
+                        <div class="custom-input-container col-md-3">
+                            <input type="text" placeholder=" " name="transportno" id="transportno">
+                            <label for="transportno">Transport No</label>
                         </div>
                     </div>
+
                     <div style="display: none;">
                         <input type="hidden" id="pamount_" name="pamount" value="0.00">
                         <input type="hidden" id="pigst_" name="pigst" value="0.00">
@@ -249,13 +255,15 @@
                                 <select id="pdiscMode" class="dropdown" name="pdiscMode">
                                     <option selected="disabled">Select Discount Mode</option>
                                 </select>
-                                <label for="discMode">discMode<span class="text-danger text-2x " style="font-size: medium !important;">*</span></label>
+                                <label for="discMode">discMode<span class="text-danger text-2x "
+                                        style="font-size: medium !important;">*</span></label>
                             </div>
                         </div>
                         <div class="col-2 custom">
                             <div class="custom-input-container">
-                                <input type="text" placeholder=" " name="pdiscount" id="pdiscount">
-                                <label for="pdiscount">discount<span class="text-danger text-2x " style="font-size: medium !important;">*</span></label>
+                                <input type="text" placeholder=" " name="pdiscount" id="pdiscount" disabled>
+                                <label for="pdiscount">discount<span class="text-danger text-2x "
+                                        style="font-size: medium !important;">*</span></label>
                             </div>
                         </div>
                     </form>
@@ -269,89 +277,106 @@
 
                 </div>
 
-                <form id="purchaseDetails" class="form-control" style="display: block; align-item: start;"
-                    action="auth/purchase" method="post">
-                    <div class="row">
-                        <div class="labels">
-                            <div class="col">
-                                <div class="custom">
-                                    <label for="pamount">Amount:</label>
-                                    <span id="pamount" name="pamount">0.00</span>
-                                </div>
+<form id="purchaseDetails" class="form-control p-0" style="display: block; align-item: start;" action="auth/sales"
+    method="post">
+    <div class="row d-flex justify-content-between  mb-0 gx-0 w-100 ">
 
-                                <div class="custom">
-                                    <label for="pigst">IGST:</label>
-                                    <span id="pigst" name="pigts">0.00</span>
-                                </div>
-                            </div>
 
-                            <div class="col">
-                                <div class="custom">
-                                    <label for="pcgst">CGST:</label>
-                                    <span id="pcgst" name="pcgst">0.00</span>
-                                </div>
+        <div class="custom col-md-1">
+            <label for="pamount">Amount:</label>
+            <span id="pamount" name="pamount">0.00</span>
+        </div>
 
-                                <div class="custom">
-                                    <label for="psgst">SGST:</label>
-                                    <span id="psgst" name="psgst">0.00</span>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="custom">
-                                    <label for="psubtotal">Sub Total:</label>
-                                    <span id="psubtotal" name="psubtotal">0.00</span>
-                                </div>
-
-                                <div class="custom">
-                                    <label for="pcess">CESS:</label>
-                                    <span id="pcess" name="pcess">0.00</span>
-                                </div>
-                            </div>
-
-                            <div class="col">
-                                <div class="custom">
-                                    <label for="ptcs">TCS:</label>
-                                    <span id="ptcs" name="ptcs">0.00</span>
-                                </div>
-                                {{!-- <div class="custom">
-                                    <label for="proundOff">Round Off:</label>
-                                    <span id="proundOff" name="proundOff">0.00</span>
-                                </div> --}}
-                            </div>
-                            {{!-- <div class="col">
-                                <div class="custom">
-                                    <label for="pnetAmount">Net Amount:</label>
-                                    <span id="pnetAmount" name="pnetAmount">0.00</span>
-                                </div>
-                            </div> --}}
-                        </div>
-                    </div>
-                    <div id="overlay"
-                        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; overflow: auto;">
-                        <div id="batchform"
-                            style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border: 1px solid #ccc; max-height: 200px; overflow-y: auto;">
-                            <table id="batchDetailsTable" border="1px" class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Batch No</th>
-                                        <th>Tax</th>
-                                        <th>Quantity</th>
-                                        <th>UOM</th>
-                                        <th>Rate</th>
-                                        <th>MRP</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="batchDetailsBody"></tbody>
-                            </table>
-                            <a class="closebatch" style="position: absolute; top: 5px; right: 5px;"><i
-                                    class="fa-solid fa-circle-xmark"></i></a>
-                        </div>
-                    </div>
+        <div class="custom col-md-1">
+            <label for="pigst">IGST:</label>
+            <span id="pigst" name="pigts">0.00</span>
+        </div>
 
 
 
+        <div class="custom col-md-1">
+            <label for="pcgst">CGST:</label>
+            <span id="pcgst" name="pcgst">0.00</span>
+        </div>
 
-                </form>
+        <div class="custom col-md-1">
+            <label for="psgst">SGST:</label>
+            <span id="psgst" name="psgst">0.00</span>
+        </div>
+
+        <div class="custom col-md-1">
+            <label for="psubtotal">Total Amount:</label>
+            <span id="psubtotal" name="psubtotal">0.00</span>
+        </div>
+
+
+    </div>
+    {{!--
+    <div class="custom">
+        <label for="pcess">CESS:</label>
+        <span id="pcess" name="pcess">0.00</span>
+    </div>
+
+
+    <div class="col">
+        <div class="custom">
+            <label for="ptcs">TCS:</label>
+            <span id="ptcs" name="ptcs">0.00</span>
+        </div>
+        <div class="custom">
+            <label for="proundOff">Round Off:</label>
+            <span id="proundOff" name="proundOff">0.00</span>
+        </div>
+    </div>
+    <div class="col">
+        <div class="custom">
+            <label for="pnetAmount">Net Amount:</label>
+            <span id="pnetAmount" name="pnetAmount">0.00</span>
+        </div>
+    </div> --}}
+    <div id="overlay"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; overflow: auto;">
+        <div id="batchform"
+            style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #ccc; width: 80%; max-width: 800px;">
+            <a class="closebatch" style="position: absolute; top: 0px; right: -2px;"><i
+                    class="fa-solid fa-circle-xmark fa-2x"></i></a>
+
+            <!-- Scrollable table container with fixed header -->
+            <div style="max-height: 200px; overflow-y: auto; position: relative;">
+                <table id="batchDetailsTable" class="table"
+                    style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+                    <thead class="bg-primary"
+                        style="position: sticky; top: 0; z-index: 1; background-color: #007bff; color: white;">
+                        <tr>
+                            <th>Batch No</th>
+                            <th>Expiry Date</th>
+                            <th>Tax</th>
+                            <th>Quantity</th>
+                            <th>UOM</th>
+                            <th>Rate</th>
+                            <th>MRP</th>
+                        </tr>
+                    </thead>
+                    <tbody id="batchDetailsBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Fixed Color Legend below the scrollable table -->
+            <div style="margin-top: 10px;">
+                <strong>Color Legend:</strong>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li><span style="background-color: red; color: white; padding: 2px 5px;">&nbsp;&nbsp;&nbsp;</span>
+                        Already expired</li>
+                    <li><span
+                            style="background-color: orange; color: white; padding: 2px 5px;">&nbsp;&nbsp;&nbsp;</span>
+                        Expiring in Three Months</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+</form>
 
             </div>
             <div id="selectedRowDetails"></div>
@@ -365,6 +390,49 @@
     {{>color}}
 
     <script>
+
+        $.ajax({
+            url: '/auth/sales/salesmanname',
+            method: 'GET',
+            success: function (response) {
+                console.log('Received response fortype:', response);
+                var options = response.data;
+                if (options && options.length) {
+                    options.forEach(function (option) {
+                        $('.dropdown[name="salesmanname"]').append($('<option>', {
+                            value: option.id,
+                            text: option.ledgername
+                        }));
+                    });
+                } else {
+                    console.error('No options found for salesmanname)');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching options for salesmanname:', error);
+            }
+        });
+
+
+        $(document).ready(function () {
+            // Disable the discount input initially
+            $('#pdiscount').prop('disabled', true);
+
+            // Listen to change event on the discount mode dropdown
+            $('#pdiscMode').change(function () {
+                var selectedValue = $(this).val();
+
+                if (selectedValue) {
+                    // Enable discount input if a discount mode is selected
+                    $('#pdiscount').prop('disabled', false);
+                } else {
+                    // Disable discount input if no discount mode is selected
+                    $('#pdiscount').prop('disabled', true);
+                }
+            });
+        });
+
+
 
         $(document).ready(function () {
             // Attach click event listener to the closebatch link
@@ -413,9 +481,8 @@
         });
 
         $(document).on('click', '.editmasbtn', function () {
-            alert("If You Gonna Edit Quantity Of Transaction,Delete The Transaction And Add  Correct Quantity.👍");
+            alert("IF YOU GONNA EDIT IN QUANTITY OF SALES PRODUCT,DELETE THE TRANSACTION AND ADD  CORRECT QUANTITY.");
             $('.opener').show();
-
             $('#customerTable tbody tr').each(function () {
                 var row = $(this);
                 var id = row.find('td:eq(0)').text();
@@ -433,7 +500,7 @@
                 var amount = row.find('td:eq(12)').text();
                 var cgst = row.find('td:eq(13)').text();
                 var sgst = row.find('td:eq(14)').text();
-                var igst = row.find('td:eq(15').text();
+                var igst = row.find('td:eq(15)').text();
                 var totalAmount = row.find('td:eq(16)').text();
 
                 row.html("<td><input type='number' readonly name='Id' class='input-field  purchase-id' value='" + id + "'></td>" +
@@ -445,8 +512,7 @@
 
                     "<td><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
                     "<td><input type='number' name='purcRate' class='input-field' value='" + rate + "'></td>" +
-                    "<td><input type='number' name='mrp' class='input-field' value='" + mrp + "'></td>" +
-
+                    "<td><input type='number' name='mrp' class='input-field' value='" + rate + "'></td>" +
                     "<td><input type='number' name='rate' class='input-field' value='" + rate + "'></td>" +
                     "<td><select name='discMode' class='input-field disc-mode dropdown' id='discMode_" + id + "'><option selected disabled>Select Disc Mode</option></select></td>" +
                     "<td><input type='number' name='discount' class='input-field' value='" + discount + "'></td>" +
@@ -456,7 +522,6 @@
                     "<td><input type='number' name='igst' class='input-field' value='" + igst + "'></td>" +
                     "<td><input type='number' name='totalAmount' class='input-field' value='" + totalAmount + "'></td>" +
                     "<td><i class='fa-solid fa-trash deletetransBtn' type='button' data-id='" + id + "'></i></td>");
-
 
                 fetchProductOptions(id, product);
                 fetchDiscModeOptions(id, discMode);
@@ -511,7 +576,8 @@
                     paymentmode: $('#paymentmode').val(),
                     referno: $('#referno').val(),
                     transportno: $('#transportno').val(),
-                    customername: $('#supplierSelect').val(), // Make sure this ID matches the customer name field ID in the HTML
+                    customername: $('#supplierSelect').val(),
+                    salesmanname: $('#salesmannameSelect').val(),  // Make sure this ID matches the customer name field ID in the HTML
                     customermobileno: $('#customermobileno').val(),
                     pamount: parseFloat($('#pamount_').val()),
                     pigst: parseFloat($('#pigst_').val()),
@@ -545,7 +611,7 @@
                         console.log(response);
                         if (response.success) {
                             alert('Successfully updated');
-                            window.location.href = "/salesReturn";
+                            window.location.href = "/salesReturnRegister";
                         } else {
                             alert("Failed to update purchase: " + response.message);
                         }
@@ -697,6 +763,7 @@
             }
         });
 
+
         $(document).ready(function () {
             $('.div').hide();
             $('.add').show();
@@ -712,6 +779,33 @@
                     $('.add').show();
                 }
 
+            });
+            $(document).ready(function () {
+                // Initially hide the opener
+                $('#openPurchaseForm').hide();
+
+                function checkRequiredFields() {
+                    let isValid = true;
+
+                    // Iterate over all required fields and check their validity
+                    $('#purchaseDetails').find('input[required], select[required]').each(function () {
+                        if ($(this).val() === '' || $(this).val() === null) {
+                            isValid = false;
+                        }
+                    });
+
+                    // Show the opener if all fields are valid, else hide it
+                    if (isValid) {
+                        $('#openPurchaseForm').show();
+                    } else {
+                        $('#openPurchaseForm').hide();
+                    }
+                }
+
+                // Bind input and change events to validate on the fly
+                $('#purchaseDetails').find('input, select').on('input change', function () {
+                    checkRequiredFields();
+                });
             });
 
 
@@ -751,13 +845,13 @@
 
                         "<td><input type='number' name='rate' class='input-field' id='rate_" + uniqueId + "' placeholder='Rate'required></td>" +
                         "<td><select name='discMode' class='input-field product-name dropdown  ' id='discMode_" + uniqueId + "' placeholder='Disc.Mode'><option selected disabled>Select Disc Mode</option></select></td>" +
-                        "<td><input type='number' name='discount' class='input-field' id='discount_" + uniqueId + "' placeholder='Discount'></td>" +
+                        "<td><input type='number' name='discount' class='input-field' id='discount_" + uniqueId + "' placeholder='Discount' disabled></td>" +
                         "<td><input type='number' name='amount' class='input-field' id='amount_" + uniqueId + "' placeholder='Amount'></td>" +
                         "<td><input type='number' name='cgst' class='input-field' id='cgst_" + uniqueId + "' placeholder='CGST'></td>" +
                         "<td><input type='number' name='sgst' class='input-field' id='sgst_" + uniqueId + "' placeholder='SGST'></td>" +
                         "<td><input type='number' name='igst' class='input-field' id='igst_" + uniqueId + "' placeholder='IGST'></td>" +
                         "<td><input type='number' name='totalAmount' class='input-field' id='totalAmount_" + uniqueId + "' placeholder='Total Amount'></td>" +
-                        "<td class='action new-row'><i class='fa-solid fa-trash deleteRowBtn text-danger' type='button'></i> <i class='fa-solid fa-plus addRowBtn text-success' type='button'></i></td>" + 
+                        "<td class='action new-row'><i class='fa-solid fa-trash deleteRowBtn text-danger' type='button'></i> <i class='fa-solid fa-plus addRowBtn text-success' type='button'></i></td>" +
                         "</tr>");
                     $('#customerTable tbody').append(newRow);
                     table.rows.add([newRow[0]]).draw();
@@ -864,8 +958,9 @@
                         data: formData,
                         success: function (response) {
                             console.log(response);
-                            location.reload();
-                            alert('Successfully Submitted purchase');
+
+                            alert('Successfully Submitted sales Return ');
+                            window.location.href = "/salesReturnRegister";
                         },
                         error: function (error) {
                             console.error("Error submitting form:", error);
@@ -1059,7 +1154,18 @@
             function generateUniqueId() {
                 return uuidv4();
             }
+            $(document).on('change', "select[name='discMode']", function () {
+                var uniqueId = $(this).attr('id').split('_')[1]; // Get the unique id
+                var discountInput = $('#discount_' + uniqueId);   // Find the corresponding discount input
 
+                if ($(this).val() !== null) {
+                    // Enable the discount input if a valid option is selected
+                    discountInput.prop('disabled', false);
+                } else {
+                    // Disable the discount input if no valid option is selected
+                    discountInput.prop('disabled', true);
+                }
+            });
 
         });
 
@@ -1108,7 +1214,6 @@
             let totalCGST = 0;
             let totalSGST = 0;
             let totalIGST = 0;
-
             let totalNetAmount = parseFloat($('#supplierinvoiceamount').val()) || 0;
 
             $('#customerTable tbody tr').each(function () {
@@ -1143,35 +1248,41 @@
             let subtotal = parseFloat($('#psubtotal').text()) || 0;
             let netAmount = parseFloat($('#pnetAmount').text()) || 0;
 
-            var discMode = $('#pdiscMode').val();
-            var discount = parseFloat($('#pdiscount').val()) || 0;
+            let discMode = $('#pdiscMode').val() || "3";
+            let discount = parseFloat($('#pdiscount').val()) || 0;
 
             if (isNaN(discount)) {
                 discount = 0;
             }
 
-            if (discMode === 'N/A' || discMode === '3') {
+            if (discMode === "3" || discMode === "N/A") {
                 discount = 0;
                 $('#pdiscount').val('0');
-            } else if (discMode === 'percentage' || discMode === '1') {
+            } else if (discMode === "percentage" || discMode === "1") {
                 discount = (subtotal * discount) / 100;
             }
 
             subtotal -= discount;
 
-            let roundOff = netAmount - subtotal;
+            // Implement rounding rule for subtotal
+            let roundedSubtotal = Math.round(subtotal);
 
-            $('#psubtotal').text(subtotal.toFixed(2));
+            // Calculate roundOff
+            let roundOff = netAmount - roundedSubtotal;
 
-            $('#psubtotal_').val(subtotal.toFixed(2));
+            // Update values with rounded subtotal
+            $('#psubtotal').text(roundedSubtotal.toFixed(2));
+            $('#psubtotal_').val(roundedSubtotal.toFixed(2));
 
             $('#proundOff').text(roundOff.toFixed(2));
             $('#proundOff_').val(roundOff.toFixed(2));
 
             var discModeId = $('#pdiscMode').val();
-            $('#pdiscMode_').val(discModeId);
-            $('#pdiscount_').val($('#pdiscount').val());
+            $('#pdiscMode_').val(discMode);
+            $('#pdiscount_').val(discount.toFixed(2));
         }
+    
+
 
         $('#pdiscMode, #pdiscount').change(function () {
             calculateTotals();
@@ -1488,7 +1599,7 @@
                     $('#supplierSelect').val(rowDetails.customer);
 
                     $('.dropdown[name="customername"]').val(rowDetails.customer);
-
+                    $('.dropdown[name="salesmanname"]').val(rowDetails.salesman);
                     var selectedSupplierState = $('#supplierSelect').find(':selected').data('state');
                     initiateFetchCompanyState(selectedSupplierState);
 

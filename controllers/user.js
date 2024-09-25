@@ -41,6 +41,154 @@ function formatDate(dateString) {
   return dateString;
 }
 
+/*****customerretail */
+exports.checkMobileNumber = async (req, res) => {
+  const { mobileno } = req.body;
+
+  // Validate the mobile number
+  if (!mobileno || mobileno.length !== 10) {
+    return res
+      .status(400)
+      .json({ error: "Invalid mobile number. It must be 10 digits long." });
+  }
+
+  const query =
+    "SELECT COUNT(*) as count FROM [elite_pos].[dbo].[retailcustomer] WHERE mobileno = ?";
+
+  try {
+    const [result] = await pool.query(query, [mobileno]);
+    const exists = result[0].count > 0; // Check if count is greater than 0
+    res.json({ exists }); // Return response with exists status
+  } catch (err) {
+    console.error("Error checking mobile number:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+
+
+
+
+exports.customerretailadd = async (req, res) => {
+  const { customername, mobileno, salesman } = req.body;
+
+  try {
+    // Ensure the database connection is established before proceeding
+    await poolConnect();
+
+    const result = await pool
+      .request()
+      .input("customername", sql.VarChar(255), customername || null)
+      .input("mobileno", sql.NVarChar(255), mobileno || null)
+      .input("salesman", sql.NVarChar(255), salesman || null)
+      .execute("Addcustomerretail");
+
+    console.log(result);
+    console.log(result.toString());
+
+    // Redirect to another route after processing
+    return res.redirect("/salesretail");
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Internal Server Error");
+  }
+};
+
+exports.customerretaildelete = async (req, res) => {
+  const uomId = req.params.id;
+
+  try {
+    // Ensure the database connection is established before proceeding
+    await poolConnect();
+
+    const result = await pool
+      .request()
+      .input("uomId", /* Assuming your parameter type is INT */ sql.Int, uomId)
+      .execute("Deletecustomerretail");
+
+    if (result.rowsAffected[0] > 0) {
+      return res.json({ success: true, message: "uomId deleted successfully" });
+    } else {
+      return res.status(404).json({ success: false, error: "uomId not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, error: "Internal Server Error" });
+  }
+};
+
+exports.customerretailedit = async (req, res) => {
+  const uomId = req.params.id;
+
+  // Extract the product data from the request body
+  const { customername, mobileno, salesman } = req.body;
+
+  try {
+    // Ensure the database connection is established before proceeding
+    await poolConnect();
+
+    const result = await pool.query`
+      UPDATE [elite_pos].[dbo].[retailcustomer]
+      SET
+      customername = ${customername},
+      mobileno = ${mobileno},
+      salesman=${salesman}
+      WHERE
+        id = ${uomId}
+    `;
+
+    console.log(result);
+    console.log(result.toString());
+
+    // Check if the update was successful (at least one row affected)
+    if (result.rowsAffected[0] > 0) {
+      return res.json({
+        success: true,
+        message: "uomId Type updated successfully",
+      });
+    } else {
+      // Handle the case where no rows were affected (e.g., product ID not found)
+      return res.status(404).json({ success: false, error: "uomId not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, error: "Internal Server Error" });
+  }
+};
+
+exports.customerretail = (req, res) => {
+    pool.connect((err, connection) => {
+        if (err) {
+            console.error("Error getting connection from pool:", err);
+            return res.status(500).json({ error: "Internal Server Error" });
+        }
+
+        connection.query("EXEC Getcustomerdetail", (err, result) => {
+            connection.release(); // Release the connection back to the pool
+
+            if (err) {
+                console.error("Error in listing data:", err);
+                return res.status(500).json({ error: "Internal Server Error" });
+            }
+
+
+
+            // Send the data as JSON response
+            res.json({ data: result.recordset });
+        });
+    });
+};
+
+
+
+/*****customerretail */
+
+
 //moleculescombination
 exports.moleculescombination = async (req, res) => {
   pool.connect((err, connection) => {
@@ -949,7 +1097,31 @@ exports.salesretailDetails = async (req, res) => {
       return res.status(500).json({ error: "Internal Server Error" });
     }
 
-    const query = "SELECT * FROM [elite_pos].[dbo].[salesretail_Master]";
+    const query = `
+      SELECT 
+          sm.[id] ,
+          sm.[saledate],
+          sm.[paymentmode],
+          rc.[customername],
+          rc.[mobileno],
+          sm.[amount],
+          sm.[cdAmount],
+          sm.[igst],
+          sm.[cgst],
+          sm.[sgst],
+          sm.[subtotal],
+          sm.[cess],
+          sm.[tcs],
+          sm.[discMode],
+          sm.[discount],
+          sm.[roundoff],
+          sm.[netAmount],
+          sm.[isDraft]
+      FROM 
+          [elite_pos].[dbo].[salesretail_Master] sm
+      LEFT JOIN 
+          [elite_pos].[dbo].[retailcustomer] rc ON sm.[customername] = rc.[mobileno] -- Change the join condition if needed
+    `;
 
     pool.query(query, (err, result) => {
       connection.release(); // Release the connection back to the pool
@@ -966,13 +1138,13 @@ exports.salesretailDetails = async (req, res) => {
   });
 };
 
+
 exports.salesretailadd = async (req, res) => {
   console.log(req.body);
   const {
     saledate,
-    paymentmode,
-    customermobileno,
-    customername,
+    ppaymentMode,
+    customerId, // Use customerId received from the client
     pamount,
     pigst,
     pcgst,
@@ -996,14 +1168,15 @@ exports.salesretailadd = async (req, res) => {
 
     parsedProducts = JSON.parse(productsString);
 
+    // Make sure customerId is being used correctly
     const result = await pool.query`
-          INSERT INTO [elite_pos].[dbo].[salesretail_Master]
-          ([saledate], [paymentmode],  [customermobileno], [customername], [amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft])
-          VALUES
-          (${formattedSaleDate}, ${paymentmode},  ${customermobileno}, ${customername}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft});
-
-          SELECT SCOPE_IDENTITY() as salesId;
-      `;
+      INSERT INTO [elite_pos].[dbo].[salesretail_Master]
+      ([saledate], [paymentmode], [customername], [amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft])
+      VALUES
+      (${formattedSaleDate}, ${ppaymentMode}, ${customerId}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft});
+    
+      SELECT SCOPE_IDENTITY() as salesId;
+    `;
 
     const salesId = result.recordset[0].salesId;
     console.log("Number of products:", parsedProducts.length);
@@ -1029,11 +1202,11 @@ exports.salesretailadd = async (req, res) => {
       } = product;
 
       await pool.query`
-            INSERT INTO [elite_pos].[dbo].[salesretail_Trans]
-            ([salesId], [product], [batchNo], [tax], [quantity],[free], [uom],[purcRate], [mrp],[rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
-            VALUES
-            (${salesId}, ${productId}, ${batchNo}, ${tax}, ${quantity},${free}, ${uom},${purcRate},${mrp} ,${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
-        `;
+        INSERT INTO [elite_pos].[dbo].[salesretail_Trans]
+        ([salesId], [product], [batchNo], [tax], [quantity],[free], [uom],[purcRate], [mrp],[rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
+        VALUES
+        (${salesId}, ${productId}, ${batchNo}, ${tax}, ${quantity}, ${free}, ${uom}, ${purcRate}, ${mrp}, ${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
+      `;
 
       await reduceretailStock(productId, quantity, free, batchNo);
     }
@@ -1046,6 +1219,8 @@ exports.salesretailadd = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
+
 
 async function reduceretailStock(productId, quantity, free, batchNo) {
   try {
@@ -1099,8 +1274,7 @@ exports.salesretailEdit = async (req, res) => {
         UPDATE [elite_pos].[dbo].[salesretail_Master]
         SET
             [saledate] = ${purchaseDetails.saledate},
-            [paymentmode] = ${purchaseDetails.paymentmode},
-            [customermobileno] = ${purchaseDetails.customermobileno},
+            [paymentmode] = ${purchaseDetails.ppaymentMode},
             [customername] = ${purchaseDetails.customername},
             [amount] = ${purchaseDetails.pamount},
             [cgst] = ${purchaseDetails.pcgst},
@@ -1237,18 +1411,38 @@ exports.salesretailids = (req, res) => {
       console.error("Error getting connection from pool:", err);
       return res.status(500).json({ error: "Internal Server Error" });
     }
+
     const query = `
-                  SELECT *
-                 
-              FROM 
-                  [elite_pos].[dbo].[salesretail_Master] 
-                  
-              
-              `;
+            SELECT 
+    sm.[id] ,
+    sm.[saledate],
+    sm.[paymentmode],
+    sm.[customername] as selectcustomer,
+    rc.[customername],
+    rc.[mobileno],
+    sm.[amount],
+    sm.[cdAmount],
+    sm.[igst],
+    sm.[cgst],
+    sm.[sgst],
+    sm.[subtotal],
+    sm.[cess],
+    sm.[tcs],
+    sm.[discMode],
+    sm.[discount],
+    sm.[roundoff],
+    sm.[netAmount],
+    sm.[isDraft]
+FROM 
+    [elite_pos].[dbo].[salesretail_Master] sm
+LEFT JOIN 
+    [elite_pos].[dbo].[retailcustomer] rc ON sm.[customername] = rc.[id] 
+        `;
+
     pool.query(query, (err, result) => {
       connection.release();
       if (err) {
-        console.error("Error in fetching purchase IDs:", err);
+        console.error("Error in fetching sales retail IDs:", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
       res.header("Content-Type", "application/json");
@@ -1256,6 +1450,7 @@ exports.salesretailids = (req, res) => {
     });
   });
 };
+
 
 exports.salesretailproductid = (req, res) => {
   const purchaseId = req.query.purchaseId;
@@ -1267,13 +1462,13 @@ exports.salesretailproductid = (req, res) => {
     const query = `
     SELECT 
     pt.Id,
-    pt.product, -- Assuming this is the product ID
+    pt.product, 
     p.productname,
     dm.discMode,
     pt.batchNo,
     pt.tax,
     pt.quantity,
-    pt.free,
+   pt.free,
     pt.uom,
     pt.purcRate,
      pt.mrp,
@@ -1422,8 +1617,30 @@ exports.salesretailregister = (req, res) => {
 
     pool.query(
       `
-    SELECT *
-    FROM [elite_pos].[dbo].[salesretail_Master] 
+ SELECT 
+    sm.[id] ,
+    sm.[saledate],
+    sm.[paymentmode],
+    rc.[customername],
+    rc.[mobileno],
+    sm.[amount],
+    sm.[cdAmount],
+    sm.[igst],
+    sm.[cgst],
+    sm.[sgst],
+    sm.[subtotal],
+    sm.[cess],
+    sm.[tcs],
+    sm.[discMode],
+    sm.[discount],
+    sm.[roundoff],
+    sm.[netAmount],
+    sm.[isDraft]
+FROM 
+    [elite_pos].[dbo].[salesretail_Master] sm
+LEFT JOIN 
+    [elite_pos].[dbo].[retailcustomer] rc ON sm.[customername] = rc.[id] 
+
     
    ;
     `,
@@ -4793,7 +5010,7 @@ exports.purchase = (req, res) => {
 exports.purchaseadd = async (req, res) => {
   const {
     purchasedate,
-    paymentmode,
+    ppaymentmode,
     supplierinvoicedate,
     modeoftransport,
     transportno,
@@ -4830,7 +5047,7 @@ exports.purchaseadd = async (req, res) => {
       INSERT INTO [elite_pos].[dbo].[PurchaseTable_Master]
       ([purchasedate], [paymentmode], [supplierinvoicedate], [modeoftransport], [transportno], [supplierinvoiceamount], [supplierinvoiceno], [suppliername], [amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft])
       VALUES
-      (${formattedPurchaseDate}, ${paymentmode}, ${formattedsupplierinvoicedate}, ${modeoftransport}, ${transportno}, ${supplierinvoiceamount}, ${supplierinvoiceno}, ${suppliername}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft});
+      (${formattedPurchaseDate}, ${ppaymentmode}, ${formattedsupplierinvoicedate}, ${modeoftransport}, ${transportno}, ${supplierinvoiceamount}, ${supplierinvoiceno}, ${suppliername}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft});
 
       SET @purchaseId = SCOPE_IDENTITY(); -- Retrieve the SCOPE_IDENTITY() value
 

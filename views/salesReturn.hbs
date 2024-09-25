@@ -34,9 +34,8 @@
             width: 200px;
             /* Adjust the width as needed */
             padding: 5px;
-            ;
+            
         }
-
         .editForm {
             display: none;
             position: fixed;
@@ -49,11 +48,9 @@
             /* Ensure the popup is above the blurred background */
             border-radius: 10px;
         }
-
         .container {
             margin-left: 20%;
         }
-
         .updateManufacturer {
             background-color: rgba(50, 141, 168) !important;
             color: white !important;
@@ -62,7 +59,6 @@
             width: 80px !important;
             height: 30px;
         }
-
         .closeForm {
             background-color: rgba(50, 141, 168) !important;
             color: white !important;
@@ -71,11 +67,9 @@
             width: 80px !important;
             height: 30px;
         }
-
         button {
             margin: 1px;
         }
-
         #message {
             display: none;
             position: fixed;
@@ -96,26 +90,21 @@
             border-radius: 8px;
             overflow: hidden;
         }
-
         form input {
             margin: 2px;
         }
-
         form button {
             width: 100px !important;
             padding: 5px;
             margin: 5px;
         }
-
         .col input {
             width: 100%;
         }
-
         input[type=checkbox] {
             width: 100px;
             color: #8f8f8f !important;
         }
-
         #submitButton {
             display: none;
         }
@@ -129,7 +118,6 @@
         }
     </style>
 </head>
-
 <body class="g-sidenav-show bg-gray-100">
     {{>sidebar}}
     <main class="main-content position-relative border-radius-lg">
@@ -144,11 +132,9 @@
                         <button type="button" class="btn btn-danger deletemasBtn">Delete</button>
                     </div>
                 </div>
-
                 <form id="purchaseDetails" class="form-control" style="display: block; align-item: start;"
                     method="post">
                     <div class="row">
-
                         <div class="custom-input-container d-none">
                             <select name="Id" class="dropdown" id="Id">
                                 <option selected>view details</option>
@@ -167,15 +153,11 @@
                             <input type="text" placeholder=" " name="customermobileno" id="customermobileno">
                             <label for="customermobileno">Customer Mobile No</label>
                         </div>
-
-
                         <div class="custom-input-container col-md-3">
                             <input type="date" placeholder=" " name="saledate" id="saledate" required>
                             <label for="saledate">Sale Date<span class="text-danger text-2x "
                                     style="font-size: medium !important;">*</span></label>
                         </div>
-
-
                         <div class="custom-input-container ma col-md-3">
                             <label for="paymentmode">Payment Mode<span class="text-danger text-2x "
                                     style="font-size: medium !important;">*</span></label>
@@ -273,51 +255,36 @@
                         </div>
                         <button type="button" id="submitFormBtn" class="btn btn-primary custom-btn add">Submit</button>
                     </div>
-
-
                 </div>
-
 <form id="purchaseDetails" class="form-control p-0" style="display: block; align-item: start;" action="auth/sales"
     method="post">
     <div class="row d-flex justify-content-between  mb-0 gx-0 w-100 ">
-
-
         <div class="custom col-md-1">
             <label for="pamount">Amount:</label>
             <span id="pamount" name="pamount">0.00</span>
         </div>
-
         <div class="custom col-md-1">
             <label for="pigst">IGST:</label>
             <span id="pigst" name="pigts">0.00</span>
         </div>
-
-
-
         <div class="custom col-md-1">
             <label for="pcgst">CGST:</label>
             <span id="pcgst" name="pcgst">0.00</span>
         </div>
-
         <div class="custom col-md-1">
             <label for="psgst">SGST:</label>
             <span id="psgst" name="psgst">0.00</span>
         </div>
-
         <div class="custom col-md-1">
             <label for="psubtotal">Total Amount:</label>
             <span id="psubtotal" name="psubtotal">0.00</span>
         </div>
-
-
     </div>
     {{!--
     <div class="custom">
         <label for="pcess">CESS:</label>
         <span id="pcess" name="pcess">0.00</span>
     </div>
-
-
     <div class="col">
         <div class="custom">
             <label for="ptcs">TCS:</label>
@@ -340,7 +307,6 @@
             style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #ccc; width: 80%; max-width: 800px;">
             <a class="closebatch" style="position: absolute; top: 0px; right: -2px;"><i
                     class="fa-solid fa-circle-xmark fa-2x"></i></a>
-
             <!-- Scrollable table container with fixed header -->
             <div style="max-height: 200px; overflow-y: auto; position: relative;">
                 <table id="batchDetailsTable" class="table"
@@ -360,7 +326,6 @@
                     <tbody id="batchDetailsBody"></tbody>
                 </table>
             </div>
-
             <!-- Fixed Color Legend below the scrollable table -->
             <div style="margin-top: 10px;">
                 <strong>Color Legend:</strong>

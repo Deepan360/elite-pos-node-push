@@ -189,7 +189,8 @@
                         </div>
 
                         <div class="col-md-3 custom-input-container ma">
-                            <input type="date" placeholder=" " name="supplierinvoicedate" id="supplierinvoicedate" required>
+                            <input type="date" placeholder=" " name="supplierinvoicedate" id="supplierinvoicedate"
+                                required>
                             <label for="supplierinvoicedate">Supplier Invoice Date<span class="text-danger text-2x "
                                     style="font-size: medium !important;">*</span></label>
                         </div>
@@ -316,56 +317,56 @@
                 </div>
 
                 <form id="purchaseDetails" class="form-control p-0 g-0 " style="display: block; align-item: start;"
-                    action="auth/purchase"  method="post">
+                    action="auth/purchase" method="post">
                     <div class="row d-flex justify-content-between  mb-0 gx-0 w-100 ">
-                     
-                            
-                                <div class="custom col-md-1">
-                                    <label for="pamount">Amount:</label>
-                                    <span id="pamount" name="pamount">0.00</span>
-                                </div>
 
-                                <div class="custom col-md-1">
-                                    <label for="pigst">IGST:</label>
-                                    <span id="pigst" name="pigts">0.00</span>
-                                </div>
-                          
-                                <div class="custom col-md-1">
-                                    <label for="pcgst">CGST:</label>
-                                    <span id="pcgst" name="pcgst">0.00</span>
-                                </div>
 
-                                <div class="custom col-md-1">
-                                    <label for="psgst">SGST:</label>
-                                    <span id="psgst" name="psgst">0.00</span>
-                                </div>
-                           
-                                <div class="custom col-md-1">
-                                    <label for="psubtotal">Total Amount:</label>
-                                    <span id="psubtotal" name="psubtotal">0.00</span>
-                                </div>
-{{!-- 
-                                <div class="custom">
-                                    <label for="pcess">CESS:</label>
-                                    <span id="pcess" name="pcess">0.00</span>
-                                </div>
-                          
-                                <div class="custom">
-                                    <label for="ptcs">TCS:</label>
-                                    <span id="ptcs" name="ptcs">0.00</span>
-                                </div> --}}
-                                <div class="custom col-md-1">
-                                    <label for="proundOff">Round Off:</label>
-                                    <span id="proundOff" name="proundOff">0.00</span>
-                                </div>
-                            
-                                <div class="custom col-md-1">
-                                    <label for="pnetAmount">Net Amount:</label>
-                                    <span id="pnetAmount" name="pnetAmount">0.00</span>
-                                </div>
-                            
+                        <div class="custom col-md-1">
+                            <label for="pamount">Amount:</label>
+                            <span id="pamount" name="pamount">0.00</span>
                         </div>
-                    
+
+                        <div class="custom col-md-1">
+                            <label for="pigst">IGST:</label>
+                            <span id="pigst" name="pigts">0.00</span>
+                        </div>
+
+                        <div class="custom col-md-1">
+                            <label for="pcgst">CGST:</label>
+                            <span id="pcgst" name="pcgst">0.00</span>
+                        </div>
+
+                        <div class="custom col-md-1">
+                            <label for="psgst">SGST:</label>
+                            <span id="psgst" name="psgst">0.00</span>
+                        </div>
+
+                        <div class="custom col-md-1">
+                            <label for="psubtotal">Total Amount:</label>
+                            <span id="psubtotal" name="psubtotal">0.00</span>
+                        </div>
+                        {{!--
+                        <div class="custom">
+                            <label for="pcess">CESS:</label>
+                            <span id="pcess" name="pcess">0.00</span>
+                        </div>
+
+                        <div class="custom">
+                            <label for="ptcs">TCS:</label>
+                            <span id="ptcs" name="ptcs">0.00</span>
+                        </div> --}}
+                        <div class="custom col-md-1">
+                            <label for="proundOff">Round Off:</label>
+                            <span id="proundOff" name="proundOff">0.00</span>
+                        </div>
+
+                        <div class="custom col-md-1">
+                            <label for="pnetAmount">Net Amount:</label>
+                            <span id="pnetAmount" name="pnetAmount">0.00</span>
+                        </div>
+
+                    </div>
+
                 </form>
             </div>
 
@@ -394,7 +395,7 @@
 
     </main>
     {{>color}}
-  
+
 
     <script>
         $(document).ready(function () {
@@ -830,7 +831,6 @@
                 if (selectedOption.val() && selectedOption.val() !== 'view details') {
                     $('.div').show();
                     $('.opener').hide();
-                       $('.input-invalid').remove();
                     $('.add').hide();
                 } else {
                     $('.div').hide();
@@ -1086,7 +1086,6 @@
                                 free: $('#free_' + uniqueId).val() || "",
                                 package: $('#package_' + uniqueId).val() || "",
                                 retailQty: $('#retailQty_' + uniqueId).val() || "",
-
                                 uom: $('#uom_' + uniqueId).val() || "",
                                 rate: $('#rate_' + uniqueId).val() || "",
                                 retailRate: $('#retailRate_' + uniqueId).val() || "",
@@ -1133,11 +1132,6 @@
 
         });
 
-
-
-
-
-
         function fetchDiscmodeOptions(uniqueId) {
             $.ajax({
                 url: '/auth/purchase/discmode',
@@ -1178,79 +1172,78 @@
         }
 
 
- function calculateTotals() {
-        let totalAmount = 0;
-        let totalCGST = 0;
-        let totalSGST = 0;
-        let totalIGST = 0;
-        let totalNetAmount = parseFloat($('#supplierinvoiceamount').val()) || 0;
+        function calculateTotals() {
+            let totalAmount = 0;
+            let totalCGST = 0;
+            let totalSGST = 0;
+            let totalIGST = 0;
+            let totalNetAmount = parseFloat($('#supplierinvoiceamount').val()) || 0;
 
-        $('#customerTable tbody tr').each(function () {
-            let row = $(this);
-            let amount = parseFloat(row.find('input[name="amount"]').val()) || 0;
-            let cgst = parseFloat(row.find('input[name="cgst"]').val()) || 0;
-            let sgst = parseFloat(row.find('input[name="sgst"]').val()) || 0;
-            let igst = parseFloat(row.find('input[name="igst"]').val()) || 0;
+            $('#customerTable tbody tr').each(function () {
+                let row = $(this);
+                let amount = parseFloat(row.find('input[name="amount"]').val()) || 0;
+                let cgst = parseFloat(row.find('input[name="cgst"]').val()) || 0;
+                let sgst = parseFloat(row.find('input[name="sgst"]').val()) || 0;
+                let igst = parseFloat(row.find('input[name="igst"]').val()) || 0;
 
-            totalAmount += amount;
-            totalCGST += cgst;
-            totalSGST += sgst;
-            totalIGST += igst;
-        });
+                totalAmount += amount;
+                totalCGST += cgst;
+                totalSGST += sgst;
+                totalIGST += igst;
+            });
 
-        let totalTax = totalCGST + totalSGST + totalIGST;
+            let totalTax = totalCGST + totalSGST + totalIGST;
 
-        $('#pamount').text(totalAmount.toFixed(2));
-        $('#pcgst').text(totalCGST.toFixed(2));
-        $('#psgst').text(totalSGST.toFixed(2));
-        $('#pigst').text(totalIGST.toFixed(2));
-        $('#pnetAmount').text(totalNetAmount.toFixed(2));
-        $('#psubtotal').text((totalAmount + totalTax).toFixed(2));
+            $('#pamount').text(totalAmount.toFixed(2));
+            $('#pcgst').text(totalCGST.toFixed(2));
+            $('#psgst').text(totalSGST.toFixed(2));
+            $('#pigst').text(totalIGST.toFixed(2));
+            $('#pnetAmount').text(totalNetAmount.toFixed(2));
+            $('#psubtotal').text((totalAmount + totalTax).toFixed(2));
 
-        $('#pamount_').val(totalAmount.toFixed(2));
-        $('#pcgst_').val(totalCGST.toFixed(2));
-        $('#psgst_').val(totalSGST.toFixed(2));
-        $('#pigst_').val(totalIGST.toFixed(2));
-        $('#pnetAmount_').val(totalNetAmount.toFixed(2));
-        $('#psubtotal_').val((totalAmount + totalTax).toFixed(2));
+            $('#pamount_').val(totalAmount.toFixed(2));
+            $('#pcgst_').val(totalCGST.toFixed(2));
+            $('#psgst_').val(totalSGST.toFixed(2));
+            $('#pigst_').val(totalIGST.toFixed(2));
+            $('#pnetAmount_').val(totalNetAmount.toFixed(2));
+            $('#psubtotal_').val((totalAmount + totalTax).toFixed(2));
 
-        let subtotal = parseFloat($('#psubtotal').text()) || 0;
-        let netAmount = parseFloat($('#pnetAmount').text()) || 0;
+            let subtotal = parseFloat($('#psubtotal').text()) || 0;
+            let netAmount = parseFloat($('#pnetAmount').text()) || 0;
 
-        let discMode = $('#pdiscMode').val() || "3";
-        let discount = parseFloat($('#pdiscount').val()) || 0;
+            let discMode = $('#pdiscMode').val() || "3";
+            let discount = parseFloat($('#pdiscount').val()) || 0;
 
-        if (isNaN(discount)) {
-            discount = 0;
+            if (isNaN(discount)) {
+                discount = 0;
+            }
+
+            if (discMode === "3" || discMode === "N/A") {
+                discount = 0;
+                $('#pdiscount').val('0');
+            } else if (discMode === "percentage" || discMode === "1") {
+                discount = (subtotal * discount) / 100;
+            }
+
+            subtotal -= discount;
+
+            // Implement rounding rule for subtotal
+            let roundedSubtotal = Math.round(subtotal);
+
+            // Calculate roundOff
+            let roundOff = netAmount - roundedSubtotal;
+
+            // Update values with rounded subtotal
+            $('#psubtotal').text(roundedSubtotal.toFixed(2));
+            $('#psubtotal_').val(roundedSubtotal.toFixed(2));
+
+            $('#proundOff').text(roundOff.toFixed(2));
+            $('#proundOff_').val(roundOff.toFixed(2));
+
+            var discModeId = $('#pdiscMode').val();
+            $('#pdiscMode_').val(discMode);
+            $('#pdiscount_').val(discount.toFixed(2));
         }
-
-        if (discMode === "3" || discMode === "N/A") {
-            discount = 0;
-            $('#pdiscount').val('0');
-        } else if (discMode === "percentage" || discMode === "1") {
-            discount = (subtotal * discount) / 100;
-        }
-
-        subtotal -= discount;
-
-        // Implement rounding rule for subtotal
-        let roundedSubtotal = Math.round(subtotal);
-
-        // Calculate roundOff
-        let roundOff = netAmount - roundedSubtotal;
-
-        // Update values with rounded subtotal
-        $('#psubtotal').text(roundedSubtotal.toFixed(2));
-        $('#psubtotal_').val(roundedSubtotal.toFixed(2));
-
-        $('#proundOff').text(roundOff.toFixed(2));
-        $('#proundOff_').val(roundOff.toFixed(2));
-
-        var discModeId = $('#pdiscMode').val();
-        $('#pdiscMode_').val(discMode);
-        $('#pdiscount_').val(discount.toFixed(2));
-    }
-
 
 
         $('#pdiscMode, #pdiscount').change(function () {
@@ -1474,72 +1467,72 @@
                 initiateFetchCompanyState(selectedSupplier);
             });
 
-                $(document).ready(function () {
-                    // Initially hide the opener
-                    $('#openPurchaseForm').hide();
+            $(document).ready(function () {
+                // Initially hide the opener
+                $('#openPurchaseForm').hide();
 
                 // Function to validate supplier invoice number
                 function validateInvoiceNumber() {
-            var invoiceNo = $('#supplierinvoiceno').val();
-                var selectedSupplier = $('#supplierSelect').val(); // Get the selected supplier ID
-                var $invoiceField = $('#supplierinvoiceno');
-                var $wrapper = $invoiceField.closest('.input-wrapper');
-                var $icon = $wrapper.find('.validation-icon');
-                let isValidInvoice = true; // To track invoice validity
+                    var invoiceNo = $('#supplierinvoiceno').val();
+                    var selectedSupplier = $('#supplierSelect').val(); // Get the selected supplier ID
+                    var $invoiceField = $('#supplierinvoiceno');
+                    var $wrapper = $invoiceField.closest('.input-wrapper');
+                    var $icon = $wrapper.find('.validation-icon');
+                    let isValidInvoice = true; // To track invoice validity
 
-                if (invoiceNo && selectedSupplier) { // Check both invoice number and supplier ID
-                    // Perform AJAX request to check if invoice number exists
-                    $.ajax({
-                        url: '/auth/purchase/checkInvoiceNumber',
-                        method: 'GET',
-                        data: { invoiceNo: invoiceNo, supplierId: selectedSupplier }, // Pass both parameters
-                        success: function (response) {
-                            if (response.exists) {
-                                $invoiceField.removeClass('input-valid').addClass('input-invalid');
-                                $icon.removeClass('input-valid').addClass('input-invalid').css('color', 'red');
-                                isValidInvoice = false; // Mark as invalid
-                            } else {
-                                $invoiceField.removeClass('input-invalid').addClass('input-valid');
-                                $icon.removeClass('input-invalid').addClass('input-valid').css('color', 'green');
-                                isValidInvoice = true; // Mark as valid
+                    if (invoiceNo && selectedSupplier) { // Check both invoice number and supplier ID
+                        // Perform AJAX request to check if invoice number exists
+                        $.ajax({
+                            url: '/auth/purchase/checkInvoiceNumber',
+                            method: 'GET',
+                            data: { invoiceNo: invoiceNo, supplierId: selectedSupplier }, // Pass both parameters
+                            success: function (response) {
+                                if (response.exists) {
+                                    $invoiceField.removeClass('input-valid').addClass('input-invalid');
+                                    $icon.removeClass('input-valid').addClass('input-invalid').css('color', 'red');
+                                    isValidInvoice = false; // Mark as invalid
+                                } else {
+                                    $invoiceField.removeClass('input-invalid').addClass('input-valid');
+                                    $icon.removeClass('input-invalid').addClass('input-valid').css('color', 'green');
+                                    isValidInvoice = true; // Mark as valid
+                                }
+                                checkRequiredFields(isValidInvoice); // Call check after validation with invoice status
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Error checking invoice number:', error);
                             }
-                            checkRequiredFields(isValidInvoice); // Call check after validation with invoice status
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Error checking invoice number:', error);
-                        }
-                    });
-            } else {
-                    // Clear validation if input is empty or supplier not selected
-                    $invoiceField.removeClass('input-invalid input-valid');
-                $icon.removeClass('input-invalid input-valid').css('color', '');
-                checkRequiredFields(false); // Invoice is invalid if fields are empty
-            }
-        }
+                        });
+                    } else {
+                        // Clear validation if input is empty or supplier not selected
+                        $invoiceField.removeClass('input-invalid input-valid');
+                        $icon.removeClass('input-invalid input-valid').css('color', '');
+                        checkRequiredFields(false); // Invoice is invalid if fields are empty
+                    }
+                }
 
                 // Function to check required fields and invoice validity
                 function checkRequiredFields(isValidInvoice) {
                     let isValid = true;
 
-                // Iterate over all required fields and check their validity
-                $('#purchaseDetails').find('input[required], select[required]').each(function () {
-                if ($(this).val() === '' || $(this).val() === null) {
-                    isValid = false;
-                }
-            });
+                    // Iterate over all required fields and check their validity
+                    $('#purchaseDetails').find('input[required], select[required]').each(function () {
+                        if ($(this).val() === '' || $(this).val() === null) {
+                            isValid = false;
+                        }
+                    });
 
-                // Show the opener if all required fields are valid and invoice is valid, else hide it
-                if (isValid && isValidInvoice) {
-                    $('#openPurchaseForm').show();
-            } else {
-                    $('#openPurchaseForm').hide();
-            }
-        }
+                    // Show the opener if all required fields are valid and invoice is valid, else hide it
+                    if (isValid && isValidInvoice) {
+                        $('#openPurchaseForm').show();
+                    } else {
+                        $('#openPurchaseForm').hide();
+                    }
+                }
 
                 // Bind input and change events to validate on the fly
                 $('#purchaseDetails').find('input, select').on('input change', function () {
                     validateInvoiceNumber();  // Also validate invoice when fields change
-        });
+                });
 
                 // Trigger invoice validation directly on input change of the invoice number
                 $('#supplierinvoiceno').on('input', validateInvoiceNumber);
@@ -1547,8 +1540,8 @@
                 // Trigger validation when the supplier dropdown changes
                 $('#supplierSelect').on('change', function () {
                     validateInvoiceNumber();  // Validate the invoice number when supplier changes
-        });
-    });
+                });
+            });
 
 
             function fetchSupplierNames() {
@@ -1567,13 +1560,13 @@
                                     text: option.ledgername,
                                     'data-state': option.state,
                                     'data-mobile': option.mobile
-                              
+
                                 });
                                 $('.dropdown[name="suppliername"]').append($option);
-                                });
-                                // Trigger change event to update mobile number when the first option is selected by default
-                                $('.dropdown[name="suppliername"]').change();
-                            
+                            });
+                            // Trigger change event to update mobile number when the first option is selected by default
+                            $('.dropdown[name="suppliername"]').change();
+
                         } else {
                             console.error('No options found for Supplier Ledger(dr)');
                         }
@@ -1661,7 +1654,7 @@
                         $('.dropdown[name="Id"] option').each(function () {
                             var optionValue = $(this).val();
                             if (optionValue !== 'view details') {
-                                var optionRow = JSON.parse(optionValue);
+                                var optionRow = JSON.parse(optionValue); 
                                 if (optionRow.id === purchaseIdInt) {
                                     $(this).prop('selected', true);
                                 }

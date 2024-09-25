@@ -249,7 +249,7 @@ router.post(
   "/salesretail/retailbatchDetails/:selectedProductId",
   userController.retailbatchDetails
 );
-
+router.get("/salesretail/checkMobile", userController.checkMobileNumber);
 
 
 router.get("/molecules", userController.molecules);
@@ -323,6 +323,19 @@ router.get(
 router.get(
   "/salesretailreturn/salesretailreturnproductid",
   userController.salesretailreturnproductid
+);
+
+
+
+router.get("/salesretail/customerretail", userController.customerretail);
+router.post("/salesretail/customerretail", userController.customerretailadd);
+router.put(
+  "/salesretail/customerretailedit/:id",
+  userController.customerretailedit
+);
+router.delete(
+  "/salesretail/customerretaildelete/:id",
+  userController.customerretaildelete
 );
 
 module.exports = router;

@@ -1299,25 +1299,19 @@
 
         table.column('.action').visible(false);
 
-
         // Toggle visibility of the action column and buttons when Edit button is clicked
         $('.editmasbtn').click(function () {
             var isVisible = table.column('.action').visible();
             table.column('.action').visible(!isVisible);
-
-
         });
 
         $('#purchaseId').on('change', function () {
             var selectedPurchaseId = $(this).val();
-
-
+            debugger;
             table.ajax.url('/auth/salesReturn/salesReturnproductid?purchaseId=' + selectedPurchaseId).load();
-
         });
 
         if (table.data().count() === 0) {
-
             console.log("No data available in table");
         }
         if (table.rows().count() === 0) {

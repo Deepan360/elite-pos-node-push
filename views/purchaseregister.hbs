@@ -110,6 +110,7 @@
                                 <th>Supplier</th>
                                 <th>Supp Inv Date</th>
                                 <th>Total Amount</th>
+                                <th>Payment Mode</th>
                                 <th class="action">Action</th>
                                 <th>Print</th>
                             </tr>
@@ -239,7 +240,8 @@
                             const formattedDate = moment(data).format("DD-MM-YYYY");
                             return formattedDate;
                         }  },
-        { data: 'netAmount' },
+        { data: 'subtotal' },
+         { data: 'paymentmode' },
         {
     data: 'id',
     render: function (data) {

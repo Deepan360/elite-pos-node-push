@@ -1084,10 +1084,6 @@ exports.salesretailreturndraft = (req, res) => {
 };
 //salesretailreturn
 
-
-
-
-
 //salesretail retail
 
 exports.salesretailDetails = async (req, res) => {
@@ -1102,6 +1098,7 @@ exports.salesretailDetails = async (req, res) => {
           sm.[id] ,
           sm.[saledate],
           sm.[paymentmode],
+          sm.[doctorname],
           rc.[customername],
           rc.[mobileno],
           sm.[amount],
@@ -1138,13 +1135,13 @@ exports.salesretailDetails = async (req, res) => {
   });
 };
 
-
 exports.salesretailadd = async (req, res) => {
   console.log(req.body);
   const {
     saledate,
     ppaymentMode,
     customerId, // Use customerId received from the client
+    doctorname,
     pamount,
     pigst,
     pcgst,
@@ -1171,9 +1168,9 @@ exports.salesretailadd = async (req, res) => {
     // Make sure customerId is being used correctly
     const result = await pool.query`
       INSERT INTO [elite_pos].[dbo].[salesretail_Master]
-      ([saledate], [paymentmode], [customername], [amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft])
+      ([saledate], [paymentmode], [customername],[doctorname] ,[amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft])
       VALUES
-      (${formattedSaleDate}, ${ppaymentMode}, ${customerId}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft});
+      (${formattedSaleDate}, ${ppaymentMode}, ${customerId},${doctorname}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft});
     
       SELECT SCOPE_IDENTITY() as salesId;
     `;
@@ -1219,8 +1216,6 @@ exports.salesretailadd = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
-
-
 
 async function reduceretailStock(productId, quantity, free, batchNo) {
   try {
@@ -1273,9 +1268,10 @@ exports.salesretailEdit = async (req, res) => {
     await pool.query`
         UPDATE [elite_pos].[dbo].[salesretail_Master]
         SET
-            [saledate] = ${purchaseDetails.saledate},
-            [paymentmode] = ${purchaseDetails.ppaymentMode},
+            [saledate] = ${purchaseDetails.saledate}, 
+            [paymentmode] = ${purchaseDetails.paymentmode},
             [customername] = ${purchaseDetails.customername},
+             [doctorname] = ${purchaseDetails.doctorname},
             [amount] = ${purchaseDetails.pamount},
             [cgst] = ${purchaseDetails.pcgst},
             [sgst] = ${purchaseDetails.psgst},
@@ -1418,6 +1414,7 @@ exports.salesretailids = (req, res) => {
     sm.[saledate],
     sm.[paymentmode],
     sm.[customername] as selectcustomer,
+    sm.[doctorname],
     rc.[customername],
     rc.[mobileno],
     sm.[amount],
@@ -1450,7 +1447,6 @@ LEFT JOIN
     });
   });
 };
-
 
 exports.salesretailproductid = (req, res) => {
   const purchaseId = req.query.purchaseId;
@@ -1621,6 +1617,7 @@ exports.salesretailregister = (req, res) => {
     sm.[id] ,
     sm.[saledate],
     sm.[paymentmode],
+    sm.[doctorname],
     rc.[customername],
     rc.[mobileno],
     sm.[amount],
@@ -1635,7 +1632,8 @@ exports.salesretailregister = (req, res) => {
     sm.[discount],
     sm.[roundoff],
     sm.[netAmount],
-    sm.[isDraft]
+    sm.[isDraft],
+     dbo.GetBillMargin(sm.id) as billmargin
 FROM 
     [elite_pos].[dbo].[salesretail_Master] sm
 LEFT JOIN 
@@ -1904,7 +1902,6 @@ exports.salesretaildetails = (req, res) => {
     res.json({ data: result.recordset });
   });
 };
-
 //salesretailprintpage
 
 //salesprintpage
@@ -1949,7 +1946,6 @@ exports.salesdetails = (req, res) => {
     res.json({ data: result.recordset });
   });
 };
-
 //salesprintpage
 
 //purchaseprintpage
@@ -1994,7 +1990,6 @@ exports.purchasedetails = (req, res) => {
     res.json({ data: result.recordset });
   });
 };
-
 //purchaseprintpage
 //purchasesales report
 exports.purchaseoutstanding = (req, res) => {
@@ -2171,7 +2166,6 @@ exports.billwise = (req, res) => {
       return res.status(500).json({ error: "Internal Server Error" });
     });
 };
-
 //mis
 
 //accounts
@@ -2470,7 +2464,6 @@ exports.balancesheet = (req, res) => {
     });
   });
 };
-
 //aaccounts
 //reports on gst
 exports.gstPurchase = (req, res) => {
@@ -2544,10 +2537,8 @@ exports.hsnsales = (req, res) => {
     });
   });
 };
-
 //reports on gst
 //dashboard
-
 exports.masterdata = async (req, res) => {
   try {
     const result = await pool.request().execute("GetMasterData");
@@ -2711,7 +2702,6 @@ exports.purchaseCount = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-
 //dashboard
 //company title
 const initializePool = async () => {
@@ -3432,7 +3422,7 @@ exports.batchDetails = async (req, res) => {
           SELECT 
               [batchNo],
               [tax],
-              [op_quantity],
+             CAST([op_quantity] AS INT) AS op_quantity,
               [expiryDate],
               [uom],
               [rate] ,
@@ -3926,7 +3916,7 @@ exports.salesregister = (req, res) => {
 
     pool.query(
       `
-    SELECT s.*, c.ledgername
+        SELECT s.*, c.ledgername,  dbo.GetsalesBillMargin(s.id) as billmargin
     FROM [elite_pos].[dbo].[sales_Master] s
     JOIN [elite_pos].[dbo].[customer] c ON s.customer = c.id
     where isDraft=0;

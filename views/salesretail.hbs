@@ -4,8 +4,6 @@
 <head>
     {{>header}}
     <style>
-
-
         .new-row {
             display: none;
         }
@@ -16,10 +14,14 @@
             padding: 5px;
             ;
         }
-.non-selectable {
-    cursor: not-allowed; /* Show not-allowed cursor for non-selectable rows */
-    opacity: 0.5; /* Make non-selectable rows appear faded */
-}
+
+        .non-selectable {
+            cursor: not-allowed;
+            /* Show not-allowed cursor for non-selectable rows */
+            opacity: 0.5;
+            /* Make non-selectable rows appear faded */
+        }
+
         .input-field.disc-mode {
             width: 200px;
             /* Adjust the width as needed */
@@ -53,14 +55,20 @@
             height: 30px;
         }
 
-        {{!-- .closeForm {
-            background-color: rgba(50, 141, 168) !important;
-            color: white !important;
-            border: none !important;
-            border-radius: 3px !important;
-            width: 80px !important;
-            height: 30px;
-        } --}}
+            {
+                {
+                !-- .closeForm {
+                    background-color: rgba(50, 141, 168) !important;
+                    color: white !important;
+                    border: none !important;
+                    border-radius: 3px !important;
+                    width: 80px !important;
+                    height: 30px;
+                }
+
+                --
+            }
+        }
 
         button {
             margin: 1px;
@@ -116,56 +124,71 @@
             right: 0;
             margin: 10px;
         }
-                .btn.disabled, .btn[disabled] {
-    background-color: #4e4e4e !important;
-    border-color: #afafaf !important;
-    cursor: not-allowed !important;
-    opacity: 0.6;
-    color: #000;
-    pointer-events: none !important;
-}
-/* Ensure the Select2 dropdown has the correct width */
-.select2-container--default .select2-selection--single {
-    height: 38px; /* Adjust this height to match your design */
-    border: 1px solid #ced4da; /* Match your input styles */
-    border-radius: 4px; /* Match your input styles */
-}
-/* Adjust the width of the dropdown */
-.select2-container {
-    width: 100% !important; /* Make sure it takes full width */
-}
-/* Optional: Customize the dropdown's search input */
-.select2-container--default .select2-search--dropdown .select2-search__field {
-    height: 38px; /* Match the height */
-}
-/* Optional: Style the placeholder */
-.select2-container--default .select2-selection--single .select2-selection__placeholder {
-    color: #6c757d; /* Placeholder color */
-}
-tr td input.input-field,
-tr td select.input-field {
-  width: 100%;
-  /* Make the input/select take full width of the td */
-  max-width: max-content;
-  /* Allow the input to stretch based on its content */
-  box-sizing: border-box;
-white-space: nowrap;
-  margin: 0;
-  /* Remove any default margin */
-  /* Center text in the inputs */
-}
-/* Table header (thead) styling to ensure alignment with tbody */
-table th {
-    width: auto;
-      /* Make the input/select take full width of the td */
-      white-space: nowrap;
-  box-sizing: border-box;
-}
-/* Responsive table container */
-.table-responsive {
-  white-space: nowrap;
-  /* Ensure the table does not break in smaller screens */
-}
+
+        .btn.disabled,
+        .btn[disabled] {
+            background-color: #4e4e4e !important;
+            border-color: #afafaf !important;
+            cursor: not-allowed !important;
+            opacity: 0.6;
+            color: #000;
+            pointer-events: none !important;
+        }
+
+        /* Ensure the Select2 dropdown has the correct width */
+        .select2-container--default .select2-selection--single {
+            height: 38px;
+            /* Adjust this height to match your design */
+            border: 1px solid #ced4da;
+            /* Match your input styles */
+            border-radius: 4px;
+            /* Match your input styles */
+        }
+
+        /* Adjust the width of the dropdown */
+        .select2-container {
+            width: 100% !important;
+            /* Make sure it takes full width */
+        }
+
+        /* Optional: Customize the dropdown's search input */
+        .select2-container--default .select2-search--dropdown .select2-search__field {
+            height: 38px;
+            /* Match the height */
+        }
+
+        /* Optional: Style the placeholder */
+        .select2-container--default .select2-selection--single .select2-selection__placeholder {
+            color: #6c757d;
+            /* Placeholder color */
+        }
+
+        tr td input.input-field,
+        tr td select.input-field {
+            width: 100%;
+            /* Make the input/select take full width of the td */
+            max-width: max-content;
+            /* Allow the input to stretch based on its content */
+            box-sizing: border-box;
+            white-space: nowrap;
+            margin: 0;
+            /* Remove any default margin */
+            /* Center text in the inputs */
+        }
+
+        /* Table header (thead) styling to ensure alignment with tbody */
+        table th {
+            width: auto;
+            /* Make the input/select take full width of the td */
+            white-space: nowrap;
+            box-sizing: border-box;
+        }
+
+        /* Responsive table container */
+        .table-responsive {
+            white-space: nowrap;
+            /* Ensure the table does not break in smaller screens */
+        }
     </style>
 </head>
 
@@ -177,17 +200,18 @@ table th {
             <div class="form-control card">
                 <div style="display: flex;justify-content: space-between;">
                     <div class="d-flex w-auto align-center align-center gap-2">
-                    <h3>Retailer sale </h3>
-                    <div class=" opener mt-2  bg-success mb-2 px-1 rounded-3 align-center text-white py-1 cursor-pointer newcoustomer" type="button" id="newCustomerBtn">
+                        <h3>Retailer sale </h3>
+                        <div class=" opener mt-2  bg-success mb-2 px-1 rounded-3 align-center text-white py-1 cursor-pointer newcoustomer"
+                            type="button" id="newCustomerBtn">
 
-                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-person-plus-fill"
-                            viewBox="0 0 16 16">
-                            <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
-                            <path fill-rule="evenodd"
-                                d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5" />
-                        </svg>
-                        <label class="text-white">New Customer</label>
-                    </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor"
+                                class="bi bi-person-plus-fill" viewBox="0 0 16 16">
+                                <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+                                <path fill-rule="evenodd"
+                                    d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5" />
+                            </svg>
+                            <label class="text-white">New Customer</label>
+                        </div>
                     </div>
                     <div class="div" style="align-items: end;">
                         <button type="button" class="btn btn-success" id="new">New</button>
@@ -208,50 +232,58 @@ table th {
                                 <input type="hidden" name="id" id="id">
                             </div>
                         </div>
-<div class="col-md-2 custom">
-    <div class="custom-input-container">
-        <select name="customerSelect" id="customerSelect">
-            <option value="" disabled selected>Select a customer</option>
-            <!-- Options will be dynamically populated -->
-        </select>
-        <label for="customerSelect">Select a customer<span class="text-danger text-2x"
-                style="font-size: medium !important;">*</span></label>
-    </div>
-</div>
+                        <div class="col-md-2 custom opener">
+                            <div class="custom-input-container">
 
-    <div class="col-md-2">
-        <div class="custom-input-container">
-            <input type="text" placeholder=" " name="mobileno" id="mobileno" readonly>
-            <label for="mobileno">Customer Mobile No</label>
-        </div>
-    </div>
-                    <div class="col-md-2">
-                        <div class="custom-input-container">
-                        <input type="text" placeholder=" " name="customername" id="customername" readonly>
-                            <label for="customername">Customer Name</label>
+
+                                <select name="customerSelect" id="customerSelect" required>
+                                    <option value="" disabled selected>Select a customer</option>
+                                    <!-- Options will be dynamically populated -->
+                                </select>
+                                <label for="customerSelect">Select a customer<span class="text-danger text-2x"
+                                        style="font-size: medium !important;">*</span></label>
+                            </div>
                         </div>
-                    </div>
-                                                {{!-- <div class="col-md-2 custom">
-                                                    <div class=" custom-input-container  ">
-                                                        <label for="paymentmode">Payment Mode<span class="text-danger text-2x "
-                                                                style="font-size: medium !important;">*</span></label>
-                                                        <select name="paymentmode" id="paymentmode">
-                                                            <option value="" disabled selected hidden>Choose Payment Mode</option>
-                                                            <option value="cash">Cash</option>
-                                                            <option value="credit">Credit</option>
-                                                            <option value="cash-credit">Cash/Credit</option>
-                                                        </select>
-                                                
-                                                    </div>
-</div> --}}
+
+                        <div class="col-md-2">
+                            <div class="custom-input-container">
+                                <input type="text" placeholder=" " name="mobileno" id="mobileno" readonly>
+                                <label for="mobileno">Customer Mobile No</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="custom-input-container">
+                                <input type="text" placeholder=" " name="customername" id="customername" readonly>
+                                <label for="customername">Customer Name</label>
+                            </div>
+                        </div>
+                        {{!-- <div class="col-md-2 custom">
+                            <div class=" custom-input-container  ">
+                                <label for="paymentmode">Payment Mode<span class="text-danger text-2x "
+                                        style="font-size: medium !important;">*</span></label>
+                                <select name="paymentmode" id="paymentmode">
+                                    <option value="" disabled selected hidden>Choose Payment Mode</option>
+                                    <option value="cash">Cash</option>
+                                    <option value="credit">Credit</option>
+                                    <option value="cash-credit">Cash/Credit</option>
+                                </select>
+
+                            </div>
+                        </div> --}}
                         <div class="col-md-2">
                             <div class="custom-input-container">
                                 <input type="date" placeholder=" " name="saledate" id="saledate">
                                 <label for="saledate">Sale Date</label>
                             </div>
                         </div>
-<input type="hidden" id="customerId" name="customerId">
+                        <div class="col-md-2">
+                            <div class="custom-input-container">
+                                <input type="text" placeholder=" " name="doctorname" id="doctorname">
+                                <label for="doctorname">Doctor Name</label>
+                            </div>
+                        </div>
 
+                        <input type="hidden" id="customerId" name="customerId" value="">
 
                     </div>
 
@@ -291,11 +323,11 @@ table th {
                             <th>MRP</th>
                             <th>Disc.Mode</th>
                             <th>Disc</th>
-                            <th class="d-none">Amount</th>
+                            <th>Amount</th>
                             <th class="d-none">CGST</th>
                             <th class="d-none">SGST</th>
                             <th class="d-none">IGST</th>
-                            <th>Total Amount</th>
+                            <th class="d-none">Total Amount</th>
                             <th class="action">Action</th>
                         </tr>
                     </thead>
@@ -309,87 +341,91 @@ table th {
                                 <select id="pdiscMode" class="dropdown" name="pdiscMode">
                                     <option selected="disabled">Select Discount Mode</option>
                                 </select>
-                                <label for="discMode">discMode<span class="text-danger text-2x " style="font-size: medium !important;">*</span></label>
+                                <label for="discMode">discMode<span class="text-danger text-2x "
+                                        style="font-size: medium !important;">*</span></label>
                             </div>
                         </div>
                         <div class="col-2 custom">
                             <div class="custom-input-container">
                                 <input type="text" placeholder=" " name="pdiscount" id="pdiscount" disabled>
-                                <label for="pdiscount">discount<span class="text-danger text-2x " style="font-size: medium !important;">*</span></label>
+                                <label for="pdiscount">discount<span class="text-danger text-2x "
+                                        style="font-size: medium !important;">*</span></label>
                             </div>
                         </div>
-                                                <div class="col-md-2 custom">
-                                                    <div class=" custom-input-container  ">
-                                                        <label for="paymentmode">Payment Mode<span class="text-danger text-2x "
-                                                                style="font-size: medium !important;">*</span></label>
-                                                        <select name="paymentmode" id="paymentmode">
-                                                            <option value="" disabled selected hidden>Choose Payment Mode</option>
-                                                            <option value="cash">Cash</option>
-                                                            <option value="credit">Credit</option>
-                                                            <option value="cash-credit">Cash/Credit</option>
-                                                        </select>   
-                                                
-                                                    </div>
-                                                </div> 
+                        <div class="col-md-2 custom">
+                            <div class=" custom-input-container  ">
+                                <label for="paymentmode">Payment Mode<span class="text-danger text-2x "
+                                        style="font-size: medium !important;">*</span></label>
+                                <select name="paymentmode" id="paymentmode" required>
+                                    <option value="" disabled selected hidden>Choose Payment Mode</option>
+                                    <option value="cash">Cash</option>
+                                    <option value="COD">Cash On Delivery</option>
+                                    <option value="CODP">Cash On Delivery(PAID)</option>
+                                    <option value="gpay">Google Pay</option>
+                                </select>
+
+                            </div>
+                        </div>
                     </form>
-<div class="col d-flex justify-content-end ms-auto">
-    <div class="div">
-        <button type="submit" class="btn updateBtn disabled disabled" id="not">Update</button>
-        <button type="button" class="btn draftBtn disabled" id="draftBtn">Draft</button>
-        <input type="hidden" name="is_Draft" id="is_Draft">
-    </div>
-    <button type="button" id="submitFormBtn" class="btn btn-primary custom-btn add">Submit</button>
-    <input type="button" id="draftButton" value="Draft" class="btn btn-primary custom-btn add">
-    <input type="hidden" name="is_Draft" id="is_Draft" value="0">
-</div>
+                    <div class="col d-flex justify-content-end ms-auto">
+                        <div class="div">
+                            <button type="submit" class="btn updateBtn disabled disabled" id="not">Update</button>
+                            <button type="button" class="btn draftBtn disabled" id="draftBtn">Draft</button>
+                            <input type="hidden" name="is_Draft" id="is_Draft">
+                        </div>
+                        <button type="button" id="submitFormBtn" class="btn btn-primary custom-btn add"
+                            disabled>Submit</button>
+                        <input type="button" id="draftButton" value="Draft" class="btn btn-primary custom-btn add">
+                        <input type="hidden" name="is_Draft" id="is_Draft" value="0">
+                    </div>
                 </div>
 
                 <form id="purchaseDetails" class="form-control p-0" style="display: block; align-item: start;"
                     action="auth/salesretail" method="post">
                     <div class="row d-flex justify-content-between  mb-0 gx-0 w-100 ">
                         <div class="labels">
-                       
-                                <div class="custom col-md-1">
-                                    <label for="pamount">Amount:</label>
-                                    <span id="pamount" name="pamount">0.00</span>
-                                </div>
 
-                                <div class="custom col-md-1">
-                                    <label for="pigst">IGST:</label>
-                                    <span id="pigst" name="pigts">0.00</span>
-                                </div>
-                       
-                                <div class="custom col-md-1">
-                                    <label for="pcgst">CGST:</label>
-                                    <span id="pcgst" name="pcgst">0.00</span>
-                                </div>
+                            <div class="custom col-md-1">
+                                <label for="pamount">Amount:</label>
+                                <span id="pamount" name="pamount">0.00</span>
+                            </div>
 
-                                <div class="custom col-md-1">
-                                    <label for="psgst">SGST:</label>
-                                    <span id="psgst" name="psgst">0.00</span>
-                                </div>
-                          
-                                <div class="custom col-md-1">
-                                    <label for="psubtotal">Total Net Amount:</label>
-                                    <span id="psubtotal" name="psubtotal">0.00</span>
-                                </div>
+                            <div class="custom col-md-1">
+                                <label for="pigst">IGST:</label>
+                                <span id="pigst" name="pigts">0.00</span>
+                            </div>
 
-                                {{!-- <div class="custom">
-                                    <label for="pcess">CESS:</label>
-                                    <span id="pcess" name="pcess">0.00</span>
-                                </div> --}}
-                           
+                            <div class="custom col-md-1">
+                                <label for="pcgst">CGST:</label>
+                                <span id="pcgst" name="pcgst">0.00</span>
+                            </div>
 
-                          
-                                {{!-- <div class="custom">
-                                    <label for="ptcs">TCS:</label>
-                                    <span id="ptcs" name="ptcs">0.00</span>
-                                </div> --}}
-                                {{!-- <div class="custom">
-                                    <label for="proundOff">Round Off:</label>
-                                    <span id="proundOff" name="proundOff">0.00</span>
-                                </div> --}}
-                           
+                            <div class="custom col-md-1">
+                                <label for="psgst">SGST:</label>
+                                <span id="psgst" name="psgst">0.00</span>
+                            </div>
+
+                            <div class="custom col-md-1">
+                                <label for="psubtotal">Total Net Amount:</label>
+                                <span id="psubtotal" name="psubtotal">0.00</span>
+                            </div>
+
+                            {{!-- <div class="custom">
+                                <label for="pcess">CESS:</label>
+                                <span id="pcess" name="pcess">0.00</span>
+                            </div> --}}
+
+
+
+                            {{!-- <div class="custom">
+                                <label for="ptcs">TCS:</label>
+                                <span id="ptcs" name="ptcs">0.00</span>
+                            </div> --}}
+                            {{!-- <div class="custom">
+                                <label for="proundOff">Round Off:</label>
+                                <span id="proundOff" name="proundOff">0.00</span>
+                            </div> --}}
+
                             {{!-- <div class="col">
                                 <div class="custom">
                                     <label for="pnetAmount">Net Amount:</label>
@@ -398,197 +434,210 @@ table th {
                             </div> --}}
                         </div>
                     </div>
-<div id="overlay"
-    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; overflow: auto;">
-    <div id="batchform"
-        style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #ccc; width: 80%; max-width: 800px;">
-        <a class="closebatch" style="position: absolute; top: 0px; right: -2px;"><i
-                class="fa-solid fa-circle-xmark fa-2x"></i></a>
+                    <div id="overlay"
+                        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; overflow: auto;">
+                        <div id="batchform"
+                            style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #ccc; width: 80%; max-width: 800px;">
+                            <a class="closebatch" style="position: absolute; top: 0px; right: -2px;"><i
+                                    class="fa-solid fa-circle-xmark fa-2x"></i></a>
 
-        <!-- Scrollable table container with fixed header -->
-        <div style="max-height: 200px; overflow-y: auto; position: relative;">
-            <table id="batchDetailsTable" class="table"
-                style="width: 100%; table-layout: fixed; border-collapse: collapse;">
-                <thead class="bg-primary"
-                    style="position: sticky; top: 0; z-index: 1; background-color: #007bff; color: white;">
-                    <tr>
-                        <th>Batch No</th>
-                        <th>Expiry Date</th>
-                        <th>Tax</th>
-                        <th>Quantity</th>
-                        <th>UOM</th>
-                        <th>Rate</th>
-                        <th>MRP</th>
-                    </tr>
-                </thead>
-                <tbody id="batchDetailsBody"></tbody>
-            </table>
-        </div>
+                            <!-- Scrollable table container with fixed header -->
+                            <div style="max-height: 200px; overflow-y: auto; position: relative;">
+                                <table id="batchDetailsTable" class="table"
+                                    style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+                                    <thead class="bg-primary"
+                                        style="position: sticky; top: 0; z-index: 1; background-color: #007bff; color: white;">
+                                        <tr>
+                                            <th>Batch No</th>
+                                            <th>Expiry Date</th>
+                                            <th>Tax</th>
+                                            <th>Quantity</th>
+                                            <th>UOM</th>
+                                            <th>Rate</th>
+                                            <th>MRP</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="batchDetailsBody"></tbody>
+                                </table>
+                            </div>
 
-        <!-- Fixed Color Legend below the scrollable table -->
-        <div style="margin-top: 10px;">
-            <strong>Color Legend:</strong>
-            <ul style="list-style: none; padding-left: 0;">
-                <li><span style="background-color: red; color: white; padding: 2px 5px;">&nbsp;&nbsp;&nbsp;</span>
-                    Already expired</li>
-                <li><span style="background-color: orange; color: white; padding: 2px 5px;">&nbsp;&nbsp;&nbsp;</span>
-                    Expiring in Three Months</li>
-            </ul>
-        </div>
-    </div>
-</div>
+                            <!-- Fixed Color Legend below the scrollable table -->
+                            <div style="margin-top: 10px;">
+                                <strong>Color Legend:</strong>
+                                <ul style="list-style: none; padding-left: 0;">
+                                    <li><span
+                                            style="background-color: red; color: white; padding: 2px 5px;">&nbsp;&nbsp;&nbsp;</span>
+                                        Already expired</li>
+                                    <li><span
+                                            style="background-color: orange; color: white; padding: 2px 5px;">&nbsp;&nbsp;&nbsp;</span>
+                                        Expiring in Three Months</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
 
                 </form>
             </div>
             <div id="selectedRowDetails"></div>
 
         </div>
-<div id="alertMessage" class="alert alert-danger text-white d-none alert-dismissible show" role="alert"
-    style="padding: 10px; border: 1px solid; margin-bottom: 10px; position: fixed; top: 0; right: 10px; width: 25%;">
-    <button type="button" class="close text-white" data-bs-dismiss="alert" aria-label="Close"
-        style="background: none; border: none; font-size: 20px; line-height: 1;">X</button>
-</div>
-<div class="alert alert-danger alert-dismissible fade show" role="alert" id="quantityAlert" style="display: none;">
-    <strong>Warning!</strong> Quantity cannot be greater than the purchase quantity.
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-
-
-<div id="newCustomerFormOverlay"
-    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000;">
-    <div id="newCustomerFormContainer"
-        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #ccc; width: 80%; max-width: 600px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); border-radius: 10px;">
-        <h5 class="form-title" style="text-align: center; margin-bottom: 20px;">Add New Customer</h5>
-
-        <form id="newCustomerForm" method="post" action="/salesretail/customerretail">
-            <div class="mb-3">
-                <label for="customer" class="form-label">Customer Name</label>
-                <input type="text" class="form-control" id="customer" required>
-            </div>
-<div class="mb-3">
-    <label for="mobileno" class="form-label">Phone Number</label>
-    <div style="display: flex; align-items: center;">
-        <input type="tel" class="form-control" id="cmobileno" required maxlength="10" pattern="[0-9]{10}"
-            placeholder="Enter 10 digit number">
-            <span class="mobileStatus"></span>
-        <!-- Placeholder for status icon -->
-    </div>
-</div>
-            <div class="mb-3">
-                <label for="salesmannameSelect" class="form-label">Salesman</label>
-                <select id="salesmannameSelect" class="form-select" name="salesman" required>
-                    <option value="" disabled selected>Select Salesman</option>
-                    <!-- Options populated dynamically -->
-                </select>
-            </div>
-        </form>
-        <div class="modal-footer" style="display: flex; justify-content: space-between; margin-top: 20px;">
-            <button type="button" class="btn btn-secondary closeForm">Close</button>
-            <button type="button" class="btn btn-primary" id="saveCustomerBtn">Save Customer</button>
+        <div id="alertMessage" class="alert alert-danger text-white d-none alert-dismissible show" role="alert"
+            style="padding: 10px; border: 1px solid; margin-bottom: 10px; position: fixed; top: 0; right: 10px; width: 25%;">
+            <button type="button" class="close text-white" data-bs-dismiss="alert" aria-label="Close"
+                style="background: none; border: none; font-size: 20px; line-height: 1;">X</button>
         </div>
-    </div>
-</div>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="quantityAlert"
+            style="display: none;">
+            <strong>Warning!</strong> Quantity cannot be greater than the purchase quantity.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+
+        <div id="newCustomerFormOverlay"
+            style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000;">
+            <div id="newCustomerFormContainer"
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #ccc; width: 80%; max-width: 600px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); border-radius: 10px;">
+                <h5 class="form-title" style="text-align: center; margin-bottom: 20px;">Add New Customer</h5>
+
+                <form id="newCustomerForm" method="post" action="/salesretail/customerretail">
+                    <div class="mb-3">
+                        <label for="customer" class="form-label">Customer Name</label>
+                        <input type="text" class="form-control" id="customer" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="mobileno" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="cmobileno" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="salesmannameSelect" class="form-label">Salesman</label>
+                        <select id="salesmannameSelect" class="form-select" name="salesman" required>
+                            <option value="" disabled selected>Select Salesman</option>
+                            <!-- Options populated dynamically -->
+                        </select>
+                    </div>
+                </form>
+                <div class="modal-footer" style="display: flex; justify-content: space-between; margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary closeForm">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveCustomerBtn">Save Customer</button>
+                </div>
+            </div>
+        </div>
         {{>footer}}
         </div>
     </main>
     {{>color}}
-<script>
-    $(document).ready(function () {
-        $('#paymentmode').change(function () {
-            $('#ppaymentMode').val($(this).val());
-        });
-    });
 
 
 
-    $(document).ready(function () {
-        $('#cmobileno').on('input', function () {
-            const mobileno = $(this).val().trim();
+    <script>
+        $(document).ready(function () {
+            // Initially hide the opener
+            $('#openPurchaseForm').hide();
 
-            // Clear the validation icon if the mobile number is empty or not valid
-            if (!mobileno || mobileno.length !== 10) {
-                $('#mobileStatus').html(''); // Clear status icon
-                return;
-            }
+            function checkRequiredFields() {
+                let isValid = true;
 
-            console.log('Mobile number to check:', mobileno); // Log mobile number before sending
-
-            // Perform AJAX request to check if mobile number exists
-            $.ajax({
-                url: '/auth/salesretail/checkMobile', // This should match your server route
-                method: 'POST',
-                data: JSON.stringify({ mobileno: mobileno }),
-                contentType: 'application/json',
-                success: function (response) {
-                    if (response.exists) {
-                        $('#mobileStatus').html('<i class="fa fa-times text-danger"></i>');
-                    } else {
-                        $('#mobileStatus').html('<i class="fa fa-check text-success"></i>');
+                // Iterate over all required fields and check their validity
+                $('#purchaseDetails').find('input[required], select[required]').each(function () {
+                    if ($(this).val() === '' || $(this).val() === null) {
+                        isValid = false;
                     }
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error checking mobile number:", xhr, status, error);
-                    alert('Failed to check mobile number. Please try again.');
-                }
-            });
-        });
-    });
-
-
-    $(document).ready(function () {
-        {{!-- $('#customerSelect').select2({
-            placeholder: "Search by name or mobile number",
-            allowClear: true
-        }); --}}
-
-        // Fetch customer data and populate dropdown
-        $.ajax({
-            url: '/auth/salesretail/customerretail',
-            method: 'GET',
-            success: function (response) {
-                const customers = response.data;
-                $('#customerSelect').empty().append('<option value="" disabled selected>Select a customer</option>');
-
-                customers.forEach(function (customer) {
-                    var $option = $('<option>', {
-                        value: customer.id, // Correctly set the value to customer.id
-                        text: `${customer.customername} (${customer.mobileno})` // Ensure the correct property names
-                    });
-
-                    $('#customerSelect').append($option);
                 });
 
-                // Trigger Select2 update and change event after appending options
-                $('#customerSelect').trigger('change');
-            },
-            error: function (xhr, status, error) {
-                console.error('Error fetching customer data:', error);
-                alert('Failed to load customer data.');
+                // Show the opener if all fields are valid, else hide it
+                if (isValid) {
+                    $('#openPurchaseForm').show();
+                } else {
+                    $('#openPurchaseForm').hide();
+                }
             }
+
+            // Bind input and change events to validate on the fly
+            $('#purchaseDetails').find('input, select').on('input change', function () {
+                checkRequiredFields();
+            });
         });
 
-        // When a customer is selected, update the hidden fields with customer details
-        $('#customerSelect').on('select2:select', function (e) {
-            const selectedOption = $(this).find('option:selected');
-            const customerId = selectedOption.val();
-            const customerName = selectedOption.text().split(" (")[0];
-            const customerMobile = selectedOption.text().split(" (")[1].replace(')', '');
 
-            // Set selected customer details in input fields
-            $('#customername').val(customerName);
-            $('#mobileno').val(customerMobile);
-            $('#customerId').val(customerId); // Store the customer ID in a hidden input
+
+        $(document).ready(function () {
+            const $submitBtn = $('#submitFormBtn');
+            const $paymentMode = $('#paymentmode'); // Select the select element directly
+
+            function checkRequiredFields() {
+                $submitBtn.prop('disabled', $paymentMode.is(':invalid')); // Simplified logic
+            }
+
+            $paymentMode.on('change input', checkRequiredFields); // Bind to the select element
+            checkRequiredFields(); // Initial check
         });
 
-        // Handle clearing the selection
-        $('#customerSelect').on('select2:unselect', function () {
-            $('#customername').val(""); // Clear customer name input
-            $('#mobileno').val(""); // Clear mobile number input
-            $('#customerId').val(""); // Clear customer ID
-        });
-    });
 
-    $(document).on('click', '#newCustomerBtn', function () {
+    </script>
+
+
+
+    <script>
+        $(document).ready(function () {
+            $('#paymentmode').change(function () {
+                $('#ppaymentMode').val($(this).val());
+            });
+        });
+        $(document).ready(function () {
+            // Initialize Select2 for customerSelect
+            $('#customerSelect').select2({
+                placeholder: "Search by name or mobile number",
+                allowClear: true
+            });
+
+            // Fetch customer data and populate dropdown
+            $.ajax({
+                url: '/auth/salesretail/customerretail',
+                method: 'GET',
+                success: function (response) {
+                    const customers = response.data;
+
+                    // Populate the customer select dropdown
+                    customers.forEach(function (customer) {
+                        $('#customerSelect').append($('<option>', {
+                            value: customer.id, // Ensure this is just the ID
+                            text: `${customer.customername} (${customer.mobileno})`
+                        }));
+                    });
+
+
+                    // Trigger Select2 update after appending options
+                    $('#customerSelect').trigger('change');
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching customer data:', error);
+                    alert('Failed to load customer data.');
+                }
+            });
+
+            $('#customerSelect').on('select2:select', function (e) {
+                const selectedOption = $(this).find('option:selected');
+                const customerId = selectedOption.val(); // This should only be the ID
+                const customerName = selectedOption.text().split(" (")[0]; // Extracting name if needed
+                const customerMobile = selectedOption.text().split(" (")[1].replace(')', ''); // Extracting mobile number
+                console.log("Customer ID:", customerId);
+                // Set selected customer details in input fields
+                $('#customername').val(customerName); // This is for display purposes
+                $('#mobileno').val(customerMobile); // This is for display purposes
+                $('#customerId').val(customerId); // Ensure this is just the ID
+            });
+
+            $('#customerSelect').on('select2:unselect', function () {
+                $('#customername').val(""); // Clear customer name input
+                $('#mobileno').val(""); // Clear mobile number input
+                $('#customerId').val(""); // Clear customer ID
+            });
+
+
+        });
+
+
+        $(document).on('click', '#newCustomerBtn', function () {
             $('#newCustomerForm')[0].reset(); // Reset the form
             $('#newCustomerFormOverlay').show(); // Show the overlay and form
         });
@@ -620,51 +669,51 @@ table th {
             }
         });
 
-    $('#saveCustomerBtn').on('click', function () {
-        const customername = $('#customer').val().trim(); // Ensure no leading/trailing spaces
-        const mobileno = $('#cmobileno').val().trim(); // Ensure no leading/trailing spaces
-        const salesman = $('#salesmannameSelect').val();
-        console.log($('#customername').length);
+        $('#saveCustomerBtn').on('click', function () {
+            const customername = $('#customer').val().trim(); // Ensure no leading/trailing spaces
+            const mobileno = $('#cmobileno').val().trim(); // Ensure no leading/trailing spaces
+            const salesman = $('#salesmannameSelect').val();
+            console.log($('#customername').length);
 
-        // Log all values for debugging
-        console.log('Customer Name:', customername);
-        console.log('Mobile No:', mobileno);
-        console.log('Salesman selected value:', salesman);
+            // Log all values for debugging
+            console.log('Customer Name:', customername);
+            console.log('Mobile No:', mobileno);
+            console.log('Salesman selected value:', salesman);
 
-        if (!customername || !mobileno ) {
-            alert("Please fill in all fields.");
-            return;
-        }
-
-        const customerData = {
-            customername: customername,
-            mobileno: mobileno,
-            salesman: salesman
-        };
-
-        $.ajax({
-            url: '/auth/salesretail/customerretail',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(customerData),
-            success: function (response) {
-                alert('Customer added successfully!');
-                $('#newCustomerFormOverlay').hide();
-                location.reload();
-            },
-            error: function (xhr, status, error) {
-                console.error("Error adding customer:", xhr, status, error);
-                if (xhr.status === 400) {
-                    let errorMessage = JSON.parse(xhr.responseText).message;
-                    alert('Failed to add customer: ' + errorMessage);
-                } else if (xhr.status === 500) {
-                    alert('Failed to add customer. Please try again later.');
-                } else {
-                    alert('Failed to add customer. Please try again.');
-                }
+            if (!customername || !mobileno) {
+                alert("Please fill in all fields.");
+                return;
             }
+
+            const customerData = {
+                customername: customername,
+                mobileno: mobileno,
+                salesman: salesman
+            };
+
+            $.ajax({
+                url: '/auth/salesretail/customerretail',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(customerData),
+                success: function (response) {
+                    alert('Customer added successfully!');
+                    $('#newCustomerFormOverlay').hide();
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error adding customer:", xhr, status, error);
+                    if (xhr.status === 400) {
+                        let errorMessage = JSON.parse(xhr.responseText).message;
+                        alert('Failed to add customer: ' + errorMessage);
+                    } else if (xhr.status === 500) {
+                        alert('Failed to add customer. Please try again later.');
+                    } else {
+                        alert('Failed to add customer. Please try again.');
+                    }
+                }
+            });
         });
-    });
 
 
         // Optionally, hide overlay when clicking outside the form
@@ -675,25 +724,25 @@ table th {
         });
 
 
-</script>
+    </script>
     <script>
-            $(document).ready(function () {
-                // Disable the discount input initially
-                $('#pdiscount').prop('disabled', true);
+        $(document).ready(function () {
+            // Disable the discount input initially
+            $('#pdiscount').prop('disabled', true);
 
-                // Listen to change event on the discount mode dropdown
-                $('#pdiscMode').change(function () {
-                    var selectedValue = $(this).val();
+            // Listen to change event on the discount mode dropdown
+            $('#pdiscMode').change(function () {
+                var selectedValue = $(this).val();
 
-                    if (selectedValue) {
-                        // Enable discount input if a discount mode is selected
-                        $('#pdiscount').prop('disabled', false);
-                    } else {
-                        // Disable discount input if no discount mode is selected
-                        $('#pdiscount').prop('disabled', true);
-                    }
-                });
+                if (selectedValue) {
+                    // Enable discount input if a discount mode is selected
+                    $('#pdiscount').prop('disabled', false);
+                } else {
+                    // Disable discount input if no discount mode is selected
+                    $('#pdiscount').prop('disabled', true);
+                }
             });
+        });
         $(document).ready(function () {
             // Attach click event listener to the closebatch link
             $('.closebatch').on('click', function () {
@@ -765,8 +814,8 @@ table th {
 
                 row.html("<td><input type='number' readonly name='Id' class='input-field  purchase-id' value='" + id + "'></td>" +
                     "<td><select name='product' class='input-field product-name dropdown' id='productname_" + id + "'><option selected disabled>Select product</option></select></td>" +
-                    "<td><input type='text' name='batchNo' class='input-field' value='" + batchNo + "'></td>" +
-                    "<td><input type='text' name='tax' class='input-field' value='" + tax + "'></td>" +
+                    "<td><input type='text' name='batchNo' class='input-field' value='" + batchNo + "' readonly></td>" +
+                    "<td><input type='text' name='tax' class='input-field' value='" + tax + "' readonly></td>" +
                     "<td><input type='number' name='quantity' class='input-field' value='" + quantity + "'></td>" +
                     "<td class='d-none'><input type='number' name='free' class='input-field' value='" + free + "'></td>" +
                     "<td class='d-none'><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
@@ -775,11 +824,11 @@ table th {
                     "<td><input type='number' name='rate' class='input-field' value='" + rate + "'></td>" +
                     "<td><select name='discMode' class='input-field disc-mode dropdown' id='discMode_" + id + "'><option selected disabled>Select Disc Mode</option></select></td>" +
                     "<td><input type='number' name='discount' class='input-field' value='" + discount + "'></td>" +
-                    "<td class='d-none'><input type='number' name='amount' class='input-field' value='" + amount + "'></td>" +
+                    "<td><input type='number' name='amount' class='input-field' value='" + amount + "'></td>" +
                     "<td class='d-none'><input type='number' name='cgst' class='input-field' value='" + cgst + "'></td>" +
                     "<td class='d-none'><input type='number' name='sgst' class='input-field' value='" + sgst + "'></td>" +
                     "<td class='d-none'><input type='number' name='igst' class='input-field' value='" + igst + "'></td>" +
-                    "<td ><input type='number' name='totalAmount' class='input-field' value='" + totalAmount + "'></td>" +
+                    "<td class='d-none'><input type='number' name='totalAmount' class='input-field' value='" + totalAmount + "'></td>" +
                     "<td><i class='fa-solid fa-trash deletetransBtn' type='button' data-id='" + id + "'></i></td>");
 
 
@@ -820,7 +869,7 @@ table th {
         });
 
         $(document).ready(function () {
-                        $('#draftBtn').on('click', function () {
+            $('#draftBtn').on('click', function () {
                 // Set the value of is_Draft to 1
                 $('#is_Draft').val('1');
                 console.log('Draft button clicked, is_Draft value set to 1');
@@ -841,9 +890,9 @@ table th {
                 var purchaseDetails = {
                     id: $('#id').val(),
                     saledate: $('#saledate').val(),
-                    paymentmode: $('#paymentmode').val(),
-                    customername: $('#customerSelect').val(),
-                   
+                    paymentmode: $('#ppaymentMode').val(),
+                    customername: $('#customerSelect').val() || $('#customerId').val(),
+                    doctorname: $('#doctorname').val(),
                     pamount: parseFloat($('#pamount_').val()),
                     pigst: parseFloat($('#pigst_').val()),
                     pcgst: parseFloat($('#pcgst_').val()),
@@ -854,8 +903,8 @@ table th {
                     proundOff: parseFloat($('#proundOff_').val()),
                     pnetAmount: parseFloat($('#pnetAmount_').val()),
                     pdiscMode_: parseFloat($('#pdiscMode_').val()), // Make sure this ID matches the discount mode field ID in the HTML
-                    pdiscount: parseFloat($('#pdiscount_').val()) ,
-                     isDraft: $('#is_Draft').val()// Make sure this ID matches the discount field ID in the HTML
+                    pdiscount: parseFloat($('#pdiscount_').val()),
+                    isDraft: $('#is_Draft').val()// Make sure this ID matches the discount field ID in the HTML
                 };
 
                 console.log('Purchase Details:', purchaseDetails);
@@ -888,8 +937,6 @@ table th {
                     }
                 });
             });
-     
-     
         });
 
         function getUpdatedProductsData() {
@@ -1031,50 +1078,50 @@ table th {
             }
         });
 
-    $(document).ready(function () {
-        // Cache jQuery selectors for reuse and performance
-        var $div = $('.div'),
-            $add = $('.add'),
-            $opener = $('.opener'),
-            $updateBtn = $('.updateBtn'),
-            $draftBtn = $('.draftBtn'),
-            $dropdown = $('.dropdown[name="Id"]'),
-            $editBtn = $('.editmasbtn');
+        $(document).ready(function () {
+            // Cache jQuery selectors for reuse and performance
+            var $div = $('.div'),
+                $add = $('.add'),
+                $opener = $('.opener'),
+                $updateBtn = $('.updateBtn'),
+                $draftBtn = $('.draftBtn'),
+                $dropdown = $('.dropdown[name="Id"]'),
+                $editBtn = $('.editmasbtn');
 
-        // Initial state
-        $div.hide();
-        $add.show();
-        $updateBtn.add($draftBtn).addClass('disabled').prop('disabled', true);
+            // Initial state
+            $div.hide();
+            $add.show();
+            $updateBtn.add($draftBtn).addClass('disabled').prop('disabled', true);
 
-        // Handle dropdown change event
-        $dropdown.on('change', function () {
-            var selectedOption = $(this).find('option:selected').val();
+            // Handle dropdown change event
+            $dropdown.on('change', function () {
+                var selectedOption = $(this).find('option:selected').val();
 
-            // Check for valid selected option
-            if (selectedOption && selectedOption !== 'view details') {
-                $div.show();
-                $opener.hide();
-                $add.hide();
-            } else {
-                $div.hide();
-                $add.show();
-            }
+                // Check for valid selected option
+                if (selectedOption && selectedOption !== 'view details') {
+                    $div.show();
+                    $opener.hide();
+                    $add.hide();
+                } else {
+                    $div.hide();
+                    $add.show();
+                }
+            });
+
+            // Handle edit button click event
+            $editBtn.on('click', function () {
+                // Enable all buttons inside the div
+                $div.find('button').prop('disabled', false);
+
+                // Enable and style the update and draft buttons
+                $updateBtn.add($draftBtn)
+                    .removeClass('disabled')
+                    .addClass('btn-info')
+                    .prop('disabled', false);
+            });
         });
 
-        // Handle edit button click event
-        $editBtn.on('click', function () {
-            // Enable all buttons inside the div
-            $div.find('button').prop('disabled', false);
-
-            // Enable and style the update and draft buttons
-            $updateBtn.add($draftBtn)
-                .removeClass('disabled')
-                .addClass('btn-info')
-                .prop('disabled', false);
-        });
-    });
-
-     // Add an event listener to validate the quantity field on input
+        // Add an event listener to validate the quantity field on input
         document.addEventListener('input', function (event) {
             if (event.target.matches('.quantity')) {
                 let quantityInput = event.target;
@@ -1142,7 +1189,7 @@ table th {
                 }
             }
         }
-    
+
 
 
 
@@ -1163,23 +1210,24 @@ table th {
                 let newRow = $("<tr data-uniqueId='" + uniqueId + "'>" +
                     "<td><input type='hidden' name='purchaseId' class='input-field purchase-id' value='" + purchaseId + "'></td>" +
                     "<td><select name='productname' class='input-field product-name dropdown' id='productname_" + uniqueId + "' placeholder='Product Name' required><option selected disabled>Select product</option></select></td>" +
-                    "<td><input type='text' name='batchNo' class='input-field' id='batchNo_" + uniqueId + "' placeholder='Batch No'></td>" +
-                    "<td><input type='text' name='tax' class='input-field' id='tax_" + uniqueId + "' placeholder='Tax(%)'></td>" +
-                  "<td><input type='number' name='quantity' min='1' class='input-field quantity' id='quantity_" + uniqueId + "' placeholder='Quantity' required></td>" +
-                    "<td class='d-none'><input type='number' name='free'min='0' class='input-field' id='free_" + uniqueId + "' placeholder='Free'></td>" +                
+                    "<td><input type='text' name='batchNo' class='input-field' id='batchNo_" + uniqueId + "' placeholder='Batch No' readonly></td>" +
+                    "<td><input type='text' name='tax' class='input-field' id='tax_" + uniqueId + "' placeholder='Tax(%)'readonly ></td>" +
+                    "<td><input type='number' name='quantity' min='1' class='input-field quantity' id='quantity_" + uniqueId + "' placeholder='Quantity' required></td>" +
+                    "<td class='d-none'><input type='number' name='free'min='0' class='input-field' id='free_" + uniqueId + "' placeholder='Free'></td>" +
                     "<td class='d-none'><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
-                    "<td><input type='number' name='purcRate' class='input-field' id='purcRate_" + uniqueId + "' placeholder='purcRate'></td>" +
+                    "<td><input type='number' name='purcRate' class='input-field' id='purcRate_" + uniqueId + "' placeholder='purcRate' readonly></td>" +
                     "<td class='d-none'><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='MRP'></td>" +
                     "<td><input type='number' name='rate' class='input-field' id='rate_" + uniqueId + "' placeholder='Rate' required></td>" +
                     "<td><select name='discMode' class='input-field product-name dropdown' id='discMode_" + uniqueId + "' placeholder='Disc.Mode' ><option selected disabled>Select Disc Mode</option></select></td>" +
                     "<td><input type='number' name='discount' class='input-field' id='discount_" + uniqueId + "' placeholder='Discount' disabled></td>" +
-                    "<td class='d-none'><input type='number' name='amount' class='input-field' id='amount_" + uniqueId + "' placeholder='Amount'></td>" +
+                    "<td><input type='number' name='amount' class='input-field' id='amount_" + uniqueId + "' placeholder='Amount'></td>" +
                     "<td class='d-none'><input type='number' name='cgst' class='input-field' id='cgst_" + uniqueId + "' placeholder='CGST'></td>" +
                     "<td class='d-none'><input type='number' name='sgst' class='input-field' id='sgst_" + uniqueId + "' placeholder='SGST'></td>" +
                     "<td class='d-none'><input type='number' name='igst' class='input-field' id='igst_" + uniqueId + "' placeholder='IGST'></td>" +
-                    "<td><input type='number' name='totalAmount' class='input-field' id='totalAmount_" + uniqueId + "' placeholder='Total Amount'></td>" +
-                    "<td class='action new-row'><i class='fa-solid fa-trash deleteRowBtn text-danger' type='button'></i> <i class='fa-solid fa-plus addRowBtn text-success' type='button'></i></td>" + 
+                    "<td class='d-none'><input type='number' name='totalAmount' class='input-field' id='totalAmount_" + uniqueId + "' placeholder='Total Amount'></td>" +
+                    "<td class='action new-row'><i class='fa-solid fa-trash deleteRowBtn text-danger' type='button'></i> <i class='fa-solid fa-plus addRowBtn text-success' type='button'></i></td>" +
                     "</tr>");
+
 
 
                 $('#customerTable tbody').append(newRow);
@@ -1199,6 +1247,31 @@ table th {
                                 }));
                             });
 
+                            // Initialize Select2 with search filter functionality
+                            $('#productname_' + uniqueId).select2({
+                                placeholder: 'Select a product',
+                                allowClear: true,
+                                width: '100%', // Adjusts the dropdown to full width
+                                minimumInputLength: 1, // Starts searching after 1 character
+                                matcher: function (params, data) {
+                                    if ($.trim(params.term) === '') {
+                                        return data;
+                                    }
+
+                                    // Custom matcher for case-insensitive search
+                                    if (typeof data.text === 'undefined') {
+                                        return null;
+                                    }
+
+                                    if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                                        return data;
+                                    }
+
+                                    return null;
+                                }
+                            });
+
+                            // Handle product selection
                             $('#productname_' + uniqueId).on('change', function () {
                                 var selectedProductId = $(this).val();
                                 var selectedProduct = options.find(function (product) {
@@ -1220,10 +1293,12 @@ table th {
                         console.error('Error fetching options for product name:', error);
                     }
                 });
+
             });
 
-            // Delete Row
-   function disableOpener() {
+
+          // Delete Row
+            function disableOpener() {
                 $('#openPurchaseForm').prop('disabled', true);
             }
 
@@ -1241,7 +1316,7 @@ table th {
                 let uniqueId = row.attr('data-uniqueid'); // Get the unique ID from the row
 
                 // Trigger validation before allowing a new row to be added
-                let isValid = validateAmount(uniqueId);
+                let isValid = true;
 
                 if (isValid) {
                     // If validation passes, trigger adding a new row
@@ -1249,6 +1324,18 @@ table th {
                 } else {
                     // If validation fails, do not add a new row and show alert
                     alert('Please correct the errors before adding a new row.');
+                }
+            });
+
+    
+            $('#productname_' + uniqueId).on('change', function () {
+                var selectedProductId = $(this).val();
+                var selectedBatchNo = $('#batchNo_' + uniqueId).val(); // Ensure batchNo is populated
+
+                if (isProductBatchAlreadySelected(selectedProductId, selectedBatchNo)) {
+                    alert('This product and batch is already selected.');
+                } else {
+                    fetchBatchDetails(selectedProductId, uniqueId);
                 }
             });
 
@@ -1289,12 +1376,10 @@ table th {
 
                 // Form submit logic
                 function submitForm() {
-                    // Log the customerId value for debugging
-                   console.log("Customer ID:", $('#customerId').val());
 
                     let formData = $('#purchaseDetails').serializeArray();
                     let products = getProductsData();
-
+                    // formData.push({ name: 'customerId', value: $('#customerId').val() });
                     formData.push({ name: 'products', value: JSON.stringify(products) });
                     formData.push({ name: 'isDraft', value: $('#is_Draft').val() });
                     console.log("Serialized Form Data:", formData);
@@ -1303,39 +1388,78 @@ table th {
                         method: 'POST',
                         data: formData,
                         success: function (response) {
-                            window.location.href = '/salesretailregister';
+                            console.log("Form submitted successfully:", response); // Log successful submission
                             alert('Successfully Submitted Sales');
+                            window.location.href = '/salesretailregister';
                         },
                         error: function (error) {
                             console.error("Error submitting form:", error);
+                            alert("Error submitting form: " + error.statusText);
                         }
                     });
+
                 }
 
+                // Attach event listeners to the inputs to trigger validation on change
+                $(document).on('change', '.input-field', function () {
+                    // Extract uniqueId from the relevant input field
+                    let uniqueId = $(this).attr('id').split('_')[1]; // Assuming IDs are in the format of 'prefix_uniqueId'
 
+                    // Call the validateAmount function to check the current values
+                    validateAmount(uniqueId);
+                });
+
+                // Your existing validateAmount function
                 function validateAmount(uniqueId) {
-                    if ($('#discount_' + uniqueId).prop('disabled')) {
-                        return true; // If discount is disabled, no validation needed
-                    }
+                    try {
+                        if ($('#discount_' + uniqueId).prop('disabled')) {
+                            return true; // If discount is disabled, no validation needed
+                        }
 
-                    let amount = parseFloat($('#amount_' + uniqueId).val()) || 0;
-                    let purcRate = parseFloat($('#purcRate_' + uniqueId).val()) || 0;
-                    let quantity = parseFloat($('#quantity_' + uniqueId).val()) || 0;
+                        let amount = parseFloat($('#amount_' + uniqueId).val()) || 0;
+                        let purcRate = parseFloat($('#purcRate_' + uniqueId).val()) || 0;
+                        let quantity = parseFloat($('#quantity_' + uniqueId).val()) || 0;
+                        let taxPercentage = parseFloat($('#tax_' + uniqueId).val()) || 0;
 
-                    let purcQuantityRate = purcRate * quantity;
+                        console.log('Amount:', amount);
+                        console.log('Purchase Rate:', purcRate);
+                        console.log('Quantity:', quantity);
+                        console.log('Tax Percentage:', taxPercentage);
 
-                    if (amount < purcQuantityRate) {
-                        let productName = $('#productname_' + uniqueId + ' option:selected').text();
-                        let alertMessage = 'Amount cannot be less than Purchase Amount for product: ' + productName;
-                        showAlert(alertMessage);
-                        $('#amount_' + uniqueId).addClass('error');
-                        return false; // Validation failed
-                    } else {
-                        $('#amount_' + uniqueId).removeClass('error');
-                        $('#alertBox').hide(); // Hide the alert
-                        return true; // Validation passed
+                        if (purcRate <= 0 || quantity <= 0) {
+                            console.error('Purchase rate or quantity is invalid.');
+                            return false;
+                        }
+
+                        let baseAmount = purcRate * quantity;
+                        let taxAmount = (baseAmount * taxPercentage) / 100;
+                        let totalExpectedAmount = baseAmount + taxAmount;
+
+                        console.log('Base Amount:', baseAmount);
+                        console.log('Tax Amount:', taxAmount);
+                        console.log('Total Expected Amount:', totalExpectedAmount);
+
+                        if (amount < totalExpectedAmount) {
+                            let productName = $('#productname_' + uniqueId + ' option:selected').text();
+                            let alertMessage = 'Amount cannot be less than Purchase Amount (' + baseAmount + ') plus ' + taxPercentage + '% tax for product: ' + productName;
+
+                            showAlert(alertMessage);
+                            $('#amount_' + uniqueId).addClass('error');
+                            console.error('Validation failed: Amount is less than totalExpectedAmount.');
+
+                            return false; // Validation failed
+                        } else {
+                            $('#amount_' + uniqueId).removeClass('error');
+                            $('#alertBox').hide();
+                            console.log('Validation passed: Amount is correct.');
+
+                            return true; // Validation passed
+                        }
+                    } catch (error) {
+                        console.error('Error in validateAmount:', error);
                     }
                 }
+
                 // Real-time input validation on rate field
                 $(document).on('input', 'input[name="rate"]', function () {
                     let uniqueId = $(this).attr('id').split('_')[1];
@@ -1361,14 +1485,17 @@ table th {
                     let isValid = true;
                     let rows = $('#customerTable tbody tr');
                     $('#alertMessage').addClass('d-none').html(''); // Clear any previous alerts
+
                     // Check if there are any rows
                     if (rows.length === 0) {
                         showAlert('No rows found. Please add at least one row.');
                         return false;
                     }
+
                     rows.each(function () {
                         let uniqueId = $(this).find('select[name="productname"]').attr('id').split('_')[1];
                         let isRowValid = true;
+
                         // Define the required fields
                         let requiredFields = [
                             '#productname_' + uniqueId,
@@ -1377,6 +1504,7 @@ table th {
                             '#rate_' + uniqueId,
                             '#mrp_' + uniqueId
                         ];
+
                         // Validate required fields
                         requiredFields.forEach(function (selector) {
                             let $field = $(selector);
@@ -1387,6 +1515,7 @@ table th {
                                 $field.removeClass('error'); // Remove error class if valid
                             }
                         });
+
                         // Validate rate vs purcRate
                         let rate = parseFloat($('#rate_' + uniqueId).val());
                         let purcRate = parseFloat($('#purcRate_' + uniqueId).val());
@@ -1394,10 +1523,12 @@ table th {
                             isRowValid = false;
                             validateRate(uniqueId); // Show the alert immediately for this row
                         }
+
                         // Validate amount vs purcQuantityRate
                         if (!validateAmount(uniqueId)) {
                             isRowValid = false;
                         }
+
                         if (!isRowValid) {
                             isValid = false;
                             $('html, body').animate({
@@ -1405,19 +1536,25 @@ table th {
                             }, 500); // Scroll to the first invalid field
                         }
                     });
+
                     if (!isValid) {
                         let alertMessage = 'Please correct the errors before submitting.';
                         showAlert(alertMessage);
                     }
+
                     return isValid;
                 }
+
                 // Function to show Bootstrap alert
                 function showAlert(alertMessage) {
                     $('#alertMessage').removeClass('d-none').html(alertMessage +
                         '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>');
                 }
             });
-            
+
+
+
+
             // Get Product Data
             function getProductsData() {
                 var products = [];
@@ -1452,13 +1589,30 @@ table th {
 
                 return products;
             }
+            function isProductBatchAlreadySelected(selectedProductId, batchNo) {
+                let exists = false;
+
+                $('#customerTable tbody tr').each(function () {
+                    let existingProductId = $(this).find('select[name="productname"]').val();
+                    let existingBatchNo = $(this).find('input[name="batchNo"]').val();
+
+                    if (existingProductId == selectedProductId && existingBatchNo == batchNo) {
+                        exists = true;
+                        return false; // Exit loop if a match is found
+                    }
+                });
+
+                return exists;
+            }
 
             // Fetch Batch Details
             function fetchBatchDetails(selectedProductId, uniqueId) {
                 console.log('Selected Product ID:', selectedProductId);
+
                 var requestData = {
                     selectedProductId: selectedProductId
                 };
+
 
                 $.ajax({
                     url: '/auth/salesretail/retailbatchDetails/' + selectedProductId,
@@ -1471,60 +1625,52 @@ table th {
                             let rows = [];
 
                             response.data.forEach(function (batch) {
-                                // Parse expiryDate and format it to MM-YYYY
                                 let expiryDate = new Date(batch.expiryDate);
-                                let formattedExpiry = expiryDate.getFullYear() !== 1970 // Handle null or invalid dates
+                                let formattedExpiry = expiryDate.getFullYear() !== 1970
                                     ? expiryDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
                                     : 'N/A';
 
                                 let now = new Date();
-                                let currentMonth = new Date(now.getFullYear(), now.getMonth(), 1); // First day of current month
-                                let threeMonthsAhead = new Date(now.getFullYear(), now.getMonth() + 3, 1); // First day of three months ahead
+                                let currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                                let threeMonthsAhead = new Date(now.getFullYear(), now.getMonth() + 3, 1);
 
-                                // Set default background and color
                                 let backgroundColor = '';
                                 let color = '';
                                 let selectable = true;
 
                                 if (expiryDate < currentMonth) {
-                                    // Already expired, set red background and make it non-selectable
                                     backgroundColor = 'red';
                                     color = 'white';
                                     selectable = false;
                                 } else if (expiryDate >= currentMonth && expiryDate < threeMonthsAhead) {
-                                    // This month and next two months, set orange background
                                     backgroundColor = 'orange';
-                                    color = 'white'; // Change to black for better readability
-                                } else {
-                                    // Normal, default background
-                                    backgroundColor = '';
-                                    color = '';
+                                    color = 'white';
                                 }
 
-                                // Store row with color information
-                                rows.push({
-                                    uniqueId: uniqueId,
-                                    batchNo: batch.batchNo,
-                                    expiryDate: batch.expiryDate,
-                                    tax: batch.tax,
-                                    quantity: batch.retailQty,
-                                    uom: batch.uom,
-                                    rate: batch.retailRate,
-                                    mrp: batch.retailMrp,
-                                    backgroundColor: backgroundColor,
-                                    color: color,
-                                    selectable: selectable,
-                                    formattedExpiry: formattedExpiry
-                                });
+                                // Skip adding the batch if it is already selected for this product
+                                if (!isProductBatchAlreadySelected(selectedProductId, batch.batchNo)) {
+                                    rows.push({
+                                        uniqueId: uniqueId,
+                                        batchNo: batch.batchNo,
+                                        expiryDate: batch.expiryDate,
+                                        tax: batch.tax,
+                                        quantity: batch.retailQty,
+                                        uom: batch.uom,
+                                        rate: batch.retailRate,
+                                        mrp: batch.retailMrp,
+                                        backgroundColor: backgroundColor,
+                                        color: color,
+                                        selectable: selectable,
+                                        formattedExpiry: formattedExpiry
+                                    });
+                                }
                             });
 
-                            // Sort rows by color priority
                             // Sort rows by color priority: Orange first, Normal second, Red last
                             rows.sort(function (a, b) {
                                 let colorOrder = { 'orange': 1, '': 2, 'red': 3 };
                                 return colorOrder[a.backgroundColor] - colorOrder[b.backgroundColor];
                             });
-
 
                             // Clear existing rows and append sorted rows
                             $('#batchDetailsBody').empty();
@@ -1539,7 +1685,7 @@ table th {
                             data-rate="${row.rate}" 
                             data-mrp="${row.mrp}" 
                             style="background-color: ${row.backgroundColor}; color: ${row.color};" 
-                            ${row.selectable ? '' : 'class="non-selectable"'}>
+                            ${row.selectable ? '' : 'class="non-selectable"'} >
                             <td>${row.batchNo}</td>
                             <td>${row.formattedExpiry}</td>
                             <td>${row.tax}</td>
@@ -1569,8 +1715,7 @@ table th {
             }
 
 
-
-             $('#batchDetailsBody').on('click', 'tr', function () {
+            $('#batchDetailsBody').on('click', 'tr', function () {
                 // Check if the row has the class "non-selectable"
                 if ($(this).hasClass('non-selectable')) {
                     console.log('This row is not selectable');
@@ -1600,12 +1745,14 @@ table th {
                 $('#uom_' + uniqueId).val(uom);
                 $('#purcRate_' + uniqueId).val(rate);
                 $('#mrp_' + uniqueId).val(mrp);
-                $('#rate_' + uniqueId).val(mrp).attr('max',mrp);
+                $('#rate_' + uniqueId).val(mrp).attr('max', mrp);
 
                 // Hide overlay and batch form
                 $('#overlay').hide();
                 $('#batchform').hide();
             });
+
+
 
             // Close Batch Form
             $('#closeBatchForm').on('click', function () {
@@ -1643,7 +1790,7 @@ table th {
                 return Math.floor(Math.random() * 1000000);
             }
 
-                        $(document).ready(function () {
+            $(document).ready(function () {
                 // Trigger validation on discount, rate, quantity, or amount change
                 $('#customerTable tbody').on('input', 'input[name="discount"], input[name="rate"], input[name^="quantity"], input[name="amount"]', function () {
                     let uniqueId = $(this).attr('id').split('_')[1]; // Get the unique ID from the input element
@@ -1701,7 +1848,7 @@ table th {
                     $('#alertMessage').text(message).removeClass('d-none').addClass('alert alert-danger');
                 }
             });
-                        
+
 
         });
 
@@ -1746,86 +1893,83 @@ table th {
         }
 
 
-    function calculateTotals() {
-        let totalAmount = 0;
-        let totalCGST = 0;
-        let totalSGST = 0;
-        let totalIGST = 0;
-        let totalNetAmount = parseFloat($('#supplierinvoiceamount').val()) || 0;
-         // Use .val() to get the value
+        function calculateTotals() {
+            let totalAmount = 0;
+            let totalCGST = 0;
+            let totalSGST = 0;
+            let totalIGST = 0;
+            let totalNetAmount = parseFloat($('#supplierinvoiceamount').val()) || 0;
 
-        $('#customerTable tbody tr').each(function () {
-            let row = $(this);
-            let amount = parseFloat(row.find('input[name="amount"]').val()) || 0;
-            let cgst = parseFloat(row.find('input[name="cgst"]').val()) || 0;
-            let sgst = parseFloat(row.find('input[name="sgst"]').val()) || 0;
-            let igst = parseFloat(row.find('input[name="igst"]').val()) || 0;
+            $('#customerTable tbody tr').each(function () {
+                let row = $(this);
+                let amount = parseFloat(row.find('input[name="amount"]').val()) || 0;
+                let cgst = parseFloat(row.find('input[name="cgst"]').val()) || 0;
+                let sgst = parseFloat(row.find('input[name="sgst"]').val()) || 0;
+                let igst = parseFloat(row.find('input[name="igst"]').val()) || 0;
 
-            totalAmount += amount;
-            totalCGST += cgst;
-            totalSGST += sgst;
-            totalIGST += igst;
+                totalAmount += amount;
+                totalCGST += cgst;
+                totalSGST += sgst;
+                totalIGST += igst;
+            });
+
+            let totalTax = totalCGST + totalSGST + totalIGST;
+
+            $('#pamount').text(totalAmount.toFixed(2));
+            $('#pcgst').text(totalCGST.toFixed(2));
+            $('#psgst').text(totalSGST.toFixed(2));
+            $('#pigst').text(totalIGST.toFixed(2));
+            $('#pnetAmount').text(totalNetAmount.toFixed(2));
+            $('#psubtotal').text((totalAmount).toFixed(2));
+
+            $('#pamount_').val(totalAmount.toFixed(2));
+            $('#pcgst_').val(totalCGST.toFixed(2));
+            $('#psgst_').val(totalSGST.toFixed(2));
+            $('#pigst_').val(totalIGST.toFixed(2));
+            $('#pnetAmount_').val(totalNetAmount.toFixed(2));
+            $('#psubtotal_').val((totalAmount).toFixed(2));
+
+            let subtotal = parseFloat($('#psubtotal').text()) || 0;
+            let netAmount = parseFloat($('#pnetAmount').text()) || 0;
+
+            let discMode = $('#pdiscMode').val() || "3";
+            let discount = parseFloat($('#pdiscount').val()) || 0;
+
+            if (isNaN(discount)) {
+                discount = 0;
+            }
+
+            if (discMode === "3" || discMode === "N/A") {
+                discount = 0;
+                $('#pdiscount').val('0');
+            } else if (discMode === "percentage" || discMode === "1") {
+                discount = (subtotal * discount) / 100;
+            }
+
+            subtotal -= discount;
+
+            // Implement rounding rule for subtotal
+            let roundedSubtotal = Math.round(subtotal);
+
+            // Calculate roundOff
+            let roundOff = 0;
+
+            // Update values with rounded subtotal
+            $('#psubtotal').text(roundedSubtotal.toFixed(2));
+            $('#psubtotal_').val(roundedSubtotal.toFixed(2));
+
+            $('#proundOff').text(roundOff.toFixed(2));
+            $('#proundOff_').val(roundOff.toFixed(2));
+
+            var discModeId = $('#pdiscMode').val();
+            $('#pdiscMode_').val(discMode);
+            $('#pdiscount_').val(discount.toFixed(2));
+        }
+
+
+        $('#pdiscMode, #pdiscount').change(function () {
+            calculateTotals();
         });
-
-        let totalTax = totalCGST + totalSGST + totalIGST;
-
-        $('#pamount').text(totalAmount.toFixed(2));
-        $('#pcgst').text(totalCGST.toFixed(2));
-        $('#psgst').text(totalSGST.toFixed(2));
-        $('#pigst').text(totalIGST.toFixed(2));
-        $('#pnetAmount').text(totalNetAmount.toFixed(2));
-        $('#psubtotal').text((totalAmount ).toFixed(2));
-
-        $('#pamount_').val(totalAmount.toFixed(2));
-        $('#pcgst_').val(totalCGST.toFixed(2));
-        $('#psgst_').val(totalSGST.toFixed(2));
-        $('#pigst_').val(totalIGST.toFixed(2));
-        $('#pnetAmount_').val(totalNetAmount.toFixed(2));
-        $('#psubtotal_').val((totalAmount ).toFixed(2));
-
-        let subtotal = parseFloat($('#psubtotal').text()) || 0;
-        let netAmount = parseFloat($('#pnetAmount').text()) || 0;
-
-        let discMode = $('#pdiscMode').val() || "3";
-        let discount = parseFloat($('#pdiscount').val()) || 0;
-
-        if (isNaN(discount)) {
-            discount = 0;
-        }
-
-        if (discMode === "3" || discMode === "N/A") {
-            discount = 0;
-            $('#pdiscount').val('0');
-        } else if (discMode === "percentage" || discMode === "1") {
-            discount = (subtotal * discount) / 100;
-        }
-
-        subtotal -= discount;
-
-        // Implement rounding rule for subtotal
-        let roundedSubtotal = Math.round(subtotal);
-
-        // Calculate roundOff
-        let roundOff = netAmount - roundedSubtotal;
-        let ppaymentMode = $('#paymentmode').val();
-        $('#ppaymentMode').val(ppaymentMode); // Ensure this line is added
-
-        // Update values with rounded subtotal
-        $('#psubtotal').text(roundedSubtotal.toFixed(2));
-        $('#psubtotal_').val(roundedSubtotal.toFixed(2));
-
-        $('#proundOff').text(roundOff.toFixed(2));
-        $('#proundOff_').val(roundOff.toFixed(2));
-
-        var discModeId = $('#pdiscMode').val();
-        $('#pdiscMode_').val(discMode);
-        $('#pdiscount_').val(discount.toFixed(2));
-    }
-
-
-    $('#pdiscMode, #pdiscount').change(function () {
-        calculateTotals();
-    });
 
         $(document).on('click', '#addmanufacturer', function () {
             $("#manufacturerform").show();
@@ -1843,18 +1987,18 @@ table th {
                 { data: 'batchNo' },
                 { data: 'tax' },
                 { data: 'quantity' },
-                { data: 'free' },
-                { data: 'uom' },
-                { data: 'purcRate'},
-                { data: 'mrp' },
+                { data: 'free', className: 'd-none' },
+                { data: 'uom', className: 'd-none' },
+                { data: 'purcRate' },
+                { data: 'mrp', className: 'd-none' },
                 { data: 'rate' },
                 { data: 'discMode' },
                 { data: 'discount' },
                 { data: 'amount' },
-                { data: 'cgst' },
-                { data: 'sgst' },
-                { data: 'igst' },
-                { data: 'totalAmount' },
+                { data: 'cgst', className: 'd-none' },
+                { data: 'sgst', className: 'd-none' },
+                { data: 'igst', className: 'd-none' },
+                { data: 'totalAmount', className: 'd-none' },
                 {
                     data: 'Id',
                     render: function (data) {
@@ -1869,10 +2013,11 @@ table th {
             fixedColumns: {
                 leftColumns: 1
             }
+
         });
 
-        table.column('.action').visible(false);
 
+        table.column('.action').visible(false);
 
         // Toggle visibility of the action column and buttons when Edit button is clicked
         $('.editmasbtn').click(function () {
@@ -1886,13 +2031,15 @@ table th {
             var selectedPurchaseId = $(this).val();
             table.ajax.url('/auth/salesretail/salesretailproductid?purchaseId=' + selectedPurchaseId).load();
         });
+
         if (table.data().count() === 0) {
             console.log("No data available in table");
         }
+
         if (table.rows().count() === 0) {
             $("#emptyMessage").show();
         }
-      
+
         $(document).ready(function () {
             var companyState;
             var totalAmount = 0;
@@ -2019,7 +2166,9 @@ table th {
             fetchSupplierNames();
         });
 
-          $('.dropdown[name="customername"]').on('change', function () {
+
+
+        $('.dropdown[name="customername"]').on('change', function () {
             var selectedSupplier = $(this).val();
             console.log('Selected Supplier:', selectedSupplier);
             initiateFetchCompanyState(selectedSupplier);
@@ -2113,56 +2262,58 @@ table th {
             }
         });
 
-    $('.dropdown[name="Id"]').change(function () {
-        var selectedOption = $(this).find('option:selected');
-        if (!selectedOption || !selectedOption.val()) {
-            return;
-        }
+        $('.dropdown[name="Id"]').change(function () {
+            var selectedOption = $(this).find('option:selected');
+            if (!selectedOption || !selectedOption.val()) {
+                return;
+            }
 
-        try {
-            var rowDetails = JSON.parse(selectedOption.val());
-            $('#id').val(rowDetails.id);
-            $('#saledate').val(formatDate(rowDetails.saledate));
+            try {
+                var rowDetails = JSON.parse(selectedOption.val());
+                $('#id').val(rowDetails.id);
+                $('#saledate').val(formatDate(rowDetails.saledate));
 
-            // Set the customer in the dropdown using selectcustomer from rowDetails
-            $('#customerSelect').val(rowDetails.selectcustomer).trigger('change'); // Make sure 'selectcustomer' is the customerId
-            $('#customername').val(rowDetails.customername); // Optionally, set the customer name in a text field
-            $('#mobileno').val(rowDetails.mobileno);
-            $('#paymentmode').val(rowDetails.paymentmode);
+                // Set the customer in the dropdown using selectcustomer from rowDetails
+                console.log('Setting customer ID:', rowDetails.selectcustomer);
+                $('#customerId').val(rowDetails.selectcustomer); // Make sure 'selectcustomer' is the customerId
+                $('#doctorname').val(rowDetails.doctorname);
+                $('#customername').val(rowDetails.customername);
+                $('#mobileno').val(rowDetails.mobileno);
+                $('#paymentmode').val(rowDetails.paymentmode);
 
-            // Populate financial details
-            $('#pnetAmount').text(parseFloat(rowDetails.netAmount).toFixed(2));
-            $('#pamount').text(parseFloat(rowDetails.amount).toFixed(2));
-            $('#pigst').text(parseFloat(rowDetails.igst).toFixed(2));
-            $('#pcgst').text(parseFloat(rowDetails.cgst).toFixed(2));
-            $('#psgst').text(parseFloat(rowDetails.sgst).toFixed(2));
-            $('#psubtotal').text(parseFloat(rowDetails.subtotal).toFixed(2));
-            $('#ptcs').text(parseFloat(rowDetails.tcs).toFixed(2));
-            $('#proundOff').text(parseFloat(rowDetails.roundoff).toFixed(2));
+                // Populate financial details
+                $('#pnetAmount').text(parseFloat(rowDetails.netAmount).toFixed(2));
+                $('#pamount').text(parseFloat(rowDetails.amount).toFixed(2));
+                $('#pigst').text(parseFloat(rowDetails.igst).toFixed(2));
+                $('#pcgst').text(parseFloat(rowDetails.cgst).toFixed(2));
+                $('#psgst').text(parseFloat(rowDetails.sgst).toFixed(2));
+                $('#psubtotal').text(parseFloat(rowDetails.subtotal).toFixed(2));
+                $('#ptcs').text(parseFloat(rowDetails.tcs).toFixed(2));
+                $('#proundOff').text(parseFloat(rowDetails.roundoff).toFixed(2));
 
-            // Set discount mode and value
-            $('#pdiscMode').val(rowDetails.discMode);
-            $('#pdiscount').val(rowDetails.discount);
+                // Set discount mode and value
+                $('#pdiscMode').val(rowDetails.discMode);
+                $('#pdiscount').val(rowDetails.discount);
 
-            // Fetch related product data
-            var purchaseId = parseFloat(rowDetails.id);
-            $.ajax({
-                url: '/auth/salesretail/salesretailproductid',
-                method: 'GET',
-                data: { purchaseId: purchaseId },
-                success: function (response) {
-                    updateCustomerTable(response.data);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error fetching ProductId data:', error);
-                }
-            });
-        } catch (error) {
-            console.error('Error parsing JSON:', error);
-        }
-    });
+                // Fetch related product data
+                var purchaseId = parseFloat(rowDetails.id);
+                $.ajax({
+                    url: '/auth/salesretail/salesretailproductid',
+                    method: 'GET',
+                    data: { purchaseId: purchaseId },
+                    success: function (response) {
+                        updateCustomerTable(response.data);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching ProductId data:', error);
+                    }
+                });
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+            }
+        });
 
-    function updateCustomerTable(data) {
+        function updateCustomerTable(data) {
             var table = $('#customerTable').DataTable();
             table.clear().rows.add(data).draw();
         }
@@ -2185,9 +2336,6 @@ table th {
                 window.location.href = '/salesretail'
             });
         });
-
     </script>
-
 </body>
-
 </html>

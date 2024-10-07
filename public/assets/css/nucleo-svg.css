@@ -313,7 +313,7 @@ table thead tr th {
 }
 
 table tbody tr td {
-  text-align: center !important;
+  text-align: left !important;
 }
 
 .editBtn {
@@ -325,13 +325,13 @@ table tbody tr td {
 }
 
 table thead th {
-  text-align: center;
+  text-align: left;
 }
 
 th,
 td {
   border: 0px solid #dddddd;
-  text-align: center;
+  text-align: left;
   padding: 5px;
 }
 
@@ -1116,9 +1116,10 @@ table tbody td{
   line-height: 0.35px !important;
 } */
 
-.sidenav{
+.sidenav {
   font-size: 18px !important;
 }
+
 /* General input wrapper styling */
 .input-wrapper {
   position: relative;

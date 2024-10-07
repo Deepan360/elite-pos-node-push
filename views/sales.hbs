@@ -148,6 +148,71 @@
         .input-invalid{
             border-color: red !important;
         }
+        
+        .btn.disabled,
+        .btn[disabled] {
+            background-color: #4e4e4e !important;
+            border-color: #afafaf !important;
+            cursor: not-allowed !important;
+            opacity: 0.6;
+            color: #000;
+            pointer-events: none !important;
+        }
+
+        /* Ensure the Select2 dropdown has the correct width */
+        .select2-container--default .select2-selection--single {
+            height: 38px;
+            /* Adjust this height to match your design */
+            border: 1px solid #ced4da;
+            /* Match your input styles */
+            border-radius: 4px;
+            /* Match your input styles */
+        }
+
+        /* Adjust the width of the dropdown */
+        .select2-container {
+            width: 100% !important;
+            /* Make sure it takes full width */
+        }
+
+        /* Optional: Customize the dropdown's search input */
+        .select2-container--default .select2-search--dropdown .select2-search__field {
+            height: 38px;
+            /* Match the height */
+        }
+
+        /* Optional: Style the placeholder */
+        .select2-container--default .select2-selection--single .select2-selection__placeholder {
+            color: #6c757d;
+            /* Placeholder color */
+        }
+
+        tr td input.input-field
+       {
+            width: 100%;
+            /* Make the input/select take full width of the td */
+            max-width: max-content;
+            /* Allow the input to stretch based on its content */
+            box-sizing: border-box;
+            white-space: nowrap;
+            margin: 0;
+            /* Remove any default margin */
+            /* Center text in the inputs */
+        }
+
+        /* Table header (thead) styling to ensure alignment with tbody */
+        table th {
+            width: auto;
+            /* Make the input/select take full width of the td */
+            white-space: nowrap;
+            box-sizing: border-box;
+        }
+
+        /* Responsive table container */
+        .table-responsive {
+            white-space: nowrap;
+            /* Ensure the table does not break in smaller screens */
+        }
     </style>
 </head>
 
@@ -251,7 +316,7 @@
                             <th>Tax(%)</th>
                             <th>Quantity</th>
                             <th>Free</th>
-                            <th>UOM</th>
+                            <th class="d-none">UOM</th>
                             <th>Purc.Rate</th>
                             <th>MRP</th>
                             <th>Rate</th>
@@ -560,13 +625,13 @@
 
                 row.html("<td><input type='number' readonly name='Id' class='input-field  purchase-id' value='" + id + "'></td>" +
                     "<td><select name='product' class='input-field product-name dropdown' id='productname_" + id + "'><option selected disabled>Select product</option></select></td>" +
-                    "<td><input type='text' name='batchNo' class='input-field' value='" + batchNo + "'></td>" +
-                    "<td><input type='text' name='tax' class='input-field' value='" + tax + "'></td>" +
+                    "<td><input type='text' name='batchNo' class='input-field' value='" + batchNo + "' readonly></td>" +
+                    "<td><input type='text' name='tax' class='input-field' value='" + tax + "' readonly></td>" +
                     "<td><input type='number' name='quantity' class='input-field' value='" + quantity + "'></td>" +
                   
                     "<td><input type='number' name='free' class='input-field' value='" + free + "'></td>" +
 
-                    "<td><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
+                    "<td class='d-none' ><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
                     "<td><input type='number' name='purcRate' class='input-field' value='" + rate + "'></td>" +
                     "<td><input type='number' name='mrp' class='input-field' value='" + rate + "'></td>" +
                     "<td><input type='number' name='rate' class='input-field' value='" + rate + "'></td>" +
@@ -1069,6 +1134,16 @@
                 }
             });
 
+$('#productname_' + uniqueId).on('change', function () {
+    var selectedProductId = $(this).val();
+    var selectedBatchNo = $('#batchNo_' + uniqueId).val(); // Ensure batchNo is populated
+
+    if (isProductBatchAlreadySelected(selectedProductId, selectedBatchNo)) {
+        alert('This product and batch is already selected.');
+    } else {
+        fetchBatchDetails(selectedProductId, uniqueId);
+    }
+});
 
 
 
@@ -1289,6 +1364,22 @@
                 return products;
             }
 
+            function isProductBatchAlreadySelected(selectedProductId, batchNo) {
+                let exists = false;
+
+                $('#customerTable tbody tr').each(function () {
+                    let existingProductId = $(this).find('select[name="productname"]').val();
+                    let existingBatchNo = $(this).find('input[name="batchNo"]').val();
+
+                    if (existingProductId == selectedProductId && existingBatchNo == batchNo) {
+                        exists = true;
+                        return false; // Exit loop if a match is found
+                    }
+                });
+
+                return exists;
+            }
+
             function fetchBatchDetails(selectedProductId, uniqueId) {
                 console.log('Selected Product ID:', selectedProductId);
 
@@ -1307,62 +1398,55 @@
                             let rows = [];
 
                             response.data.forEach(function (batch) {
-                                // Parse expiryDate and format it to MM-YYYY
                                 let expiryDate = new Date(batch.expiryDate);
-                                let formattedExpiry = expiryDate.getFullYear() !== 1970 // Handle null or invalid dates
+                                let formattedExpiry = expiryDate.getFullYear() !== 1970
                                     ? expiryDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
                                     : 'N/A';
 
                                 let now = new Date();
-                                let currentMonth = new Date(now.getFullYear(), now.getMonth(), 1); // First day of current month
-                                let threeMonthsAhead = new Date(now.getFullYear(), now.getMonth() + 3, 1); // First day of three months ahead
+                                let currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                                let threeMonthsAhead = new Date(now.getFullYear(), now.getMonth() + 3, 1);
 
-                                // Set default background and color
                                 let backgroundColor = '';
                                 let color = '';
                                 let selectable = true;
 
                                 if (expiryDate < currentMonth) {
-                                    // Already expired, set red background and make it non-selectable
                                     backgroundColor = 'red';
                                     color = 'white';
                                     selectable = false;
                                 } else if (expiryDate >= currentMonth && expiryDate < threeMonthsAhead) {
-                                    // This month and next two months, set orange background
                                     backgroundColor = 'orange';
-                                    color = 'white'; // Change to black for better readability
+                                    color = 'white';
                                 } else {
                                     // Normal, default background
                                     backgroundColor = '';
                                     color = '';
                                 }
 
-                                // Store row with color information
-                                rows.push({
-                                    uniqueId: uniqueId,
-                                    batchNo: batch.batchNo,
-                                    expiryDate: batch.expiryDate,
-                                    tax: batch.tax,
-                                    quantity: batch.op_quantity,
-                                    uom: batch.uom,
-                                    rate: batch.rate,
-                                    mrp: batch.mrp,
-                                    backgroundColor: backgroundColor,
-                                    color: color,
-                                    selectable: selectable,
-                                    formattedExpiry: formattedExpiry
-                                });
+                                if (!isProductBatchAlreadySelected(selectedProductId, batch.batchNo)) {
+                                    rows.push({
+                                        uniqueId: uniqueId,
+                                        batchNo: batch.batchNo,
+                                        expiryDate: batch.expiryDate,
+                                        tax: batch.tax,
+                                        quantity: batch.op_quantity,
+                                        uom: batch.uom,
+                                        rate: batch.rate,
+                                        mrp: batch.mrp,
+                                        backgroundColor: backgroundColor,
+                                        color: color,
+                                        selectable: selectable,
+                                        formattedExpiry: formattedExpiry
+                                    });
+                                }
                             });
 
-                            // Sort rows by color priority
-                            // Sort rows by color priority: Orange first, Normal second, Red last
                             rows.sort(function (a, b) {
                                 let colorOrder = { 'orange': 1, '': 2, 'red': 3 };
                                 return colorOrder[a.backgroundColor] - colorOrder[b.backgroundColor];
                             });
 
-
-                            // Clear existing rows and append sorted rows
                             $('#batchDetailsBody').empty();
                             rows.forEach(function (row) {
                                 $('#batchDetailsBody').append(
@@ -1404,6 +1488,7 @@
                 });
             }
 
+
             $('#batchDetailsBody').on('click', 'tr', function () {
                 // Check if the row has the class "non-selectable"
                 if ($(this).hasClass('non-selectable')) {
@@ -1439,6 +1524,8 @@
                 $('#overlay').hide();
                 $('#batchform').hide();
             });
+
+
 
             function generateUniqueId() {
                 return uuidv4();
@@ -1642,7 +1729,7 @@
                 { data: 'tax' },
                 { data: 'quantity' },
                 { data: 'free' },
-                { data: 'uom' },
+                { data: 'uom', className: 'd-none' },
                 { data: 'purcRate' },
                 { data: 'mrp' },
                 { data: 'rate' },

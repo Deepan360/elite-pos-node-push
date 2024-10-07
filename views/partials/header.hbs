@@ -33,13 +33,13 @@
         }
 .sub-menu {
     display: none;
-    position: absolute;
+    position: absolute !important;
     top: 100%; 
     left: 25%;
     font-weight: 300;
     align-items: center;
     align-self: auto;
-    z-index: 2;
+    z-index: 9999;
     margin-left: 0% !important;
     background-color: #303030;
     color: rgb(255, 255, 255) !important;
@@ -144,6 +144,7 @@ h5{
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.19/jspdf.plugin.autotable.min.js"></script>
   </head>
+
 <script>
   // Wait for the DOM to fully load before running the script
   document.addEventListener('DOMContentLoaded', function () {
@@ -185,7 +186,7 @@ h5{
     };
   });
 
-
+     
 
 </script>
 {{!-- <script>

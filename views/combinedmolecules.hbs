@@ -150,7 +150,31 @@
         {{>color}}
         {{>footer}}
     </main>
+    <div id="alertModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Notification</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalMessage">Your message here</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
+         function showBootstrapModal(message) {
+                // Set the message in the modal
+                $('#modalMessage').text(message);
+
+                // Show the modal
+                var myModal = new bootstrap.Modal(document.getElementById('alertModal'));
+                myModal.show();
+            }
         document.addEventListener('DOMContentLoaded', function () {
             var messageElement = document.getElementById('message');
             if (messageElement) {
@@ -403,7 +427,7 @@
                     success: function (response) {
                         console.log(response);
                         if (response.success) {
-                            alert('Successfully Deleted 🗑');
+                             showBootstrapModal('Deleted Successfully 🖋');
                             table.ajax.reload();
                         } else {
                             alert("Failed to delete customer: " + response.error);

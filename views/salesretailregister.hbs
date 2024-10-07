@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     {{>header}}
     <style>
@@ -10,11 +11,14 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: #8f8f8f; /* White background for the form */
+            background-color: #8f8f8f;
+            /* White background for the form */
             padding: 20px;
-            z-index: 1000; /* Ensure it's above other elements */
+            z-index: 1000;
+            /* Ensure it's above other elements */
             border-radius: 10px;
         }
+
         .editForm {
             display: none;
             position: fixed;
@@ -26,9 +30,11 @@
             z-index: 1000;
             border-radius: 10px;
         }
+
         .container {
             margin-left: 20%;
         }
+
         .updateManufacturer,
         .closeForm {
             background-color: rgba(50, 141, 168) !important;
@@ -38,52 +44,60 @@
             width: 80px !important;
             height: 30px;
         }
+
         button {
             margin: 1px;
         }
+
         #message {
             display: none;
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: #ffffff; 
+            background-color: #ffffff;
             color: black;
             padding: 20px;
-            z-index: 1000; 
+            z-index: 1000;
             size: 200px;
             font-weight: 700;
             justify-content: space-between;
             align-content: space-between;
             align-items: center;
             font-size: 14px;
-            box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.3) !important; 
+            box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.3) !important;
             border-radius: 8px;
-            overflow: hidden; 
+            overflow: hidden;
         }
+
         form input {
             margin: 2px;
         }
+
         form button {
             width: 100px !important;
             padding: 5px;
-            margin: 5px;  
+            margin: 5px;
         }
+
         .col input {
             width: 100%;
         }
+
         input[type=checkbox] {
             width: 100px;
             color: #8f8f8f !important;
         }
+
         .align-right-top {
             position: absolute;
             top: 0;
             right: 0;
-            margin: 10px; 
+            margin: 10px;
         }
     </style>
 </head>
+
 <body class="g-sidenav-show bg-gray-100">
     {{>sidebar}}
     <main class="main-content position-relative border-radius-lg">
@@ -103,14 +117,18 @@
                     </div>
                 </div>
                 <form action="/auth/customer" method="get">
-                    <table id="customerTable" class="table-responsive justify-content-between align-items-end" style="width:100% !important">
+                    <table id="customerTable" class="table-responsive justify-content-between align-items-end"
+                        style="width:100% !important">
                         <thead>
                             <tr>
                                 <th>Vch No</th>
                                 <th>Vch Date</th>
                                 <th>Customer</th>
                                 <th>Mobile no</th>
+                                <th>Payment Mode</th>
                                 <th>Total Amount</th>
+                                <th>Payment Status</th>
+                                <th>Profit Rate</th>
                                 <th class="action">Action</th>
                                 <th>Print</th>
                             </tr>
@@ -120,227 +138,248 @@
                 </form>
             </div>
         </div>
-            {{>footer}}
+        {{>footer}}
     </main>
     {{>color}}
 
-<script>
+    <script>
 
- document.getElementById("clear-button").addEventListener("click", function () {
-        clearFilters();
-    });
+        document.getElementById("clear-button").addEventListener("click", function () {
+            clearFilters();
+        });
 
-  function clearFilters() {
-        var table = document.getElementById("customerTable");
-        var rows = table.getElementsByTagName("tr");
+        function clearFilters() {
+            var table = document.getElementById("customerTable");
+            var rows = table.getElementsByTagName("tr");
 
-        for (var i = 1; i < rows.length; i++) {
-            rows[i].style.display = "";
-        }
-
-        // Check if noDataRow is defined before accessing it
-        var noDataRow = document.getElementById("noDataRow");
-        if (noDataRow) {
-            noDataRow.style.display = "none";
-        }
-
-        // Clear the values of the input fields
-        document.getElementById("fromDate").value = "";
-        document.getElementById("toDate").value = "";
-    }
-
-    document.getElementById("filter-button").addEventListener("click", function() {
-        var fromDate = new Date(document.getElementById("fromDate").value);
-        var toDate = new Date(document.getElementById("toDate").value);
-        var table = document.getElementById("customerTable");
-        var rows = table.getElementsByTagName("tr");
-        var hasData = false;
-
-        console.log('From Date:', fromDate);
-        console.log('To Date:', toDate);
-
-        for (var i = 1; i < rows.length; i++) {
-            var cell = rows[i].getElementsByTagName("td")[1]; // Assuming "Recipt Date" is the second column
-            if (cell) {
-                var cellContent = cell.innerText.trim();
-
-                // Try to extract a valid date using moment.js
-                var cellDate = moment(cellContent, "DD-MM-YYYY");
-
-                // Skip rows with invalid or non-date content
-                if (!cellDate.isValid()) {
-                    console.log('Skipping row with invalid or non-date content:', cellContent);
-                    continue;
-                }
-
-                console.log('Cell Content:', cellContent);
-                console.log('Parsed Date:', cellDate.format("YYYY-MM-DD"));
-
-                if (cellDate.isSameOrAfter(fromDate) && cellDate.isSameOrBefore(toDate)) {
-                    rows[i].style.display = "";
-                    hasData = true;
-                } else {
-                    rows[i].style.display = "none";
-                }
+            for (var i = 1; i < rows.length; i++) {
+                rows[i].style.display = "";
             }
-        }
 
-        // Check if noDataRow is defined before accessing it
-        var noDataRow = document.getElementById("noDataRow");
-        if (noDataRow) {
-            if (!hasData) {
-                noDataRow.style.display = "block";
-            } else {
+            // Check if noDataRow is defined before accessing it
+            var noDataRow = document.getElementById("noDataRow");
+            if (noDataRow) {
                 noDataRow.style.display = "none";
             }
+
+            // Clear the values of the input fields
+            document.getElementById("fromDate").value = "";
+            document.getElementById("toDate").value = "";
         }
-    });
-</script>
 
+        document.getElementById("filter-button").addEventListener("click", function () {
+            var fromDate = new Date(document.getElementById("fromDate").value);
+            var toDate = new Date(document.getElementById("toDate").value);
+            var table = document.getElementById("customerTable");
+            var rows = table.getElementsByTagName("tr");
+            var hasData = false;
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-    // Wait for the DOM to be fully loaded
-    var messageElement = document.getElementById('message');
+            console.log('From Date:', fromDate);
+            console.log('To Date:', toDate);
 
-    if (messageElement) {
-        // If the message element exists
-        setTimeout(function () {
-            // Set a timeout to hide the message after 2 seconds
-            messageElement.style.display = 'none';
-        }, 1000); // 2000 milliseconds = 2 seconds
-    }
-});
-  </script>
-  <script>
-    $(document).ready(function () {
-        // Hide all .div elements initially
-        $('.div').hide();
-        // Show the .add element initially
-        $('.add').show();
+            for (var i = 1; i < rows.length; i++) {
+                var cell = rows[i].getElementsByTagName("td")[1]; // Assuming "Recipt Date" is the second column
+                if (cell) {
+                    var cellContent = cell.innerText.trim();
 
-        // Add change event listener to the dropdown with name="Id"
-        $('.dropdown[name="Id"]').change(function () {
-            var selectedOption = $(this).find('option:selected');
-            // If a valid option is selected (not 'view details')
-            if (selectedOption.val() && selectedOption.val() !== 'view details') {
-                $('.div').show();
-                $('.opener').hide();
-                $('.add').hide();
-            } else {
-                $('.div').hide();
-                $('.add').show();
+                    // Try to extract a valid date using moment.js
+                    var cellDate = moment(cellContent, "DD-MM-YYYY");
+
+                    // Skip rows with invalid or non-date content
+                    if (!cellDate.isValid()) {
+                        console.log('Skipping row with invalid or non-date content:', cellContent);
+                        continue;
+                    }
+
+                    console.log('Cell Content:', cellContent);
+                    console.log('Parsed Date:', cellDate.format("YYYY-MM-DD"));
+
+                    if (cellDate.isSameOrAfter(fromDate) && cellDate.isSameOrBefore(toDate)) {
+                        rows[i].style.display = "";
+                        hasData = true;
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+
+            // Check if noDataRow is defined before accessing it
+            var noDataRow = document.getElementById("noDataRow");
+            if (noDataRow) {
+                if (!hasData) {
+                    noDataRow.style.display = "block";
+                } else {
+                    noDataRow.style.display = "none";
+                }
             }
         });
-    });
+    </script>
 
-    // Add event listener for the "addmanufacturer" button
-    $(document).on('click', '#addmanufacturer', function () {
-        $("#manufacturerform").show();
-        $("#id").val('');
-    });
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Wait for the DOM to be fully loaded
+            var messageElement = document.getElementById('message');
 
-    // Initialize DataTable with specified options
-    var table = $("#customerTable").DataTable({
-        dom: 'Bfrtip',
-        buttons: ['copy', 'excel', 'pdf', 'csv'],
-        paging: false,
-        scrollY: '480px',
-        scrollX: '100px',
-        scrollCollapse: true,
-        responsive: true,
-        "bInfo": true,
-        "bBorders": true,
-        ajax: {
-            url: '/auth/salesretailregister',
-            type: 'GET',
-            dataType: 'json',
-            dataSrc: 'data'
-        },
-        columns: [
-            { data: 'id' },
-            {
-                data: 'saledate',
-                render: function (data) {
-                    return data ? moment(data).format("DD-MM-YYYY") : 'null';
-                }
-            },
-            {
-                data: 'customername',
-                render: function (data) {
-                    return data ? data : 'null';
-                }
-            },
-            {
-                data: 'mobileno',
-                render: function (data) {
-                    return data ? data : 'null';
-                }
-            },
-            {
-                data: 'subtotal',
-                render: function (data) {
-                    return data ? data : 'null';
-                }
-            },
-            {
-                data: 'id',
-                render: function (data) {
-                    return '<i class="fa-solid fa-file-pen fa-2x" type="button" data-id="' + data + '"></i>';
-                }
-            },
-            {
-                data: 'id',
-                render: function (data) {
-                    return '<i class="fa-solid fa-print fa-2x" type="button" data-id="' + data + '"></i>';
-                }
+            if (messageElement) {
+                // If the message element exists
+                setTimeout(function () {
+                    // Set a timeout to hide the message after 2 seconds
+                    messageElement.style.display = 'none';
+                }, 1000); // 2000 milliseconds = 2 seconds
             }
-        ],
-        "createdRow": function (row, data, dataIndex) {
-            $(row).attr('data-id', data.id);
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            // Hide all .div elements initially
+            $('.div').hide();
+            // Show the .add element initially
+            $('.add').show();
+
+            // Add change event listener to the dropdown with name="Id"
+            $('.dropdown[name="Id"]').change(function () {
+                var selectedOption = $(this).find('option:selected');
+                // If a valid option is selected (not 'view details')
+                if (selectedOption.val() && selectedOption.val() !== 'view details') {
+                    $('.div').show();
+                    $('.opener').hide();
+                    $('.add').hide();
+                } else {
+                    $('.div').hide();
+                    $('.add').show();
+                }
+            });
+        });
+
+        // Add event listener for the "addmanufacturer" button
+        $(document).on('click', '#addmanufacturer', function () {
+            $("#manufacturerform").show();
+            $("#id").val('');
+        });
+
+        // Initialize DataTable with specified options
+        var table = $("#customerTable").DataTable({
+            dom: 'Bfrtip',
+            buttons: ['copy', 'excel', 'pdf', 'csv'],
+            paging: false,
+            scrollY: '480px',
+            scrollX: '100px',
+            scrollCollapse: true,
+            responsive: true,
+            "bInfo": true,
+            "bBorders": true,
+            ajax: {
+                url: '/auth/salesretailregister',
+                type: 'GET',
+                dataType: 'json',
+                dataSrc: 'data'
+            },
+            columns: [
+                { data: 'id' },
+                {
+                    data: 'saledate',
+                    render: function (data) {
+                        return data ? moment(data).format("DD-MM-YYYY") : 'null';
+                    }
+                },
+                {
+                    data: 'customername',
+                    render: function (data) {
+                        return data ? data : 'null';
+                    }
+                },
+                {
+                    data: 'mobileno',
+                    render: function (data) {
+                        return data ? data : 'null';
+                    }
+                },
+                {
+                    data: 'paymentmode',
+                    render: function (data) {
+                        return data ? data : 'null';
+                    }
+                },
+                {
+                    data: 'subtotal',
+                    render: function (data) {
+                        return data ? data : 'null';
+                    }
+                },
+                {
+                    data: 'paymentmode',
+                    render: function (data, type, row) {
+                        // Check if the paymentmode is 'COD', mark as 'Unpaid'; otherwise 'Paid'
+                        return data === 'COD' ? 'Unpaid' : 'Paid';
+                    }
+                },
+                {
+                    data: 'billmargin',
+                    render: function (data) {
+                        return data ? data : 'null';
+                    }
+                },
+                {
+                    data: 'id',
+                    render: function (data) {
+                        return '<i class="fa-solid fa-file-pen fa-2x" type="button" data-id="' + data + '"></i>';
+                    }
+                },
+                {
+                    data: 'id',
+                    render: function (data) {
+                        return '<i class="fa-solid fa-print fa-2x" type="button" data-id="' + data + '"></i>';
+                    }
+                }
+            ],
+
+            "createdRow": function (row, data, dataIndex) {
+                $(row).attr('data-id', data.id);
+            }
+        });
+
+
+        // Handle click event for the edit icon
+        $('#customerTable').on('click', 'i.fa-file-pen', function () {
+            var salesId = $(this).data('id');
+            console.log('sales ID:', salesId); // Debugging
+            window.location.href = '/salesretail?id=' + salesId;
+        });
+
+        // Handle click event for the print icon
+        $(document).on('click', '#customerTable i.fa-print', function () {
+            var salesId = $(this).closest('tr').data('id');
+            console.log('Sales ID:', salesId); // Debugging
+            if (salesId !== undefined) {
+                window.location.href = '/salesretailprint?id=' + salesId;
+            } else {
+                console.error('Sales ID is undefined.');
+                // Handle the case where salesId is undefined
+            }
+        });
+
+        // Show a message if there are no rows in the table
+        if (table.rows().count() === 0) {
+            $("#emptyMessage").show();
         }
-    });
-
-    // Handle click event for the edit icon
-    $('#customerTable').on('click', 'i.fa-file-pen', function () {
-        var salesId = $(this).data('id');
-        console.log('sales ID:', salesId); // Debugging
-        window.location.href = '/salesretail?id=' + salesId;
-    });
-
-    // Handle click event for the print icon
-    $(document).on('click', '#customerTable i.fa-print', function () {
-        var salesId = $(this).closest('tr').data('id');
-        console.log('Sales ID:', salesId); // Debugging
-        if (salesId !== undefined) {
-            window.location.href = '/salesretailprint?id=' + salesId;
-        } else {
-            console.error('Sales ID is undefined.');
-            // Handle the case where salesId is undefined
-        }
-    });
-
-    // Show a message if there are no rows in the table
-    if (table.rows().count() === 0) {
-        $("#emptyMessage").show();
-    }
-</script>
+    </script>
 
 
 </body>
+
 </html>
- <script>
-  $( function() {
-    $( "#fromDate" ).datepicker();
-  } );
-  </script>
- <script>
-  $( function() {
-    $( "#toDate" ).datepicker();
-  } );
-  </script>
-    <script>
-          $("#closeForm").click(function() {
-            $(".editForm").hide();
-        });
-    </script>
+<script>
+    $(function () {
+        $("#fromDate").datepicker();
+    });
+</script>
+<script>
+    $(function () {
+        $("#toDate").datepicker();
+    });
+</script>
+<script>
+    $("#closeForm").click(function () {
+        $(".editForm").hide();
+    });
+</script>

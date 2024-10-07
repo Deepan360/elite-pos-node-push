@@ -136,6 +136,22 @@
    
     
    </div>
+<div id="alertModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Notification</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage">Your message here</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
 
  
 {{>footer}}
@@ -311,7 +327,7 @@ $(document).on('submit', '.editForm', function(event) {
 
                 // Optionally, you can hide the form after a successful update
                 $(".editForm").hide();
-                alert('Customer Updated Successfully 🖋');
+                showBootstrapModal('ledger Updated Successfully 🖋');
                 table.ajax.reload();
             } else {
                 alert('Failed to update customer');
@@ -328,6 +344,15 @@ $(document).on('submit', '.editForm', function(event) {
         }
     });
 });
+
+        function showBootstrapModal(message) {
+            // Set the message in the modal
+            $('#modalMessage').text(message);
+
+            // Show the modal
+            var myModal = new bootstrap.Modal(document.getElementById('alertModal'));
+            myModal.show();
+        }
 
 // Handle form close button for the edit form
 $(document).on('click', '.editForm #closeForm', function() {

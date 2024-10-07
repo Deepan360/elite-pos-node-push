@@ -319,28 +319,22 @@
                 <form id="purchaseDetails" class="form-control p-0 g-0 " style="display: block; align-item: start;"
                     action="auth/purchase" method="post">
                     <div class="row d-flex justify-content-between  mb-0 gx-0 w-100 ">
-
-
                         <div class="custom col-md-1">
                             <label for="pamount">Amount:</label>
                             <span id="pamount" name="pamount">0.00</span>
                         </div>
-
                         <div class="custom col-md-1">
                             <label for="pigst">IGST:</label>
                             <span id="pigst" name="pigts">0.00</span>
                         </div>
-
                         <div class="custom col-md-1">
                             <label for="pcgst">CGST:</label>
                             <span id="pcgst" name="pcgst">0.00</span>
                         </div>
-
                         <div class="custom col-md-1">
                             <label for="psgst">SGST:</label>
                             <span id="psgst" name="psgst">0.00</span>
                         </div>
-
                         <div class="custom col-md-1">
                             <label for="psubtotal">Total Amount:</label>
                             <span id="psubtotal" name="psubtotal">0.00</span>
@@ -350,7 +344,6 @@
                             <label for="pcess">CESS:</label>
                             <span id="pcess" name="pcess">0.00</span>
                         </div>
-
                         <div class="custom">
                             <label for="ptcs">TCS:</label>
                             <span id="ptcs" name="ptcs">0.00</span>
@@ -359,17 +352,13 @@
                             <label for="proundOff">Round Off:</label>
                             <span id="proundOff" name="proundOff">0.00</span>
                         </div>
-
                         <div class="custom col-md-1">
                             <label for="pnetAmount">Net Amount:</label>
                             <span id="pnetAmount" name="pnetAmount">0.00</span>
                         </div>
-
                     </div>
-
                 </form>
             </div>
-
             <div id="selectedRowDetails"></div>
             {{>footer}}
         </div>
@@ -673,8 +662,9 @@
                     success: function (response) {
                         console.log(response);
                         if (response.success) {
-                            showBootstrapModal('Purchase Updated Successfully 🖋');
-                            window.location.href = '/purchaseregister';
+                          showBootstrapModal('Purchase Updated Successfully 🖋', function () {
+                                window.location.href = '/purchaseregister';
+                            });
                         } else {
                             alert("Failed to update purchase: " + response.message);
                         }
@@ -806,8 +796,9 @@
                     success: function (response) {
                         console.log(response);
                         if (response.success) {
-                            showBootstrapModal('Purchase Delete Successfully 🖋');
-                            window.location.href = "/purchase";
+                            showBootstrapModal('Purchase Deleted Successfully 🖋', function () {
+                                window.location.href = '/purchaseregister';
+                            });
                         } else {
                             alert("Failed to delete purchase: " + response.error);
                         }
@@ -1010,8 +1001,9 @@
                         data: formData,
                         success: function (response) {
                             console.log(response);
-                            window.location.href = '/purchaseregister';
-                             showBootstrapModal('Purchase Added Successfully 🖋');
+                           showBootstrapModal('Purchase Added Successfully 🖋', function () {
+                                window.location.href = '/purchaseregister';
+                            });
                         },
                         error: function (error) {
                             console.error("Error submitting form:", error);
@@ -1336,14 +1328,22 @@
             $("#emptyMessage").show();
         }
      
-            function showBootstrapModal(message) {
-                // Set the message in the modal
-                $('#modalMessage').text(message);
+    function showBootstrapModal(message, callback) {
+        // Set the message in the modal
+        $('#modalMessage').text(message);
 
-                // Show the modal
-                var myModal = new bootstrap.Modal(document.getElementById('alertModal'));
-                myModal.show();
+        // Show the modal
+        var myModal = new bootstrap.Modal(document.getElementById('alertModal'));
+        myModal.show();
+
+        // When the modal is hidden, execute the callback if provided
+        $('#alertModal').on('hide.bs.modal', function () {
+            if (typeof callback === 'function') {
+                callback();
             }
+        });
+    }
+
 
         $(document).ready(function () {
             var companyState;

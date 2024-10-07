@@ -231,17 +231,12 @@
         $(document).on('click', '.editBtn', function () {
             // Get the data associated with the clicked row
             var data = table.row($(this).parents('tr')).data();
-
             console.log('Data:', data);
-
             // Check if the data is valid and an object
             if (data && typeof data === 'object' && !Array.isArray(data)) {
                 // Populate the edit form fields with the data
                 $(".editForm #id").val(data.id);
                 $(".editForm #packagename").val(data.packagename);
-
-
-
                 // Show the edit form
                 $(".editForm").show();
             } else {

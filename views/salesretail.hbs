@@ -524,6 +524,22 @@
         </div>
         {{>footer}}
         </div>
+        <div id="alertModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Notification</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="modalMessage">Your message here</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
     {{>color}}
 
@@ -533,17 +549,14 @@
         $(document).ready(function () {
             // Initially hide the opener
             $('#openPurchaseForm').hide();
-
             function checkRequiredFields() {
                 let isValid = true;
-
                 // Iterate over all required fields and check their validity
                 $('#purchaseDetails').find('input[required], select[required]').each(function () {
                     if ($(this).val() === '' || $(this).val() === null) {
                         isValid = false;
                     }
                 });
-
                 // Show the opener if all fields are valid, else hide it
                 if (isValid) {
                     $('#openPurchaseForm').show();
@@ -551,7 +564,6 @@
                     $('#openPurchaseForm').hide();
                 }
             }
-
             // Bind input and change events to validate on the fly
             $('#purchaseDetails').find('input, select').on('input change', function () {
                 checkRequiredFields();
@@ -563,16 +575,12 @@
         $(document).ready(function () {
             const $submitBtn = $('#submitFormBtn');
             const $paymentMode = $('#paymentmode'); // Select the select element directly
-
             function checkRequiredFields() {
                 $submitBtn.prop('disabled', $paymentMode.is(':invalid')); // Simplified logic
             }
-
             $paymentMode.on('change input', checkRequiredFields); // Bind to the select element
             checkRequiredFields(); // Initial check
         });
-
-
     </script>
 
 
@@ -589,14 +597,12 @@
                 placeholder: "Search by name or mobile number",
                 allowClear: true
             });
-
             // Fetch customer data and populate dropdown
             $.ajax({
                 url: '/auth/salesretail/customerretail',
                 method: 'GET',
                 success: function (response) {
                     const customers = response.data;
-
                     // Populate the customer select dropdown
                     customers.forEach(function (customer) {
                         $('#customerSelect').append($('<option>', {
@@ -604,8 +610,6 @@
                             text: `${customer.customername} (${customer.mobileno})`
                         }));
                     });
-
-
                     // Trigger Select2 update after appending options
                     $('#customerSelect').trigger('change');
                 },
@@ -632,8 +636,6 @@
                 $('#mobileno').val(""); // Clear mobile number input
                 $('#customerId').val(""); // Clear customer ID
             });
-
-
         });
 
 
@@ -674,23 +676,19 @@
             const mobileno = $('#cmobileno').val().trim(); // Ensure no leading/trailing spaces
             const salesman = $('#salesmannameSelect').val();
             console.log($('#customername').length);
-
             // Log all values for debugging
             console.log('Customer Name:', customername);
             console.log('Mobile No:', mobileno);
             console.log('Salesman selected value:', salesman);
-
             if (!customername || !mobileno) {
                 alert("Please fill in all fields.");
                 return;
             }
-
             const customerData = {
                 customername: customername,
                 mobileno: mobileno,
                 salesman: salesman
             };
-
             $.ajax({
                 url: '/auth/salesretail/customerretail',
                 method: 'POST',
@@ -714,26 +712,20 @@
                 }
             });
         });
-
-
         // Optionally, hide overlay when clicking outside the form
         $('#newCustomerFormOverlay').on('click', function (e) {
             if (e.target === this) {
                 $('#newCustomerFormOverlay').hide(); // Hide the form when clicking outside
             }
         });
-
-
     </script>
     <script>
         $(document).ready(function () {
             // Disable the discount input initially
             $('#pdiscount').prop('disabled', true);
-
             // Listen to change event on the discount mode dropdown
             $('#pdiscMode').change(function () {
                 var selectedValue = $(this).val();
-
                 if (selectedValue) {
                     // Enable discount input if a discount mode is selected
                     $('#pdiscount').prop('disabled', false);
@@ -751,7 +743,6 @@
                 $('#batchform').hide();
             });
         });
-
         $(document).ready(function () {
             $.ajax({
                 url: '/auth/purchase/discmode',
@@ -760,13 +751,9 @@
                 success: function (response) {
                     console.log('Received response for discmode options:', response);
                     var options = response.data;
-
                     if (options && options.length) {
-
                         var discModeDropdown = $('#pdiscMode');
-
                         discModeDropdown.find('option').remove();
-
                         discModeDropdown.append($('<option>', {
                             selected: 'selected',
                             disabled: 'disabled',
@@ -790,7 +777,7 @@
         });
 
         $(document).on('click', '.editmasbtn', function () {
-            alert("IF YOU GONNA EDIT IN QUANTITY OF salesretail PRODUCT,DELETE THE TRANSACTION AND ADD  CORRECT QUANTITY.");
+            showBootstrapModal('IF YOU GONNA EDIT IN QUANTITY OF SALES PRODUCT,DELETE THE TRANSACTION AND ADD  CORRECT QUANTITY 🖋');
             $('.opener').show();
             $('#customerTable tbody tr').each(function () {
                 var row = $(this);
@@ -819,8 +806,8 @@
                     "<td><input type='number' name='quantity' class='input-field' value='" + quantity + "'></td>" +
                     "<td class='d-none'><input type='number' name='free' class='input-field' value='" + free + "'></td>" +
                     "<td class='d-none'><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
-                    "<td><input type='number' name='purcRate' class='input-field' value='" + purcRate + "'></td>" +
-                    "<td class='d-none'><input type='number' name='mrp' class='input-field' value='" + mrp + "'></td>" +
+                    "<td><input type='number' name='purcRate' class='input-field' value='" + purcRate + "' readonly></td>" +
+                    "<td class='d-none'><input type='number' name='mrp' class='input-field' value='" + mrp + " readonly'></td>" +
                     "<td><input type='number' name='rate' class='input-field' value='" + rate + "'></td>" +
                     "<td><select name='discMode' class='input-field disc-mode dropdown' id='discMode_" + id + "'><option selected disabled>Select Disc Mode</option></select></td>" +
                     "<td><input type='number' name='discount' class='input-field' value='" + discount + "'></td>" +
@@ -839,6 +826,8 @@
             calculateTotals();
             adjustColumnWidths();
         });
+     
+     
         function adjustColumnWidths() {
             $('#customerTable').DataTable().columns.adjust().draw();
         }
@@ -856,7 +845,7 @@
                     if (response.success) {
                         table.row(row).remove().draw(false);
                         calculateTotals();
-                        alert('Row deleted successfully');
+                        showBootstrapModal('Trans Row Deleted Successfully 🖋');
                     } else {
                         alert('Failed to delete row: ' + response.message);
                     }
@@ -869,31 +858,33 @@
         });
 
         $(document).ready(function () {
+
+            $('#paymentmode').change(function () {
+                $('#ppaymentMode').val($(this).val());
+            });
+
             $('#draftBtn').on('click', function () {
                 // Set the value of is_Draft to 1
                 $('#is_Draft').val('1');
                 console.log('Draft button clicked, is_Draft value set to 1');
-
                 // Trigger the click event of the update button
                 $('.updateBtn').click();
             });
             $(document).on('click', '.updateBtn', function (event) {
                 event.preventDefault();
-
                 var purchaseId = $('input[name="id"]').val();
                 if (!purchaseId) {
                     console.error('No purchase ID entered.');
                     alert('No purchase ID entered. Please enter a purchase ID to update.');
                     return;
                 }
-
                 var purchaseDetails = {
                     id: $('#id').val(),
                     saledate: $('#saledate').val(),
                     paymentmode: $('#ppaymentMode').val(),
                     customername: $('#customerSelect').val() || $('#customerId').val(),
                     doctorname: $('#doctorname').val(),
-                    pamount: parseFloat($('#pamount_').val()),
+                    pamount: parseFloat($('#pamount_').val()) || 0,
                     pigst: parseFloat($('#pigst_').val()),
                     pcgst: parseFloat($('#pcgst_').val()),
                     psgst: parseFloat($('#psgst_').val()),
@@ -902,46 +893,53 @@
                     ptcs: parseFloat($('#ptcs_').val()),
                     proundOff: parseFloat($('#proundOff_').val()),
                     pnetAmount: parseFloat($('#pnetAmount_').val()),
-                    pdiscMode_: parseFloat($('#pdiscMode_').val()), // Make sure this ID matches the discount mode field ID in the HTML
+                    pdiscMode_: parseFloat($('#pdiscMode_').val()) || 3, // Make sure this ID matches the discount mode field ID in the HTML
                     pdiscount: parseFloat($('#pdiscount_').val()),
-                    isDraft: $('#is_Draft').val()// Make sure this ID matches the discount field ID in the HTML
+                    isDraft: $('#is_Draft').val() || 0// Make sure this ID matches the discount field ID in the HTML
                 };
-
                 console.log('Purchase Details:', purchaseDetails);
-
                 var payload = {
                     purchaseId: purchaseId,
                     purchaseDetails: purchaseDetails,
                     products: getUpdatedProductsData()
                 };
+                // Collect values before form submission
+                let formData = $('#purchaseDetails').serialize();
+                console.log(formData);  // Check what data is being sent
 
                 console.log('Payload:', payload);
-
                 $.ajax({
                     type: 'PUT',
-                    url: '/auth/salesretailEdit/' + purchaseId,
+                    url: '/auth/salesretailEdit/' + purchaseId, // Ensure this uses purchaseId
                     contentType: 'application/json',
                     data: JSON.stringify(payload),
                     success: function (response) {
                         console.log(response);
                         if (response.success) {
-                            alert('Successfully updated');
-                            window.location.href = "/salesretail";
+                            showBootstrapModal('Sales Retail Updated Successfully 🖋', function () {
+                                window.location.href = '/salesretailregister';
+                            });
                         } else {
                             alert("Failed to update purchase: " + response.message);
                         }
                     },
                     error: function (xhr, status, error) {
                         console.error('Error updating purchase:', error);
+                        console.error('Response:', xhr.responseText); // Log the response for more detail
                         alert("Failed to update purchase. Check console for details.");
                     }
                 });
+
+            
             });
+     
+     
         });
+
+
 
         function getUpdatedProductsData() {
             var products = [];
-
             $('#customerTable tbody tr').each(function () {
                 try {
                     var Id = $(this).find('.purchase-id').val();
@@ -952,7 +950,7 @@
                     var free = $(this).find('[name="free"]').val() || 0;
                     var uom = $(this).find('[name="uom"]').val();
                     var purcRate = $(this).find('[name="purcRate"]').val();
-                    var mrp = $(this).find('[name="mrp"]').val();
+                    var mrp = $(this).find('[name="mrp"]').val() || 0;
                     var rate = $(this).find('[name="rate"]').val();
                     var discMode = $(this).find('[name="discMode"]').val() || 3;
                     var discount = $(this).find('[name="discount"]').val() || 0;
@@ -961,7 +959,6 @@
                     var sgst = $(this).find('[name="sgst"]').val();
                     var igst = $(this).find('[name="igst"]').val();
                     var totalAmount = $(this).find('[name="totalAmount"]').val();
-
                     var product = {
                         Id: Id,
                         productId: product,
@@ -981,14 +978,12 @@
                         igst: igst,
                         totalAmount: totalAmount
                     };
-
                     products.push(product);
                 } catch (error) {
                     console.error('Error processing row:', this);
                     console.error('Error details:', error);
                 }
             });
-
             return products;
         }
 
@@ -1050,8 +1045,9 @@
                     success: function (response) {
                         console.log(response);
                         if (response.success) {
-                            alert('Successfully Deleted 🗑');
-                            window.location.href = "/salesretail";
+                         showBootstrapModal('Sales Retail Deleted Successfully 🖋', function () {
+                                window.location.href = '/salesretailregister';
+                            });
                         } else {
                             alert("Failed to delete purchase: " + response.error);
                         }
@@ -1112,7 +1108,6 @@
             $editBtn.on('click', function () {
                 // Enable all buttons inside the div
                 $div.find('button').prop('disabled', false);
-
                 // Enable and style the update and draft buttons
                 $updateBtn.add($draftBtn)
                     .removeClass('disabled')
@@ -1126,18 +1121,15 @@
             if (event.target.matches('.quantity')) {
                 let quantityInput = event.target;
                 let freeInput = document.querySelector(`#free_${quantityInput.id.split('_')[1]}`); // Get corresponding free input field
-
                 // Parse the value as an integer
                 let quantityValue = parseInt(quantityInput.value, 10);
                 let maxQuantity = parseInt(quantityInput.getAttribute('max'), 10);
-
                 // If the value is NaN (not a number) or less than 1, set the value to an empty string
                 if (isNaN(quantityValue) || quantityValue < 0) {
                     quantityInput.value = '';
                 } else if (quantityValue > maxQuantity) {
                     quantityInput.value = maxQuantity;
                 }
-
                 // Validate the free input field
                 if (freeInput) {
                     let freeValue = parseInt(freeInput.value, 10) || 0;
@@ -1154,12 +1146,10 @@
             if (event.target.matches('.input-field') && event.target.name === 'free') {
                 let freeInput = event.target;
                 let quantityInput = document.querySelector(`#quantity_${freeInput.id.split('_')[1]}`); // Get corresponding quantity input field
-
                 // Parse the values as integers
                 let freeValue = parseInt(freeInput.value, 10) || 0;
                 let quantityValue = parseInt(quantityInput.value, 10);
                 let maxQuantity = parseInt(quantityInput.getAttribute('max'), 10);
-
                 // Validate the sum of quantity and free values
                 if (quantityValue + freeValue > maxQuantity) {
                     alert('The sum of quantity and free value cannot exceed the maximum quantity.');
@@ -1174,14 +1164,12 @@
                 event.preventDefault(); // Prevent scrolling from affecting the input field value
             }
         }, { passive: false });
-
         // Function to set quantity and max attributes
         function updateQuantityInput(uniqueId, quantity) {
             let quantityInput = document.getElementById('quantity_' + uniqueId);
             if (quantityInput) {
                 quantityInput.value = Math.max(1, quantity); // Ensure the value is at least 1
                 quantityInput.setAttribute('max', quantity);
-
                 // Also update the max attribute of the corresponding free input field
                 let freeInput = document.getElementById('free_' + uniqueId);
                 if (freeInput) {
@@ -1189,23 +1177,31 @@
                 }
             }
         }
+            function showBootstrapModal(message, callback) {
+                // Set the message in the modal
+                $('#modalMessage').text(message);
 
+                // Show the modal
+                var myModal = new bootstrap.Modal(document.getElementById('alertModal'));
+                myModal.show();
 
-
-
+                // When the modal is hidden, execute the callback if provided
+                $('#alertModal').on('hide.bs.modal', function () {
+                    if (typeof callback === 'function') {
+                        callback();
+                    }
+                });
+            }
         $(document).ready(function () {
             // Initialize DataTable
             let table = $('#customerTable').DataTable();
             let products = [];
             let uniqueId = generateUniqueId();
-
             calculateTotals();
-
             // Open Purchase Form and Add New Row
             $('#openPurchaseForm').on('click', function () {
                 let purchaseId = generateUniqueId();
                 $('#purchaseId').val(purchaseId);
-
                 uniqueId = generateUniqueId();
                 let newRow = $("<tr data-uniqueId='" + uniqueId + "'>" +
                     "<td><input type='hidden' name='purchaseId' class='input-field purchase-id' value='" + purchaseId + "'></td>" +
@@ -1216,7 +1212,7 @@
                     "<td class='d-none'><input type='number' name='free'min='0' class='input-field' id='free_" + uniqueId + "' placeholder='Free'></td>" +
                     "<td class='d-none'><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
                     "<td><input type='number' name='purcRate' class='input-field' id='purcRate_" + uniqueId + "' placeholder='purcRate' readonly></td>" +
-                    "<td class='d-none'><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='MRP'></td>" +
+                    "<td class='d-none'><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='MRP' readonly></td>" +
                     "<td><input type='number' name='rate' class='input-field' id='rate_" + uniqueId + "' placeholder='Rate' required></td>" +
                     "<td><select name='discMode' class='input-field product-name dropdown' id='discMode_" + uniqueId + "' placeholder='Disc.Mode' ><option selected disabled>Select Disc Mode</option></select></td>" +
                     "<td><input type='number' name='discount' class='input-field' id='discount_" + uniqueId + "' placeholder='Discount' disabled></td>" +
@@ -1227,12 +1223,8 @@
                     "<td class='d-none'><input type='number' name='totalAmount' class='input-field' id='totalAmount_" + uniqueId + "' placeholder='Total Amount'></td>" +
                     "<td class='action new-row'><i class='fa-solid fa-trash deleteRowBtn text-danger' type='button'></i> <i class='fa-solid fa-plus addRowBtn text-success' type='button'></i></td>" +
                     "</tr>");
-
-
-
                 $('#customerTable tbody').append(newRow);
                 table.rows.add([newRow[0]]).draw();
-
                 // Fetch product options and populate the product dropdown
                 $.ajax({
                     url: '/auth/purchase/productname',
@@ -1246,7 +1238,6 @@
                                     text: option.productname
                                 }));
                             });
-
                             // Initialize Select2 with search filter functionality
                             $('#productname_' + uniqueId).select2({
                                 placeholder: 'Select a product',
@@ -1257,16 +1248,13 @@
                                     if ($.trim(params.term) === '') {
                                         return data;
                                     }
-
                                     // Custom matcher for case-insensitive search
                                     if (typeof data.text === 'undefined') {
                                         return null;
                                     }
-
                                     if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
                                         return data;
                                     }
-
                                     return null;
                                 }
                             });
@@ -1314,10 +1302,8 @@
                 // Get the uniqueId of the current row to validate it
                 let row = $(this).closest("tr");
                 let uniqueId = row.attr('data-uniqueid'); // Get the unique ID from the row
-
                 // Trigger validation before allowing a new row to be added
                 let isValid = true;
-
                 if (isValid) {
                     // If validation passes, trigger adding a new row
                     $('#openPurchaseForm').click();
@@ -1327,21 +1313,17 @@
                 }
             });
 
-    
             $('#productname_' + uniqueId).on('change', function () {
                 var selectedProductId = $(this).val();
                 var selectedBatchNo = $('#batchNo_' + uniqueId).val(); // Ensure batchNo is populated
-
                 if (isProductBatchAlreadySelected(selectedProductId, selectedBatchNo)) {
                     alert('This product and batch is already selected.');
                 } else {
                     fetchBatchDetails(selectedProductId, uniqueId);
                 }
             });
-
             // Submit Form
             $(document).ready(function () {
-
                 // Event listener for Draft Button
                 $('#draftButton').on('click', function () {
                     $('#is_Draft').val('1'); // Set is_Draft to 1 for draft
@@ -1376,7 +1358,6 @@
 
                 // Form submit logic
                 function submitForm() {
-
                     let formData = $('#purchaseDetails').serializeArray();
                     let products = getProductsData();
                     // formData.push({ name: 'customerId', value: $('#customerId').val() });
@@ -1389,8 +1370,9 @@
                         data: formData,
                         success: function (response) {
                             console.log("Form submitted successfully:", response); // Log successful submission
-                            alert('Successfully Submitted Sales');
-                            window.location.href = '/salesretailregister';
+                             showBootstrapModal('Retail Sales Added Successfully 🖋', function () {
+                                window.location.href = '/salesretailregister';
+                            });
                         },
                         error: function (error) {
                             console.error("Error submitting form:", error);
@@ -1404,7 +1386,6 @@
                 $(document).on('change', '.input-field', function () {
                     // Extract uniqueId from the relevant input field
                     let uniqueId = $(this).attr('id').split('_')[1]; // Assuming IDs are in the format of 'prefix_uniqueId'
-
                     // Call the validateAmount function to check the current values
                     validateAmount(uniqueId);
                 });
@@ -1415,61 +1396,49 @@
                         if ($('#discount_' + uniqueId).prop('disabled')) {
                             return true; // If discount is disabled, no validation needed
                         }
-
                         let amount = parseFloat($('#amount_' + uniqueId).val()) || 0;
                         let purcRate = parseFloat($('#purcRate_' + uniqueId).val()) || 0;
                         let quantity = parseFloat($('#quantity_' + uniqueId).val()) || 0;
                         let taxPercentage = parseFloat($('#tax_' + uniqueId).val()) || 0;
-
                         console.log('Amount:', amount);
                         console.log('Purchase Rate:', purcRate);
                         console.log('Quantity:', quantity);
                         console.log('Tax Percentage:', taxPercentage);
-
                         if (purcRate <= 0 || quantity <= 0) {
                             console.error('Purchase rate or quantity is invalid.');
                             return false;
                         }
-
                         let baseAmount = purcRate * quantity;
                         let taxAmount = (baseAmount * taxPercentage) / 100;
                         let totalExpectedAmount = baseAmount + taxAmount;
-
                         console.log('Base Amount:', baseAmount);
                         console.log('Tax Amount:', taxAmount);
                         console.log('Total Expected Amount:', totalExpectedAmount);
-
                         if (amount < totalExpectedAmount) {
                             let productName = $('#productname_' + uniqueId + ' option:selected').text();
                             let alertMessage = 'Amount cannot be less than Purchase Amount (' + baseAmount + ') plus ' + taxPercentage + '% tax for product: ' + productName;
-
                             showAlert(alertMessage);
                             $('#amount_' + uniqueId).addClass('error');
                             console.error('Validation failed: Amount is less than totalExpectedAmount.');
-
                             return false; // Validation failed
                         } else {
                             $('#amount_' + uniqueId).removeClass('error');
                             $('#alertBox').hide();
                             console.log('Validation passed: Amount is correct.');
-
                             return true; // Validation passed
                         }
                     } catch (error) {
                         console.error('Error in validateAmount:', error);
                     }
                 }
-
                 // Real-time input validation on rate field
                 $(document).on('input', 'input[name="rate"]', function () {
                     let uniqueId = $(this).attr('id').split('_')[1];
                     validateRate(uniqueId);
                 });
-
                 function validateRate(uniqueId) {
                     let rate = parseFloat($('#rate_' + uniqueId).val());
                     let purcRate = parseFloat($('#purcRate_' + uniqueId).val());
-
                     if (rate < purcRate) {
                         let productName = $('#productname_' + uniqueId + ' option:selected').text();
                         let alertMessage = 'Rate cannot be less than Purchase Rate for product: ' + productName;
@@ -1480,22 +1449,18 @@
                         $('#alertMessage').addClass('d-none'); // Hide the alert if the condition is corrected
                     }
                 }
-
                 function validateRows() {
                     let isValid = true;
                     let rows = $('#customerTable tbody tr');
                     $('#alertMessage').addClass('d-none').html(''); // Clear any previous alerts
-
                     // Check if there are any rows
                     if (rows.length === 0) {
                         showAlert('No rows found. Please add at least one row.');
                         return false;
                     }
-
                     rows.each(function () {
                         let uniqueId = $(this).find('select[name="productname"]').attr('id').split('_')[1];
                         let isRowValid = true;
-
                         // Define the required fields
                         let requiredFields = [
                             '#productname_' + uniqueId,
@@ -1504,7 +1469,6 @@
                             '#rate_' + uniqueId,
                             '#mrp_' + uniqueId
                         ];
-
                         // Validate required fields
                         requiredFields.forEach(function (selector) {
                             let $field = $(selector);
@@ -1515,7 +1479,6 @@
                                 $field.removeClass('error'); // Remove error class if valid
                             }
                         });
-
                         // Validate rate vs purcRate
                         let rate = parseFloat($('#rate_' + uniqueId).val());
                         let purcRate = parseFloat($('#purcRate_' + uniqueId).val());
@@ -1523,12 +1486,10 @@
                             isRowValid = false;
                             validateRate(uniqueId); // Show the alert immediately for this row
                         }
-
                         // Validate amount vs purcQuantityRate
                         if (!validateAmount(uniqueId)) {
                             isRowValid = false;
                         }
-
                         if (!isRowValid) {
                             isValid = false;
                             $('html, body').animate({
@@ -1536,12 +1497,10 @@
                             }, 500); // Scroll to the first invalid field
                         }
                     });
-
                     if (!isValid) {
                         let alertMessage = 'Please correct the errors before submitting.';
                         showAlert(alertMessage);
                     }
-
                     return isValid;
                 }
 
@@ -1551,19 +1510,13 @@
                         '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>');
                 }
             });
-
-
-
-
             // Get Product Data
             function getProductsData() {
                 var products = [];
-
                 $('#customerTable tbody tr').each(function () {
                     var uniqueId = $(this).find('select[name="productname"]').attr('id');
                     if (uniqueId) {
                         uniqueId = uniqueId.split('_')[1];
-
                         var product = {
                             purchaseId: $(this).find('.purchase-id').val(),
                             productId: $('#productname_' + uniqueId).val() || "",
@@ -1586,22 +1539,18 @@
                         products.push(product);
                     }
                 });
-
                 return products;
             }
             function isProductBatchAlreadySelected(selectedProductId, batchNo) {
                 let exists = false;
-
                 $('#customerTable tbody tr').each(function () {
                     let existingProductId = $(this).find('select[name="productname"]').val();
                     let existingBatchNo = $(this).find('input[name="batchNo"]').val();
-
                     if (existingProductId == selectedProductId && existingBatchNo == batchNo) {
                         exists = true;
                         return false; // Exit loop if a match is found
                     }
                 });
-
                 return exists;
             }
 
@@ -1612,8 +1561,6 @@
                 var requestData = {
                     selectedProductId: selectedProductId
                 };
-
-
                 $.ajax({
                     url: '/auth/salesretail/retailbatchDetails/' + selectedProductId,
                     method: 'POST',
@@ -1623,21 +1570,17 @@
                         console.log('Received response for batch details:', response);
                         if (response.success) {
                             let rows = [];
-
                             response.data.forEach(function (batch) {
                                 let expiryDate = new Date(batch.expiryDate);
                                 let formattedExpiry = expiryDate.getFullYear() !== 1970
                                     ? expiryDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
                                     : 'N/A';
-
                                 let now = new Date();
                                 let currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
                                 let threeMonthsAhead = new Date(now.getFullYear(), now.getMonth() + 3, 1);
-
                                 let backgroundColor = '';
                                 let color = '';
                                 let selectable = true;
-
                                 if (expiryDate < currentMonth) {
                                     backgroundColor = 'red';
                                     color = 'white';
@@ -1645,10 +1588,13 @@
                                 } else if (expiryDate >= currentMonth && expiryDate < threeMonthsAhead) {
                                     backgroundColor = 'orange';
                                     color = 'white';
+                                } else {
+                                    backgroundColor = ''; // Default background
+                                    color = '';
                                 }
-
+                                 let isAlreadySelected = isProductBatchAlreadySelected(selectedProductId, batch.batchNo);
                                 // Skip adding the batch if it is already selected for this product
-                                if (!isProductBatchAlreadySelected(selectedProductId, batch.batchNo)) {
+                               
                                     rows.push({
                                         uniqueId: uniqueId,
                                         batchNo: batch.batchNo,
@@ -1660,18 +1606,17 @@
                                         mrp: batch.retailMrp,
                                         backgroundColor: backgroundColor,
                                         color: color,
-                                        selectable: selectable,
-                                        formattedExpiry: formattedExpiry
+                                        selectable: !isAlreadySelected && selectable,
+                                        formattedExpiry: formattedExpiry,
+                                        alreadySelected: isAlreadySelected
                                     });
-                                }
+                                
                             });
-
                             // Sort rows by color priority: Orange first, Normal second, Red last
                             rows.sort(function (a, b) {
                                 let colorOrder = { 'orange': 1, '': 2, 'red': 3 };
                                 return colorOrder[a.backgroundColor] - colorOrder[b.backgroundColor];
                             });
-
                             // Clear existing rows and append sorted rows
                             $('#batchDetailsBody').empty();
                             rows.forEach(function (row) {
@@ -1685,7 +1630,7 @@
                             data-rate="${row.rate}" 
                             data-mrp="${row.mrp}" 
                             style="background-color: ${row.backgroundColor}; color: ${row.color};" 
-                            ${row.selectable ? '' : 'class="non-selectable"'} >
+                             class="${row.selectable ? '' : 'non-selectable'} ${row.alreadySelected ? 'already-selected' : ''}">
                             <td>${row.batchNo}</td>
                             <td>${row.formattedExpiry}</td>
                             <td>${row.tax}</td>
@@ -1696,7 +1641,6 @@
                         </tr>`
                                 );
                             });
-
                             $('#overlay').show();
                             $('#batchform').show();
                         } else {
@@ -1713,23 +1657,18 @@
                     }
                 });
             }
-
-
             $('#batchDetailsBody').on('click', 'tr', function () {
                 // Check if the row has the class "non-selectable"
                 if ($(this).hasClass('non-selectable')) {
                     console.log('This row is not selectable');
                     return; // Prevent further actions if the row is not selectable
                 }
-
                 // Retrieve uniqueId from the clicked row
                 var uniqueId = $(this).attr('data-uniqueId');
                 console.log('Retrieved uniqueId:', uniqueId);
-
                 // Retrieve selectedProductId from the dropdown associated with this row
                 var selectedProductId = $('#productname_' + uniqueId).val();
                 console.log('Retrieved selectedProductId:', selectedProductId);
-
                 // Retrieve values from the clicked row
                 var batchNo = $(this).find('td:eq(0)').text();
                 var tax = $(this).find('td:eq(2)').text();
@@ -1737,7 +1676,6 @@
                 var uom = $(this).find('td:eq(4)').text();
                 var rate = $(this).find('td:eq(5)').text();
                 var mrp = $(this).find('td:eq(6)').text();
-
                 // Update input fields in the customerTable with uniqueId
                 $('#batchNo_' + uniqueId).val(batchNo);
                 $('#tax_' + uniqueId).val(tax);
@@ -1746,20 +1684,15 @@
                 $('#purcRate_' + uniqueId).val(rate);
                 $('#mrp_' + uniqueId).val(mrp);
                 $('#rate_' + uniqueId).val(mrp).attr('max', mrp);
-
                 // Hide overlay and batch form
                 $('#overlay').hide();
                 $('#batchform').hide();
             });
-
-
-
             // Close Batch Form
             $('#closeBatchForm').on('click', function () {
                 $('#overlay').hide();
                 $('#batchform').hide();
             });
-
             // Fetch Discount Mode Options
             function fetchDiscmodeOptions(uniqueId) {
                 $.ajax({
@@ -1783,20 +1716,16 @@
                     }
                 });
             }
-
-
             // Generate Unique ID
             function generateUniqueId() {
                 return Math.floor(Math.random() * 1000000);
             }
-
             $(document).ready(function () {
                 // Trigger validation on discount, rate, quantity, or amount change
                 $('#customerTable tbody').on('input', 'input[name="discount"], input[name="rate"], input[name^="quantity"], input[name="amount"]', function () {
                     let uniqueId = $(this).attr('id').split('_')[1]; // Get the unique ID from the input element
                     validateAmount(uniqueId);
                 });
-
                 // Validation function for amount check
                 function validateAmount(uniqueId) {
                     // Check if the discount input is disabled; if yes, skip validation
@@ -1804,15 +1733,12 @@
                         // No need to run validation or show an alert if discount is disabled
                         return;
                     }
-
                     // Parse values and handle potential NaN (Not-a-Number) issues
                     let amount = parseFloat($('#amount_' + uniqueId).val()) || 0;
                     let purcRate = parseFloat($('#purcRate_' + uniqueId).val()) || 0;
                     let quantity = parseFloat($('#quantity_' + uniqueId).val()) || 0;
-
                     // Calculate purchase rate * quantity
                     let purcQuantityRate = purcRate * quantity;
-
                     // Check if the amount is less than the purchase quantity rate
                     if (amount < purcQuantityRate) {
                         let productName = $('#productname_' + uniqueId + ' option:selected').text();
@@ -1825,7 +1751,6 @@
                         $('#alertMessage').addClass('d-none'); // Hide the alert if the condition is corrected
                     }
                 }
-
                 // Trigger validation on discMode change
                 $(document).on('change', "select[name='discMode']", function () {
                     var uniqueId = $(this).attr('id').split('_')[1]; // Get the unique ID
@@ -1838,21 +1763,15 @@
                         // Disable the discount input if no valid option is selected
                         discountInput.prop('disabled', true);
                     }
-
                     // Trigger validation after discMode change
                     validateAmount(uniqueId);
                 });
-
                 // Function to show alert message
                 function showAlert(message) {
                     $('#alertMessage').text(message).removeClass('d-none').addClass('alert alert-danger');
                 }
             });
-
-
         });
-
-
         function fetchDiscmodeOptions(uniqueId) {
             $.ajax({
                 url: '/auth/purchase/discmode',
@@ -1861,13 +1780,9 @@
                 success: function (response) {
                     console.log('Received response for discmode options:', response);
                     var options = response.data;
-
                     if (options && options.length) {
-
                         var discModeDropdown = $('#discMode_' + uniqueId);
-
                         discModeDropdown.find('option').remove();
-
                         discModeDropdown.append($('<option>', {
                             selected: 'selected',
                             disabled: 'disabled',
@@ -1879,7 +1794,6 @@
                                 text: option.discMode
                             }));
                         });
-
                         console.log('Dropdown values:', discModeDropdown.val());
                     } else {
                         console.error('No options found for discmode');
@@ -1889,10 +1803,7 @@
                     console.error('Error fetching discmode options:', error);
                 }
             });
-
         }
-
-
         function calculateTotals() {
             let totalAmount = 0;
             let totalCGST = 0;
@@ -2279,7 +2190,10 @@
                 $('#doctorname').val(rowDetails.doctorname);
                 $('#customername').val(rowDetails.customername);
                 $('#mobileno').val(rowDetails.mobileno);
+                // Load existing data into the form
                 $('#paymentmode').val(rowDetails.paymentmode);
+                $('#ppaymentMode').val(rowDetails.paymentmode); // Ensure hidden input is also set
+
 
                 // Populate financial details
                 $('#pnetAmount').text(parseFloat(rowDetails.netAmount).toFixed(2));
@@ -2293,6 +2207,7 @@
 
                 // Set discount mode and value
                 $('#pdiscMode').val(rowDetails.discMode);
+              
                 $('#pdiscount').val(rowDetails.discount);
 
                 // Fetch related product data

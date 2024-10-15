@@ -453,14 +453,16 @@ $('#customerTable').on('click', '.deleteBtn', function() {
             <!-- First Column -->
             <input type="hidden" placeholder="Id" name="id" id="id">
             <input type="text" placeholder="Code No" name="code" id="code">
-            <input type="text" placeholder="Salesman Name" name="ledgername" id="ledgername">
-            <input type="text" placeholder="mobile" name="mobile" id="mobile">
+            <input type="text" placeholder="Salesman Name" name="ledgername" id="ledgername" required>
+            <input type="text" placeholder="mobile" name="mobile" id="mobile" minlength="10" maxlength="10"
+                pattern="\d{10}" title="Please enter exactly 10 digits" required
+                oninput="this.value = this.value.replace(/[^0-9]/g, '');">
             <input type="text" placeholder="aadhar" name="aadhar" id="aadhar">
             <input type="text" placeholder="email" name="email" id="email">
             <input type="date" placeholder="dob" name="openingdate" id="openingdate">
             <input type="text" placeholder="address" name="address" id="address">
-            <input type="text" placeholder="city" name="city" id="city">
-            <input type="text" placeholder="state" name="state" id="state">
+            <input type="text" placeholder="city" name="city" id="city" required>
+            <input type="text" placeholder="state" name="state" id="state" readonly>
             <input type="text" placeholder="pincode" name="pincode" id="pincode">
         
         </div>
@@ -476,14 +478,16 @@ $('#customerTable').on('click', '.deleteBtn', function() {
             <!-- First Column -->
             <input type="hidden" placeholder="Id" name="id" id="id">
             <input type="text" placeholder="Code No" name="code" id="code">
-            <input type="text" placeholder="Salesman Name" name="ledgername" id="ledgername">
-            <input type="text" placeholder="mobile" name="mobile" id="mobile">
+            <input type="text" placeholder="Salesman Name" name="ledgername" id="ledgername" required>
+            <input type="text" placeholder="mobile" name="mobile" id="mobile" minlength="10" maxlength="10"
+                pattern="\d{10}" title="Please enter exactly 10 digits" required
+                oninput="this.value = this.value.replace(/[^0-9]/g, '');">
             <input type="text" placeholder="aadhar" name="aadhar" id="aadhar">
             <input type="text" placeholder="email" name="email" id="email">
             <input type="date" placeholder="dob" name="openingdate" id="openingdate">
             <input type="text" placeholder="address" name="address" id="address">
-            <input type="text" placeholder="city" name="city" id="city">
-            <input type="text" placeholder="state" name="state" id="state">
+            <input type="text" placeholder="city" name="city" id="city" required>
+            <input type="text" placeholder="state" name="state" id="state" readonly>
             <input type="text" placeholder="pincode" name="pincode" id="pincode">
         
         </div>

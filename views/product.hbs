@@ -125,26 +125,15 @@
                 <tbody>
                    
                 </tbody>
-               
             </table>
              <button type="button" value="button" class="btn btn-primary" id="addmanufacturer" >add</button>
             </form>
-            
-
             </div>
-             
         </div>
-        
     </div>
-  
     {{>footer}}
     {{>color}}
    </div>
-
-
-
-
-
   </main>
 
 <div id="alertModal" class="modal fade" tabindex="-1" role="dialog">
@@ -464,27 +453,39 @@ $.ajax({
     });
 
     $.ajax({
-            url: '/auth/package',
-            method: 'GET',
-            success: function (response) {
-                console.log('Received response for package:', response);
-                var options = response.data;
-                if (options && options.length) {
-                    options.forEach(function (option) {
-                        $('.dropdown[name="package"]').append($('<option>', {
+        url: '/auth/package',
+        method: 'GET',
+        success: function (response) {
+            console.log('Received response for package:', response);
+            var options = response.data;
+            var packageDropdown = $('.dropdown[name="package"]');
 
-                            value: option.packagename,
-                            text: option.packagename
-                        }));
-                    });
-                } else {
-                    console.error('No options found for package');
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('Error fetching options for package:', error);
+            // Clear the dropdown first and add the placeholder option
+            packageDropdown.empty();
+            packageDropdown.append($('<option>', {
+                value: "",
+                text: "Select Package",
+                disabled: true,
+                selected: true
+            }));
+
+            // Dynamically add the options
+            if (options && options.length) {
+                options.forEach(function (option) {
+                    packageDropdown.append($('<option>', {
+                        value: option.packagename,  // Use option.packagename for value
+                        text: option.packagename    // Display option.packagename as the text
+                    }));
+                });
+            } else {
+                console.error('No options found for package');
             }
-        });
+        },
+        error: function (xhr, status, error) {
+            console.error('Error fetching options for package:', error);
+        }
+    });
+
 
         $.ajax({
                 url: '/auth/product/moleculescombination',
@@ -540,21 +541,34 @@ $.ajax({
         success: function (response) {
             console.log('Received response fortype:', response);
             var options = response.data;
+            var drugtypeDropdown = $('.dropdown[name="drugtype"]');
+
+            // Clear the dropdown first and add the placeholder option
+            drugtypeDropdown.empty();
+            drugtypeDropdown.append($('<option>', {
+                value: "",
+                text: "Select Drug Type",
+                disabled: true,
+                selected: true
+            }));
+
+            // Dynamically add the options
             if (options && options.length) {
                 options.forEach(function (option) {
-                    $('.dropdown[name="drugtype"]').append($('<option>', {
+                    drugtypeDropdown.append($('<option>', {
                         value: option.drugtype,
                         text: option.drugtype
                     }));
                 });
             } else {
-                console.error('No options found for Supplier Ledger(dr)');
+                console.error('No options found for drug types');
             }
         },
         error: function (xhr, status, error) {
-            console.error('Error fetching options for Supplier Ledger(dr):', error);
+            console.error('Error fetching options for drug types:', error);
         }
     });
+
 
 // Fetch options for customer Ledger(cr)
 $.ajax({
@@ -629,8 +643,8 @@ $.ajax({
             </div>
                 <div class="row">
                     <label class="h6" for="drugtype">Drugtype:</label>
-                    <select id="drugtype" class="form-control dropdown" name="drugtype">
-                        <option value="Disabled Select">Select Drug Type</option>
+                    <select id="drugtype" class="form-control dropdown" name="drugtype" required>
+                        <option value=" Disabled Select">Select Drug Type</option>
                     </select>
                 </div>
             <div class="row">
@@ -647,8 +661,8 @@ $.ajax({
             </div>
             <div class="row">
                 <label class="h6" for="Package">Package:</label>
-                <select id="package" class="form-control dropdown" name="package">
-                    <option value="Disabled Select">Select Package</option>
+                <select id="package" class="form-control dropdown" name="package" required>
+                    <option value=" "Disabled Select>Select Package</option>
                 </select>
             </div>
             <div class="row">
@@ -709,7 +723,7 @@ $.ajax({
         </div>
             <div class="row">
                 <label class="h6" for="drugtype">Drugtype:</label>
-                <select id="drugtype" class="form-control dropdown" name="drugtype">
+                <select id="drugtype" class="form-control dropdown" name="drugtype" required>
                     <option value="Disabled Select">Select Drug Type</option>
                 </select>
             </div>
@@ -722,13 +736,13 @@ $.ajax({
         <div class="row">
             <label class="h6" for="Combination">Combination:</label>
             <select id="combination" class="form-control dropdown" name="combination">
-                <option value="Disabled Select">Select Combination</option>
+                <option value=" "Disabled Select>Select Combination</option>
             </select>
         </div>
         <div class="row">
             <label class="h6" for="Package">Package:</label>
-            <select id="package" class="form-control dropdown" name="package">
-                <option value="Disabled Select">Select Package</option>
+            <select id="package" class="form-control dropdown" name="package" required>
+                <option value=" "Disabled Select>Select Package</option>
             </select>
         </div>
         <div class="row">

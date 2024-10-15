@@ -650,9 +650,7 @@ router.put("/salesretail", (req, res) => {
 router.get("/editsalesretail", (req, res) => {
   res.render("editsalesretail", { id: req.params.id });
 });
-router.get("/editsalesretail/salesretailEdit", (req, res) => {
-  res.render("salesretailEdit", { id: req.params.id });
-});
+
 router.get("/salesretail", (req, res) => {
   res.render("salesretaildelete", { id: req.params.id });
 });

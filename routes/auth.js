@@ -221,10 +221,10 @@ router.get('/purchaseprintpage/purchasedetails', userController.purchasedetails)
 router.get('/purchaseoutstanding', userController.purchaseoutstanding);
 
 router.get('/salesprintpage/productdetails', userController.getSalesProductDetails);
-router.get('/salesprintpage/salesdetails', userController.salesdetails);
+router.get('/salesprintpage/salesretaildetails', userController.salesretailDetails);
 
 router.get('/salesretailprint/productdetails', userController.getSalesretailProductDetails);
-router.get('/salesretailprint/salesdetails', userController.salesretaildetails);
+router.get('/salesretailprint/salesretailDetails', userController.salesretailDetails);
 
 router.get('/user/getrole', userController.getrole);
 router.post('/user/create', userController.create);

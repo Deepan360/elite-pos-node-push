@@ -1169,3 +1169,15 @@ input.input-invalid {
   content: '✖';
   color: red;
 }
+/* Style readonly inputs with a greymud background color */
+tr td input.input-field:read-only,
+tr td input[type="month"].input-field:read-only {
+  background-color: #949494;
+  /* Greymud color */
+  color: #fff;
+  /* White text for contrast */
+  border: 1px solid #ccc;
+  /* Optional border for readonly inputs */
+  
+}
+

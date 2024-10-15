@@ -213,6 +213,12 @@
             white-space: nowrap;
             /* Ensure the table does not break in smaller screens */
         }
+        .w-200{
+            width: 100px !important;   
+        }
+        .w2{
+            width: 70px !important;
+        }
     </style>
 </head>
 
@@ -318,8 +324,8 @@
                             <th>Free</th>
                             <th class="d-none">UOM</th>
                             <th>Purc.Rate</th>
-                            <th>MRP</th>
-                            <th>Rate</th>
+                            <th >MRP&nbsp;&nbsp;</th>
+                            <th >Rate &nbsp;&nbsp;</th>
                             <th>Disc.Mode</th>
                             <th>Disc</th>
                             <th>Amount</th>
@@ -616,7 +622,7 @@
         });
 
         $(document).on('click', '.editmasbtn', function () {
-            alert("IF YOU GONNA EDIT IN QUANTITY OF SALES PRODUCT,DELETE THE TRANSACTION AND ADD  CORRECT QUANTITY.");
+            showBootstrapModal('IF YOU GONNA EDIT IN QUANTITY OF SALES PRODUCT,DELETE THE TRANSACTION AND ADD  CORRECT QUANTITY 🖋');
             $('.opener').show();
             $('#customerTable tbody tr').each(function () {
                 var row = $(this);
@@ -643,13 +649,11 @@
                     "<td><input type='text' name='batchNo' class='input-field' value='" + batchNo + "' readonly></td>" +
                     "<td><input type='text' name='tax' class='input-field' value='" + tax + "' readonly></td>" +
                     "<td><input type='number' name='quantity' class='input-field' value='" + quantity + "'></td>" +
-                  
                     "<td><input type='number' name='free' class='input-field' value='" + free + "'></td>" +
-
                     "<td class='d-none' ><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
-                    "<td><input type='number' name='purcRate' class='input-field' value='" + rate + "'></td>" +
-                    "<td><input type='number' name='mrp' class='input-field' value='" + rate + "'></td>" +
-                    "<td><input type='number' name='rate' class='input-field' value='" + rate + "'></td>" +
+                    "<td><input type='number' name='purcRate' class='input-field' value='" + purcRate + "' readonly></td>" +
+                    "<td><input type='number' name='mrp' class='input-field w2' value='" + mrp + "' readonly></td>" +
+                    "<td><input type='number' name='rate' class='input-field w-200' value='" + rate + "'></td>" +
                     "<td><select name='discMode' class='input-field disc-mode dropdown' id='discMode_" + id + "'><option selected disabled>Select Disc Mode</option></select></td>" +
                     "<td><input type='number' name='discount' class='input-field' value='" + discount + "'></td>" +
                     "<td><input type='number' name='amount' class='input-field' value='" + amount + "'></td>" +
@@ -1072,15 +1076,15 @@
                         "<td><input type='number' name='free'min='0' class='input-field' id='free_" + uniqueId + "' placeholder='Free'></td>" +
                         "<td><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
                         "<td><input type='number' name='purcRate' class='input-field' id='purcRate_" + uniqueId + "' placeholder='purcRate' readonly></td>" +
-                        "<td><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='mrp' readonly></td>" +
-                        "<td><input type='number' name='rate' class='input-field' id='rate_" + uniqueId + "' placeholder='Rate' required></td>" +
+                        "<td><input type='number' name='mrp' class='input-field w2' id='mrp_" + uniqueId + "' placeholder='mrp' readonly></td>" +
+                        "<td><input type='number' name='rate' class='input-field w-200' id='rate_" + uniqueId + "' placeholder='Rate' required></td>" +
                         "<td><select name='discMode' class='input-field product-name dropdown  ' id='discMode_" + uniqueId + "' placeholder='Disc.Mode'><option selected disabled>Select Disc Mode</option></select></td>" +
                         "<td><input type='number' name='discount' class='input-field' id='discount_" + uniqueId + "' placeholder='Discount' disabled></td>" +
-                        "<td><input type='number' name='amount' class='input-field' id='amount_" + uniqueId + "' placeholder='Amount'></td>" +
-                        "<td><input type='number' name='cgst' class='input-field' id='cgst_" + uniqueId + "' placeholder='CGST'></td>" +
-                        "<td><input type='number' name='sgst' class='input-field' id='sgst_" + uniqueId + "' placeholder='SGST'></td>" +
-                        "<td><input type='number' name='igst' class='input-field' id='igst_" + uniqueId + "' placeholder='IGST'></td>" +
-                        "<td><input type='number' name='totalAmount' class='input-field' id='totalAmount_" + uniqueId + "' placeholder='Total Amount'></td>" +
+                        "<td><input type='number' name='amount' class='input-field' id='amount_" + uniqueId + "' placeholder='Amount' readonly></td>" +
+                        "<td><input type='number' name='cgst' class='input-field' id='cgst_" + uniqueId + "' placeholder='CGST' readonly></td>" +
+                        "<td><input type='number' name='sgst' class='input-field' id='sgst_" + uniqueId + "' placeholder='SGST' readonly></td>" +
+                        "<td><input type='number' name='igst' class='input-field' id='igst_" + uniqueId + "' placeholder='IGST' readonly></td>" +
+                        "<td><input type='number' name='totalAmount' class='input-field' id='totalAmount_" + uniqueId + "' placeholder='Total Amount' readonly></td>" +
                         "<td class='action new-row'><i class='fa-solid fa-trash deleteRowBtn text-danger' type='button'></i> <i class='fa-solid fa-plus addRowBtn text-success' type='button'></i></td>" +
                         "</tr>");
                     $('#customerTable tbody').append(newRow);
@@ -1451,58 +1455,64 @@ $('#productname_' + uniqueId).on('change', function () {
                                     backgroundColor = 'orange';
                                     color = 'white';
                                 } else {
-                                    // Normal, default background
-                                    backgroundColor = '';
+                                    backgroundColor = ''; // Default background
                                     color = '';
                                 }
 
-                                if (!isProductBatchAlreadySelected(selectedProductId, batch.batchNo)) {
-                                    rows.push({
-                                        uniqueId: uniqueId,
-                                        batchNo: batch.batchNo,
-                                        expiryDate: batch.expiryDate,
-                                        tax: batch.tax,
-                                        quantity: batch.op_quantity,
-                                        uom: batch.uom,
-                                        rate: batch.rate,
-                                        mrp: batch.mrp,
-                                        backgroundColor: backgroundColor,
-                                        color: color,
-                                        selectable: selectable,
-                                        formattedExpiry: formattedExpiry
-                                    });
-                                }
+                                // Check if the batch is already selected
+                                let isAlreadySelected = isProductBatchAlreadySelected(selectedProductId, batch.batchNo);
+
+                                rows.push({
+                                    uniqueId: uniqueId,
+                                    batchNo: batch.batchNo,
+                                    expiryDate: batch.expiryDate,
+                                    tax: batch.tax,
+                                    quantity: batch.op_quantity,
+                                    uom: batch.uom,
+                                    rate: batch.rate,
+                                    mrp: batch.mrp,
+                                    backgroundColor: backgroundColor,
+                                    color: color,
+                                    selectable: !isAlreadySelected && selectable, // Mark non-selectable if already selected or expired
+                                    formattedExpiry: formattedExpiry,
+                                    alreadySelected: isAlreadySelected // Flag to mark already selected rows
+                                });
                             });
 
+                            // Sort rows by color: orange first, then normal, then red
                             rows.sort(function (a, b) {
                                 let colorOrder = { 'orange': 1, '': 2, 'red': 3 };
                                 return colorOrder[a.backgroundColor] - colorOrder[b.backgroundColor];
                             });
 
+                            // Clear existing rows
                             $('#batchDetailsBody').empty();
+
+                            // Append rows
                             rows.forEach(function (row) {
                                 $('#batchDetailsBody').append(
                                     `<tr data-uniqueId="${row.uniqueId}" 
-                            data-batchNo="${row.batchNo}" 
-                            data-expiryDate="${row.expiryDate}" 
-                            data-tax="${row.tax}" 
-                            data-quantity="${row.quantity}" 
-                            data-uom="${row.uom}" 
-                            data-rate="${row.rate}" 
-                            data-mrp="${row.mrp}" 
-                            style="background-color: ${row.backgroundColor}; color: ${row.color};" 
-                            ${row.selectable ? '' : 'class="non-selectable"'}>
-                            <td>${row.batchNo}</td>
-                            <td>${row.formattedExpiry}</td>
-                            <td>${row.tax}</td>
-                            <td>${row.quantity}</td>
-                            <td>${row.uom}</td>
-                            <td>${row.rate}</td>
-                            <td>${row.mrp}</td>
-                        </tr>`
+                             data-batchNo="${row.batchNo}" 
+                             data-expiryDate="${row.expiryDate}" 
+                             data-tax="${row.tax}" 
+                             data-quantity="${row.quantity}" 
+                             data-uom="${row.uom}" 
+                             data-rate="${row.rate}" 
+                             data-mrp="${row.mrp}" 
+                             style="background-color: ${row.backgroundColor}; color: ${row.color};"
+                             class="${row.selectable ? '' : 'non-selectable'} ${row.alreadySelected ? 'already-selected' : ''}">
+                             <td>${row.batchNo}</td>
+                             <td>${row.formattedExpiry}</td>
+                             <td>${row.tax}</td>
+                             <td>${row.quantity}</td>
+                             <td>${row.uom}</td>
+                             <td>${row.rate}</td>
+                             <td>${row.mrp}</td>
+                         </tr>`
                                 );
                             });
 
+                            // Show the modal
                             $('#overlay').show();
                             $('#batchform').show();
                         } else {

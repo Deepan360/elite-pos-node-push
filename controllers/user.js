@@ -1261,7 +1261,8 @@ async function reduceretailStock(productId, quantity, free, batchNo) {
 }
 
 exports.salesretailEdit = async (req, res) => {
-  const { purchaseId } = req.params;
+  const { id } = req.params;
+
   const { purchaseDetails, products } = req.body;
   try {
     console.log("Received request to edit purchase:", req.body);
@@ -1285,7 +1286,7 @@ exports.salesretailEdit = async (req, res) => {
             [roundoff] = ${purchaseDetails.proundOff},
           [isDraft] = ${purchaseDetails.isDraft}
         WHERE
-            [id] = ${purchaseDetails.id};
+            [id] = ${id};
     `;
     for (const product of products) {
       const {
@@ -1346,8 +1347,12 @@ exports.salesretailEdit = async (req, res) => {
     console.error("Error updating salesretail:", error);
     res
       .status(400)
-      .json({ success: false, message: "Failed to update salesretail" });
+      .json({
+        success: false,
+        message: error.message || "Failed to update salesretail",
+      });
   }
+
 };
 
 // async function reduceStock(productId, quantity,batchNo) {
@@ -1905,7 +1910,7 @@ exports.salesretaildetails = (req, res) => {
 //salesretailprintpage
 
 //salesprintpage
-exports.getSalesProductDetails = (req, res) => {
+  exports.getSalesProductDetails = (req, res) => {
   const salesId = req.query.salesId; // Extract salesId from query parameter
 
   // Use parameterized query to prevent SQL injection
@@ -1926,14 +1931,14 @@ exports.getSalesProductDetails = (req, res) => {
   });
 };
 
-exports.salesdetails = (req, res) => {
+  exports.salesretailDetails = (req, res) => {
   const salesId = req.query.salesId; // Extract salesId from query parameter
 
   // Use parameterized query to prevent SQL injection
   const request = pool.request();
   request.input("SalesId", sql.Int, salesId); // Add salesId as a parameter
 
-  request.execute("dbo.GetSalesDetails", (err, result) => {
+  request.execute("dbo.GetSalesretailDetails", (err, result) => {
     if (err) {
       console.error("Error executing stored procedure:", err);
       return res.status(500).json({ error: "Internal Server Error" });
@@ -1949,7 +1954,7 @@ exports.salesdetails = (req, res) => {
 //salesprintpage
 
 //purchaseprintpage
-exports.getProductDetails = (req, res) => {
+  exports.getProductDetails = (req, res) => {
   const purchaseId = req.query.purchaseId; // Extract purchaseId from query parameter
 
   // Use parameterized query to prevent SQL injection
@@ -1970,7 +1975,7 @@ exports.getProductDetails = (req, res) => {
   });
 };
 
-exports.purchasedetails = (req, res) => {
+  exports.purchasedetails = (req, res) => {
   const purchaseId = req.query.purchaseId; // Extract purchaseId from query parameter
 
   // Use parameterized query to prevent SQL injection
@@ -1992,7 +1997,7 @@ exports.purchasedetails = (req, res) => {
 };
 //purchaseprintpage
 //purchasesales report
-exports.purchaseoutstanding = (req, res) => {
+  exports.purchaseoutstanding = (req, res) => {
   poolConnect()
     .then((pool) => {
       const request = pool.request();
@@ -2015,7 +2020,7 @@ exports.purchaseoutstanding = (req, res) => {
 
 //purchasesales report
 //batchsummary
-exports.currentstock = (req, res) => {
+  exports.currentstock = (req, res) => {
   poolConnect()
     .then((pool) => {
       const request = pool.request();
@@ -2036,7 +2041,7 @@ exports.currentstock = (req, res) => {
     });
 };
 
-exports.batchsummary = (req, res) => {
+  exports.batchsummary = (req, res) => {
   poolConnect()
     .then((pool) => {
       const request = pool.request();
@@ -2057,7 +2062,7 @@ exports.batchsummary = (req, res) => {
     });
 };
 
-exports.stocksummary = (req, res) => {
+  exports.stocksummary = (req, res) => {
   poolConnect()
     .then((pool) => {
       const request = pool.request();
@@ -2078,7 +2083,7 @@ exports.stocksummary = (req, res) => {
     });
 };
 
-exports.stockanalysis = (req, res) => {
+  exports.stockanalysis = (req, res) => {
   poolConnect()
     .then((pool) => {
       const request = pool.request();
@@ -5000,7 +5005,7 @@ exports.purchase = (req, res) => {
 exports.purchaseadd = async (req, res) => {
   const {
     purchasedate,
-    ppaymentmode,
+    paymentmode,
     supplierinvoicedate,
     modeoftransport,
     transportno,
@@ -5037,7 +5042,7 @@ exports.purchaseadd = async (req, res) => {
       INSERT INTO [elite_pos].[dbo].[PurchaseTable_Master]
       ([purchasedate], [paymentmode], [supplierinvoicedate], [modeoftransport], [transportno], [supplierinvoiceamount], [supplierinvoiceno], [suppliername], [amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft])
       VALUES
-      (${formattedPurchaseDate}, ${ppaymentmode}, ${formattedsupplierinvoicedate}, ${modeoftransport}, ${transportno}, ${supplierinvoiceamount}, ${supplierinvoiceno}, ${suppliername}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft});
+      (${formattedPurchaseDate}, ${paymentmode}, ${formattedsupplierinvoicedate}, ${modeoftransport}, ${transportno}, ${supplierinvoiceamount}, ${supplierinvoiceno}, ${suppliername}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft});
 
       SET @purchaseId = SCOPE_IDENTITY(); -- Retrieve the SCOPE_IDENTITY() value
 
@@ -5112,7 +5117,7 @@ exports.purchaseEdit = async (req, res) => {
       UPDATE [elite_pos].[dbo].[PurchaseTable_Master]
       SET
           [purchaseDate] = ${purchaseDetails.purchaseDate},
-          [paymentMode] = ${purchaseDetails.paymentMode},
+          [paymentmode] = ${purchaseDetails.paymentMode},
           [supplierInvoiceDate] = ${purchaseDetails.supplierInvoiceDate},
           [modeOfTransport] = ${purchaseDetails.modeOfTransport},
           [transportNo] = ${purchaseDetails.transportNo},
@@ -5216,8 +5221,8 @@ exports.purchaseEdit = async (req, res) => {
         BEGIN
           UPDATE [elite_pos].[dbo].[stock_Ob]
           SET 
-            [quantity] = [quantity] + ${quantityValue} + ${freeValue},
-            [op_quantity] = [op_quantity] + ${quantityValue} + ${freeValue},
+            [quantity] =  ${quantityValue} + ${freeValue},
+            [op_quantity] =  ${quantityValue} + ${freeValue},
             [retailQty] = ${retailQty},
             [retailRate] = ${retailRate},
             [tax] = ${tax},

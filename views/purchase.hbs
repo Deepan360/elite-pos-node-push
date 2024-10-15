@@ -141,6 +141,46 @@
             right: 0;
             margin: 10px;
         }
+
+        tr td input.input-field,
+        tr td input[type="month"].input-field,
+        tr td select.input-field {
+            width: 100%;
+            /* Make the input/select take full width of the td */
+            box-sizing: border-box;
+            /* Ensure padding and borders are included in the width */
+            white-space: nowrap;
+            /* Prevent wrapping of content */
+            margin: 0;
+            /* Remove default margin */
+            padding: 5px;
+            /* Add padding for better appearance */
+            max-width: 100%;
+            /* Ensure input cannot exceed 100% of the td width */
+        }
+
+
+        /* Table header (thead) styling to ensure alignment with tbody */
+        table th {
+            width: auto;
+            /* Make the input/select take full width of the td */
+            white-space: nowrap;
+            box-sizing: border-box;
+        }
+
+        /* Responsive table container */
+        .table-responsive {
+            white-space: nowrap;
+            /* Ensure the table does not break in smaller screens */
+        }
+
+        .w-200 {
+            width: 100px !important;
+        }
+
+        .w2 {
+            width: 70px !important;
+        }
     </style>
 </head>
 
@@ -264,12 +304,12 @@
                             <th>Quantity</th>
                             <th>Free</th>
                             <th>Package</th>
-                            <th>Retail.qty</th>
-                            <th>UOM</th>
+                            <th class="d-none">Retail.qty</th>
+                            <th class="d-none">UOM</th>
                             <th>Rate</th>
-                            <th>Retail.rate</th>
+                            <th class="d-none">Retail.rate</th>
                             <th>MRP</th>
-                            <th>Retail.MRP</th>
+                            <th class="d-none">Retail.MRP</th>
                             <th>Disc.Mode</th>
                             <th>Disc</th>
                             <th>Amount</th>
@@ -381,25 +421,24 @@
                 </div>
             </div>
         </div>
-<div id="alertModal" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Notification</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p id="modalMessage">Your message here</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+        <div id="alertModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Notification</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="modalMessage">Your message here</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
     </main>
     {{>color}}
-
 
     <script>
         $(document).ready(function () {
@@ -430,7 +469,6 @@
             });
         });
 
-
     </script>
     <script>
         // Get the current date
@@ -441,6 +479,7 @@
 
         // Set the value of the input to the formatted date
         document.getElementById('purchasedate').value = formattedDate;
+
         function formatDate(dateObject) {
             const date = new Date(dateObject);
             const year = date.getFullYear();
@@ -449,6 +488,7 @@
             return `${year}-${month}-${day}`;
         }
     </script>
+
     <script>
         $(document).ready(function () {
             // Disable the discount input initially
@@ -508,11 +548,11 @@
 
         $(document).on('click', '.editmasbtn', function () {
             $('.opener').show();
-            alert("IF YOU GONNA EDIT IN QUANTITY OF THE PURCHASE PLEASE DELETE THE PRODUCT TRANS AND RE-ENTER ");
+            showBootstrapModal('IF YOU GONNA EDIT IN QUANTITY OF PURCHASE PRODUCT,DELETE THE TRANSACTION AND ADD  CORRECT QUANTITY 🖋');
             $('#customerTable tbody tr').each(function () {
                 var row = $(this);
                 var id = row.find('td:eq(0)').text();
-                var product = row.find('td:eq(1)').text();
+                var product = row.find('td:eq(1)').text().trim();
                 var batchNo = row.find('td:eq(2)').text();
                 var expiryDate = row.find('td:eq(3)').text();
                 var tax = row.find('td:eq(4)').text();
@@ -541,19 +581,19 @@
                 }
 
                 row.html("<td><input type='number' readonly name='Id' class='input-field purchase-id' value='" + id + "'></td>" +
-                    "<td><select name='product' class='input-field product-name dropdown' id='productname_" + id + "'><option selected disabled>Select product</option></select></td>" +
+                    "<td><select name='product' class='input-field product-name dropdown' id='productname_" + id + "' ><option selected disabled>Select product</option></select></td>" +
                     "<td><input type='text' name='batchNo' class='input-field' value='" + batchNo + "'></td>" +
                     "<td><input type='month' name='expiryDate' class='input-field' value='" + formattedExpiryDate + "'></td>" +
-                    "<td><input type='text' name='tax' class='input-field' value='" + tax + "'></td>" +
+                    "<td><input type='text' name='tax' class='input-field' value='" + tax + "' readonly></td>" +
                     "<td><input type='number' name='quantity' class='input-field' value='" + quantity + "' readonly></td>" +
                     "<td><input type='number' name='free' class='input-field' value='" + free + "' readonly></td>" +
-                    "<td><input type='number' name='package' class='input-field' value='" + package + "'></td>" +
-                    "<td><input type='number' name='retailQty' class='input-field' value='" + retailQty + "'></td>" +
-                    "<td><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
+                    "<td><input type='number' name='package' class='input-field' value='" + package + "' readonly></td>" +
+                    "<td class='d-none'><input type='number' name='retailQty' class='input-field' value='" + retailQty + "'></td>" +
+                    "<td class='d-none'><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
                     "<td><input type='number' name='rate' class='input-field' value='" + rate + "'></td>" +
-                    "<td><input type='number' name='retailRate' class='input-field' value='" + retailRate + "'></td>" +
+                    "<td class='d-none'><input type='number' name='retailRate' class='input-field' value='" + retailRate + "'></td>" +
                     "<td><input type='number' name='mrp' class='input-field' value='" + mrp + "'></td>" +
-                    "<td><input type='number' name='retailMrp' class='input-field' value='" + retailMrp + "'></td>" +
+                    "<td class='d-none'><input type='number' name='retailMrp' class='input-field' value='" + retailMrp + "'></td>" +
                     "<td><select name='discMode' class='input-field disc-mode dropdown' id='discMode_" + id + "'><option selected disabled>Select Disc Mode</option></select></td>" +
                     "<td><input type='number' name='discount' class='input-field' value='" + discount + "'></td>" +
                     "<td><input type='number' name='amount' class='input-field' value='" + amount + "'></td>" +
@@ -570,6 +610,7 @@
             calculateTotals();
             adjustColumnWidths();
         });
+
 
         function adjustColumnWidths() {
             $('#customerTable').DataTable().columns.adjust().draw();
@@ -588,7 +629,7 @@
                     if (response.success) {
                         table.row(row).remove().draw(false);
                         calculateTotals();
-                         showBootstrapModal('Trans Row Deleted Successfully 🖋');
+                        showBootstrapModal('Trans Row Deleted Successfully 🖋');
                     } else {
                         alert('Failed to delete row: ' + response.message);
                     }
@@ -619,7 +660,7 @@
                     alert('No purchase ID entered. Please enter a purchase ID to update.');
                     return;
                 }
-
+                showLoadingOverlay();
                 var purchaseDetails = {
                     id: $('#id').val(),
                     purchaseDate: $('#purchasedate').val(),
@@ -660,9 +701,11 @@
                     contentType: 'application/json',
                     data: JSON.stringify(payload),
                     success: function (response) {
+                        hideLoadingOverlay();
+
                         console.log(response);
                         if (response.success) {
-                          showBootstrapModal('Purchase Updated Successfully 🖋', function () {
+                            showBootstrapModal('Purchase Updated Successfully 🖋', function () {
                                 window.location.href = '/purchaseregister';
                             });
                         } else {
@@ -677,6 +720,16 @@
             });
         });
 
+        function showLoadingOverlay() {
+            $('body').append('<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;"><img src="/assets/img/6Gl.gif" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>');
+        }
+
+        // Function to hide loading overlay
+        function hideLoadingOverlay() {
+            $('#loadingOverlay').remove();
+        }
+
+
         function getUpdatedProductsData() {
             var products = [];
 
@@ -688,7 +741,7 @@
                     var expiryDate = $(this).find('[name="expiryDate"]').val();
                     var tax = $(this).find('[name="tax"]').val();
                     var quantity = $(this).find('[name="quantity"]').val();
-                    var free = $(this).find('[name="free"]').val();
+                    var free = $(this).find('[name="free"]').val() || 0;
                     var package = $(this).find('[name="package"]').val();
                     var retailQty = $(this).find('[name="retailQty"]').val();
                     var retailRate = $(this).find('[name="retailRate"]').val();
@@ -696,8 +749,8 @@
                     var rate = $(this).find('[name="rate"]').val();
                     var mrp = $(this).find('[name="mrp"]').val();
                     var retailMrp = $(this).find('[name="retailMrp"]').val();
-                    var discMode = $(this).find('[name="discMode"]').val();
-                    var discount = $(this).find('[name="discount"]').val();
+                    var discMode = $(this).find('[name="discMode"]').val() || 3;
+                    var discount = $(this).find('[name="discount"]').val() || 0;
                     var amount = $(this).find('[name="amount"]').val();
                     var cgst = $(this).find('[name="cgst"]').val();
                     var sgst = $(this).find('[name="sgst"]').val();
@@ -738,19 +791,25 @@
         }
 
         // Function to fetch product options and populate dropdown
-        function fetchProductOptions(id, product) {
-            $.ajax({
-                url: '/auth/purchase/productname',
-                method: 'GET',
-                success: function (response) {
-                    console.log('Product Options:', response); // Check response in console
-                    // Populate the product dropdown with response.data and select the matching product name
-                    populateDropdown('#productname_' + id, response.data, product);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error fetching product options:', error);
+        async function fetchProductOptions(id, selectedProduct) {
+            try {
+                const response = await fetch('/auth/purchase/productname');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
                 }
-            });
+                const data = await response.json();
+                console.log('Product Options:', data); // Log the fetched data for debugging
+
+                // Ensure data is an array and populate the dropdown
+                if (Array.isArray(data.data)) {
+                    console.log('Populating dropdown for ID:', id); // Debugging
+                    populateDropdown('#productname_' + id, data.data, selectedProduct);
+                } else {
+                    console.error('Fetched data is not an array:', data.data);
+                }
+            } catch (error) {
+                console.error('Error fetching product options:', error);
+            }
         }
 
         function fetchDiscModeOptions(id, discModeData) {
@@ -830,11 +889,13 @@
             $('.add').show();
             $('.updateBtn, .draftBtn').addClass('disabled').prop('disabled', true);
             $('.dropdown[name="Id"]').change(function () {
+
                 var selectedOption = $(this).find('option:selected');
                 if (selectedOption.val() && selectedOption.val() !== 'view details') {
                     $('.div').show();
                     $('.opener').hide();
                     $('.add').hide();
+
                 } else {
                     $('.div').hide();
                     $('.add').show();
@@ -874,19 +935,19 @@
                         "<td><input type='number' name='quantity' class='input-field' id='quantity_" + uniqueId + "' placeholder='Quantity'></td>" +
                         "<td><input type='number' name='free' class='input-field' id='free_" + uniqueId + "' placeholder='free'></td>" +
                         "<td><input type='number' name='package' class='input-field' id='package_" + uniqueId + "' placeholder='package' readonly></td>" +
-                        "<td><input type='number' name='retailQty' class='input-field' id='retailQty_" + uniqueId + "' placeholder='retailQty'></td>" +
-                        "<td><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
-                        "<td><input type='number' name='rate' class='input-field' id='rate_" + uniqueId + "' placeholder='Rate' required></td>" +
-                        "<td><input type='number' name='retailRate' class='input-field' id='retailRate_" + uniqueId + "' placeholder='retailRate'></td>" +
-                        "<td><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='MRP' required></td>" + // Ensure 'required' attribute
-                        "<td><input type='number' name='retailMrp' class='input-field' id='retailMrp_" + uniqueId + "' placeholder='Retail MRP'></td>" +
+                        "<td class='d-none'><input type='number' name='retailQty' class='input-field' id='retailQty_" + uniqueId + "' placeholder='retailQty'></td>" +
+                        "<td class='d-none'><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
+                        "<td><input type='number' name='rate' class='input-field w-200' id='rate_" + uniqueId + "' placeholder='Rate' required></td>" +
+                        "<td class='d-none'><input type='number' name='retailRate' class='input-field' id='retailRate_" + uniqueId + "' placeholder='retailRate'></td>" +
+                        "<td><input type='number' name='mrp' class='input-field w2' id='mrp_" + uniqueId + "' placeholder='MRP' required></td>" + // Ensure 'required' attribute
+                        "<td class='d-none'><input type='number' name='retailMrp' class='input-field' id='retailMrp_" + uniqueId + "' placeholder='Retail MRP'></td>" +
                         "<td><select name='discMode' class='input-field product-name dropdown' id='discMode_" + uniqueId + "' placeholder='Disc.Mode' required><option selected disabled>Select Disc Mode</option></select></td>" +
                         "<td><input type='number' name='discount' class='input-field' id='discount_" + uniqueId + "' placeholder='Discount' required disabled></td>" +
-                        "<td><input type='number' name='amount' class='input-field' id='amount_" + uniqueId + "' placeholder='Amount'></td>" +
-                        "<td><input type='number' name='cgst' class='input-field' id='cgst_" + uniqueId + "' placeholder='CGST'></td>" +
-                        "<td><input type='number' name='sgst' class='input-field' id='sgst_" + uniqueId + "' placeholder='SGST'></td>" +
-                        "<td><input type='number' name='igst' class='input-field' id='igst_" + uniqueId + "' placeholder='IGST'></td>" +
-                        "<td><input type='number' name='totalAmount' class='input-field' id='totalAmount_" + uniqueId + "' placeholder='Total Amount'></td>" +
+                        "<td><input type='number' name='amount' class='input-field' id='amount_" + uniqueId + "' placeholder='Amount' readonly></td>" +
+                        "<td><input type='number' name='cgst' class='input-field' id='cgst_" + uniqueId + "' placeholder='CGST' readonly></td>" +
+                        "<td><input type='number' name='sgst' class='input-field' id='sgst_" + uniqueId + "' placeholder='SGST' readonly></td>" +
+                        "<td><input type='number' name='igst' class='input-field' id='igst_" + uniqueId + "' placeholder='IGST' readonly></td>" +
+                        "<td><input type='number' name='totalAmount' class='input-field' id='totalAmount_" + uniqueId + "' placeholder='Total Amount' readonly></td>" +
                         "<td class='action new-row'><i class='fa-solid fa-trash deleteRowBtn text-danger' type='button'></i> <i class='fa-solid fa-plus addRowBtn text-success' type='button'></i></td>" + "</tr>");
 
                     $('#customerTable tbody').append(newRow);
@@ -923,7 +984,7 @@
                                         $('#package_' + uniqueId).val(selectedProduct.package);
                                     }
 
-                                }); 
+                                });
                                 fetchDiscmodeOptions(uniqueId);
                                 disableOpener();
                             } else {
@@ -985,7 +1046,6 @@
                     $('#confirmationModal').modal('hide'); // Hide the modal
                 });
 
-
                 function submitForm() {
                     let formData = $('#purchaseDetails').serializeArray();
                     let products = getProductsData();
@@ -1001,7 +1061,7 @@
                         data: formData,
                         success: function (response) {
                             console.log(response);
-                           showBootstrapModal('Purchase Added Successfully 🖋', function () {
+                            showBootstrapModal('Purchase Added Successfully 🖋', function () {
                                 window.location.href = '/purchaseregister';
                             });
                         },
@@ -1010,8 +1070,6 @@
                         }
                     });
                 }
-
-
 
                 $(document).on('input', 'input, select', function () {
                     validateRows(); // Validate rows as inputs change
@@ -1065,11 +1123,7 @@
                     return isValid;
                 }
 
-
-
             });
-
-
 
             function getProductsData() {
                 var products = [];
@@ -1271,13 +1325,13 @@
                 { data: 'quantity' },
                 { data: 'free' },
                 { data: 'package' },
-                { data: 'retailQty' },
+                { data: 'retailQty', className: 'd-none' },
 
-                { data: 'uom' },
+                { data: 'uom', className: 'd-none' },
                 { data: 'rate' },
-                { data: 'retailRate' },
+                { data: 'retailRate', className: 'd-none' },
                 { data: 'mrp' },
-                { data: 'retailMrp' },
+                { data: 'retailMrp', className: 'd-none' },
                 { data: 'discMode' },
                 { data: 'discount' },
                 { data: 'amount' },
@@ -1296,9 +1350,7 @@
             responsive: true,
             bInfo: true,
             bBorders: true,
-            fixedColumns: {
-                leftColumns: 1
-            } 
+
 
         });
 
@@ -1323,27 +1375,26 @@
 
             console.log("No data available in table");
         }
-    
+
         if (table.rows().count() === 0) {
             $("#emptyMessage").show();
         }
-     
-    function showBootstrapModal(message, callback) {
-        // Set the message in the modal
-        $('#modalMessage').text(message);
 
-        // Show the modal
-        var myModal = new bootstrap.Modal(document.getElementById('alertModal'));
-        myModal.show();
+        function showBootstrapModal(message, callback) {
+            // Set the message in the modal
+            $('#modalMessage').text(message);
 
-        // When the modal is hidden, execute the callback if provided
-        $('#alertModal').on('hide.bs.modal', function () {
-            if (typeof callback === 'function') {
-                callback();
-            }
-        });
-    }
+            // Show the modal
+            var myModal = new bootstrap.Modal(document.getElementById('alertModal'));
+            myModal.show();
 
+            // When the modal is hidden, execute the callback if provided
+            $('#alertModal').on('hide.bs.modal', function () {
+                if (typeof callback === 'function') {
+                    callback();
+                }
+            });
+        }
 
         $(document).ready(function () {
             var companyState;
@@ -1560,37 +1611,35 @@
                 });
             });
 
-            function fetchSupplierNames() {
-                $.ajax({
-                    url: '/auth/purchase/suppliername', // Update to your endpoint
-                    method: 'GET',
-                    success: function (response) {
-                        var options = response.data;
-                        if (options && options.length) {
-                            var $dropdown = $('#supplierSelect');
+            async function fetchSupplierNames() {
+                try {
+                    const response = await $.ajax({
+                        url: '/auth/purchase/suppliername', // Update to your endpoint
+                        method: 'GET',
+                    });
 
+                    const options = response.data;
+                    if (options && options.length) {
+                        const $dropdown = $('.dropdown[name="suppliername"]');
+                        // $dropdown.empty(); // Clear existing options
 
-                            options.forEach(function (option) {
-                                var $option = $('<option>', {
-                                    value: option.id,
-                                    text: option.ledgername,
-                                    'data-state': option.state,
-                                    'data-mobile': option.mobile
-
-                                });
-                                $('.dropdown[name="suppliername"]').append($option);
+                        options.forEach(function (option) {
+                            var $option = $('<option>', {
+                                value: option.id,
+                                text: option.ledgername,
+                                'data-state': option.state,
+                                'data-mobile': option.mobile
                             });
-                            // Trigger change event to update mobile number when the first option is selected by default
-                            $('.dropdown[name="suppliername"]').change();
-
-                        } else {
-                            console.error('No options found for Supplier Ledger(dr)');
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Error fetching options for Supplier Ledger(dr):', error);
+                            $dropdown.append($option);
+                        });
+                        // Trigger change event to update mobile number when the first option is selected by default
+                        $dropdown.change();
+                    } else {
+                        console.error('No options found for Supplier Ledger(dr)');
                     }
-                });
+                } catch (error) {
+                    console.error('Error fetching options for Supplier Ledger(dr):', error);
+                }
             }
 
 
@@ -1623,15 +1672,19 @@
 
             fetchSupplierNames();
 
-            var rowDetails;
-            $.ajax({
-                url: '/auth/purchase/purchaseids',
-                method: 'GET',
-                data: { view: 'purchaseids' },
-                success: function (response) {
-                    console.log('Received response for Purchase IDs:', response);
+            async function fetchPurchaseIds() {
+                try {
+                    // First fetch supplier names
+                    await fetchSupplierNames();
 
-                    var options = response.data;
+                    const response = await $.ajax({
+                        url: '/auth/purchase/purchaseids',
+                        method: 'GET',
+                        data: { view: 'purchaseids' },
+                    });
+
+                    console.log('Received response for Purchase IDs:', response);
+                    const options = response.data;
                     console.log('Options:', options);
 
                     if (options && options.length) {
@@ -1660,17 +1713,17 @@
                         console.error('No options found for purchase IDs');
                     }
 
-                    var urlParams = new URLSearchParams(window.location.search);
-                    var purchaseIdParam = urlParams.get('id');
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const purchaseIdParam = urlParams.get('id');
                     console.log('Purchase ID from URL:', purchaseIdParam);
 
                     if (purchaseIdParam) {
-                        var purchaseIdInt = parseFloat(purchaseIdParam);
+                        const purchaseIdInt = parseFloat(purchaseIdParam);
 
                         $('.dropdown[name="Id"] option').each(function () {
-                            var optionValue = $(this).val();
+                            const optionValue = $(this).val();
                             if (optionValue !== 'view details') {
-                                var optionRow = JSON.parse(optionValue); 
+                                const optionRow = JSON.parse(optionValue);
                                 if (optionRow.id === purchaseIdInt) {
                                     $(this).prop('selected', true);
                                 }
@@ -1679,21 +1732,21 @@
 
                         $('.dropdown[name="Id"]').change();
                     }
-                },
-                error: function (xhr, status, error) {
+                } catch (error) {
                     console.error('Error fetching options for purchase IDs:', error);
                 }
-            });
+            }
 
-            $('.dropdown[name="Id"]').change(function () {
-                var selectedOption = $(this).find('option:selected');
+            // Function to handle dropdown change
+            $('.dropdown[name="Id"]').change(async function () {
+                const selectedOption = $(this).find('option:selected');
 
                 if (!selectedOption || !selectedOption.val()) {
                     return;
                 }
 
                 try {
-                    var rowDetails = JSON.parse(selectedOption.val());
+                    const rowDetails = JSON.parse(selectedOption.val());
                     $('#id').val(rowDetails.id);
                     $('#purchasedate').val(formatDate(rowDetails.purchasedate));
                     $('#paymentmode').val(rowDetails.paymentmode);
@@ -1706,9 +1759,10 @@
 
                     $('.dropdown[name="suppliername"]').val(rowDetails.suppliername);
 
-                    var selectedSupplierState = $('#supplierSelect').find(':selected').data('state');
-                    initiateFetchCompanyState(selectedSupplierState);
+                    const selectedSupplierState = $('#supplierSelect').find(':selected').data('state');
+                    await initiateFetchCompanyState(selectedSupplierState); // Ensure this is also an async function
 
+                    // Update amounts and other details
                     $('#pnetAmount').text(!isNaN(rowDetails.netAmount) ? parseFloat(rowDetails.netAmount).toFixed(2) : 'Invalid Net Amount');
                     $('#pamount').text(!isNaN(rowDetails.amount) ? parseFloat(rowDetails.amount).toFixed(2) : 'Invalid Amount');
                     $('#pigst').text(!isNaN(rowDetails.igst) ? parseFloat(rowDetails.igst).toFixed(2) : 'Invalid IGST');
@@ -1718,40 +1772,38 @@
                     $('#ptcs').text(!isNaN(rowDetails.tcs) ? parseFloat(rowDetails.tcs).toFixed(2) : 'Invalid TCS');
                     $('#proundOff').text(!isNaN(rowDetails.roundoff) ? parseFloat(rowDetails.roundoff).toFixed(2) : 'Invalid roundOff');
 
-
                     // Set the selected value in the dropdown
                     $('#pdiscMode').val(rowDetails.discMode);
-
-                    // Set the discount input box value
                     $('#pdiscount').val(rowDetails.discount);
-
                     selectedOption.prop('selected', true);
 
                     console.log('rowDetails.id:', rowDetails.id);
                     console.log('Dropdown Options:', $(this).val());
 
-                    var purchaseId = parseFloat(rowDetails.id);
+                    const purchaseId = parseFloat(rowDetails.id);
 
                     if (isNaN(purchaseId)) {
                         console.error('Invalid purchaseId:', purchaseId);
                         return;
                     }
 
-                    $.ajax({
+                    // Fetch product ID data
+                    const productResponse = await $.ajax({
                         url: '/auth/purchase/productid',
                         method: 'GET',
                         data: { purchaseId: purchaseId },
-                        success: function (response) {
-                            console.log('Received response for ProductId:', response);
-                            updateCustomerTable(response.data);
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Error fetching ProductId data:', error);
-                        }
                     });
+
+                    console.log('Received response for ProductId:', productResponse);
+                    updateCustomerTable(productResponse.data);
                 } catch (error) {
                     console.error('Error parsing JSON:', error);
                 }
+            });
+
+            // Call the fetch function on page load
+            $(document).ready(function () {
+                fetchPurchaseIds();
             });
 
         });

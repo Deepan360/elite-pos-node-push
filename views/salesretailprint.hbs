@@ -268,13 +268,58 @@
             background-color: #344767;
             color: white;
         }
+        body {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    color: #333;
+}
+
+.invoice h2 {
+    font-weight: 500;
+    margin-bottom: 25px;
+    color: #344767;
+}
+
+.invoice-details {
+    margin-bottom: 25px;
+}
+
+.company-info, .customer-info {
+    padding: 15px;
+    background-color: #f0f4f7; /* Light gray-blue to unify the colors */
+}
+
+table {
+    border-radius: 8px;
+}
+
+th {
+    background-color: #344767;
+    font-size: 12px;
+}
+
+th, td {
+    border: 1px solid #ddd; 
+    padding: 8px;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f1f1f1;
+}
+
+.print-button button {
+    background-color: #344767;
+    border-radius: 25px;
+    padding: 8px 20px;
+}
+
     </style>
-
 </head>
-
 <body>
-    <button class="btn btn-dark print-button" onclick="printData()">Print</button>
-    <button class="btn btn-success print-button" onclick="back()">Back</button>
     <div class="invoice">
         <h2>Elite POS<img src="/assets/img/Untitled design (11)-modified.png"
                 style="height: 40px !important; margin: 2px !important;align-item:center !important;">
@@ -378,7 +423,11 @@
         </div>
 
     </div>
-
+    <div class="d-flex justify-content-start align-item-start">
+        <button class="btn btn-primary print-button" onclick="back()">Back</button>
+        <button class="btn  btn-success print-button" onclick="printData()">Print</button>
+    
+    </div>
     <script>
         // Function to print the invoice
         function printData() {
@@ -460,14 +509,14 @@
             // Function to fetch sales details
             function fetchsalesDetails(salesId) {
                 $.ajax({
-                    url: '/auth/salesretailprint/salesdetails',
+                    url: '/auth/salesretailprint/salesretaildetails',
                     method: 'GET',
                     data: { salesId: salesId },
                     success: function (response) {
                         if (response && response.data && response.data.length > 0) {
                             var responseData = response.data[0];
                             $('#customername').text(responseData.customername);
-                            $('#customermobileno').text(responseData.customermobileno);
+                            $('#customermobileno').text(responseData.mobileno);
 
                             $('#invoiceAmount').text(responseData.amount);
                             $('#discountMode').text(responseData.discMode);

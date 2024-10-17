@@ -1181,3 +1181,12 @@ tr td input[type="month"].input-field:read-only {
   
 }
 
+table.dataTable td {
+  white-space: normal !important;
+  /* Allow wrapping of content */
+  word-wrap: break-word;
+  /* Break long words if needed */
+  max-width: 250px !important;
+  width: auto;
+  /* Set a reasonable maximum width */
+}

@@ -100,10 +100,13 @@
             border-radius: 8px;
             overflow: hidden;
         }
-.non-selectable {
-    cursor: not-allowed; /* Show not-allowed cursor for non-selectable rows */
-    opacity: 0.5; /* Make non-selectable rows appear faded */
-}
+
+        .non-selectable {
+            cursor: not-allowed;
+            /* Show not-allowed cursor for non-selectable rows */
+            opacity: 0.5;
+            /* Make non-selectable rows appear faded */
+        }
 
         form input {
             margin: 2px;
@@ -145,10 +148,11 @@
             color: #000;
             pointer-events: none !important;
         }
-        .input-invalid{
+
+        .input-invalid {
             border-color: red !important;
         }
-        
+
         .btn.disabled,
         .btn[disabled] {
             background-color: #4e4e4e !important;
@@ -187,8 +191,7 @@
             /* Placeholder color */
         }
 
-        tr td input.input-field
-       {
+        tr td input.input-field {
             width: 100%;
             /* Make the input/select take full width of the td */
             max-width: max-content;
@@ -213,10 +216,12 @@
             white-space: nowrap;
             /* Ensure the table does not break in smaller screens */
         }
-        .w-200{
-            width: 100px !important;   
+
+        .w-200 {
+            width: 100px !important;
         }
-        .w2{
+
+        .w2 {
             width: 70px !important;
         }
     </style>
@@ -276,7 +281,7 @@
 
                         </div>
                         <div class="custom-input-container ma col-md-3">
-                            <select id="salesmannameSelect" class="dropdown" name="salesmanname" >
+                            <select id="salesmannameSelect" class="dropdown" name="salesmanname">
                                 <option value="" disabled selected>Select Salesman</option>
                             </select>
                             <label for="Salesman">Salesman </label>
@@ -324,8 +329,8 @@
                             <th>Free</th>
                             <th class="d-none">UOM</th>
                             <th>Purc.Rate</th>
-                            <th >MRP&nbsp;&nbsp;</th>
-                            <th >Rate &nbsp;&nbsp;</th>
+                            <th>MRP&nbsp;&nbsp;</th>
+                            <th>Rate &nbsp;&nbsp;</th>
                             <th>Disc.Mode</th>
                             <th>Disc</th>
                             <th>Amount</th>
@@ -376,99 +381,101 @@
                 <form id="purchaseDetails" class="form-control p-0" style="display: block; align-item: start;"
                     action="auth/sales" method="post">
                     <div class="row d-flex justify-content-between  mb-0 gx-0 w-100 ">
-                        
-                            
-                                <div class="custom col-md-1">
-                                    <label for="pamount">Amount:</label>
-                                    <span id="pamount" name="pamount">0.00</span>
-                                </div>
 
-                                <div class="custom col-md-1">
-                                    <label for="pigst">IGST:</label>
-                                    <span id="pigst" name="pigts">0.00</span>
-                                </div>
-                            
 
-                           
-                                <div class="custom col-md-1">
-                                    <label for="pcgst">CGST:</label>
-                                    <span id="pcgst" name="pcgst">0.00</span>
-                                </div>
+                        <div class="custom col-md-1">
+                            <label for="pamount">Amount:</label>
+                            <span id="pamount" name="pamount">0.00</span>
+                        </div>
 
-                                <div class="custom col-md-1">
-                                    <label for="psgst">SGST:</label>
-                                    <span id="psgst" name="psgst">0.00</span>
-                                </div>
-                            
-                                <div class="custom col-md-1">
-                                    <label for="psubtotal">Total Amount:</label>
-                                    <span id="psubtotal" name="psubtotal">0.00</span>
-                                </div>
+                        <div class="custom col-md-1">
+                            <label for="pigst">IGST:</label>
+                            <span id="pigst" name="pigts">0.00</span>
+                        </div>
 
-                        
+
+
+                        <div class="custom col-md-1">
+                            <label for="pcgst">CGST:</label>
+                            <span id="pcgst" name="pcgst">0.00</span>
+                        </div>
+
+                        <div class="custom col-md-1">
+                            <label for="psgst">SGST:</label>
+                            <span id="psgst" name="psgst">0.00</span>
+                        </div>
+
+                        <div class="custom col-md-1">
+                            <label for="psubtotal">Total Amount:</label>
+                            <span id="psubtotal" name="psubtotal">0.00</span>
+                        </div>
+
+
                     </div>
                     {{!--
                     <div class="custom">
                         <label for="pcess">CESS:</label>
                         <span id="pcess" name="pcess">0.00</span>
-                    </div> 
-                    
-                    
-                   <div class="col">
+                    </div>
+
+
+                    <div class="col">
                         <div class="custom">
                             <label for="ptcs">TCS:</label>
                             <span id="ptcs" name="ptcs">0.00</span>
                         </div>
-                         <div class="custom">
+                        <div class="custom">
                             <label for="proundOff">Round Off:</label>
                             <span id="proundOff" name="proundOff">0.00</span>
                         </div>
-                    </div> 
-                     <div class="col">
+                    </div>
+                    <div class="col">
                         <div class="custom">
                             <label for="pnetAmount">Net Amount:</label>
                             <span id="pnetAmount" name="pnetAmount">0.00</span>
                         </div>
-                   </div> --}}
-<div id="overlay"
-    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; overflow: auto;">
-    <div id="batchform"
-        style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #ccc; width: 80%; max-width: 800px;">
-        <a class="closebatch" style="position: absolute; top: 0px; right: -2px;"><i
-                class="fa-solid fa-circle-xmark fa-2x"></i></a>
+                    </div> --}}
+                    <div id="overlay"
+                        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; overflow: auto;">
+                        <div id="batchform"
+                            style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #ccc; width: 80%; max-width: 800px;">
+                            <a class="closebatch" style="position: absolute; top: 0px; right: -2px;"><i
+                                    class="fa-solid fa-circle-xmark fa-2x"></i></a>
 
-        <!-- Scrollable table container with fixed header -->
-        <div style="max-height: 200px; overflow-y: auto; position: relative;">
-            <table id="batchDetailsTable" class="table"
-                style="width: 100%; table-layout: fixed; border-collapse: collapse;">
-                <thead class="bg-primary"
-                    style="position: sticky; top: 0; z-index: 1; background-color: #007bff; color: white;">
-                    <tr>
-                        <th>Batch No</th>
-                        <th>Expiry Date</th>
-                        <th>Tax</th>
-                        <th>Quantity</th>
-                        <th>UOM</th>
-                        <th>Rate</th>
-                        <th>MRP</th>
-                    </tr>
-                </thead>
-                <tbody id="batchDetailsBody"></tbody>
-            </table>
-        </div>
+                            <!-- Scrollable table container with fixed header -->
+                            <div style="max-height: 200px; overflow-y: auto; position: relative;">
+                                <table id="batchDetailsTable" class="table"
+                                    style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+                                    <thead class="bg-primary"
+                                        style="position: sticky; top: 0; z-index: 1; background-color: #007bff; color: white;">
+                                        <tr>
+                                            <th>Batch No</th>
+                                            <th>Expiry Date</th>
+                                            <th>Tax</th>
+                                            <th>Quantity</th>
+                                            <th>UOM</th>
+                                            <th>Rate</th>
+                                            <th>MRP</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="batchDetailsBody"></tbody>
+                                </table>
+                            </div>
 
-        <!-- Fixed Color Legend below the scrollable table -->
-        <div style="margin-top: 10px;">
-            <strong>Color Legend:</strong>
-            <ul style="list-style: none; padding-left: 0;">
-                <li><span style="background-color: red; color: white; padding: 2px 5px;">&nbsp;&nbsp;&nbsp;</span>
-                    Already expired</li>
-                <li><span style="background-color: orange; color: white; padding: 2px 5px;">&nbsp;&nbsp;&nbsp;</span>
-                    Expiring in Three Months</li>
-            </ul>
-        </div>
-    </div>
-</div>
+                            <!-- Fixed Color Legend below the scrollable table -->
+                            <div style="margin-top: 10px;">
+                                <strong>Color Legend:</strong>
+                                <ul style="list-style: none; padding-left: 0;">
+                                    <li><span
+                                            style="background-color: red; color: white; padding: 2px 5px;">&nbsp;&nbsp;&nbsp;</span>
+                                        Already expired</li>
+                                    <li><span
+                                            style="background-color: orange; color: white; padding: 2px 5px;">&nbsp;&nbsp;&nbsp;</span>
+                                        Expiring in Three Months</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
 
 
                 </form>
@@ -477,15 +484,16 @@
             <div id="selectedRowDetails"></div>
 
         </div>
-<div id="alertMessage" class="alert alert-danger text-white d-none alert-dismissible show" role="alert"
-    style="padding: 10px; border: 1px solid; margin-bottom: 10px; position: fixed; top: 0; right: 10px; width: 25%;">
-    <button type="button" class="close text-white" data-bs-dismiss="alert" aria-label="Close"
-        style="background: none; border: none; font-size: 20px; line-height: 1;">X</button>
-</div>
-<div class="alert alert-danger alert-dismissible fade show" role="alert" id="quantityAlert" style="display: none;">
-    <strong>Warning!</strong> Quantity cannot be greater than the purchase quantity.
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
+        <div id="alertMessage" class="alert alert-danger text-white d-none alert-dismissible show" role="alert"
+            style="padding: 10px; border: 1px solid; margin-bottom: 10px; position: fixed; top: 0; right: 10px; width: 25%;">
+            <button type="button" class="close text-white" data-bs-dismiss="alert" aria-label="Close"
+                style="background: none; border: none; font-size: 20px; line-height: 1;">X</button>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="quantityAlert"
+            style="display: none;">
+            <strong>Warning!</strong> Quantity cannot be greater than the purchase quantity.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
 
 
         {{>footer}}
@@ -509,22 +517,22 @@
             </div>
         </div>
 
-<div id="alertModal" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Notification</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p id="modalMessage">Your message here</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+        <div id="alertModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Notification</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="modalMessage">Your message here</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
     </main>
     {{>color}}
 
@@ -532,27 +540,27 @@
 
 
 
-            $.ajax({
-                url: '/auth/sales/salesmanname',
-                method: 'GET',
-                success: function (response) {
-                    console.log('Received response fortype:', response);
-                    var options = response.data;
-                    if (options && options.length) {
-                        options.forEach(function (option) {
-                            $('.dropdown[name="salesmanname"]').append($('<option>', {
-                                value: option.id,
-                                text: option.ledgername
-                            }));
-                        });
-                    } else {
-                        console.error('No options found for salesmanname)');
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error fetching options for salesmanname:', error);
+        $.ajax({
+            url: '/auth/sales/salesmanname',
+            method: 'GET',
+            success: function (response) {
+                console.log('Received response fortype:', response);
+                var options = response.data;
+                if (options && options.length) {
+                    options.forEach(function (option) {
+                        $('.dropdown[name="salesmanname"]').append($('<option>', {
+                            value: option.id,
+                            text: option.ledgername
+                        }));
+                    });
+                } else {
+                    console.error('No options found for salesmanname)');
                 }
-            });
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching options for salesmanname:', error);
+            }
+        });
 
 
         $(document).ready(function () {
@@ -644,23 +652,23 @@
                 var igst = row.find('td:eq(15)').text();
                 var totalAmount = row.find('td:eq(16)').text();
 
-                row.html("<td><input type='number' readonly name='Id' class='input-field  purchase-id' value='" + id + "'></td>" +
+                row.html("<td><input type='number' readonly name='Id' class='input-field  purchase-id w2' value='" + id + "'></td>" +
                     "<td><select name='product' class='input-field product-name dropdown' id='productname_" + id + "'><option selected disabled>Select product</option></select></td>" +
                     "<td><input type='text' name='batchNo' class='input-field' value='" + batchNo + "' readonly></td>" +
                     "<td><input type='text' name='tax' class='input-field' value='" + tax + "' readonly></td>" +
                     "<td><input type='number' name='quantity' class='input-field' value='" + quantity + "'></td>" +
                     "<td><input type='number' name='free' class='input-field' value='" + free + "'></td>" +
                     "<td class='d-none' ><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
-                    "<td><input type='number' name='purcRate' class='input-field' value='" + purcRate + "' readonly></td>" +
+                    "<td><input type='number' name='purcRate' class='input-field w2' value='" + purcRate + "' readonly></td>" +
                     "<td><input type='number' name='mrp' class='input-field w2' value='" + mrp + "' readonly></td>" +
                     "<td><input type='number' name='rate' class='input-field w-200' value='" + rate + "'></td>" +
                     "<td><select name='discMode' class='input-field disc-mode dropdown' id='discMode_" + id + "'><option selected disabled>Select Disc Mode</option></select></td>" +
                     "<td><input type='number' name='discount' class='input-field' value='" + discount + "'></td>" +
-                    "<td><input type='number' name='amount' class='input-field' value='" + amount + "'></td>" +
-                    "<td><input type='number' name='cgst' class='input-field' value='" + cgst + "'></td>" +
-                    "<td><input type='number' name='sgst' class='input-field' value='" + sgst + "'></td>" +
-                    "<td><input type='number' name='igst' class='input-field' value='" + igst + "'></td>" +
-                    "<td><input type='number' name='totalAmount' class='input-field' value='" + totalAmount + "'></td>" +
+                    "<td><input type='number' name='amount' class='input-field' value='" + amount + "'readonly></td>" +
+                    "<td><input type='number' name='cgst' class='input-field' value='" + cgst + "'readonly></td>" +
+                    "<td><input type='number' name='sgst' class='input-field' value='" + sgst + "'readonly></td>" +
+                    "<td><input type='number' name='igst' class='input-field' value='" + igst + "'readonly></td>" +
+                    "<td><input type='number' name='totalAmount' class='input-field' value='" + totalAmount + "'readonly></td>" +
                     "<td><i class='fa-solid fa-trash deletetransBtn' type='button' data-id='" + id + "'></i></td>");
 
                 fetchProductOptions(id, product);
@@ -756,12 +764,19 @@
                     url: '/auth/salesEdit/' + purchaseId,
                     contentType: 'application/json',
                     data: JSON.stringify(payload),
-                    success: function (response) {
+                   success: function (response) {
                         console.log(response);
                         if (response.success) {
-                             showBootstrapModal('Sales Updated Successfully 🖋', function () {
-                                window.location.href = '/salesregister';
-                            });
+                            // Check if the response contains a draft value
+                            if ($('#is_Draft').val() === '1')  {
+                                showBootstrapModal('Sale Saved as Draft Successfully 🖋', function () {
+                                    window.location.href = '/salesdraftregister'; // Redirect to draft page
+                                });
+                            } else {
+                                showBootstrapModal('Sales Updated Successfully 🖋', function () {
+                                    window.location.href = '/salesregister'; // Redirect to sales register
+                                });
+                            }
                         } else {
                             alert("Failed to update purchase: " + response.message);
                         }
@@ -773,6 +788,8 @@
                 });
             });
         });
+
+
 
         function getUpdatedProductsData() {
             var products = [];
@@ -829,7 +846,7 @@
 
         function fetchProductOptions(id, product) {
             $.ajax({
-                url: '/auth/purchase/productname',
+                  url: '/auth/sales/salesproductname',
                 method: 'GET',
                 success: function (response) {
                     console.log('Product Options:', response); // Check response in console
@@ -922,7 +939,7 @@
                 var selectedOption = $(this).find('option:selected');
                 if (selectedOption.val() && selectedOption.val() !== 'view details') {
                     $('.div').show();
-                 
+
                     $('.opener').hide();
                     $('.add').hide();
                 } else {
@@ -969,74 +986,74 @@
                 $('.draftBtn').addClass('btn-info').prop('disabled', false);
             });
         });
-    // Add an event listener to validate the quantity field on input
-    document.addEventListener('input', function (event) {
-        if (event.target.matches('.quantity')) {
-            let quantityInput = event.target;
-            let freeInput = document.querySelector(`#free_${quantityInput.id.split('_')[1]}`); // Get corresponding free input field
+        // Add an event listener to validate the quantity field on input
+        document.addEventListener('input', function (event) {
+            if (event.target.matches('.quantity')) {
+                let quantityInput = event.target;
+                let freeInput = document.querySelector(`#free_${quantityInput.id.split('_')[1]}`); // Get corresponding free input field
 
-            // Parse the value as an integer
-            let quantityValue = parseInt(quantityInput.value, 10);
-            let maxQuantity = parseInt(quantityInput.getAttribute('max'), 10);
+                // Parse the value as an integer
+                let quantityValue = parseInt(quantityInput.value, 10);
+                let maxQuantity = parseInt(quantityInput.getAttribute('max'), 10);
 
-            // If the value is NaN (not a number) or less than 1, set the value to an empty string
-            if (isNaN(quantityValue) || quantityValue < 0) {
-                quantityInput.value = '';
-            } else if (quantityValue > maxQuantity) {
-                quantityInput.value = maxQuantity;
+                // If the value is NaN (not a number) or less than 1, set the value to an empty string
+                if (isNaN(quantityValue) || quantityValue < 0) {
+                    quantityInput.value = '';
+                } else if (quantityValue > maxQuantity) {
+                    quantityInput.value = maxQuantity;
+                }
+
+                // Validate the free input field
+                if (freeInput) {
+                    let freeValue = parseInt(freeInput.value, 10) || 0;
+                    if (quantityValue + freeValue > maxQuantity) {
+                        alert('The sum of quantity and free value cannot exceed the maximum quantity.');
+                        freeInput.value = ''; // Clear the free field
+                    }
+                }
             }
+        });
 
-            // Validate the free input field
-            if (freeInput) {
+        // Add an event listener to validate the free field on input
+        document.addEventListener('input', function (event) {
+            if (event.target.matches('.input-field') && event.target.name === 'free') {
+                let freeInput = event.target;
+                let quantityInput = document.querySelector(`#quantity_${freeInput.id.split('_')[1]}`); // Get corresponding quantity input field
+
+                // Parse the values as integers
                 let freeValue = parseInt(freeInput.value, 10) || 0;
+                let quantityValue = parseInt(quantityInput.value, 10);
+                let maxQuantity = parseInt(quantityInput.getAttribute('max'), 10);
+
+                // Validate the sum of quantity and free values
                 if (quantityValue + freeValue > maxQuantity) {
                     alert('The sum of quantity and free value cannot exceed the maximum quantity.');
                     freeInput.value = ''; // Clear the free field
                 }
             }
-        }
-    });
+        });
 
-    // Add an event listener to validate the free field on input
-    document.addEventListener('input', function (event) {
-        if (event.target.matches('.input-field') && event.target.name === 'free') {
-            let freeInput = event.target;
-            let quantityInput = document.querySelector(`#quantity_${freeInput.id.split('_')[1]}`); // Get corresponding quantity input field
+        // Prevent mouse wheel from changing the value of the input field
+        document.addEventListener('wheel', function (event) {
+            if (event.target.matches('.quantity, .input-field')) {
+                event.preventDefault(); // Prevent scrolling from affecting the input field value
+            }
+        }, { passive: false });
 
-            // Parse the values as integers
-            let freeValue = parseInt(freeInput.value, 10) || 0;
-            let quantityValue = parseInt(quantityInput.value, 10);
-            let maxQuantity = parseInt(quantityInput.getAttribute('max'), 10);
+        // Function to set quantity and max attributes
+        function updateQuantityInput(uniqueId, quantity) {
+            let quantityInput = document.getElementById('quantity_' + uniqueId);
+            if (quantityInput) {
+                quantityInput.value = Math.max(1, quantity); // Ensure the value is at least 1
+                quantityInput.setAttribute('max', quantity);
 
-            // Validate the sum of quantity and free values
-            if (quantityValue + freeValue > maxQuantity) {
-                alert('The sum of quantity and free value cannot exceed the maximum quantity.');
-                freeInput.value = ''; // Clear the free field
+                // Also update the max attribute of the corresponding free input field
+                let freeInput = document.getElementById('free_' + uniqueId);
+                if (freeInput) {
+                    freeInput.setAttribute('max', quantity);
+                }
             }
         }
-    });
-
-    // Prevent mouse wheel from changing the value of the input field
-    document.addEventListener('wheel', function (event) {
-        if (event.target.matches('.quantity, .input-field')) {
-            event.preventDefault(); // Prevent scrolling from affecting the input field value
-        }
-    }, { passive: false });
-
-    // Function to set quantity and max attributes
-    function updateQuantityInput(uniqueId, quantity) {
-        let quantityInput = document.getElementById('quantity_' + uniqueId);
-        if (quantityInput) {
-            quantityInput.value = Math.max(1, quantity); // Ensure the value is at least 1
-            quantityInput.setAttribute('max', quantity);
-
-            // Also update the max attribute of the corresponding free input field
-            let freeInput = document.getElementById('free_' + uniqueId);
-            if (freeInput) {
-                freeInput.setAttribute('max', quantity);
-            }
-        }
-    }
 
         function showBootstrapModal(message, callback) {
             // Set the message in the modal
@@ -1066,14 +1083,14 @@
                     let purchaseId = generateUniqueId();
                     $('#purchaseId').val(purchaseId);
                     let uniqueId = generateUniqueId();
-                    
+
                     let newRow = $("<tr data-uniqueId='" + uniqueId + "'>" +
                         "<td><input type='hidden' name='purchaseId' class='input-field purchase-id' value='" + purchaseId + "'></td>" +
                         "<td><select name='productname' class='input-field product-name dropdown' id='productname_" + uniqueId + "' placeholder='Product Name' required><option selected disabled>Select product</option></select></td>" +
                         "<td><input type='text' name='batchNo' class='input-field' id='batchNo_" + uniqueId + "' placeholder='Batch No' readonly></td>" +
                         "<td><input type='text' name='tax' class='input-field' id='tax_" + uniqueId + "' placeholder='Tax(%)' readonly></td>" +
-                        "<td><input type='number' name='quantity' min='1' class='input-field quantity' id='quantity_" + uniqueId + "' placeholder='Quantity' required></td>" +
-                        "<td><input type='number' name='free'min='0' class='input-field' id='free_" + uniqueId + "' placeholder='Free'></td>" +
+                        "<td><input type='number' name='quantity' min='1' class='input-field quantity' id='quantity_" + uniqueId + "' placeholder='Quantity' oninput='this.value = this.value.replace(/[^0-9]/g, \"\")' required></td>" +
+                        "<td><input type='number' name='free'min='0' class='input-field' id='free_" + uniqueId + "' placeholder='Free' oninput='this.value = this.value.replace(/[^0-9]/g, \"\")'></td>" +
                         "<td><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
                         "<td><input type='number' name='purcRate' class='input-field' id='purcRate_" + uniqueId + "' placeholder='purcRate' readonly></td>" +
                         "<td><input type='number' name='mrp' class='input-field w2' id='mrp_" + uniqueId + "' placeholder='mrp' readonly></td>" +
@@ -1089,8 +1106,14 @@
                         "</tr>");
                     $('#customerTable tbody').append(newRow);
                     table.rows.add([newRow[0]]).draw();
+                       // Scroll to the newly added row
+                    let rowElement = newRow[0];
+                    rowElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+
+                    // Optionally, focus on the first input in the new row (if needed)
+                    $(newRow).find('input:first').focus();
                     $.ajax({
-                        url: '/auth/purchase/productname',
+                        url: '/auth/sales/salesproductname',
                         method: 'GET',
                         success: function (response) {
                             console.log('Received response for product:', response);
@@ -1110,7 +1133,7 @@
 
                                     var selectedProduct = options.find(function (product) {
                                         return product.id == selectedProductId;
-                                        
+
                                     });
 
                                     if (selectedProduct) {
@@ -1169,30 +1192,27 @@
                 }
             });
 
-$('#productname_' + uniqueId).on('change', function () {
-    var selectedProductId = $(this).val();
-    var selectedBatchNo = $('#batchNo_' + uniqueId).val(); // Ensure batchNo is populated
+            $('#productname_' + uniqueId).on('change', function () {
+                var selectedProductId = $(this).val();
+                var selectedBatchNo = $('#batchNo_' + uniqueId).val(); // Ensure batchNo is populated
 
-    if (isProductBatchAlreadySelected(selectedProductId, selectedBatchNo)) {
-        alert('This product and batch is already selected.');
-    } else {
-        fetchBatchDetails(selectedProductId, uniqueId);
-    }
-});
-
-
-
+                if (isProductBatchAlreadySelected(selectedProductId, selectedBatchNo)) {
+                    alert('This product and batch is already selected.');
+                } else {
+                    fetchBatchDetails(selectedProductId, uniqueId);
+                }
+            });
+ 
             $(document).ready(function () {
-
                 // Event listener for Draft Button
                 $('#draftButton').on('click', function () {
                     $('#is_Draft').val('1'); // Set is_Draft to 1 for draft
                     submitForm(); // Submit directly without validation
                 });
- function showAlert(message) {
-        $('#alertMessage').text(message);
-        $('#alertBox').show();
-    }
+                function showAlert(message) {
+                    $('#alertMessage').text(message);
+                    $('#alertBox').show();
+                }
                 // Event listener for Submit Button
                 $('#submitFormBtn').on('click', function () {
                     if (!validateRows()) {
@@ -1228,18 +1248,28 @@ $('#productname_' + uniqueId).on('change', function () {
                         url: '/auth/sales',
                         method: 'POST',
                         data: formData,
-                        success: function (response) {
-                            showBootstrapModal('Sales Added Successfully 🖋', function () {
-                                window.location.href = '/Salesregister';
-                            });
+                       success: function (response) {
+                            console.log(response);
+                            if (response.success) {
+                                // Check if the response contains a draft value
+                                if ($('#is_Draft').val() === '1') {
+                                    showBootstrapModal('Sale Saved as Draft Successfully 🖋', function () {
+                                        window.location.href = '/salesdraftregister'; // Redirect to draft page
+                                    });
+                                } else {
+                                    showBootstrapModal('Sales Updated Successfully 🖋', function () {
+                                        window.location.href = '/salesregister'; // Redirect to sales register
+                                    });
+                                }
+                            } else {
+                                alert("Failed to update purchase: " + response.message);
+                            }
                         },
                         error: function (error) {
                             console.error("Error submitting form:", error);
                         }
                     });
                 }
-
-
 
                 function validateAmount(uniqueId) {
                     if ($('#discount_' + uniqueId).prop('disabled')) {
@@ -1356,11 +1386,8 @@ $('#productname_' + uniqueId).on('change', function () {
                 }
             });
 
-
-
             function getProductsData() {
                 var products = [];
-
                 $('#customerTable tbody tr').each(function () {
                     try {
                         var uniqueId = $(this).find('select[name="productname"]').attr('id');
@@ -1402,7 +1429,6 @@ $('#productname_' + uniqueId).on('change', function () {
 
             function isProductBatchAlreadySelected(selectedProductId, batchNo) {
                 let exists = false;
-
                 $('#customerTable tbody tr').each(function () {
                     let existingProductId = $(this).find('select[name="productname"]').val();
                     let existingBatchNo = $(this).find('input[name="batchNo"]').val();
@@ -1418,7 +1444,6 @@ $('#productname_' + uniqueId).on('change', function () {
 
             function fetchBatchDetails(selectedProductId, uniqueId) {
                 console.log('Selected Product ID:', selectedProductId);
-
                 var requestData = {
                     selectedProductId: selectedProductId
                 };
@@ -1530,7 +1555,6 @@ $('#productname_' + uniqueId).on('change', function () {
                 });
             }
 
-
             $('#batchDetailsBody').on('click', 'tr', function () {
                 // Check if the row has the class "non-selectable"
                 if ($(this).hasClass('non-selectable')) {
@@ -1567,12 +1591,10 @@ $('#productname_' + uniqueId).on('change', function () {
                 $('#batchform').hide();
             });
 
-
-
             function generateUniqueId() {
                 return uuidv4();
             }
-          
+
             $(document).ready(function () {
                 // Trigger validation on discount, rate, quantity, or amount change
                 $('#customerTable tbody').on('input', 'input[name="discount"], input[name="rate"], input[name^="quantity"], input[name="amount"]', function () {
@@ -1632,7 +1654,6 @@ $('#productname_' + uniqueId).on('change', function () {
                 }
             });
 
-
         });
 
 
@@ -1676,78 +1697,78 @@ $('#productname_' + uniqueId).on('change', function () {
 
         }
 
-    function calculateTotals() {
-        let totalAmount = 0;
-        let totalCGST = 0;
-        let totalSGST = 0;
-        let totalIGST = 0;
-        let totalNetAmount = parseFloat($('#supplierinvoiceamount').val()) || 0;
+        function calculateTotals() {
+            let totalAmount = 0;
+            let totalCGST = 0;
+            let totalSGST = 0;
+            let totalIGST = 0;
+            let totalNetAmount = parseFloat($('#supplierinvoiceamount').val()) || 0;
 
-        $('#customerTable tbody tr').each(function () {
-            let row = $(this);
-            let amount = parseFloat(row.find('input[name="amount"]').val()) || 0;
-            let cgst = parseFloat(row.find('input[name="cgst"]').val()) || 0;
-            let sgst = parseFloat(row.find('input[name="sgst"]').val()) || 0;
-            let igst = parseFloat(row.find('input[name="igst"]').val()) || 0;
+            $('#customerTable tbody tr').each(function () {
+                let row = $(this);
+                let amount = parseFloat(row.find('input[name="amount"]').val()) || 0;
+                let cgst = parseFloat(row.find('input[name="cgst"]').val()) || 0;
+                let sgst = parseFloat(row.find('input[name="sgst"]').val()) || 0;
+                let igst = parseFloat(row.find('input[name="igst"]').val()) || 0;
 
-            totalAmount += amount;
-            totalCGST += cgst;
-            totalSGST += sgst;
-            totalIGST += igst;
-        });
+                totalAmount += amount;
+                totalCGST += cgst;
+                totalSGST += sgst;
+                totalIGST += igst;
+            });
 
-        let totalTax = totalCGST + totalSGST + totalIGST;
+            let totalTax = totalCGST + totalSGST + totalIGST;
 
-        $('#pamount').text(totalAmount.toFixed(2));
-        $('#pcgst').text(totalCGST.toFixed(2));
-        $('#psgst').text(totalSGST.toFixed(2));
-        $('#pigst').text(totalIGST.toFixed(2));
-        $('#pnetAmount').text(totalNetAmount.toFixed(2));
-        $('#psubtotal').text((totalAmount + totalTax).toFixed(2));
+            $('#pamount').text(totalAmount.toFixed(2));
+            $('#pcgst').text(totalCGST.toFixed(2));
+            $('#psgst').text(totalSGST.toFixed(2));
+            $('#pigst').text(totalIGST.toFixed(2));
+            $('#pnetAmount').text(totalNetAmount.toFixed(2));
+            $('#psubtotal').text((totalAmount + totalTax).toFixed(2));
 
-        $('#pamount_').val(totalAmount.toFixed(2));
-        $('#pcgst_').val(totalCGST.toFixed(2));
-        $('#psgst_').val(totalSGST.toFixed(2));
-        $('#pigst_').val(totalIGST.toFixed(2));
-        $('#pnetAmount_').val(totalNetAmount.toFixed(2));
-        $('#psubtotal_').val((totalAmount + totalTax).toFixed(2));
+            $('#pamount_').val(totalAmount.toFixed(2));
+            $('#pcgst_').val(totalCGST.toFixed(2));
+            $('#psgst_').val(totalSGST.toFixed(2));
+            $('#pigst_').val(totalIGST.toFixed(2));
+            $('#pnetAmount_').val(totalNetAmount.toFixed(2));
+            $('#psubtotal_').val((totalAmount + totalTax).toFixed(2));
 
-        let subtotal = parseFloat($('#psubtotal').text()) || 0;
-        let netAmount = parseFloat($('#pnetAmount').text()) || 0;
+            let subtotal = parseFloat($('#psubtotal').text()) || 0;
+            let netAmount = parseFloat($('#pnetAmount').text()) || 0;
 
-        let discMode = $('#pdiscMode').val() || "3";
-        let discount = parseFloat($('#pdiscount').val()) || 0;
+            let discMode = $('#pdiscMode').val() || "3";
+            let discount = parseFloat($('#pdiscount').val()) || 0;
 
-        if (isNaN(discount)) {
-            discount = 0;
+            if (isNaN(discount)) {
+                discount = 0;
+            }
+
+            if (discMode === "3" || discMode === "N/A") {
+                discount = 0;
+                $('#pdiscount').val('0');
+            } else if (discMode === "percentage" || discMode === "1") {
+                discount = (subtotal * discount) / 100;
+            }
+
+            subtotal -= discount;
+
+            // Implement rounding rule for subtotal
+            let roundedSubtotal = Math.round(subtotal);
+
+            // Calculate roundOff
+            let roundOff = netAmount - roundedSubtotal;
+
+            // Update values with rounded subtotal
+            $('#psubtotal').text(roundedSubtotal.toFixed(2));
+            $('#psubtotal_').val(roundedSubtotal.toFixed(2));
+
+            $('#proundOff').text(roundOff.toFixed(2));
+            $('#proundOff_').val(roundOff.toFixed(2));
+
+            var discModeId = $('#pdiscMode').val();
+            $('#pdiscMode_').val(discMode);
+            $('#pdiscount_').val(discount.toFixed(2));
         }
-
-        if (discMode === "3" || discMode === "N/A") {
-            discount = 0;
-            $('#pdiscount').val('0');
-        } else if (discMode === "percentage" || discMode === "1") {
-            discount = (subtotal * discount) / 100;
-        }
-
-        subtotal -= discount;
-
-        // Implement rounding rule for subtotal
-        let roundedSubtotal = Math.round(subtotal);
-
-        // Calculate roundOff
-        let roundOff = netAmount - roundedSubtotal;
-
-        // Update values with rounded subtotal
-        $('#psubtotal').text(roundedSubtotal.toFixed(2));
-        $('#psubtotal_').val(roundedSubtotal.toFixed(2));
-
-        $('#proundOff').text(roundOff.toFixed(2));
-        $('#proundOff_').val(roundOff.toFixed(2));
-
-        var discModeId = $('#pdiscMode').val();
-        $('#pdiscMode_').val(discMode);
-        $('#pdiscount_').val(discount.toFixed(2));
-    }
 
 
         $('#pdiscMode, #pdiscount').change(function () {
@@ -1844,7 +1865,7 @@ $('#productname_' + uniqueId).on('change', function () {
                 calculateTax(row, selectedCustomerState, companyState);
                 calculateTotals();
                 calculateTotalAmount();
-                
+
             });
 
             function calculateTotalAmount() {
@@ -1918,43 +1939,45 @@ $('#productname_' + uniqueId).on('change', function () {
                 initiateFetchCompanyState(selectedSupplier);
             });
 
-            function fetchSupplierNames() {
-                $.ajax({
-                    url: '/auth/sales/customername',
-                    method: 'GET',
-                    success: function (response) {
-                        console.log('Received response for Customer Name:', response);
-                        var options = response.data;
-                        if (options && options.length) {
-                            options.forEach(function (option) {
-                                var $option = $('<option>', {
-                                    value: option.id,
-                                    text: option.ledgername,
-                                    'data-state': option.state,
-                                    'data-mobile': option.mobile // Add data attribute to store mobile number
-                                });
-                                $('.dropdown[name="customername"]').append($option);
+            async function fetchSupplierNames() {
+                try {
+                    const response = await $.ajax({
+                        url: '/auth/sales/customername',
+                        method: 'GET',
+                    });
+
+                    console.log('Received response for Customer Name:', response);
+                    const options = response.data;
+                    const $dropdown = $('.dropdown[name="customername"]');
+
+                    // Clear existing options
+                    // $dropdown.empty();
+
+                    if (options && options.length) {
+                        options.forEach((option) => {
+                            const $option = $('<option>', {
+                                value: option.id,
+                                text: option.ledgername,
+                                'data-state': option.state,
+                                'data-mobile': option.mobile
                             });
 
-                            // Trigger change event to update mobile number when the first option is selected by default
-                            $('.dropdown[name="customername"]').change();
-                        } else {
-                            console.error('No options found for Customer Name');
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Error fetching options for Customer Name:', error);
+                            // Add the option to the dropdown
+                            $dropdown.append($option);
+                        });
+
+                        // Optionally, set the first option as selected by default
+                        $dropdown.find('option:first').prop('selected', true);
+                        $dropdown.trigger('change');
+                    } else {
+                        console.error('No options found for Customer Name');
                     }
-                });
 
-                // Update mobile number input field when customer selection changes
-                $('.dropdown[name="customername"]').change(function () {
-                    var selectedMobile = $(this).find(':selected').data('mobile');
-                    $('#customermobileno').val(selectedMobile).show(); // Set and show mobile number
-                });
-
+                } catch (error) {
+                    console.error('Error fetching options for Customer Name:', error);
+                }
             }
-          
+
             function initiateFetchCompanyState(customerState) {
                 fetchCompanyStateAndCalculateTax(customerState);
             }
@@ -1986,22 +2009,27 @@ $('#productname_' + uniqueId).on('change', function () {
             fetchSupplierNames();
 
             var rowDetails;
-            $.ajax({
-                url: '/auth/sales/salesids',
-                method: 'GET',
-                data: { view: 'salesids' },
-                success: function (response) {
-                    console.log('Received response for Purchase IDs:', response);
+            async function fetchSalesIDs() {
+                try {
+                    const response = await $.ajax({
+                        url: '/auth/sales/salesids',
+                        method: 'GET',
+                        data: { view: 'salesids' },
+                    });
 
-                    var options = response.data;
+                    console.log('Received response for Purchase IDs:', response);
+                    const options = response.data;
                     console.log('Options:', options);
 
-                    if (options && options.length) {
-                        options.forEach(function (row) {
-                            if (row.id !== undefined && row.id !== null && !isNaN(row.id)) {
-                                var saledate = formatDate(row.saledate);
+                    const $dropdown = $('.dropdown[name="Id"]');
+                    $dropdown.empty(); // Clear existing options
 
-                                var optionHtml =
+                    if (options && options.length) {
+                        options.forEach((row) => {
+                            if (row.id !== undefined && row.id !== null && !isNaN(row.id)) {
+                                const saledate = formatDate(row.saledate);
+
+                                const optionHtml =
                                     '<option value=\'' +
                                     JSON.stringify(row) +
                                     '\'>' +
@@ -2011,7 +2039,7 @@ $('#productname_' + uniqueId).on('change', function () {
                                     ',<strong> Sale Date: </strong>' + saledate +
                                     '</option>';
 
-                                $('.dropdown[name="Id"]').append(optionHtml);
+                                $dropdown.append(optionHtml);
                             } else {
                                 console.warn('Skipping option with invalid ID:', row);
                             }
@@ -2020,57 +2048,51 @@ $('#productname_' + uniqueId).on('change', function () {
                         console.error('No options found for sales IDs');
                     }
 
-                    var urlParams = new URLSearchParams(window.location.search);
-                    var purchaseIdParam = urlParams.get('id');
+                    // Handle URL parameters to select a specific purchase ID
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const purchaseIdParam = urlParams.get('id');
                     console.log('Purchase ID from URL:', purchaseIdParam);
 
                     if (purchaseIdParam) {
-                        var purchaseIdInt = parseFloat(purchaseIdParam);
-
-                        $('.dropdown[name="Id"] option').each(function () {
-                            var optionValue = $(this).val();
+                        const purchaseIdInt = parseFloat(purchaseIdParam);
+                        $dropdown.find('option').each(function () {
+                            const optionValue = $(this).val();
                             if (optionValue !== 'view details') {
-                                var optionRow = JSON.parse(optionValue);
+                                const optionRow = JSON.parse(optionValue);
                                 if (optionRow.id === purchaseIdInt) {
                                     $(this).prop('selected', true);
                                 }
                             }
                         });
-
-                        $('.dropdown[name="Id"]').change();
+                        $dropdown.change(); // Trigger change event after selection
                     }
-                },
-                error: function (xhr, status, error) {
+                } catch (error) {
                     console.error('Error fetching options for sales IDs:', error);
                 }
-            });
+            }
 
-
-            $('.dropdown[name="Id"]').change(function () {
-                var selectedOption = $(this).find('option:selected');
+            $('.dropdown[name="Id"]').on('change', async function () {
+                const selectedOption = $(this).find('option:selected');
 
                 if (!selectedOption || !selectedOption.val()) {
                     return;
                 }
 
                 try {
-                    var rowDetails = JSON.parse(selectedOption.val());
+                    const rowDetails = JSON.parse(selectedOption.val());
                     $('#id').val(rowDetails.id);
                     $('#customermobileno').val(rowDetails.customermobileno);
                     $('#paymentmode').val(rowDetails.paymentmode);
                     $('#saledate').val(formatDate(rowDetails.saledate));
                     $('#referno').val(rowDetails.referno);
                     $('#transportno').val(rowDetails.transportno);
-                    
-
                     $('#supplierSelect').val(rowDetails.customer);
-                    
-
                     $('.dropdown[name="salesmanname"]').val(rowDetails.salesman);
-                    
-                    var selectedSupplierState = $('#supplierSelect').find(':selected').data('state');
-                    initiateFetchCompanyState(selectedSupplierState);
 
+                    const selectedSupplierState = $('#supplierSelect').find(':selected').data('state');
+                    await initiateFetchCompanyState(selectedSupplierState);
+
+                    // Update amounts with proper formatting
                     $('#pnetAmount').text(!isNaN(rowDetails.netAmount) ? parseFloat(rowDetails.netAmount).toFixed(2) : 'Invalid Net Amount');
                     $('#pamount').text(!isNaN(rowDetails.amount) ? parseFloat(rowDetails.amount).toFixed(2) : 'Invalid Amount');
                     $('#pigst').text(!isNaN(rowDetails.igst) ? parseFloat(rowDetails.igst).toFixed(2) : 'Invalid IGST');
@@ -2080,40 +2102,40 @@ $('#productname_' + uniqueId).on('change', function () {
                     $('#ptcs').text(!isNaN(rowDetails.tcs) ? parseFloat(rowDetails.tcs).toFixed(2) : 'Invalid TCS');
                     $('#proundOff').text(!isNaN(rowDetails.roundoff) ? parseFloat(rowDetails.roundoff).toFixed(2) : 'Invalid roundOff');
 
-                    // Set the selected value in the dropdown
+                    // Set values for discount mode and discount input box
                     $('#pdiscMode').val(rowDetails.discMode);
-
-                    // Set the discount input box value
                     $('#pdiscount').val(rowDetails.discount);
-
                     selectedOption.prop('selected', true);
 
                     console.log('rowDetails.id:', rowDetails.id);
                     console.log('Dropdown Options:', $(this).val());
 
-                    var purchaseId = parseFloat(rowDetails.id);
-
+                    const purchaseId = parseFloat(rowDetails.id);
                     if (isNaN(purchaseId)) {
                         console.error('Invalid purchaseId:', purchaseId);
                         return;
                     }
 
-                    $.ajax({
+                    const productResponse = await $.ajax({
                         url: '/auth/sales/saleproductid',
                         method: 'GET',
                         data: { purchaseId: purchaseId },
-                        success: function (response) {
-                            console.log('Received response for ProductId:', response);
-                            updateCustomerTable(response.data);
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Error fetching ProductId data:', error);
-                        }
                     });
+
+                    console.log('Received response for ProductId:', productResponse);
+                    updateCustomerTable(productResponse.data);
+
                 } catch (error) {
-                    console.error('Error parsing JSON:', error);
+                    console.error('Error handling dropdown change:', error);
                 }
             });
+
+            // Call the functions to fetch supplier names and sales IDs
+            (async function initialize() {
+                await fetchSupplierNames();
+                await fetchSalesIDs();
+            })();
+
 
         });
 
@@ -2139,8 +2161,8 @@ $('#productname_' + uniqueId).on('change', function () {
         });
 
     </script>
-{{!-- $('#supplierSelect').val(rowDetails.customer); --}}
-{{!-- $('#salesmannameSelect').val(rowDetails.salesman); --}}
+    {{!-- $('#supplierSelect').val(rowDetails.customer); --}}
+    {{!-- $('#salesmannameSelect').val(rowDetails.salesman); --}}
 </body>
 
 </html>

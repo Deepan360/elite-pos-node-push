@@ -406,7 +406,7 @@
         // Function to fetch sales details
         function fetchsalesDetails(salesId) {
             $.ajax({
-                url: '/auth/salesprintpage/salesdetails', 
+                url: '/auth/sales/salesdetails', 
                 method: 'GET',
                 data: { salesId: salesId }, 
                 success: function (response) {
@@ -422,7 +422,7 @@
                         $('#discountMode').text(responseData.discMode);
                         $('#discount').text(responseData.discount);
                         $('#cgst').text(responseData.cgst);
-                        $('#igst').text(responseData.igst);
+                        $('#igst').text(responseData.igst); 
                         $('#sgst').text(responseData.sgst);
                         $('#subtotal').text(responseData.total);
                     } else {

@@ -502,6 +502,9 @@ router.get("/sales", (req, res) => {
   res.render("salesdelete", { id: req.params.id });
 });
 router.get("/sales", (req, res) => {
+  res.render("salesproductname");
+});
+router.get("/sales", (req, res) => {
   res.render("salestransdelete", { id: req.params.id });         
 });
 router.get('/salesregister', (req, res) => {

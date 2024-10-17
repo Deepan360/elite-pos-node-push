@@ -1028,7 +1028,7 @@ exports.salesretailreturntransdelete = async (req, res) => {
   }
 };
 
-exports.salesretailreturnregister = (req, res) => {
+ exports.salesretailreturnregister = (req, res) => {
   pool.connect((err, connection) => {
     if (err) {
       console.error("Error getting connection from pool:", err);
@@ -1055,7 +1055,7 @@ exports.salesretailreturnregister = (req, res) => {
   });
 };
 
-exports.salesretailreturndraft = (req, res) => {
+ exports.salesretailreturndraft = (req, res) => {
   pool.connect((err, connection) => {
     if (err) {
       console.error("Error getting connection from pool:", err);
@@ -1086,7 +1086,7 @@ exports.salesretailreturndraft = (req, res) => {
 
 //salesretail retail
 
-exports.salesretailDetails = async (req, res) => {
+ exports.salesretailDetails = async (req, res) => {
   pool.connect((err, connection) => {
     if (err) {
       console.error("Error getting connection from pool:", err);
@@ -1135,7 +1135,7 @@ exports.salesretailDetails = async (req, res) => {
   });
 };
 
-exports.salesretailadd = async (req, res) => {
+ exports.salesretailadd = async (req, res) => {
   console.log(req.body);
   const {
     saledate,
@@ -1260,7 +1260,8 @@ async function reduceretailStock(productId, quantity, free, batchNo) {
   }
 }
 
-exports.salesretailEdit = async (req, res) => {
+
+ exports.salesretailEdit = async (req, res) => {
   const { id } = req.params;
 
   const { purchaseDetails, products } = req.body;
@@ -3329,6 +3330,9 @@ exports.salesReturnregister = (req, res) => {
 
 //sales
 
+
+
+
 exports.salesmanname = (req, res) => {
   pool.connect((err, connection) => {
     if (err) {
@@ -3460,14 +3464,39 @@ exports.batchDetails = async (req, res) => {
   }
 };
 
-exports.salesDetails = async (req, res) => {
+// exports.salesDetails = async (req, res) => {
+//   pool.connect((err, connection) => {
+//     if (err) {
+//       console.error("Error getting connection from pool:", err);
+//       return res.status(500).json({ error: "Internal Server Error" });
+//     }
+
+//     const query = "SELECT * FROM [elite_pos].[dbo].[sales_Master]";
+
+//     pool.query(query, (err, result) => {
+//       connection.release(); // Release the connection back to the pool
+
+//       if (err) {
+//         console.error("Error in listing data:", err);
+//         return res.status(500).json({ error: "Internal Server Error" });
+//       }
+
+//       console.log("Query Result:", result);
+
+//       res.json({ data: result.recordset });
+//     });
+//   });
+// };
+
+
+exports.salesproductname = async (req, res) => {
   pool.connect((err, connection) => {
     if (err) {
       console.error("Error getting connection from pool:", err);
       return res.status(500).json({ error: "Internal Server Error" });
     }
 
-    const query = "SELECT * FROM [elite_pos].[dbo].[sales_Master]";
+    const query = " SELECT DISTINCT p.productname,p.id FROM product p JOIN stock_Ob s ON p.id = s.product";
 
     pool.query(query, (err, result) => {
       connection.release(); // Release the connection back to the pool
@@ -5260,6 +5289,19 @@ exports.purchaseDetails = async (req, res) => {
     await poolConnect();
 
     const result = await pool.request().execute("GetPurchaseDetails");
+
+    res.json({ data: result.recordset });
+  } catch (error) {
+    console.error("Error in listing data:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+exports.salesDetails = async (req, res) => {
+  try {
+    await poolConnect();
+
+    const result = await pool.request().execute("GetSalespDetails");
 
     res.json({ data: result.recordset });
   } catch (error) {

@@ -799,7 +799,7 @@
                 var igst = row.find('td:eq(15)').text();
                 var totalAmount = row.find('td:eq(16)').text();
 
-                row.html("<td><input type='number' readonly name='Id' class='input-field  purchase-id' value='" + id + "'></td>" +
+                row.html("<td><input type='number' readonly name='Id' class='input-field  purchase-id w2' value='" + id + "'></td>" +
                     "<td><select name='product' class='input-field product-name dropdown' id='productname_" + id + "'><option selected disabled>Select product</option></select></td>" +
                     "<td><input type='text' name='batchNo' class='input-field' value='" + batchNo + "' readonly></td>" +
                     "<td><input type='text' name='tax' class='input-field' value='" + tax + "' readonly></td>" +
@@ -808,14 +808,14 @@
                     "<td class='d-none'><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
                     "<td><input type='number' name='purcRate' class='input-field' value='" + purcRate + "' readonly></td>" +
                     "<td class='d-none'><input type='number' name='mrp' class='input-field' value='" + mrp + " readonly'></td>" +
-                    "<td><input type='number' name='rate' class='input-field' value='" + rate + "'></td>" +
+                    "<td><input type='number' name='rate' class='input-field  w-200' value='" + rate + "'></td>" +
                     "<td><select name='discMode' class='input-field disc-mode dropdown' id='discMode_" + id + "'><option selected disabled>Select Disc Mode</option></select></td>" +
                     "<td><input type='number' name='discount' class='input-field' value='" + discount + "'></td>" +
-                    "<td><input type='number' name='amount' class='input-field' value='" + amount + "'></td>" +
-                    "<td class='d-none'><input type='number' name='cgst' class='input-field' value='" + cgst + "'></td>" +
-                    "<td class='d-none'><input type='number' name='sgst' class='input-field' value='" + sgst + "'></td>" +
-                    "<td class='d-none'><input type='number' name='igst' class='input-field' value='" + igst + "'></td>" +
-                    "<td class='d-none'><input type='number' name='totalAmount' class='input-field' value='" + totalAmount + "'></td>" +
+                    "<td><input type='number' name='amount' class='input-field' value='" + amount + "' readonly></td>" +
+                    "<td class='d-none'><input type='number' name='cgst' class='input-field' value='" + cgst + "' readonly></td>" +
+                    "<td class='d-none'><input type='number' name='sgst' class='input-field' value='" + sgst + "'readonly></td>" +
+                    "<td class='d-none'><input type='number' name='igst' class='input-field' value='" + igst + "'readonly></td>" +
+                    "<td class='d-none'><input type='number' name='totalAmount' class='input-field' value='" + totalAmount + "'readonly></td>" +
                     "<td><i class='fa-solid fa-trash deletetransBtn' type='button' data-id='" + id + "'></i></td>");
 
 
@@ -913,12 +913,19 @@
                     url: '/auth/salesretailEdit/' + purchaseId, // Ensure this uses purchaseId
                     contentType: 'application/json',
                     data: JSON.stringify(payload),
-                    success: function (response) {
+                     success: function (response) {
                         console.log(response);
                         if (response.success) {
-                            showBootstrapModal('Sales Retail Updated Successfully 🖋', function () {
-                                window.location.href = '/salesretailregister';
-                            });
+                            // Check if the response contains a draft value
+                            if ($('#is_Draft').val() === '1') {
+                                showBootstrapModal('Sale Saved as Draft Successfully 🖋', function () {
+                                    window.location.href = '/salesretaildraft'; // Redirect to draft page
+                                });
+                            } else {
+                                showBootstrapModal('Sales Updated Successfully 🖋', function () {
+                                    window.location.href = '/salesretailregister'; // Redirect to sales register
+                                });
+                            }
                         } else {
                             alert("Failed to update purchase: " + response.message);
                         }
@@ -989,7 +996,7 @@
 
         function fetchProductOptions(id, product) {
             $.ajax({
-                url: '/auth/purchase/productname',
+                  url: '/auth/sales/salesproductname',
                 method: 'GET',
                 success: function (response) {
                     console.log('Product Options:', response); // Check response in console
@@ -1192,24 +1199,50 @@
                     }
                 });
             }
+     
         $(document).ready(function () {
             // Initialize DataTable
             let table = $('#customerTable').DataTable();
             let products = [];
             let uniqueId = generateUniqueId();
             calculateTotals();
-            // Open Purchase Form and Add New Row
+            // Open Purchase Form and Add New Row 
             $('#openPurchaseForm').on('click', function () {
                 let purchaseId = generateUniqueId();
                 $('#purchaseId').val(purchaseId);
                 uniqueId = generateUniqueId();
+
+
+                let rowCount = $('#customerTable tbody tr').length;
+
+                // If there are existing rows, validate the last one
+                if (rowCount > 0) {
+                    let lastRow = $('#customerTable tbody tr:last');
+                    let isValid = true;
+
+                    // Check for required fields in the last row
+                    $(lastRow).find('input[required]').each(function () {
+                        if (!$(this).val()) {
+                            isValid = false;
+                            return false; // Exit the loop if a required field is empty
+                        }
+                    });
+
+                    // If validation fails, show an alert and return
+                    if (!isValid) {
+                        showBootstrapModal("Please fill in all required fields in the last row before adding a new one.");
+                        return; // Prevent adding a new row
+                    }
+                }
+
+
                 let newRow = $("<tr data-uniqueId='" + uniqueId + "'>" +
                     "<td><input type='hidden' name='purchaseId' class='input-field purchase-id' value='" + purchaseId + "'></td>" +
                     "<td><select name='productname' class='input-field product-name dropdown' id='productname_" + uniqueId + "' placeholder='Product Name' required><option selected disabled>Select product</option></select></td>" +
                     "<td><input type='text' name='batchNo' class='input-field' id='batchNo_" + uniqueId + "' placeholder='Batch No' readonly></td>" +
                     "<td><input type='text' name='tax' class='input-field' id='tax_" + uniqueId + "' placeholder='Tax(%)'readonly ></td>" +
-                    "<td><input type='number' name='quantity' min='1' class='input-field quantity' id='quantity_" + uniqueId + "' placeholder='Quantity' required></td>" +
-                    "<td class='d-none'><input type='number' name='free'min='0' class='input-field' id='free_" + uniqueId + "' placeholder='Free'></td>" +
+                    "<td><input type='number' name='quantity' min='1' class='input-field quantity' id='quantity_" + uniqueId + "' placeholder='Quantity' oninput='this.value = this.value.replace(/[^0-9]/g, \"\")' required></td>" +
+                    "<td class='d-none'><input type='number' name='free'min='0' class='input-field' id='free_" + uniqueId + "' placeholder='Free' oninput='this.value = this.value.replace(/[^0-9]/g, \"\")'></td>" +
                     "<td class='d-none'><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
                     "<td><input type='number' name='purcRate' class='input-field' id='purcRate_" + uniqueId + "' placeholder='purcRate' readonly></td>" +
                     "<td class='d-none'><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='MRP' readonly></td>" +
@@ -1225,9 +1258,15 @@
                     "</tr>");
                 $('#customerTable tbody').append(newRow);
                 table.rows.add([newRow[0]]).draw();
+                   // Scroll to the newly added row
+                let rowElement = newRow[0];
+                rowElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+
+                // Optionally, focus on the first input in the new row (if needed)
+                $(newRow).find('input:first').focus();
                 // Fetch product options and populate the product dropdown
                 $.ajax({
-                    url: '/auth/purchase/productname',
+                       url: '/auth/sales/salesproductname',
                     method: 'GET',
                     success: function (response) {
                         var options = response.data;
@@ -1369,10 +1408,21 @@
                         method: 'POST',
                         data: formData,
                         success: function (response) {
-                            console.log("Form submitted successfully:", response); // Log successful submission
-                             showBootstrapModal('Retail Sales Added Successfully 🖋', function () {
-                                window.location.href = '/salesretailregister';
-                            });
+                            console.log(response);
+                            if (response.success) {
+                                // Check if the response contains a draft value
+                                if ($('#is_Draft').val() === '1') {
+                                    showBootstrapModal('Sale Saved as Draft Successfully 🖋', function () {
+                                        window.location.href = '/salesretaildraft'; // Redirect to draft page
+                                    });
+                                } else {
+                                    showBootstrapModal('Sales Updated Successfully 🖋', function () {
+                                        window.location.href = '/salesretailregister'; // Redirect to sales register
+                                    });
+                                }
+                            } else {
+                                alert("Failed to update purchase: " + response.message);
+                            }
                         },
                         error: function (error) {
                             console.error("Error submitting form:", error);
@@ -1436,6 +1486,7 @@
                     let uniqueId = $(this).attr('id').split('_')[1];
                     validateRate(uniqueId);
                 });
+              
                 function validateRate(uniqueId) {
                     let rate = parseFloat($('#rate_' + uniqueId).val());
                     let purcRate = parseFloat($('#purcRate_' + uniqueId).val());
@@ -1449,6 +1500,7 @@
                         $('#alertMessage').addClass('d-none'); // Hide the alert if the condition is corrected
                     }
                 }
+              
                 function validateRows() {
                     let isValid = true;
                     let rows = $('#customerTable tbody tr');

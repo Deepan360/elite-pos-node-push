@@ -159,6 +159,7 @@ router.get('/Purchasereturn/productreturnid',userController.productreturnid);
 router.get("/Purchasereturnregister",userController.Purchasereturnregister);
 
 router.get('/sales/salesDetails', userController.salesDetails);
+router.get("/sales/salesproductname", userController.salesproductname);
 router.post('/sales',userController.salesadd);
 router.put("/salesEdit/:id", userController.salesEdit); 
 router.get('/sales/salesids', userController.salesids);     

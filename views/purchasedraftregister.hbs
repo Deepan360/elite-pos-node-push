@@ -130,8 +130,7 @@
         clearFilters();
     });
 
-
-  function clearFilters() {
+function clearFilters() {
         var table = document.getElementById("customerTable");
         var rows = table.getElementsByTagName("tr");
 
@@ -150,7 +149,7 @@
         document.getElementById("toDate").value = "";
     }
 
-    document.getElementById("filter-button").addEventListener("click", function() {
+document.getElementById("filter-button").addEventListener("click", function() {
         var fromDate = new Date(document.getElementById("fromDate").value);
         var toDate = new Date(document.getElementById("toDate").value);
         var table = document.getElementById("customerTable");
@@ -196,6 +195,7 @@
             }
         }
     });
+
 </script>
 
 
@@ -254,14 +254,14 @@
         {
     data: 'id',
     render: function (data) {
-        return '<i class="fa-solid fa-file-pen fa-2x" type="button" data-id="' + data + '"></i>';
+        return '<i class="fa-solid fa-file-pen text-warning fa-2x" type="button" data-id="' + data + '"></i>';
     }
 },
         {{!-- { 
             data: null,
             render: function (data, type, row) {
                 // You can customize the print column content here
-                return '<i class="fa-solid fa-print fa-2x" onclick="yourPrintFunction(' + data.id + ')"></i>';
+                return '<i class="fa-solid fa-print  fa-2x" onclick="yourPrintFunction(' + data.id + ')"></i>';
             }
         } --}}
     ]

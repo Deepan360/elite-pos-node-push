@@ -108,9 +108,18 @@
                                 <th>Bill No</th>
                                 <th>Bill Date</th>
                                 <th>Supplier</th>
+                                <th>Inv NO</th>
                                 <th>Supp Inv Date</th>
+                                <th>Sub Total</th>
                                 <th>Total Amount</th>
+                                <th>Disc.Mode</th>
+                                <th>Discount</th>
                                 <th>Payment Mode</th>
+                                <th>Payment Status</th>
+                                <th>Paid Amount</th>
+                                <th>Payable Amount</th>
+                                <th>Age Days</th>
+                                <th>Payment</th>
                                 <th class="action">Action</th>
                                 <th>Print</th>
                             </tr>
@@ -225,37 +234,96 @@
         dataType: 'json',
         dataSrc: 'data' // Change 'data' to match your server's response structure
     },
-    columns: [
-          { data: 'id' },
-        { data: 'purchasedate', render: function (data) {
-                            const formattedDate = moment(data).format("DD-MM-YYYY");
-                            return formattedDate;
-                        }  },
-       {    data: 'suppliername',
-            render: function(data, type, row) {
-                return data[1]; 
-            }
-        },
-        { data: 'supplierinvoicedate', render: function (data) {
-                            const formattedDate = moment(data).format("DD-MM-YYYY");
-                            return formattedDate;
-                        }  },
-        { data: 'subtotal' },
-         { data: 'paymentmode' },
-        {
-    data: 'id',
-    render: function (data) {
-        return '<i class="fa-solid fa-file-pen fa-2x" type="button" data-id="' + data + '"></i>';
-    }
-},
-        { 
-            data: 'id',
-            render: function (data, type, row) {
-                // You can customize the print column content here
-                return '<i class="fa-solid  fa-print fa-2x" type="button" data-id="' + data + '"></i>';
-            }
-        }
-    ]
+       columns: [
+           { data: 'id' },
+           {
+               data: 'purchasedate',
+               render: function (data) {
+                   return moment(data).format("DD-MM-YYYY"); // Format date for purchasedate
+               }
+           },
+           {
+               data: 'suppliername',
+               render: function (data, type, row) {
+                   return data[1]; // Return the supplier name if it's an array or object
+               }
+           },
+           {data:'supplierinvoiceno'},
+           {
+               data: 'supplierinvoicedate',
+               render: function (data) {
+                   return moment(data).format("DD-MM-YYYY"); // Format date for supplier invoice
+               }
+           },
+           { data: 'amount' }, // Display the amount
+           { data: 'subtotal' }, // Display the subtotal
+           { data: 'discModes' }, // Display discount modes
+           { data: 'discount' }, // Display discount
+           { data: 'paymentmode' }, // Payment mode display
+
+           {
+               data: 'paymentmode',
+               render: function (data) {
+                   // If payment mode is 'credit', show 'Unpaid', otherwise 'Paid'
+                   return data === 'credit' ? 'Unpaid' : 'Paid';
+               }
+           },
+           {
+               data: 'subtotal',
+               render: function (data, type, row) {
+                   // If payment mode is 'credit', show the subtotal, otherwise show '0.00'
+                   return row.paymentmode === 'credit' ? '0.00' : data;
+               }
+           },
+           {
+               data: 'subtotal',
+               render: function (data, type, row) {
+                   // If payment mode is 'cash', show '0.00', otherwise show subtotal
+                   return row.paymentmode === 'cash' ? '0.00' : data;
+               }
+           },
+          {
+               data: 'supplierinvoicedate',
+               render: function (data, type, row) {
+                   const purchaseDate = moment(data);
+                   const today = moment();
+                   const daysDiff = today.diff(purchaseDate, 'days');
+
+                   if (daysDiff === 0) {
+                       return '0 days'; // If it's today, display 0 days
+                   } else if (daysDiff > 0) {
+                       return `${daysDiff} days`; // For past dates
+                   } else {
+                       return `${Math.abs(daysDiff)} days from today`; // For future dates
+                   }
+               }
+           }
+
+, {
+               data: 'id',
+               render: function (data, type, row) {
+                   // If payment mode is 'credit', show a credit card icon; otherwise, show the id
+                   return row.paymentmode === 'credit' ? '<i class="fa-solid fa-credit-card text-danger fa-2x" type="button" data-id="' + data + '"></i>' : '<i class="fa-solid fa-clipboard-check text-success fa-2x"></i>';
+               }
+           }
+,
+           {
+               data: 'id',
+               render: function (data) {
+                   // Render an edit icon with the ID attached
+                   return '<i class="fa-solid fa-file-pen text-warning fa-2x" type="button" data-id="' + data + '"></i>';
+               }
+           },
+           {
+               data: 'id',
+               render: function (data, type, row) {
+                   // Render a print icon with the ID attached
+                   return '<i class="fa-solid fa-print text-info fa-2x" type="button" data-id="' + data + '"></i>';
+               }
+           }
+       ]
+
+
 });
 
 

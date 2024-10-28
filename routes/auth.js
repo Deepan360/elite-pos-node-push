@@ -130,6 +130,8 @@ router.get(
   "/purchase/GetSupplierInvoiceData",
   userController.GetSupplierInvoiceData
 );
+router.get("/salesretail/checkMobileNumber", userController.checkMobileNumber);
+
 router.get("/purchase/checkInvoiceNumber", userController.checkInvoiceNumber);
 router.get('/city',userController.city);
 router.get('/purchase/productid',userController.productid);
@@ -146,6 +148,20 @@ router.put('/company/updatecompany',userController.updatecompany);
 router.get("/editPurchase/productname",userController.productname);
 router.get('/editPurchase/discmode',userController.discmode);
 router.put("/editPurchase/purchaseEdit/:purchaseId", userController.purchaseEdit);
+
+
+router.get(
+  "/salesprintpage/productdetails",
+  userController.getSalesProductDetails
+);
+router.get("/salesprintpage/salesdetails", userController.salesDetails);
+
+router.get(
+  "/salesretailprint/productdetails",
+  userController.getSalesretailProductDetails
+);
+router.get("/salesretailprint/salesdetails", userController.salesretaildetails);
+
 
 router.get('/Purchasereturn/PurchasereturnDetails', userController.PurchasereturnDetails);
 router.post('/Purchasereturn',userController.Purchasereturnadd);

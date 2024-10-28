@@ -314,6 +314,7 @@
                             <th>Id</th>
                             <th>Product Name</th>
                             <th>Batch No</th>
+                            <th>Expiry Date</th>
                             <th>Tax(%)</th>
                             <th>Quantity</th>
                             <th class="d-none">Free</th>
@@ -380,33 +381,33 @@
                     </div>
                 </div>
 
-                <form id="purchaseDetails" class="form-control p-0" style="display: block; align-item: start;"
+                <form id="purchaseDetails" class="form-control p-0 bg-primary text-white" style="display: block; align-item: start;"
                     action="auth/salesretail" method="post">
                     <div class="row d-flex justify-content-between  mb-0 gx-0 w-100 ">
                         <div class="labels">
 
                             <div class="custom col-md-1">
-                                <label for="pamount">Amount:</label>
+                                <label for="pamount" class=" text-white">Amount:</label>
                                 <span id="pamount" name="pamount">0.00</span>
                             </div>
 
                             <div class="custom col-md-1">
-                                <label for="pigst">IGST:</label>
+                                <label for="pigst" class=" text-white">IGST:</label>
                                 <span id="pigst" name="pigts">0.00</span>
                             </div>
 
                             <div class="custom col-md-1">
-                                <label for="pcgst">CGST:</label>
+                                <label for="pcgst" class=" text-white">CGST:</label>
                                 <span id="pcgst" name="pcgst">0.00</span>
                             </div>
 
                             <div class="custom col-md-1">
-                                <label for="psgst">SGST:</label>
+                                <label for="psgst" class=" text-white">SGST:</label>
                                 <span id="psgst" name="psgst">0.00</span>
                             </div>
 
                             <div class="custom col-md-1">
-                                <label for="psubtotal">Total Net Amount:</label>
+                                <label for="psubtotal" class=" text-white">Total Net Amount:</label>
                                 <span id="psubtotal" name="psubtotal">0.00</span>
                             </div>
 
@@ -414,8 +415,6 @@
                                 <label for="pcess">CESS:</label>
                                 <span id="pcess" name="pcess">0.00</span>
                             </div> --}}
-
-
 
                             {{!-- <div class="custom">
                                 <label for="ptcs">TCS:</label>
@@ -462,7 +461,7 @@
                             </div>
 
                             <!-- Fixed Color Legend below the scrollable table -->
-                            <div style="margin-top: 10px;">
+                            <div style="margin-top: 10px;" class="text-primary">
                                 <strong>Color Legend:</strong>
                                 <ul style="list-style: none; padding-left: 0;">
                                     <li><span
@@ -504,10 +503,13 @@
                         <label for="customer" class="form-label">Customer Name</label>
                         <input type="text" class="form-control" id="customer" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="mobileno" class="form-label">Phone Number</label>
-                        <input type="tel" class="form-control" id="cmobileno" required>
-                    </div>
+<div class="mb-3">
+    <label for="mobileno" class="form-label">Phone Number</label>
+    <input type="tel" class="form-control" id="cmobileno" maxlength="10" oninput="checkMobileNumber()" required>
+    <span id="mobileValidationMessage"></span> <!-- Display validation messages here -->
+</div>
+
+
                     <div class="mb-3">
                         <label for="salesmannameSelect" class="form-label">Salesman</label>
                         <select id="salesmannameSelect" class="form-select" name="salesman" required>
@@ -542,6 +544,42 @@
         </div>
     </main>
     {{>color}}
+
+<script>
+    async function checkMobileNumber() {
+        const mobileNo = document.getElementById('cmobileno').value;
+
+        // Check if the mobile number is exactly 10 digits
+        if (mobileNo.length !== 10 || isNaN(mobileNo)) {
+            document.getElementById('mobileValidationMessage').innerHTML = '<span style="color: red;">Please enter a valid 10-digit mobile number</span>';
+            return;
+        } else {
+            document.getElementById('mobileValidationMessage').innerHTML = ''; // Clear validation message if valid
+        }
+
+        try {
+            // Send request to check if the mobile number exists in the database
+            const response = await fetch(`/auth/salesretail/checkMobileNumber?mobileNo=${mobileNo}`);
+            const data = await response.json();
+
+            if (data.exists) {
+                // If the number exists, show an error message and prevent further action
+                document.getElementById('mobileValidationMessage').innerHTML = '<span style="color: red;">Mobile number already exists</span>';
+                // You can also disable the submit button if needed
+                document.getElementById('saveCustomerBtn').disabled = true;
+            } else {
+                // If the number is not found, show a success message
+                document.getElementById('mobileValidationMessage').innerHTML = '<span style="color: green;">Mobile number is available</span>';
+                // Enable the submit button
+                document.getElementById('saveCustomerBtn').disabled = false;
+            }
+        } catch (error) {
+            console.error('Error checking mobile number:', error);
+            document.getElementById('mobileValidationMessage').innerHTML = '<span style="color: red;">Error checking mobile number</span>';
+        }
+    }
+</script>
+
 
 
 
@@ -782,26 +820,29 @@
             $('#customerTable tbody tr').each(function () {
                 var row = $(this);
                 var id = row.find('td:eq(0)').text();
-                var product = row.find('td:eq(1)').text();
+                var product = row.find('td:eq(1)').text().trim();
                 var batchNo = row.find('td:eq(2)').text();
-                var tax = row.find('td:eq(3)').text();
-                var quantity = row.find('td:eq(4)').text();
-                var free = row.find('td:eq(5)').text();
-                var uom = row.find('td:eq(6)').text();
-                var purcRate = row.find('td:eq(7)').text();
-                var mrp = row.find('td:eq(8)').text();
-                var rate = row.find('td:eq(9)').text();
-                var discMode = row.find('td:eq(10)').text();
-                var discount = row.find('td:eq(11)').text();
-                var amount = row.find('td:eq(12)').text();
-                var cgst = row.find('td:eq(13)').text();
-                var sgst = row.find('td:eq(14)').text();
-                var igst = row.find('td:eq(15)').text();
-                var totalAmount = row.find('td:eq(16)').text();
+                 var expiryDate = row.find('td:eq(3)').text();
+                var tax = row.find('td:eq(4)').text();
+                var quantity = row.find('td:eq(5)').text();
+                var free = row.find('td:eq(6)').text();
+                var uom = row.find('td:eq(7)').text();
+                var purcRate = row.find('td:eq(8)').text();
+                var mrp = row.find('td:eq(9)').text();
+                var rate = row.find('td:eq(10)').text();
+                var discMode = row.find('td:eq(11)').text();
+                var discount = row.find('td:eq(12)').text();
+                var amount = row.find('td:eq(13)').text();
+                var cgst = row.find('td:eq(14)').text();
+                var sgst = row.find('td:eq(15)').text();
+                var igst = row.find('td:eq(16)').text();
+                var totalAmount = row.find('td:eq(17)').text();
 
                 row.html("<td><input type='number' readonly name='Id' class='input-field  purchase-id w2' value='" + id + "'></td>" +
                     "<td><select name='product' class='input-field product-name dropdown' id='productname_" + id + "'><option selected disabled>Select product</option></select></td>" +
                     "<td><input type='text' name='batchNo' class='input-field' value='" + batchNo + "' readonly></td>" +
+                                       "<td><input type='text' name='expiryDate' class='input-field' value='" + expiryDate + "' readonly></td>" +
+
                     "<td><input type='text' name='tax' class='input-field' value='" + tax + "' readonly></td>" +
                     "<td><input type='number' name='quantity' class='input-field' value='" + quantity + "'></td>" +
                     "<td class='d-none'><input type='number' name='free' class='input-field' value='" + free + "'></td>" +
@@ -922,7 +963,7 @@
                                     window.location.href = '/salesretaildraft'; // Redirect to draft page
                                 });
                             } else {
-                                showBootstrapModal('Sales Updated Successfully 🖋', function () {
+                                showBootstrapModal('Sales Added Successfully 🖋', function () {
                                     window.location.href = '/salesretailregister'; // Redirect to sales register
                                 });
                             }
@@ -952,6 +993,8 @@
                     var Id = $(this).find('.purchase-id').val();
                     var product = $(this).find('.product-name').val();
                     var batchNo = $(this).find('[name="batchNo"]').val();
+                                     var expiryDate = $(this).find('[name="expiryDate"]').val();
+
                     var tax = $(this).find('[name="tax"]').val();
                     var quantity = $(this).find('[name="quantity"]').val();
                     var free = $(this).find('[name="free"]').val() || 0;
@@ -994,20 +1037,26 @@
             return products;
         }
 
-        function fetchProductOptions(id, product) {
-            $.ajax({
-                  url: '/auth/sales/salesproductname',
-                method: 'GET',
-                success: function (response) {
-                    console.log('Product Options:', response); // Check response in console
-                    // Populate the product dropdown with response.data and select the matching product name
-                    populateDropdown('#productname_' + id, response.data, product);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error fetching product options:', error);
+                async function fetchProductOptions(id, selectedProduct) {
+                    try {
+                        const response = await fetch('/auth/sales/salesproductname');
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        const data = await response.json();
+                        console.log('Product Options:', data); // Log the fetched data for debugging
+
+                        // Ensure data is an array and populate the dropdown
+                        if (Array.isArray(data.data)) {
+                            console.log('Populating dropdown for ID:', id); // Debugging
+                            populateDropdown('#productname_' + id, data.data, selectedProduct);
+                        } else {
+                            console.error('Fetched data is not an array:', data.data);
+                        }
+                    } catch (error) {
+                        console.error('Error fetching product options:', error);
+                    }
                 }
-            });
-        }
 
         function fetchDiscModeOptions(id, discModeData) {
             $.ajax({
@@ -1240,6 +1289,7 @@
                     "<td><input type='hidden' name='purchaseId' class='input-field purchase-id' value='" + purchaseId + "'></td>" +
                     "<td><select name='productname' class='input-field product-name dropdown' id='productname_" + uniqueId + "' placeholder='Product Name' required><option selected disabled>Select product</option></select></td>" +
                     "<td><input type='text' name='batchNo' class='input-field' id='batchNo_" + uniqueId + "' placeholder='Batch No' readonly></td>" +
+                     "<td><input type='text' name='expiryDate' class='input-field' id='expiryDate_" + uniqueId + "' placeholder='Expiry Date' readonly></td>" +
                     "<td><input type='text' name='tax' class='input-field' id='tax_" + uniqueId + "' placeholder='Tax(%)'readonly ></td>" +
                     "<td><input type='number' name='quantity' min='1' class='input-field quantity' id='quantity_" + uniqueId + "' placeholder='Quantity' oninput='this.value = this.value.replace(/[^0-9]/g, \"\")' required></td>" +
                     "<td class='d-none'><input type='number' name='free'min='0' class='input-field' id='free_" + uniqueId + "' placeholder='Free' oninput='this.value = this.value.replace(/[^0-9]/g, \"\")'></td>" +
@@ -1573,6 +1623,7 @@
                             purchaseId: $(this).find('.purchase-id').val(),
                             productId: $('#productname_' + uniqueId).val() || "",
                             batchNo: $('#batchNo_' + uniqueId).val() || "",
+                            expiryDate: $('#expiryDate_' + uniqueId).val() || "",
                             tax: parseFloat($('#tax_' + uniqueId).val()) || 0,
                             quantity: parseFloat($('#quantity_' + uniqueId).val()) || 0,
                             free: parseFloat($('#free_' + uniqueId).val()) || 0,
@@ -1723,6 +1774,7 @@
                 console.log('Retrieved selectedProductId:', selectedProductId);
                 // Retrieve values from the clicked row
                 var batchNo = $(this).find('td:eq(0)').text();
+                var formattedExpiry = $(this).find('td:eq(1)').text();
                 var tax = $(this).find('td:eq(2)').text();
                 var quantity = $(this).find('td:eq(3)').text();
                 var uom = $(this).find('td:eq(4)').text();
@@ -1730,6 +1782,7 @@
                 var mrp = $(this).find('td:eq(6)').text();
                 // Update input fields in the customerTable with uniqueId
                 $('#batchNo_' + uniqueId).val(batchNo);
+                $('#expiryDate_' + uniqueId).val(formattedExpiry);
                 $('#tax_' + uniqueId).val(tax);
                 $('#quantity_' + uniqueId).val(quantity).attr('max', quantity);
                 $('#uom_' + uniqueId).val(uom);
@@ -1856,83 +1909,97 @@
                 }
             });
         }
-        function calculateTotals() {
-            let totalAmount = 0;
-            let totalCGST = 0;
-            let totalSGST = 0;
-            let totalIGST = 0;
-            let totalNetAmount = parseFloat($('#supplierinvoiceamount').val()) || 0;
+    function calculateTotals() {
+        let totalAmount = 0;
+        let totalCGST = 0;
+        let totalSGST = 0;
+        let totalIGST = 0;
+        let totalNetAmount = parseFloat($('#supplierinvoiceamount').val()) || 0;
 
-            $('#customerTable tbody tr').each(function () {
-                let row = $(this);
-                let amount = parseFloat(row.find('input[name="amount"]').val()) || 0;
-                let cgst = parseFloat(row.find('input[name="cgst"]').val()) || 0;
-                let sgst = parseFloat(row.find('input[name="sgst"]').val()) || 0;
-                let igst = parseFloat(row.find('input[name="igst"]').val()) || 0;
+        // Loop through each row in the customer table
+        $('#customerTable tbody tr').each(function () {
+            let row = $(this);
+            let amount = parseFloat(row.find('input[name="amount"]').val()) || 0;
+            let cgst = parseFloat(row.find('input[name="cgst"]').val()) || 0;
+            let sgst = parseFloat(row.find('input[name="sgst"]').val()) || 0;
+            let igst = parseFloat(row.find('input[name="igst"]').val()) || 0;
 
-                totalAmount += amount;
-                totalCGST += cgst;
-                totalSGST += sgst;
-                totalIGST += igst;
-            });
+            totalAmount += amount;
+            totalCGST += cgst;
+            totalSGST += sgst;
+            totalIGST += igst;
+        });
 
-            let totalTax = totalCGST + totalSGST + totalIGST;
+        let totalTax = totalCGST + totalSGST + totalIGST;
 
-            $('#pamount').text(totalAmount.toFixed(2));
-            $('#pcgst').text(totalCGST.toFixed(2));
-            $('#psgst').text(totalSGST.toFixed(2));
-            $('#pigst').text(totalIGST.toFixed(2));
-            $('#pnetAmount').text(totalNetAmount.toFixed(2));
-            $('#psubtotal').text((totalAmount).toFixed(2));
+        // Update displayed totals
+        $('#pamount').text(totalAmount.toFixed(2));
+        $('#pcgst').text(totalCGST.toFixed(2));
+        $('#psgst').text(totalSGST.toFixed(2));
+        $('#pigst').text(totalIGST.toFixed(2));
+        $('#pnetAmount').text(totalNetAmount.toFixed(2));
+        $('#psubtotal').text(totalAmount.toFixed(2));
 
-            $('#pamount_').val(totalAmount.toFixed(2));
-            $('#pcgst_').val(totalCGST.toFixed(2));
-            $('#psgst_').val(totalSGST.toFixed(2));
-            $('#pigst_').val(totalIGST.toFixed(2));
-            $('#pnetAmount_').val(totalNetAmount.toFixed(2));
-            $('#psubtotal_').val((totalAmount).toFixed(2));
+        // Update hidden inputs
+        $('#pamount_').val(totalAmount.toFixed(2));
+        $('#pcgst_').val(totalCGST.toFixed(2));
+        $('#psgst_').val(totalSGST.toFixed(2));
+        $('#pigst_').val(totalIGST.toFixed(2));
+        $('#pnetAmount_').val(totalNetAmount.toFixed(2));
+        $('#psubtotal_').val(totalAmount.toFixed(2));
 
-            let subtotal = parseFloat($('#psubtotal').text()) || 0;
-            let netAmount = parseFloat($('#pnetAmount').text()) || 0;
+        // Subtotal and net amount
+        let subtotal = parseFloat($('#psubtotal').text()) || 0;
+        let netAmount = parseFloat($('#pnetAmount').text()) || 0;
 
-            let discMode = $('#pdiscMode').val() || "3";
-            let discount = parseFloat($('#pdiscount').val()) || 0;
+        // Get discount mode and discount value from the input fields
+        let discMode = $('#pdiscMode').val() || "3"; // Default to "3" if not selected
+        let discountInput = parseFloat($('#pdiscount').val()) || 0; // This will hold the raw input value
 
-            if (isNaN(discount)) {
-                discount = 0;
-            }
+        let discountAmount = 0; // Variable for calculated discount amount
 
-            if (discMode === "3" || discMode === "N/A") {
-                discount = 0;
-                $('#pdiscount').val('0');
-            } else if (discMode === "percentage" || discMode === "1") {
-                discount = (subtotal * discount) / 100;
-            }
-
-            subtotal -= discount;
-
-            // Implement rounding rule for subtotal
-            let roundedSubtotal = Math.round(subtotal);
-
-            // Calculate roundOff
-            let roundOff = 0;
-
-            // Update values with rounded subtotal
-            $('#psubtotal').text(roundedSubtotal.toFixed(2));
-            $('#psubtotal_').val(roundedSubtotal.toFixed(2));
-
-            $('#proundOff').text(roundOff.toFixed(2));
-            $('#proundOff_').val(roundOff.toFixed(2));
-
-            var discModeId = $('#pdiscMode').val();
-            $('#pdiscMode_').val(discMode);
-            $('#pdiscount_').val(discount.toFixed(2));
+        if (isNaN(discountInput)) {
+            discountInput = 0;
         }
 
+        // Apply discount logic
+        if (discMode === "3" || discMode === "N/A") {
+            // No discount
+            discountAmount = 0;
+            $('#pdiscount').val('0');  // Reset input field to 0
+        } else if (discMode === "percentage" || discMode === "1") {
+            // Calculate discount as a percentage of the subtotal
+            discountAmount = (subtotal * discountInput) / 100;  // Calculate discount amount
+        } else {
+            // If a fixed amount discount, use it directly
+            discountAmount = discountInput;
+        }
 
-        $('#pdiscMode, #pdiscount').change(function () {
-            calculateTotals();
-        });
+        // Subtotal minus calculated discount amount
+        subtotal -= discountAmount;
+
+        // Implement rounding rule for subtotal
+        let roundedSubtotal = Math.round(subtotal);
+
+        // Calculate roundOff (optional, adjust as needed)
+        let roundOff = 0;
+
+        // Update displayed and hidden inputs with calculated values
+        $('#psubtotal').text(roundedSubtotal.toFixed(2));
+        $('#psubtotal_').val(roundedSubtotal.toFixed(2));
+        $('#proundOff').text(roundOff.toFixed(2));
+        $('#proundOff_').val(roundOff.toFixed(2));
+
+        // Store discount mode and raw discount input value, not the calculated amount
+        $('#pdiscMode_').val(discMode);   // Send discount mode as-is
+        $('#pdiscount_').val($('#pdiscount').val());  // Send raw input value (percentage or amount)
+    }
+
+    // Trigger recalculation when discount mode or discount value changes
+    $('#pdiscMode, #pdiscount').change(function () {
+        calculateTotals();
+    });
+
 
         $(document).on('click', '#addmanufacturer', function () {
             $("#manufacturerform").show();
@@ -1948,6 +2015,7 @@
                 { data: 'Id' },
                 { data: 'product' },
                 { data: 'batchNo' },
+                {data:'expiryDate'},
                 { data: 'tax' },
                 { data: 'quantity' },
                 { data: 'free', className: 'd-none' },

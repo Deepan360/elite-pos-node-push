@@ -356,27 +356,27 @@
 
                 </div>
 
-                <form id="purchaseDetails" class="form-control p-0 g-0 " style="display: block; align-item: start;"
+                <form id="purchaseDetails" class="form-control p-0 g-0 bg-primary text-white" style="display: block; align-item: start;text-wrap:wrap;"
                     action="auth/purchase" method="post">
                     <div class="row d-flex justify-content-between  mb-0 gx-0 w-100 ">
-                        <div class="custom col-md-1">
-                            <label for="pamount">Amount:</label>
+                        <div class="custom col-md-1  text-white">
+                            <label for="pamount" class=" text-white">Amount:</label>
                             <span id="pamount" name="pamount">0.00</span>
                         </div>
-                        <div class="custom col-md-1">
-                            <label for="pigst">IGST:</label>
+                        <div class="custom col-md-1  text-white ">
+                            <label for="pigst" class=" text-white">IGST:</label>
                             <span id="pigst" name="pigts">0.00</span>
                         </div>
                         <div class="custom col-md-1">
-                            <label for="pcgst">CGST:</label>
+                            <label for="pcgst" class=" text-white">CGST:</label>
                             <span id="pcgst" name="pcgst">0.00</span>
                         </div>
                         <div class="custom col-md-1">
-                            <label for="psgst">SGST:</label>
+                            <label for="psgst" class=" text-white">SGST:</label>
                             <span id="psgst" name="psgst">0.00</span>
                         </div>
                         <div class="custom col-md-1">
-                            <label for="psubtotal">Total Amount:</label>
+                            <label for="psubtotal" class=" text-white">Total Amount:</label>
                             <span id="psubtotal" name="psubtotal">0.00</span>
                         </div>
                         {{!--
@@ -389,11 +389,11 @@
                             <span id="ptcs" name="ptcs">0.00</span>
                         </div> --}}
                         <div class="custom col-md-1">
-                            <label for="proundOff">Round Off:</label>
+                            <label for="proundOff" class=" text-white">Round Off:</label>
                             <span id="proundOff" name="proundOff">0.00</span>
                         </div>
                         <div class="custom col-md-1">
-                            <label for="pnetAmount">Net Amount:</label>
+                            <label for="pnetAmount" class=" text-white">Net Amount:</label>
                             <span id="pnetAmount" name="pnetAmount">0.00</span>
                         </div>
                     </div>
@@ -629,35 +629,41 @@
             adjustColumnWidths();
         });
 
-
         function adjustColumnWidths() {
             $('#customerTable').DataTable().columns.adjust().draw();
         }
 
-        $(document).on('click', '.deletetransBtn', function () {
-            var row = $(this).closest('tr');
-            var id = row.find('.purchase-id').val();
-            if (!confirm('Are you sure you want to delete this row?')) {
-                return;
-            }
-            $.ajax({
-                type: 'DELETE',
-                url: `/auth/purchasetransdelete/${id}`,
-                success: function (response) {
-                    if (response.success) {
-                        table.row(row).remove().draw(false);
-                        calculateTotals();
-                        showBootstrapModal('Trans Row Deleted Successfully 🖋');
-                    } else {
-                        alert('Failed to delete row: ' + response.message);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error deleting row:', error);
-                    alert('An error occurred while deleting the row.');
+    $(document).on('click', '.deletetransBtn', function () {
+        var row = $(this).closest('tr');
+        var id = row.find('.purchase-id').val();
+        var isDraft = $('#is_Draft').val(); // Get the value from the single hidden input
+
+        if (!confirm('Are you sure you want to delete this row?')) {
+            return;
+        }
+
+       $.ajax({
+            type: 'DELETE',
+            url: `/auth/purchasetransdelete/${id}`, // Ensure `id` is correct
+            contentType: 'application/json',
+            data: JSON.stringify({ isDraft: isDraft }),
+            success: function (response) {
+                if (response.success) {
+                    table.row(row).remove().draw(false);
+                    calculateTotals();
+                    showBootstrapModal('Trans Row Deleted Successfully 🖋');
+                } else {
+                    alert('Failed to delete row: ' + response.message);
                 }
-            });
+            },
+            error: function (xhr, status, error) {
+                console.error('Error deleting row:', error);
+                alert('An error occurred while deleting the row: ' + xhr.responseText);
+            }
         });
+
+    });
+
 
     $(document).ready(function () {
         // Draft Button Handler
@@ -766,8 +772,9 @@
                 }
             });
         }
+   
+   
     });
-
 
         function showLoadingOverlay() {
             $('body').append('<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;"><img src="/assets/img/6Gl.gif" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>');
@@ -932,33 +939,41 @@
             }
         });
 
-        $(document).ready(function () {
-            $('.div').hide();
-            $('.add').show();
-            $('.updateBtn, .draftBtn').addClass('disabled').prop('disabled', true);
-            $('.dropdown[name="Id"]').change(function () {
+    $(document).ready(function () {
+        $('.div').hide();
+        $('.add').show();
+        $('.updateBtn, .draftBtn').addClass('disabled').prop('disabled', true);
+        $('#openPurchaseForm').hide(); // Initially hide the opener
 
-                var selectedOption = $(this).find('option:selected');
-                if (selectedOption.val() && selectedOption.val() !== 'view details') {
-                    $('.div').show();
-                    $('.opener').hide();
-                    $('.add').hide();
-
-                } else {
-                    $('.div').hide();
-                    $('.add').show();
-                }
-            });
-
-            // When the edit button is clicked
-            $('.editmasbtn').click(function () {
-                $('.div').find('button').prop('disabled', false);
-                $('.updateBtn').removeClass('disabled').prop('disabled', false);
-                $('.draftBtn').removeClass('disabled').prop('disabled', false);
-                $('.updateBtn').addClass('btn-info').prop('disabled', false);
-                $('.draftBtn').addClass('btn-info').prop('disabled', false);
-            });
+        $('.dropdown[name="Id"]').change(function () {
+            var selectedOption = $(this).find('option:selected');
+            if (selectedOption.val() && selectedOption.val() !== 'view details') {
+                $('.div').show();
+                $('.add').hide();
+            } else {
+                $('.div').hide();
+                $('.add').show();
+                $('#openPurchaseForm').hide(); // Ensure opener is hidden if no valid option is selected
+            }
         });
+
+        // When the edit button is clicked
+        $('.editmasbtn').click(function () {
+            $('.div').find('button').prop('disabled', false);
+            $('.updateBtn').removeClass('disabled').prop('disabled', false).addClass('btn-info');
+            $('.draftBtn').removeClass('disabled').prop('disabled', false).addClass('btn-info');
+
+            // Check if the dropdown has a valid selection
+            var selectedOption = $('.dropdown[name="Id"]').find('option:selected');
+            if (selectedOption.val() && selectedOption.val() !== 'view details') {
+                $('#openPurchaseForm').show(); // Show the opener only if a valid option is selected
+            } else {
+                $('#openPurchaseForm').hide(); // Ensure opener is hidden if no valid selection
+            }
+        });
+    });
+
+
 
         $(document).ready(function () {
             let table = $('#customerTable').DataTable();
@@ -1320,7 +1335,95 @@
 
         }
 
+
+
         function calculateTotals() {
+                let totalAmount = 0;
+                let totalCGST = 0;
+                let totalSGST = 0;
+                let totalIGST = 0;
+                let totalNetAmount = parseFloat($('#supplierinvoiceamount').val()) || 0;
+
+                // Loop through each row in the customer table
+                $('#customerTable tbody tr').each(function () {
+                    let row = $(this);
+                    let amount = parseFloat(row.find('input[name="amount"]').val()) || 0;
+                    let cgst = parseFloat(row.find('input[name="cgst"]').val()) || 0;
+                    let sgst = parseFloat(row.find('input[name="sgst"]').val()) || 0;
+                    let igst = parseFloat(row.find('input[name="igst"]').val()) || 0;
+
+                    totalAmount += amount;
+                    totalCGST += cgst;
+                    totalSGST += sgst;
+                    totalIGST += igst;
+                });
+
+                let totalTax = totalCGST + totalSGST + totalIGST;
+
+                // Update the displayed amounts
+                $('#pamount').text(totalAmount.toFixed(2));
+                $('#pcgst').text(totalCGST.toFixed(2));
+                $('#psgst').text(totalSGST.toFixed(2));
+                $('#pigst').text(totalIGST.toFixed(2));
+                $('#pnetAmount').text(totalNetAmount.toFixed(2));
+
+                // Subtotal is the total of amounts + tax
+                let subtotal = totalAmount + totalTax;
+                $('#psubtotal').text(subtotal.toFixed(2));
+
+                // Update hidden fields for backend submission
+                $('#pamount_').val(totalAmount.toFixed(2));
+                $('#pcgst_').val(totalCGST.toFixed(2));
+                $('#psgst_').val(totalSGST.toFixed(2));
+                $('#pigst_').val(totalIGST.toFixed(2));
+                $('#pnetAmount_').val(totalNetAmount.toFixed(2));
+                $('#psubtotal_').val(subtotal.toFixed(2));
+
+                // Get discount mode and discount value
+                let discMode = $('#pdiscMode').val() || "3"; // Default to "3" if no selection
+                let discountInput = parseFloat($('#pdiscount').val()) || 0; // The raw discount input
+
+                let discountAmount = 0; // Variable for calculated discount amount
+
+                if (discMode === "3" || discMode === "N/A") {
+                    // No discount
+                    discountAmount = 0;
+                    $('#pdiscount').val('0');  // Reset the discount input to 0
+                } else if (discMode === "percentage" || discMode === "1") {
+                    // Percentage discount
+                    discountAmount = (subtotal * discountInput) / 100;
+                } else {
+                    // Fixed discount amount
+                    discountAmount = discountInput;
+                }
+
+                // Subtract the discount amount from the subtotal
+                let discountedSubtotal = subtotal - discountAmount;
+
+                // Implement rounding rule for subtotal
+                let roundedSubtotal = Math.round(discountedSubtotal);
+
+                // Calculate roundOff
+                let roundOff = totalNetAmount - roundedSubtotal;
+
+                // Update displayed and hidden inputs with rounded values
+                $('#psubtotal').text(roundedSubtotal.toFixed(2));
+                $('#psubtotal_').val(roundedSubtotal.toFixed(2));
+                $('#proundOff').text(roundOff.toFixed(2));
+                $('#proundOff_').val(roundOff.toFixed(2));
+
+                // Store the raw discount input and the discount mode for submission
+                $('#pdiscMode_').val(discMode);   // Send discount mode as-is
+                $('#pdiscount_').val($('#pdiscount').val());  // Send the raw input value
+            }
+
+            // Trigger recalculation when discount mode or discount value changes
+            $('#pdiscMode, #pdiscount').change(function () {
+                calculateTotals();
+            });
+
+
+        {{!-- function calculateTotals() {
             let totalAmount = 0;
             let totalCGST = 0;
             let totalSGST = 0;
@@ -1392,10 +1495,12 @@
             $('#pdiscMode_').val(discMode);
             $('#pdiscount_').val(discount.toFixed(2));
         }
+ --}}
 
-        $('#pdiscMode, #pdiscount').change(function () {
+
+        {{!-- $('#pdiscMode, #pdiscount').change(function () {
             calculateTotals();
-        });
+        }); --}}
 
         $(document).on('click', '#addmanufacturer', function () {
             $("#manufacturerform").show();
@@ -1712,8 +1817,36 @@
                 $('#supplierSelect').on('change', function () {
                     validateInvoiceNumber();  // Validate the invoice number when supplier changes
                 });
-            });
 
+                // Check the dropdown value on page load and hide the opener if it has a value
+                if ($('.dropdown[name="Id"]').val()) {
+                    $('#openPurchaseForm').hide();
+                }
+
+                // Dropdown change event
+                $('.dropdown[name="Id"]').change(function () {
+                    var selectedOption = $(this).find('option:selected');
+                    if (selectedOption.val() && selectedOption.val() !== 'view details') {
+                        $('.div').show();
+                        $('.add').hide();
+                        $('#openPurchaseForm').hide(); // Ensure opener is hidden if no valid option is selected
+                    } else {
+                        $('.div').hide();
+                        $('.add').show();
+                        $('#openPurchaseForm').hide(); // Ensure opener is hidden if no valid option is selected
+                    }
+                });
+
+                // When the edit button is clicked
+                $('.editmasbtn').click(function () {
+                    $('.div').find('button').prop('disabled', false);
+                    $('.updateBtn').removeClass('disabled').prop('disabled', false).addClass('btn-info');
+                    $('.draftBtn').removeClass('disabled').prop('disabled', false).addClass('btn-info');
+
+                    // Show the opener when the edit button is clicked
+                    $('#openPurchaseForm').show(); // Always show opener on edit button click
+                });
+            });
 
             async function fetchSupplierNames() {
                 try {

@@ -129,6 +129,7 @@
                                 <th>Total Amount</th>
                                 <th>Payment Status</th>
                                 <th>Profit Rate</th>
+                                <th>Payment</th>
                                 <th class="action">Action</th>
                                 <th>Print</th>
                             </tr>
@@ -306,6 +307,7 @@
                         return data ? data : 'null';
                     }
                 },
+                 
                 {
                     data: 'paymentmode',
                     render: function (data, type, row) {
@@ -319,16 +321,23 @@
                         return data ? data : 'null';
                     }
                 },
-                {
+                 {
                     data: 'id',
-                    render: function (data) {
-                        return '<i class="fa-solid fa-file-pen fa-2x" type="button" data-id="' + data + '"></i>';
+                    render: function (data, type, row) {
+                        // If payment mode is 'credit', show a credit card icon; otherwise, show the id
+                        return row.paymentmode === 'credit' ? '<i class="fa-solid fa-credit-card text-danger fa-2x" type="button" data-id="' + data + '"></i>' : '<i class="fa-solid fa-clipboard-check text-success fa-2x"></i>';
                     }
                 },
                 {
                     data: 'id',
                     render: function (data) {
-                        return '<i class="fa-solid fa-print fa-2x" type="button" data-id="' + data + '"></i>';
+                        return '<i class="fa-solid fa-file-pen fa-2x text-warning" type="button" data-id="' + data + '"></i>';
+                    }
+                },
+                {
+                    data: 'id',
+                    render: function (data) {
+                        return '<i class="fa-solid fa-print fa-2x text-info" type="button" data-id="' + data + '"></i>';
                     }
                 }
             ],

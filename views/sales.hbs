@@ -378,35 +378,35 @@
 
                 </div>
 
-                <form id="purchaseDetails" class="form-control p-0" style="display: block; align-item: start;"
+                <form id="purchaseDetails" class="form-control p-0 bg-primary text-white" style="display: block; align-item: start;text-wrap:wrap;"
                     action="auth/sales" method="post">
                     <div class="row d-flex justify-content-between  mb-0 gx-0 w-100 ">
 
 
                         <div class="custom col-md-1">
-                            <label for="pamount">Amount:</label>
+                            <label for="pamount" class=" text-white">Amount:</label>
                             <span id="pamount" name="pamount">0.00</span>
                         </div>
 
                         <div class="custom col-md-1">
-                            <label for="pigst">IGST:</label>
+                            <label for="pigst" class=" text-white">IGST:</label>
                             <span id="pigst" name="pigts">0.00</span>
                         </div>
 
 
 
                         <div class="custom col-md-1">
-                            <label for="pcgst">CGST:</label>
+                            <label for="pcgst" class=" text-white">CGST:</label>
                             <span id="pcgst" name="pcgst">0.00</span>
                         </div>
 
                         <div class="custom col-md-1">
-                            <label for="psgst">SGST:</label>
+                            <label for="psgst" class=" text-white">SGST:</label>
                             <span id="psgst" name="psgst">0.00</span>
                         </div>
 
                         <div class="custom col-md-1">
-                            <label for="psubtotal">Total Amount:</label>
+                            <label for="psubtotal" class=" text-white">Total Amount:</label>
                             <span id="psubtotal" name="psubtotal">0.00</span>
                         </div>
 
@@ -635,7 +635,7 @@
             $('#customerTable tbody tr').each(function () {
                 var row = $(this);
                 var id = row.find('td:eq(0)').text();
-                var product = row.find('td:eq(1)').text();
+               var product = row.find('td:eq(1)').text().trim();
                 var batchNo = row.find('td:eq(2)').text();
                 var tax = row.find('td:eq(3)').text();
                 var quantity = row.find('td:eq(4)').text();
@@ -843,7 +843,27 @@
 
             return products;
         }
+            async function fetchProductOptions(id, selectedProduct) {
+                try {
+                    const response = await fetch('/auth/sales/salesproductname');
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const data = await response.json();
+                    console.log('Product Options:', data); // Log the fetched data for debugging
 
+                    // Ensure data is an array and populate the dropdown
+                    if (Array.isArray(data.data)) {
+                        console.log('Populating dropdown for ID:', id); // Debugging
+                        populateDropdown('#productname_' + id, data.data, selectedProduct);
+                    } else {
+                        console.error('Fetched data is not an array:', data.data);
+                    }
+                } catch (error) {
+                    console.error('Error fetching product options:', error);
+                }
+            }
+{{!--             
         function fetchProductOptions(id, product) {
             $.ajax({
                   url: '/auth/sales/salesproductname',
@@ -857,7 +877,7 @@
                     console.error('Error fetching product options:', error);
                 }
             });
-        }
+        } --}}
 
         function fetchDiscModeOptions(id, discModeData) {
             $.ajax({
@@ -931,61 +951,65 @@
             }
         });
 
-        $(document).ready(function () {
-            $('.div').hide();
-            $('.add').show();
-            $('.updateBtn, .draftBtn').addClass('disabled').prop('disabled', true);
-            $('.dropdown[name="Id"]').change(function () {
-                var selectedOption = $(this).find('option:selected');
-                if (selectedOption.val() && selectedOption.val() !== 'view details') {
-                    $('.div').show();
+    $(document).ready(function () {
+        $('.div').hide();
+        $('.add').show();
+        $('.updateBtn, .draftBtn').addClass('disabled').prop('disabled', true);
 
-                    $('.opener').hide();
-                    $('.add').hide();
-                } else {
-                    $('.div').hide();
-                    $('.add').show();
-                }
+        // Initial hiding of the opener
+        $('#openPurchaseForm').hide();
 
-            });
-            $(document).ready(function () {
-                // Initially hide the opener
-                $('#openPurchaseForm').hide();
+        $('.dropdown[name="Id"]').change(function () {
+            var selectedOption = $(this).find('option:selected');
+            if (selectedOption.val() && selectedOption.val() !== 'view details') {
+                $('.div').show();
+                $('.opener').hide();
+                $('.add').hide();
+            } else {
+                $('.div').hide();
+                $('.add').show();
+                $('#openPurchaseForm').hide(); // Hide the opener if no valid option is selected
+            }
 
-                function checkRequiredFields() {
-                    let isValid = true;
-
-                    // Iterate over all required fields and check their validity
-                    $('#purchaseDetails').find('input[required], select[required]').each(function () {
-                        if ($(this).val() === '' || $(this).val() === null) {
-                            isValid = false;
-                        }
-                    });
-
-                    // Show the opener if all fields are valid, else hide it
-                    if (isValid) {
-                        $('#openPurchaseForm').show();
-                    } else {
-                        $('#openPurchaseForm').hide();
-                    }
-                }
-
-                // Bind input and change events to validate on the fly
-                $('#purchaseDetails').find('input, select').on('input change', function () {
-                    checkRequiredFields();
-                });
-            });
-
-
-            // When the edit button is clicked
-            $('.editmasbtn').click(function () {
-                $('.div').find('button').prop('disabled', false);
-                $('.updateBtn').removeClass('disabled').prop('disabled', false);
-                $('.draftBtn').removeClass('disabled').prop('disabled', false);
-                $('.updateBtn').addClass('btn-info').prop('disabled', false);
-                $('.draftBtn').addClass('btn-info').prop('disabled', false);
-            });
+            // Check if all required fields are filled after dropdown change
+            checkRequiredFields();
         });
+
+        function checkRequiredFields() {
+            let isValid = true;
+
+            // Iterate over all required fields and check their validity
+            $('#purchaseDetails').find('input[required], select[required]').each(function () {
+                if ($(this).val() === '' || $(this).val() === null) {
+                    isValid = false;
+                }
+            });
+
+            // Show the opener only if all fields are valid and the dropdown has a selected value
+            if (isValid && $('.dropdown[name="Id"]').find('option:selected').val()) {
+                $('#openPurchaseForm').show();
+            } else {
+                $('#openPurchaseForm').hide();
+            }
+        }
+
+        // Bind input and change events to validate on the fly
+        $('#purchaseDetails').find('input, select').on('input change', function () {
+            checkRequiredFields();
+        });
+
+        // When the edit button is clicked
+        $('.editmasbtn').click(function () {
+            $('.div').find('button').prop('disabled', false);
+            $('.updateBtn').removeClass('disabled').prop('disabled', false).addClass('btn-info');
+            $('.draftBtn').removeClass('disabled').prop('disabled', false).addClass('btn-info');
+
+            // Check required fields again to possibly show the opener
+            checkRequiredFields();
+        });
+    });
+
+
         // Add an event listener to validate the quantity field on input
         document.addEventListener('input', function (event) {
             if (event.target.matches('.quantity')) {
@@ -1257,7 +1281,7 @@
                                         window.location.href = '/salesdraftregister'; // Redirect to draft page
                                     });
                                 } else {
-                                    showBootstrapModal('Sales Updated Successfully 🖋', function () {
+                                    showBootstrapModal('Sales Added Successfully 🖋', function () {
                                         window.location.href = '/salesregister'; // Redirect to sales register
                                     });
                                 }
@@ -1697,83 +1721,96 @@
 
         }
 
-        function calculateTotals() {
-            let totalAmount = 0;
-            let totalCGST = 0;
-            let totalSGST = 0;
-            let totalIGST = 0;
-            let totalNetAmount = parseFloat($('#supplierinvoiceamount').val()) || 0;
+    function calculateTotals() {
+        let totalAmount = 0;
+        let totalCGST = 0;
+        let totalSGST = 0;
+        let totalIGST = 0;
+        let totalNetAmount = parseFloat($('#supplierinvoiceamount').val()) || 0;
 
-            $('#customerTable tbody tr').each(function () {
-                let row = $(this);
-                let amount = parseFloat(row.find('input[name="amount"]').val()) || 0;
-                let cgst = parseFloat(row.find('input[name="cgst"]').val()) || 0;
-                let sgst = parseFloat(row.find('input[name="sgst"]').val()) || 0;
-                let igst = parseFloat(row.find('input[name="igst"]').val()) || 0;
+        // Loop through each row in the customer table
+        $('#customerTable tbody tr').each(function () {
+            let row = $(this);
+            let amount = parseFloat(row.find('input[name="amount"]').val()) || 0;
+            let cgst = parseFloat(row.find('input[name="cgst"]').val()) || 0;
+            let sgst = parseFloat(row.find('input[name="sgst"]').val()) || 0;
+            let igst = parseFloat(row.find('input[name="igst"]').val()) || 0;
 
-                totalAmount += amount;
-                totalCGST += cgst;
-                totalSGST += sgst;
-                totalIGST += igst;
-            });
+            totalAmount += amount;
+            totalCGST += cgst;
+            totalSGST += sgst;
+            totalIGST += igst;
+        });
 
-            let totalTax = totalCGST + totalSGST + totalIGST;
+        let totalTax = totalCGST + totalSGST + totalIGST;
 
-            $('#pamount').text(totalAmount.toFixed(2));
-            $('#pcgst').text(totalCGST.toFixed(2));
-            $('#psgst').text(totalSGST.toFixed(2));
-            $('#pigst').text(totalIGST.toFixed(2));
-            $('#pnetAmount').text(totalNetAmount.toFixed(2));
-            $('#psubtotal').text((totalAmount + totalTax).toFixed(2));
+        // Update displayed totals
+        $('#pamount').text(totalAmount.toFixed(2));
+        $('#pcgst').text(totalCGST.toFixed(2));
+        $('#psgst').text(totalSGST.toFixed(2));
+        $('#pigst').text(totalIGST.toFixed(2));
+        $('#pnetAmount').text(totalNetAmount.toFixed(2));
+        $('#psubtotal').text(totalAmount.toFixed(2));
 
-            $('#pamount_').val(totalAmount.toFixed(2));
-            $('#pcgst_').val(totalCGST.toFixed(2));
-            $('#psgst_').val(totalSGST.toFixed(2));
-            $('#pigst_').val(totalIGST.toFixed(2));
-            $('#pnetAmount_').val(totalNetAmount.toFixed(2));
-            $('#psubtotal_').val((totalAmount + totalTax).toFixed(2));
+        // Update hidden inputs
+        $('#pamount_').val(totalAmount.toFixed(2));
+        $('#pcgst_').val(totalCGST.toFixed(2));
+        $('#psgst_').val(totalSGST.toFixed(2));
+        $('#pigst_').val(totalIGST.toFixed(2));
+        $('#pnetAmount_').val(totalNetAmount.toFixed(2));
+        $('#psubtotal_').val(totalAmount.toFixed(2));
 
-            let subtotal = parseFloat($('#psubtotal').text()) || 0;
-            let netAmount = parseFloat($('#pnetAmount').text()) || 0;
+        // Subtotal and net amount
+        let subtotal = parseFloat($('#psubtotal').text()) || 0;
+        let netAmount = parseFloat($('#pnetAmount').text()) || 0;
 
-            let discMode = $('#pdiscMode').val() || "3";
-            let discount = parseFloat($('#pdiscount').val()) || 0;
+        // Get discount mode and discount value from the input fields
+        let discMode = $('#pdiscMode').val() || "3"; // Default to "3" if not selected
+        let discountInput = parseFloat($('#pdiscount').val()) || 0; // This will hold the raw input value
 
-            if (isNaN(discount)) {
-                discount = 0;
-            }
+        let discountAmount = 0; // Variable for calculated discount amount
 
-            if (discMode === "3" || discMode === "N/A") {
-                discount = 0;
-                $('#pdiscount').val('0');
-            } else if (discMode === "percentage" || discMode === "1") {
-                discount = (subtotal * discount) / 100;
-            }
-
-            subtotal -= discount;
-
-            // Implement rounding rule for subtotal
-            let roundedSubtotal = Math.round(subtotal);
-
-            // Calculate roundOff
-            let roundOff = netAmount - roundedSubtotal;
-
-            // Update values with rounded subtotal
-            $('#psubtotal').text(roundedSubtotal.toFixed(2));
-            $('#psubtotal_').val(roundedSubtotal.toFixed(2));
-
-            $('#proundOff').text(roundOff.toFixed(2));
-            $('#proundOff_').val(roundOff.toFixed(2));
-
-            var discModeId = $('#pdiscMode').val();
-            $('#pdiscMode_').val(discMode);
-            $('#pdiscount_').val(discount.toFixed(2));
+        if (isNaN(discountInput)) {
+            discountInput = 0;
         }
 
+        // Apply discount logic
+        if (discMode === "3" || discMode === "N/A") {
+            // No discount
+            discountAmount = 0;
+            $('#pdiscount').val('0');  // Reset input field to 0
+        } else if (discMode === "percentage" || discMode === "1") {
+            // Calculate discount as a percentage of the subtotal
+            discountAmount = (subtotal * discountInput) / 100;  // Calculate discount amount
+        } else {
+            // If a fixed amount discount, use it directly
+            discountAmount = discountInput;
+        }
 
-        $('#pdiscMode, #pdiscount').change(function () {
-            calculateTotals();
-        });
+        // Subtotal minus calculated discount amount
+        subtotal -= discountAmount;
+
+        // Implement rounding rule for subtotal
+        let roundedSubtotal = Math.round(subtotal);
+
+        // Calculate roundOff (optional, adjust as needed)
+        let roundOff = 0;
+
+        // Update displayed and hidden inputs with calculated values
+        $('#psubtotal').text(roundedSubtotal.toFixed(2));
+        $('#psubtotal_').val(roundedSubtotal.toFixed(2));
+        $('#proundOff').text(roundOff.toFixed(2));
+        $('#proundOff_').val(roundOff.toFixed(2));
+
+        // Store discount mode and raw discount input value, not the calculated amount
+        $('#pdiscMode_').val(discMode);   // Send discount mode as-is
+        $('#pdiscount_').val($('#pdiscount').val());  // Send raw input value (percentage or amount)
+    }
+
+    // Trigger recalculation when discount mode or discount value changes
+    $('#pdiscMode, #pdiscount').change(function () {
+        calculateTotals();
+    });
 
         $(document).on('click', '#addmanufacturer', function () {
             $("#manufacturerform").show();

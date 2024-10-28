@@ -747,6 +747,10 @@ router.get("/salesretailreturn/salesretailreturnproductid", (req, res) => {
 router.get("/salesretailreturn/salesretailreturnDetails", (req, res) => {
   res.render("salesretailreturnproductid");
 });
+router.get("/salesretail/checkMobileNumber", (req, res) => {
+  console.log("Request received to check mobile number:", req.query.mobileNo); // Add this log
+ res.render("checkMobileNumber");
+});
 
 
 module.exports=router;     

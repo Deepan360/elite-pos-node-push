@@ -114,6 +114,7 @@
                                 <th>Total Amount</th>
                                 <th>Payment Mode</th>
                                 <th>Profit Amount</th>
+                                <th>Payment</th>
                                 <th class="action">Action</th>
                                 <th>Print</th>
                             </tr>
@@ -250,17 +251,25 @@
         { data: 'subtotal' },
         {data:'paymentmode'},
         {data:'billmargin'},
+          {
+            data: 'id',
+            render: function (data, type, row) {
+                // If payment mode is 'credit', show a credit card icon; otherwise, show the id
+                return row.paymentmode === 'credit' ? '<i class="fa-solid fa-credit-card text-danger fa-2x" type="button" data-id="' + data + '"></i>' : '<i class="fa-solid fa-clipboard-check text-success fa-2x"></i>';
+            }
+        }
+        ,
         {
     data: 'id',
     render: function (data) {
-        return '<i class="fa-solid fa-file-pen fa-2x " type="button" data-id="' + data + '"></i>';
+        return '<i class="fa-solid fa-file-pen text-warning fa-2x " type="button" data-id="' + data + '"></i>';
     }
 },
-        { 
+ { 
             data: 'id',
             render: function (data, type, row) {
                 // You can customize the print column content here
-                return '<i class="fa-solid fa-print fa-2x " type="button" data-id="' + data + '"></i>';
+                return '<i class="fa-solid fa-print text-info fa-2x " type="button" data-id="' + data + '"></i>';
             }
         }
     ],

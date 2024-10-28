@@ -1,467 +1,404 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     {{>header}}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <style>
-        @page {
-            size: A4 portrait;
-            margin: 0;
-            padding: 2px;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f9f9f9;
-            padding: 10px;
-
-        }
-
+                    @page {
+                    size: A5 landscape;
+                    margin: 0; /* Remove margins for precise control */
+                }
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    padding: 0;
+                    width: 21cm; /* Set the width for A5 landscape */
+                    height: 14.8cm; /* Set the height for A5 landscape */
+                    overflow: hidden; /* Hide overflow beyond the defined size */
+                }
+/* Invoice Styles */
+                .invoice{
+                    width: 100%; /* Set width to full */
+                    height: 100%; /* Set height to full */
+                    margin: 0 ;
+                    padding: 0;
+                    border: 1px solid #ccc;   
+                    background-color: #fff;
+                    box-sizing: border-box;
+                }
+/* Product Name Column Styles */
+                #productDetailsTable th:nth-child(1),
+                #productDetailsTable td:nth-child(1) {
+                    width: 40% !important; /* Ensure first column is 40% */
+                    font-size: 12px;
+                    text-align: left;
+                    white-space: nowrap;         /* Prevent text wrapping */
+                    overflow: hidden;            /* Hide overflowed content */
+                    text-overflow: ellipsis;     /* Show '...' for overflowed text */
+                    max-width: 40%;              /* Ensure the product name does not take more than 40% of the table */
+                }
+/* Additional table styles */
+            table {
+                width: 100%; /* Full width for the table */
+                border-collapse: collapse; /* Collapse borders */
+                padding: 0px !important;
+            }
+            th,
+            td {
+                border: 1px solid #ccc;
+                padding: 10px;
+                text-align: left;
+            }
+            th {
+                background-color: #344767;
+                color: white;
+            }
+            tbody tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+        .content {
+                margin-top: 150px; /* Adjust to the height of the header */
+            padding: 0px !important;
+            
+            }
+        /* Header Styles */
         .invoice {
-            width: 90%;
-            /* Adjusted width */
+            width: 100%;
             margin: 0 auto;
-            padding: 20px;
+            padding: 5px;
             border: 1px solid #ccc;
             border-radius: 10px;
             background-color: #fff;
             box-sizing: border-box;
-            /* Added */
-            font-weight: 100 !important;
+            position: relative;
+            /* Positioning for footer */
         }
-
-        .invoice h2 {
+        .invoices h4 {
+            font-size: large !important;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            width: 100% !important;
             color: #344767;
-        }    
-
+        }
         .invoice-details {
-            width: 100%;
-            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
-            box-sizing: border-box;
-            font-weight: 100;
+            margin-bottom: 20px;
         }
-
-        .company-info {
-            background-color: rgb(196, 193, 193);
-            padding: 20px;
+        .company-info,
+        .customer-info {
+            padding: 10px;
             border-radius: 10px;
-            margin-right: 10px;
-            /* Add margin to create a gap */
+            font-size: small;
         }
-
-        .supplier-info {
-            background-color: rgb(197, 179, 196);
-            padding: 20px;
-            border-radius: 10px;
-        }
-
-        .invoice-footer {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-
         }
-
         th,
         td {
             border: 1px solid #ccc;
             padding: 10px;
             text-align: left;
         }
-
         th {
             background-color: #344767;
             color: white;
         }
-
-        .clearfix::after {
-            content: "";
-            clear: both;
-            display: table;
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
-
-
-        /* Styles for printing */
         @media print {
             body {
+                margin: auto;
                 padding: 0;
+                height: auto; /* Allow body to adjust height for printing */
             }
-
-            table,
-            div {
-                page-break-inside: avoid;
+            *{
+            font-size: 12px !important;
+           
             }
-
-            @page {
-                margin: 5px;
-            }
-
-            .invoice {
-                width: 100%;
-                border: none;
-                border-radius: 0;
-                padding: 0;
-                margin: 0;
-                background-color: #ffffff;
-            }
-
-            .invoice h2 {
-                margin-top: 20px;
-            }
-
-            .invoice-details {
-                margin-bottom: 10px;
-                font-weight: 100 !important;
-                width: 100% !important;
-            }
-
-            table {
-                width: 100%;
-                border-radius: 10px !important;
-            }
-
-            th,
-            td {
-                padding: 5px;
-                font-size: 10px;
-            }
-
-            .company-info,
-            .supplier-info {
-                width: 100%;
-                float: none;
-            }
-
-            th {
-                background-color: #344767 !important;
-            }
-
-            .invoice-header,
-            .invoice-content,
-            .invoice-footer {
-                width: 100%;
-            }
-
-            .invoice-header,
-            .invoice-footer {
-                position: fixed;
-            }
-
-            .invoice-header {
-                top: 0;
-            }
-
-            .invoice-content {
-                margin-top: 80px;
-                /* Adjust as needed */
-            }
-
-            .invoice-footer {
-                bottom: 0;
-            }
-        }
-
-        .supplier-info,
-        .company-info {
-            background-color: rgb(196, 193, 193);
-            padding: 2px;
-            border-radius: 10px;
-            font-weight: 100 !important;
-        }
-
-            {
-                {
-                !-- #companyTitle {
-                    margin-bottom: 10px;
-                }
-
-                .company-detail {
-                    display: inline-block;
-                    margin-right: 10px;
-                }
-
-                --
-            }
-        }
-
-        .company-detail strong {
-            font-weight: lighter;
-        }
-
-        .company-detail span {
-            color: #444;
-        }
-
-        /* Button Styles */
+   .header,
+   .footer {
+        position: fixed; /* Keep header and footer fixed */
+        left: 0;
+        right: 0; 
+        
+        width: 100%;
+        z-index: 1000;
+        background-color: white;
+    }
+    .header {
+        top: 0;
+    }
+    .footer {
+        bottom: 0;
+        color:  #000 !important;
+    }
+    .content {
+        margin-left: 2mm;
+        margin-right: 2mm;
+        margin-top: 90px; /* Adjust to the height of the header */
+        margin-bottom: 20px; /* Adjust to the height of the footer */
+        page-break-after: avoid; /* Ensure content breaks after the main content */
+      page-break-inside: auto;
+        overflow: visible; /* Ensure overflow is visible */
+    }
+    thead {
+       page-break-after: always;
+        display: table-header-group; /* Ensure thead repeats on each page */
+    }
+    tbody tr td {
+        padding: 5px !important;
+        page-break-inside: avoid; /* Avoid breaking rows */
+    }
+    /* Product name column styles */
+#productDetailsTable th:nth-child(1),
+#productDetailsTable td:nth-child(1) {
+    width: 40% !important;
+    font-size: 12px;
+    text-align: left;
+    white-space: nowrap;         /* Prevent text wrapping */
+    overflow: hidden;            /* Hide overflowed content */
+    text-overflow: ellipsis;     /* Show '...' for overflowed text */
+    max-width: 40%;              /* Ensure the product name does not take more than 40% of the table */
+}
+/* Additional styles for the table */
+table.dataTable td {
+    white-space: normal !important; /* Allow wrapping of content for other columns */
+    word-wrap: break-word;          /* Break long words if needed */
+    max-width: 350px !important;    /* Set a reasonable maximum width */
+    width: auto;                    /* Set to auto to allow flexibility */
+}
+.content table tbody tr td,
+table thead th {
+    font-size: 12px !important;
+    line-height: normal !important;
+    padding: 5px !important;
+}
+}
+ /* Set first column to 40%, prevent wrapping, and handle overflow */
+    #productDetailsTable th:nth-child(1),
+    #productDetailsTable td:nth-child(1) {
+        width: 40% !important;
+        font-size: 12px;
+        text-align: left;
+        white-space: nowrap;        /* Prevent text wrapping */
+        overflow: hidden;           /* Hide overflow */
+        text-overflow: ellipsis;    /* Show '...' for overflowed text */
+        max-width: 40%;             /* Ensure the product name does not take more than 40% of the table */
+    }
+/* Product name column styles */
+#productDetailsTable th:nth-child(1),
+#productDetailsTable td:nth-child(1) {
+    width: 40% !important;
+    font-size: 12px;
+    text-align: left;
+    white-space: nowrap;         /* Prevent text wrapping */
+    overflow: hidden;            /* Hide overflowed content */
+    text-overflow: ellipsis;     /* Show '...' for overflowed text */
+    max-width: 40%;              /* Ensure the product name does not take more than 40% of the table */
+}
+/* Additional styles for the table */
+table.dataTable td {
+    white-space: normal !important; /* Allow wrapping of content for other columns */
+    word-wrap: break-word;          /* Break long words if needed */
+    max-width: 350px !important;    /* Set a reasonable maximum width */
+    width: auto;                    /* Set to auto to allow flexibility */
+}
+.content table tbody tr td,
+table thead th {
+    font-size: 12px !important;
+    line-height: normal !important;
+    padding: 2px !important;
+}
         .print-button {
             display: block;
             margin: 20px auto;
             text-align: center;
         }
-
         .print-button button {
             padding: 10px 20px;
             background-color: #344767;
-            color: #fff;
+            color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
-
         .print-button button:hover {
             background-color: #2c3e50;
         }
-
-        /* CSS */
-        .invoice-footer {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .page-count {
-            font-size: 12px;
-        }
-
-        .invoice-footer {
-            display: none;
-        }
-
-        /* Hide the footer by default */
-        .invoice-footer {
-            display: none;
-        }
-
-        /* Show the page count during printing */
-        @media print {
-            .invoice-footer {
-                display: block;
-            }
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button {
-            padding: 0.5em 0.8em;
-            margin-left: 2px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-            background-color: #344767;
-            color: white;
-        }
-        body {
-    font-family: 'Roboto', sans-serif;
-    font-weight: 300;
-    color: #333;
+        .non-wrapping {
+    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Hide overflowed content */
+    text-overflow: ellipsis; /* Show '...' for overflowed text */
+    max-width: 100%; /* Set max width for the cell */
 }
-
-.invoice h2 {
-    font-weight: 500;
-    margin-bottom: 25px;
-    color: #344767;
-}
-
-.invoice-details {
-    margin-bottom: 25px;
-}
-
-.company-info, .customer-info {
-    padding: 15px;
-    background-color: #f0f4f7; /* Light gray-blue to unify the colors */
-}
-
-table {
-    border-radius: 8px;
-}
-
-th {
-    background-color: #344767;
-    font-size: 12px;
-}
-
-th, td {
-    border: 1px solid #ddd; 
-    padding: 8px;
-}
-
-tbody tr:nth-child(odd) {
-    background-color: #f9f9f9;
-}
-
-tbody tr:nth-child(even) {
-    background-color: #f1f1f1;
-}
-
-.print-button button {
-    background-color: #344767;
-    border-radius: 25px;
-    padding: 8px 20px;
-}
-
     </style>
 </head>
+
 <body>
-    <div class="invoice">
-        <h2>Elite POS<img src="/assets/img/Untitled design (11)-modified.png"
-                style="height: 40px !important; margin: 2px !important;align-item:center !important;">
-        </h2>
-        <h2 style="color: rgb(255, 255, 255);background-color:#344767;">Invoice</h2>
-        <div class="invoice-details" style="display: flex; justify-content: space-between;">
-            <div class="company-info"
-                style="background-color: rgb(196, 193, 193); padding: 20px; border-radius: 10px; flex-basis: 48%;">
-                <h3 id="companyTitle" style="margin-bottom: 10px;"><strong>Company Name</strong></h3>
-                <h6>GSTIN: <span id="gstin" class="company-detail"></span></h6>
-                <h6>Address: <span id="address" class="company-detail"></span>, <span id="city"
-                        class="company-detail"></span>, <span id="state" class="company-detail"></span></h6>
-                <h6>Mobile: <span id="mobileNo" class="company-detail"></span></h6>
+
+<div class="invoices">
+    <!-- Header Section -->
+    <div class="header" style="position: fixed; top: 0; width: 100%; z-index: 100; background-color: white;">
+        <h4 style="color: rgb(255, 255, 255);background-color:#344767;" class="mt-0 mb-1" id="companyTitle">Invoice</h4>
+        <div class="invoice-details mb-0 mt-0" style="display: flex; justify-content: space-between;">
+            <!-- Company Info -->
+            <div class="company-info" style="padding: 2px; border-radius: 8px; flex-basis: 48%;">
+                <table style="width: 100%; border-collapse: collapse; color: white;">
+                    <tr style="border: 1px solid #344767;">
+                        <td style="border: 1px solid #344767; padding: 10px; color: #344767;">
+                            <strong>Bill No:</strong> <span id="id" class="company-detail"></span>
+                        </td>
+                        <td style="border: 1px solid #344767; padding: 10px; color: #344767;">
+                            <strong>GSTIN:</strong> <span id="gstin" class="company-detail"></span>
+                        </td>
+                        <td style="border: 1px solid #344767; padding: 10px; color: #344767;">
+                            <strong>Mobile:</strong> <span id="mobileNo" class="company-detail"></span>
+                        </td>
+                    </tr>
+                    <tr style="border: 1px solid #344767;">
+                        <td colspan="3" style="border: 1px solid #344767; padding: 10px; color: #344767;">
+                            <strong>Address:</strong>
+                            <span id="address" class="company-detail"></span>,
+                            <span id="city" class="company-detail"></span>,
+                            <span id="state" class="company-detail"></span>
+                        </td>
+                    </tr>
+                </table>
             </div>
-
-            <div class="customer-info" id="salesDetails"
-                style="background-color:#344767;color: rgb(196, 193, 193); padding: 20px; border-radius: 10px; flex-basis: 48%;">
-                <h3 style="color:  rgb(196, 193, 193);">customer Details</h3>
-                <div>
-                    <strong>customer Name: </strong><span id="customername"></span><br>
-                    {{!-- <strong>Sale Number: </strong><span id="customerinvoiceno"></span><br>
-                    <strong>Sale Date: </strong><span id="customerinvoicedate"></span><br> --}}
-                    {{!-- <strong>GSTIN: </strong><span id="gstin_customer"></span><br> --}}
-                    <strong>Mobile: </strong><span id="customermobileno"></span><br>
-                </div>
-            </div> 
-        </div>
-
-        <table id="productDetailsTable">
-            <thead class="bg-dark">
-                <tr>
-                    <th>Product</th>
-                    <th>Batch</th>
-                    <th>Tax</th>
-                    <th>Rate</th>
-                    <th>Quantity</th>
-                    <th>Discount Mode</th>
-                    <th>Discount (%)</th>
-                    <th>CGST</th>
-                    <th>SGST</th>
-                    <th>IGST</th>
-                    <th>Total Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Table rows will be populated dynamically -->
-            </tbody>
-        </table>
-        <div class="invoice-summary"
-            style="background-color: #f0f0f0; padding: 20px; border-radius: 10px; margin: 10px;">
-            <h3 style="margin-bottom: 15px; text-align: center;">Invoice Summary</h3>
-            <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
-                <div style="font-size: 14px; flex-basis: 48%;">
-                    <div
-                        style="margin-bottom: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
-                        <strong style="margin-right: 10px; width: 120px;">Amount :</strong>
-                        <span id="invoiceAmount" style="text-align: right;"></span>
-                    </div>
-                    <div
-                        style="margin-bottom: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
-                        <strong style="margin-right: 10px; width: 120px;">Discount Mode :</strong>
-                        <span id="discountMode" style="text-align: right;"></span>
-                    </div>
-                    <div
-                        style="margin-bottom: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
-                        <strong style="margin-right: 10px; width: 120px;">Discount :</strong>
-                        <span id="discount" style="text-align: right;"></span>
-                    </div>
-                </div>
-                <div style="font-size: 14px; flex-basis: 48%;">
-                    <div
-                        style="margin-bottom: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
-                        <strong style="margin-right: 10px; width: 120px;">SGST :</strong>
-                        <span id="sgst" style="text-align: right;"></span>
-                    </div>
-                    <div
-                        style="margin-bottom: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
-                        <strong style="margin-right: 10px; width: 120px;">CGST :</strong>
-                        <span id="cgst" style="text-align: right;"></span>
-                    </div>
-                    <div
-                        style="margin-bottom: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
-                        <strong style="margin-right: 10px; width: 120px;">IGST :</strong>
-                        <span id="igst" style="text-align: right;"></span>
-                    </div>
-                    <div style="margin-bottom: 15px; display: flex; justify-content: space-between;">
-                        <strong style="margin-right: 10px; width: 120px;">Over All Total:</strong>
-                        <span id="subtotal" style="text-align: right;"></span>
-                    </div>
-                </div>
+            <!-- Customer Info -->
+            <div class="customer-info" style="padding: 2px; border-radius: 8px; flex-basis: 48%;">
+                <table style="width: 100%; border-collapse: collapse; color: white;">
+                    <tr style="border: 1px solid #ccc; background-color: #344767;">
+                        <td style="border: 1px solid #ccc; padding: 10px;">
+                            <strong>Customer:</strong> <span id="customername"></span>
+                        </td>
+                        <td style="border: 1px solid #ccc; padding: 10px;">
+                            <strong>Mobile:</strong> <span id="customermobileno"></span>
+                        </td>
+                    </tr>
+                    <tr style="border: 1px solid #ccc; background-color: #344767;">
+                        <td colspan="1" style="border: 1px solid #ccc; padding: 10px;">
+                            <strong>Sale Date:</strong> <span id="saledate"></span>
+                        </td>
+                        <td colspan="2" style="border: 1px solid #ccc; padding: 10px;">
+                            <strong>Doctor:</strong> <span id="doctorname"></span>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
-        <footer class="invoice-footer">
-            <div class="page-count">
-                Page <span class="page-number"></span> / <span class="total-pages"></span>
-            </div>
-        </footer>
-
-        <div class="other-info">
-            <h6 style="text-align: center;"><span id="quotes"></span></h6>
-        </div>
-
     </div>
+
+    <!-- Content Section (Scroll) -->
+<div class="content">
+    <table id="productDetailsTable">
+        <thead>
+            <tr>
+                <th>Particulars</th>
+                <th>Batch</th>
+                <th>Expiry</th>
+                <th>MRP</th>
+                <th>Qty</th>
+                <th>Disc</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table rows will be populated dynamically -->
+        </tbody>
+    </table>
+</div>
+
+    <!-- Footer Section -->
+    <div class="invoice-summary footer" style="position: fixed; bottom: 0; width: 100%; background-color: white;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%;">
+                    <strong>Amount:</strong>
+                </td>
+                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%;"><span
+                        id="invoiceAmount"></span></td>
+                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%;">
+                    <strong>Discount:</strong>
+                </td>
+                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%;">
+                    <span id="discount"></span> - <span id="discountMode"></span>
+                </td>
+                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%;"><strong>SGST:</strong>
+                </td>
+                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%;"><span
+                        id="sgst"></span>
+                </td>
+                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%;"><strong>CGST:</strong>
+                </td>
+                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%;"><span
+                        id="cgst"></span>
+                </td>
+                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%;"><strong>Total
+                        Amount:</strong></td>
+                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 30%;"><span
+                        id="subtotal"></span></td>
+            </tr>
+        </table>
+    </div>
+</div>
     <div class="d-flex justify-content-start align-item-start">
         <button class="btn btn-primary print-button" onclick="back()">Back</button>
         <button class="btn  btn-success print-button" onclick="printData()">Print</button>
-    
+
     </div>
     <script>
         // Function to print the invoice
-        function printData() {
-            // Hide print button before printing
-            var printButtons = document.querySelectorAll('.print-button');
-            if (printButtons.length === 0) {
-                console.error('No .print-button elements found.');
-                return;
-            }
-            printButtons.forEach(function (el) {
-                el.style.display = 'none';
-            });
+    function printData() {
+        // Hide print button before printing
+        var printButtons = document.querySelectorAll('.print-button');
+        if (printButtons.length === 0) {
+            console.error('No .print-button elements found.');
+            return;
+        }
+        printButtons.forEach(function (el) {
+            el.style.display = 'none';
+        });
 
-            // Print the page
-            window.print();
-        }
-        function back() {
-            window.history.back();
-        }
+        // Print the page
+        window.print();
+    }
+    function back() {
+        // This function can be used to navigate back to a previous page
+        window.history.back();
+    }
+
+
+
         // Document ready function
         $(document).ready(function () {
             var table;
 
             // Function to initialize DataTable
             function initializeDataTable() {
+                // Destroy existing DataTable if it exists
                 if ($.fn.DataTable.isDataTable('#productDetailsTable')) {
                     table.destroy();
                 }
+
+                // Re-initialize DataTable
                 table = $("#productDetailsTable").DataTable({
                     paging: false,
                     ordering: false,
                     info: false,
                     searching: false,
+                    responsive: true,
+                    autoWidth: false,
                 });
+
+                // Add pagination to the custom container
                 table.on('draw', function () {
                     $('#paginationContainer').html($('.dataTables_paginate'));
                 });
@@ -474,27 +411,27 @@ tbody tr:nth-child(even) {
                     method: 'GET',
                     data: { salesId: salesId },
                     success: function (response) {
-                        if (response && response.data) {
+                        if (response && response.data && response.data.length > 0) {
                             if (!table) {
                                 initializeDataTable();
                             }
+                            // Clear table before adding new data
                             table.clear();
+
+                            // Add rows to the table
                             response.data.forEach(function (row) {
                                 table.row.add([
-                                    row.productname,
+                                    '<div class="non-wrapping">' + row.productname + '</div>',
                                     row.batchNo,
-                                    row.tax,
+                                    row.expiryDate,
                                     row.rate,
                                     row.quantity,
-                                    row.discMode,
-                                    row.discount,
-                                    row.cgst,
-                                    row.sgst,
-                                    row.igst,
+                                    row.discount + '-' + row.discMode,
                                     row.totalAmount
                                 ]);
                             });
-                            // Draw the table
+
+                            // Redraw table with new data
                             table.draw();
                         } else {
                             console.error('No data received from the server.');
@@ -506,6 +443,9 @@ tbody tr:nth-child(even) {
                 });
             }
 
+            function truncateText(text, maxLength) {
+                return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+            }
             // Function to fetch sales details
             function fetchsalesDetails(salesId) {
                 $.ajax({
@@ -515,9 +455,11 @@ tbody tr:nth-child(even) {
                     success: function (response) {
                         if (response && response.data && response.data.length > 0) {
                             var responseData = response.data[0];
-                            $('#customername').text(responseData.customername);
+                              $('#id').text(responseData.id);
+                        $('#customername').text(truncateText(responseData.customername, 10));
                             $('#customermobileno').text(responseData.mobileno);
-
+                            $('#saledate').text(formatDate(responseData.saledate));
+                            $('#doctorname').text(truncateText(responseData.doctorname, 10));
                             $('#invoiceAmount').text(responseData.amount);
                             $('#discountMode').text(responseData.discMode);
                             $('#discount').text(responseData.discount);
@@ -530,13 +472,10 @@ tbody tr:nth-child(even) {
                         }
                     },
                     error: function (xhr, status, error) {
-                        console.error('Error fetching data from the server:', error);
+                        console.error('Error fetching sales details:', error);
                     }
                 });
             }
-
-
-
 
             // Function to format date
             function formatDate(dateObject) {
@@ -547,53 +486,6 @@ tbody tr:nth-child(even) {
                 return `${day}-${month}-${year}`;
             }
 
-            // Update the page count in the footer
-            function updatePageCount() {
-                var pageNumber = document.querySelector('.page-number');
-                if (!pageNumber) {
-                    console.error('Page number element not found.');
-                    return;
-                }
-
-                // Listen for after print event to update the page count
-                window.onafterprint = function () {
-                    var totalPages = document.querySelectorAll('.invoice').length;
-                    var currentPage = getCurrentPageNumber();
-                    pageNumber.textContent = currentPage + ' / ' + totalPages;
-                };
-
-                // Get the current page number
-                function getCurrentPageNumber() {
-                    var currentPage = 1; // Initialize current page
-                    var visiblePages = getVisiblePages(); // Get all visible invoice pages
-                    currentPage = visiblePages.length > 0 ? visiblePages[0].dataset.pageNumber : 1;
-                    return currentPage;
-                }
-
-                // Get all visible invoice pages
-                function getVisiblePages() {
-                    var visiblePages = [];
-                    var pages = document.querySelectorAll('.invoice'); // Get all invoice pages
-                    pages.forEach(function (page) {
-                        if (isInViewport(page)) {
-                            visiblePages.push(page);
-                        }
-                    });
-                    return visiblePages;
-                }
-
-                // Check if an element is in the viewport
-                function isInViewport(element) {
-                    var rect = element.getBoundingClientRect();
-                    return (
-                        rect.top >= 0 &&
-                        rect.left >= 0 &&
-                        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-                        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-                    );
-                }
-            }
-
             // Call functions to load data and initialize DataTable
             const urlParams = new URLSearchParams(window.location.search);
             const salesId = urlParams.get('id');
@@ -602,13 +494,12 @@ tbody tr:nth-child(even) {
                 loadTableData(salesId);
                 fetchsalesDetails(salesId);
             } else {
-                console.error('sales ID not found in URL');
+                console.error('Sales ID not found in URL');
             }
-
-            // Call updatePageCount function
-            updatePageCount();
         });
     </script>
+
+
 
 </body>
 

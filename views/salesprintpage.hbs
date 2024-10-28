@@ -406,25 +406,25 @@
         // Function to fetch sales details
         function fetchsalesDetails(salesId) {
             $.ajax({
-                url: '/auth/sales/salesdetails', 
+                url: '/auth/salesprintpage/salesdetails', // Fixed URL
                 method: 'GET',
-                data: { salesId: salesId }, 
+                data: { salesId: salesId }, // Sending salesId as query parameter
                 success: function (response) {
                     if (response && response.data && response.data.length > 0) {
-                        var responseData = response.data[0]; 
+                        var responseData = response.data[0];
                         $('#customername').text(responseData.customername);
                         $('#customerinvoiceno').text(responseData.id);
                         $('#customerinvoicedate').text(formatDate(responseData.saledate));
                         $('#gstin_customer').text(responseData.gstin);
-                        $('#mobileNo_customer').text(responseData.mobile);
+                        $('#mobileNo_customer').text(responseData.customermobileno); // Correct key for mobile number
 
                         $('#invoiceAmount').text(responseData.amount);
                         $('#discountMode').text(responseData.discMode);
                         $('#discount').text(responseData.discount);
                         $('#cgst').text(responseData.cgst);
-                        $('#igst').text(responseData.igst); 
+                        $('#igst').text(responseData.igst);
                         $('#sgst').text(responseData.sgst);
-                        $('#subtotal').text(responseData.total);
+                        $('#subtotal').text(responseData.subtotal); // Correct key for subtotal
                     } else {
                         console.error('No data received from the server.');
                     }
@@ -434,8 +434,6 @@
                 }
             });
         }
-
-
 
 
         // Function to format date

@@ -1182,6 +1182,7 @@ tr td input[type="month"].input-field:read-only {
 }
 
 table.dataTable td {
+ 
   white-space: normal !important;
   /* Allow wrapping of content */
   word-wrap: break-word;
@@ -1189,4 +1190,9 @@ table.dataTable td {
   max-width: 250px !important;
   width: auto;
   /* Set a reasonable maximum width */
+}
+table tbody tr td,table thead th{
+  font-size: smaller !important;
+    line-height: normal !important;
+    padding: 2px;
 }

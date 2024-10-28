@@ -134,6 +134,8 @@
                         <th>Opening Date</th>
                         <th>Dr Amount</th>
                         <th>Cr Amount</th>
+                        <th>Drug Licn.1</th>
+                        <th>Drug Licn.2</th>
                         <th>Active</th>
                         <th class="action">Action</th>
                     </tr>
@@ -273,6 +275,8 @@
                         } },
     { data: 'dramount' },
     { data: 'cramount' },
+    { data: 'dl1' },
+    { data: 'dl2' },
     { data: 'active', render: function (data, type, row) {
                 // Render a checkbox based on the 'active' property value
                 return data ? '<input type="checkbox" checked>' : '<input type="checkbox">';
@@ -379,6 +383,8 @@ $(document).on('click', '.editBtn', function() {
         $(".editForm #openingdate").val(formatDate(data.openingdate));
         $(".editForm #dramount").val(data.dramount);
         $(".editForm #cramount").val(data.cramount);
+          $(".editForm #dl1").val(data.dl1);
+            $(".editForm #dl2").val(data.dl2);
         // Check if 'active' property is true and set the checkbox accordingly
         if (data.active) {
             $(".editForm #active").prop('checked', true);
@@ -520,7 +526,8 @@ $('#customerTable').on('click', '.deleteBtn', function() {
             <input type="text" placeholder="Allow. Disc." name="allowdisc" id="allowdisc">
             <input type="text" placeholder="Disc(%)" name="disc" id="disc">
             <input type="text" placeholder="Pmt Mode" name="pmtmode" id="pmtmode">
-              <input type="text" placeholder="payment limit" name="paymentlimit" id="paymentlimit">          
+              <input type="text" placeholder="payment limit" name="paymentlimit" id="paymentlimit">   
+                <input type="text" placeholder="Drug Licence 1" name="dl1" id="dl1">
         </div>
         <div class="col">
             <!-- Second Column -->
@@ -538,6 +545,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
             <input type="date" placeholder="Opening Date" name="openingdate" id="openingdate">
             <input type="text" placeholder="Dr Amount" name="dramount" id="dramount">
             <input type="text" placeholder="Cr Amount" name="cramount" id="cramount">
+            <input type="text" placeholder="Drug Licence 2" name="dl2" id="dl2">
             <label for="active" style="font-size: 14px;">Active<input type="checkbox" id="active" value="1" name="active" ></label>
             
         </div>
@@ -566,6 +574,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
             <input type="text" placeholder="Disc(%)" name="disc" id="disc">
             <input type="text" placeholder="Pmt Mode" name="pmtmode" id="pmtmode">
               <input type="text" placeholder="payment limit" name="paymentlimit" id="paymentlimit">          
+        <input type="text" placeholder="Drug Licence 1" name="dl1" id="dl1">
         </div>
         <div class="col">
             <!-- Second Column -->
@@ -583,6 +592,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
             <input type="date" placeholder="Opening Date" name="openingdate" id="openingdate">
             <input type="text" placeholder="Dr Amount" name="dramount" id="dramount">
             <input type="text" placeholder="Cr Amount" name="cramount" id="cramount">
+        <input type="text" placeholder="Drug Licence 2" name="dl2" id="dl2">
             <label for="active" style="font-size: 14px;">Active<input type="checkbox" id="active" value="1" name="active" ></label>
             
         </div>

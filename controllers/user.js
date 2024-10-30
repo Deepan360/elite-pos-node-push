@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const { v4: uuidv4 } = require("uuid");
+const moment = require("moment");
 
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -2055,26 +2056,52 @@ exports.batchsummary = (req, res) => {
     });
 };
 
-exports.stocksummary = (req, res) => {
-  poolConnect()
-    .then((pool) => {
-      const request = pool.request();
+exports.stocksummary = async (req, res) => {
+  console.log("Received query parameters:", req.query);
 
-      request.execute("dbo.GetStockSummary", (err, result) => {
-        if (err) {
-          console.error("Error executing stored procedure:", err);
-          return res.status(500).json({ error: "Internal Server Error" });
-        }
+  // Destructure the date parameters from the request query
+  const { ParamFrDate, ParamToDate } = req.query;
 
-        // Send the data as JSON response
-        res.json({ data: result.recordset });
-      });
-    })
-    .catch((error) => {
-      console.error("Error connecting to the database:", error.message);
-      return res.status(500).json({ error: "Internal Server Error" });
+  // Validate the date parameters
+  if (!ParamFrDate || !ParamToDate) {
+    return res.status(400).json({ error: "Missing date parameters." });
+  }
+
+  // Parse the dates and check validity
+  const fromDate = moment(ParamFrDate);
+  const toDate = moment(ParamToDate);
+
+  if (!fromDate.isValid() || !toDate.isValid()) {
+    return res.status(400).json({ error: "Invalid date format." });
+  }
+
+  try {
+    const pool = await poolConnect(); // Establish database connection
+    const request = pool.request();
+
+    request.input("ParamFrDate", sql.Date, fromDate.toDate());
+    request.input("ParamToDate", sql.Date, toDate.toDate());
+
+    request.execute("dbo.GetStockSummaryNew", (err, result) => {
+      if (err) {
+        console.error("Error executing stored procedure:", err);
+        return res
+          .status(500)
+          .json({ error: "Internal Server Error", details: err });
+      }
+
+      res.json({ data: result.recordset });
     });
+  } catch (error) {
+    console.error("Error connecting to the database:", error.message);
+    return res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error });
+  }
 };
+
+
+
 
 exports.stockanalysis = (req, res) => {
   poolConnect()
@@ -4728,8 +4755,7 @@ exports.purchaseregister = (req, res) => {
       return res.status(500).json({ error: "Internal Server Error" });
     }
     pool.query(
-      `
-      SELECT P.*, S.ledgername AS suppliername,DM.discMode AS discModes
+      `SELECT P.*, S.ledgername AS suppliername,DM.discMode AS discModes
       FROM [PurchaseTable_Master] AS P
       LEFT JOIN [Supplier] AS S ON P.suppliername = S.id
        LEFT JOIN 

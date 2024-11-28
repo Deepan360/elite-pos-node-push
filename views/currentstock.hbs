@@ -120,16 +120,15 @@
         <div class="table-responsive container-fluid py-4">
             <div class="form-control card">
                 <h3>Current Stock Summary</h3>
-                <div class="align-right-top">
-                    <div id="filterDateDiv" class="mb-3">
-                        <label for="fromDate">From Date:</label>
-                        <input type="text" id="fromDate">
-                        <label for="toDate">To Date:</label>
-                        <input type="text" id="toDate">
-                        <button class="btn btn-primary" id="filter-button">Filter</button>
-                        <button class="btn btn-primary" id="clear-button">Clear</button>
-                    </div>
-                </div>
+<div class="select">
+    <label id="_label" for="producttype">Product Type</label>
+    <div class="input-group mb-3">
+        <select id="producttype" name="producttype" class="form-control form-select" aria-label="Product Type">
+            <!-- Options will be populated dynamically -->
+        </select>
+    </div>
+</div>
+
                 <form action="/auth/customer" method="get">
                     <table id="customerTable" class="table-responsive justify-content-between align-items-end" style="width:100% !important">
                         <thead>
@@ -151,49 +150,107 @@
   {{>color}}
     <script>
 
-      var table = $("#customerTable").DataTable({
-         debug: true,
-    ajax: {
-        'url': '/auth/currentstock',
-        'dataType': 'json',
-        'dataSrc': 'data',
-         type: 'GET', // Adjust 'rows' based on your server response structure
-    },
-    columns: [
-        { data: 'product' },
-        { data: 'total_op_quantity' },
-        { data: 'total_value_op' },
-    ],
-    dom: 'Bfrtip',
-    buttons: ['copy', 'excel', 'pdf', 'csv'],
-    paging: false,
-    scrollY: '500px',
-    scrollX: '100px',
-    scrollCollapse: true,
-    responsive: true,
-     "bInfo": true, // Show information (records, etc.)
-    "bBorders": true, // Show borders
-});
-    </script>
-      <script>
-        document.getElementById("filter-button").addEventListener("click", function() {
-            var fromDate = new Date(document.getElementById("fromDate").value);
-            var toDate = new Date(document.getElementById("toDate").value);
-            var table = document.getElementById("productTable");
-            var rows = table.getElementsByTagName("tr");
+ $(document).ready(function () {
+        // Variable to hold the DataTable instance
+        var table;
 
-            for (var i = 1; i < rows.length; i++) {
-                var cell = rows[i].getElementsByTagName("td")[0];
-                if (cell) {
-                    var cellDate = new Date(cell.innerText);
-                    if (cellDate >= fromDate && cellDate <= toDate) {
-                        rows[i].style.display = "";
-                    } else {
-                        rows[i].style.display = "none";
-                    }
+        // First, make an AJAX request to fetch product types
+        $.ajax({
+            url: '/auth/producttype',  // Your API endpoint for product types
+            type: 'GET',
+            success: function (response) {
+                // Log the response to inspect its structure
+                console.log(response);  // Check the full response structure
+
+                // Clear any existing options
+                $('#producttype').empty();
+
+                // Add a default "Select" option
+                $('#producttype').append('<option value="">Select Product Type</option>');
+
+                // Check if the response contains 'data' and iterate through it
+                if (response.data && Array.isArray(response.data)) {
+                    // Iterate through the data and append options to the dropdown
+                    $.each(response.data, function (index, item) {
+                        // Log the item to inspect its structure
+                        console.log(item);  // Check if 'producttype' is correctly available
+
+                        if (item && item.producttype) {
+                            // Append the producttype to the dropdown
+                            $('#producttype').append('<option value="' + item.producttype + '">' + item.producttype + '</option>');
+                        } else {
+                            console.log('producttype not found in item:', item);
+                        }
+                    });
+                } else {
+                    console.error('Response data is not in the expected format');
                 }
+
+                // Once the dropdown is populated, listen for the product type change event
+                $('#producttype').on('change', function () {
+                    // Initialize the DataTable only when a product type is selected
+                    if ($(this).val()) {
+                        // Destroy the existing DataTable if it exists
+                        if ($.fn.dataTable.isDataTable('#customerTable')) {
+                            table.clear().destroy();
+                        }
+                        // Initialize the DataTable after the dropdown selection
+                        initializeDataTable();
+                    }
+                });
+            },
+            error: function (error) {
+                console.error('Error fetching product types:', error);
             }
         });
+
+        // Function to initialize the DataTable
+        function initializeDataTable() {
+            // Initialize the DataTable with AJAX call
+            table = $("#customerTable").DataTable({
+                debug: true,
+                ajax: {
+                    url: '/auth/currentstock',
+                    dataType: 'json',
+                    type: 'GET',
+                    data: function (d) {
+                        // Get the selected product type from the dropdown
+                        var selectedProductType = $('#producttype').val();
+
+                        // If no product type is selected, do not proceed with the AJAX request
+                        if (!selectedProductType) {
+                            return null;  // Prevent the AJAX request if no product type is selected
+                        }
+
+                        // Add the product type to the request data
+                        d.producttype = selectedProductType;
+                    },
+                    dataSrc: 'data',
+                    error: function (xhr, error, thrown) {
+                        console.error('Error fetching data:', error);
+                        alert('There was an error fetching data. Please try again.');
+                    }
+                },
+                columns: [
+                    { data: 'product' },
+                    { data: 'total_op_quantity' },
+                    { data: 'total_value_op' },
+                ],
+                dom: 'Bfrtip',
+                buttons: ['copy', 'excel', 'pdf', 'csv'],
+                paging: false,
+                scrollY: '500px',
+                scrollX: '100px',
+                scrollCollapse: true,
+                responsive: true,
+                "bInfo": true, // Show information (records, etc.)
+                "bBorders": true, // Show borders
+            });
+        }
+    });
+
+
+
     </script>
 
       <script>

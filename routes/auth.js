@@ -117,6 +117,7 @@ router.post('/purchase',userController.purchaseadd);
 router.get("/purchase/suppliername", userController.suppliername);
 router.get("/purchase",userController.purchase);
 router.get("/purchase/productname",userController.productname);
+router.get("/purchase/productlastdetails", userController.productlastdetails);
 router.get("/purchase/selectedsupplier",userController.getDataBySupplier);
 router.get("/purchaseregister",userController.purchaseregister);
 router.get("/purchasedraftregister",userController.purchasedraftregister);
@@ -268,6 +269,12 @@ router.post(
 );
 router.get("/salesretail/checkMobile", userController.checkMobileNumber);
 
+router.get(
+  "/salesretail/checkStockAvailability/:productId/:batchNo/:quantity/:expiryDate",
+  userController.checkStockAvailability
+);
+
+
 
 router.get("/molecules", userController.molecules);
 router.post("/molecules", userController.moleculesadd);
@@ -354,6 +361,8 @@ router.delete(
   "/salesretail/customerretaildelete/:id",
   userController.customerretaildelete
 );
+
+router.get("/producthistory", userController.producthistory);
 
 module.exports = router;
  

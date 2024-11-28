@@ -574,8 +574,10 @@ exports.salesretailreturnDetails = async (req, res) => {
 };
 
 exports.salesretailreturnadd = async (req, res) => {
-  console.log(req.body);
+  console.log("Received Data:", req.body);
+
   const {
+    id: salesreturnid,
     saledate,
     paymentmode,
     customermobileno,
@@ -592,33 +594,65 @@ exports.salesretailreturnadd = async (req, res) => {
     pdiscount,
     pdiscMode_,
     isDraft,
-    products: productsString,
+    products,
   } = req.body;
 
-  let parsedProducts = [];
-  const formattedSaleDate = saledate ? saledate : null;
+  if (!Array.isArray(products)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid products data format" });
+  }
 
+  let transaction;
   try {
-    await poolConnect();
+    // Establish connection to the pool
+    const poolConnection = await pool.connect();
 
-    parsedProducts = JSON.parse(productsString);
+    // Create and begin a transaction
+    transaction = new sql.Transaction(poolConnection);
+    await transaction.begin();
 
-    const result = await pool.query`
-          INSERT INTO [elite_pos].[dbo].[salesretailreturn_Master]
-          ([saledate], [paymentmode],  [customermobileno], [customername], [amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft])
-          VALUES
-          (${formattedSaleDate}, ${paymentmode},  ${customermobileno}, ${customername}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft});
-
-          SELECT SCOPE_IDENTITY() as salesId;
-      `;
+    // Insert into master table
+    const result = await transaction
+      .request()
+      .input("salesreturnid", salesreturnid)
+      .input("saledate", saledate || null)
+      .input("paymentmode", paymentmode)
+      .input("customermobileno", customermobileno)
+      .input("customername", customername)
+      .input("amount", pamount)
+      .input("cgst", pcgst)
+      .input("sgst", psgst)
+      .input("igst", pigst)
+      .input("netAmount", pnetAmount)
+      .input("cess", pcess)
+      .input("tcs", ptcs)
+      .input("discMode", pdiscMode_)
+      .input("discount", pdiscount)
+      .input("subtotal", psubtotal)
+      .input("roundoff", proundOff)
+      .input("isDraft", isDraft).query(`
+        INSERT INTO [elite_pos].[dbo].[salesretailreturn_Master]
+        ([salesreturnid], [saledate], [paymentmode], [customermobileno], [customername], 
+        [amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], 
+        [discMode], [discount], [subtotal], [roundoff], [isDraft])
+        VALUES
+        (@salesreturnid, @saledate, @paymentmode, @customermobileno, @customername, 
+        @amount, @cgst, @sgst, @igst, @netAmount, @cess, @tcs, 
+        @discMode, @discount, @subtotal, @roundoff, @isDraft);
+        
+        SELECT SCOPE_IDENTITY() as salesId;
+      `);
 
     const salesId = result.recordset[0].salesId;
-    console.log("Number of products:", parsedProducts.length);
 
-    for (const product of parsedProducts) {
+    // Insert products into the transaction table
+    for (const product of products) {
       const {
+        Id,
         productId,
         batchNo,
+        expiryDate,
         tax,
         quantity,
         free,
@@ -635,67 +669,107 @@ exports.salesretailreturnadd = async (req, res) => {
         totalAmount,
       } = product;
 
-      await pool.query`
-            INSERT INTO [elite_pos].[dbo].[salesretailreturn_Trans]
-            ([salesId], [product], [batchNo], [tax], [quantity],[free], [uom],[purcRate], [mrp],[rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
-            VALUES
-            (${salesId}, ${productId}, ${batchNo}, ${tax}, ${quantity},${free}, ${uom},${purcRate},${mrp} ,${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
-        `;
+      await transaction
+        .request()
+        .input("salesId", salesId)
+        .input("product", productId)
+        .input("batchNo", batchNo)
+        .input("expiryDate", expiryDate)
+        .input("tax", tax)
+        .input("quantity", quantity)
+        .input("free", free)
+        .input("uom", uom)
+        .input("purcRate", purcRate)
+        .input("mrp", mrp)
+        .input("rate", rate)
+        .input("discMode", discMode)
+        .input("discount", discount)
+        .input("amount", amount)
+        .input("cgst", cgst)
+        .input("sgst", sgst)
+        .input("igst", igst)
+        .input("totalAmount", totalAmount)
+        .input("salesreturnid", Id).query(`
+          INSERT INTO [elite_pos].[dbo].[salesretailreturn_Trans]
+          ([salesId], [product], [batchNo], [expiryDate], [tax], [quantity], 
+          [free], [uom], [purcRate], [mrp], [rate], [discMode], [discount], 
+          [amount], [cgst], [sgst], [igst], [totalAmount], [salesreturnid])
+          VALUES
+          (@salesId, @product, @batchNo, @expiryDate, @tax, @quantity, 
+          @free, @uom, @purcRate, @mrp, @rate, @discMode, @discount, 
+          @amount, @cgst, @sgst, @igst, @totalAmount, @salesreturnid);
+        `);
 
-      await increaseRetailStock(productId, quantity, free, batchNo);
+      // Update stock (your function)
+      await increaseRetailStock(productId, quantity, free, batchNo, expiryDate);
     }
 
-    res
-      .status(200)
-      .json({ success: true, message: "salesretailreturn added successfully" });
+    // Commit transaction
+    await transaction.commit();
+    res.status(200).json({
+      success: true,
+      message: "Sales retail return added successfully",
+    });
   } catch (error) {
     console.error("Error during salesretailreturn processing:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+
+    if (transaction) {
+      await transaction.rollback(); // Rollback on error
+    }
+
+    res.status(500).json({
+      success: false,
+      message: `Internal Server Error: ${error.message}`,
+    });
   }
 };
 
-async function reduceretailStock(productId, quantity, free, batchNo) {
-  try {
-    // Sum of quantity and free
-    const totalQuantity = Number(quantity) + Number(free);
 
-    // Fetch the current stock and retail quantity for the given product and batch number
-    const result = await pool.query`
-      SELECT op_quantity AS stockQty, retailQty FROM [elite_pos].[dbo].[stock_Ob]
-      WHERE product = ${productId} AND batchNo = ${batchNo};
-    `;
 
-    if (result.recordset.length > 0) {
-      let { stockQty, retailQty } = result.recordset[0];
 
-      // Calculate the new retail and stock quantities
-      const newRetailQty = retailQty - totalQuantity;
-      const stockReduction = (totalQuantity * stockQty) / retailQty;
-      const newStockQty = stockQty - stockReduction;
 
-      if (newRetailQty < 0 || newStockQty < 0) {
-        console.error("Calculated stock or retail quantity is negative.");
-        return;
-      }
+// async function reduceretailStock(productId, quantity, free, batchNo) {
+//   try {
+//     // Sum of quantity and free
+//     const totalQuantity = Number(quantity) + Number(free);
 
-      // Update the stock with new quantities
-      await pool.query`
-        UPDATE [elite_pos].[dbo].[stock_Ob]
-        SET retailQty = ${newRetailQty}, op_quantity = ${newStockQty}
-        WHERE product = ${productId} AND batchNo = ${batchNo};
-      `;
+//     // Fetch the current stock and retail quantity for the given product and batch number
+//     const result = await pool.query`
+//       SELECT op_quantity AS stockQty, retailQty FROM [elite_pos].[dbo].[stock_Ob]
+//       WHERE product = ${productId} AND batchNo = ${batchNo};
+//     `;
 
-      console.log(
-        `Stock updated: New Retail Qty = ${newRetailQty}, New Stock Qty = ${newStockQty}`
-      );
-    } else {
-      console.error("Product or Batch not found in stock_Ob");
-    }
-  } catch (error) {
-    console.error("Error updating stock:", error);
-    throw error;
-  }
-}
+//     if (result.recordset.length > 0) {
+//       let { stockQty, retailQty } = result.recordset[0];
+
+//       // Calculate the new retail and stock quantities
+//       const newRetailQty = retailQty - totalQuantity;
+//       const stockReduction = (totalQuantity * stockQty) / retailQty;
+//       const newStockQty = stockQty - stockReduction;
+
+//       if (newRetailQty < 0 || newStockQty < 0) {
+//         console.error("Calculated stock or retail quantity is negative.");
+//         return;
+//       }
+
+//       // Update the stock with new quantities
+//       await pool.query`
+//         UPDATE [elite_pos].[dbo].[stock_Ob]
+//         SET retailQty = ${newRetailQty}, op_quantity = ${newStockQty}
+//         WHERE product = ${productId} AND batchNo = ${batchNo};
+//       `;
+
+//       console.log(
+//         `Stock updated: New Retail Qty = ${newRetailQty}, New Stock Qty = ${newStockQty}`
+//       );
+//     } else {
+//       console.error("Product or Batch not found in stock_Ob");
+//     }
+//   } catch (error) {
+//     console.error("Error updating stock:", error);
+//     throw error;
+//   }
+// }
 
 exports.salesretailreturnEdit = async (req, res) => {
   const { purchaseId } = req.params;
@@ -803,43 +877,43 @@ exports.salesretailreturnEdit = async (req, res) => {
 //   }
 // };
 
-async function increaseRetailStock(productId, quantity, free, batchNo) {
-  try {
-    // Sum of quantity and free
-    const totalQuantity = Number(quantity) + Number(free);
+// async function increaseRetailStock(productId, quantity, free, batchNo) {
+//   try {
+//     // Sum of quantity and free
+//     const totalQuantity = Number(quantity) + Number(free);
 
-    // Fetch the current stock and retail quantity for the given product and batch number
-    const result = await pool.query`
-      SELECT op_quantity AS stockQty, retailQty FROM [elite_pos].[dbo].[stock_Ob]
-      WHERE product = ${productId} AND batchNo = ${batchNo};
-    `;
+//     // Fetch the current stock and retail quantity for the given product and batch number
+//     const result = await pool.query`
+//       SELECT op_quantity AS stockQty, retailQty FROM [elite_pos].[dbo].[stock_Ob]
+//       WHERE product = ${productId} AND batchNo = ${batchNo};
+//     `;
 
-    if (result.recordset.length > 0) {
-      let { stockQty, retailQty } = result.recordset[0];
+//     if (result.recordset.length > 0) {
+//       let { stockQty, retailQty } = result.recordset[0];
 
-      // Calculate the new retail and stock quantities
-      const newRetailQty = retailQty + totalQuantity;
-      const stockIncrease = (totalQuantity * stockQty) / retailQty;
-      const newStockQty = stockQty + stockIncrease;
+//       // Calculate the new retail and stock quantities
+//       const newRetailQty = retailQty + totalQuantity;
+//       const stockIncrease = (totalQuantity * stockQty) / retailQty;
+//       const newStockQty = stockQty + stockIncrease;
 
-      // Update the stock with new quantities
-      await pool.query`
-        UPDATE [elite_pos].[dbo].[stock_Ob]
-        SET retailQty = ${newRetailQty}, op_quantity = ${newStockQty}
-        WHERE product = ${productId} AND batchNo = ${batchNo};
-      `;
+//       // Update the stock with new quantities
+//       await pool.query`
+//         UPDATE [elite_pos].[dbo].[stock_Ob]
+//         SET retailQty = ${newRetailQty}, op_quantity = ${newStockQty}
+//         WHERE product = ${productId} AND batchNo = ${batchNo};
+//       `;
 
-      console.log(
-        `Stock updated: New Retail Qty = ${newRetailQty}, New Stock Qty = ${newStockQty}`
-      );
-    } else {
-      console.error("Product or Batch not found in stock_Ob");
-    }
-  } catch (error) {
-    console.error("Error updating stock:", error);
-    throw error;
-  }
-}
+//       console.log(
+//         `Stock updated: New Retail Qty = ${newRetailQty}, New Stock Qty = ${newStockQty}`
+//       );
+//     } else {
+//       console.error("Product or Batch not found in stock_Ob");
+//     }
+//   } catch (error) {
+//     console.error("Error updating stock:", error);
+//     throw error;
+//   }
+// }
 
 exports.salesretailreturnids = (req, res) => {
   pool.connect((err, connection) => {
@@ -1032,7 +1106,6 @@ exports.salesretailreturnregister = (req, res) => {
       `
     SELECT *
     FROM [elite_pos].[dbo].[salesretailreturn_Master] 
-    
    ;
     `,
       (err, result) => {
@@ -1097,7 +1170,7 @@ exports.salesretailDetails = async (req, res) => {
           sm.[saledate],
           sm.[doctorname],
           sm.[amount],
-          sm.[cdAmount],
+          sm.[cdAmount],  
           sm.[igst],
           sm.[cgst],
           sm.[sgst],
@@ -1162,7 +1235,7 @@ exports.salesretailadd = async (req, res) => {
 
     // Make sure customerId is being used correctly
     const result = await pool.query`
-      INSERT INTO [elite_pos].[dbo].[salesretail_Master]
+      INSERT INTO salesretail_Master
       ([saledate], [paymentmode], [customername],[doctorname] ,[amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft])
       VALUES
       (${formattedSaleDate}, ${ppaymentMode}, ${customerId},${doctorname}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft});
@@ -1195,13 +1268,17 @@ exports.salesretailadd = async (req, res) => {
       } = product;
 
       await pool.query`
-        INSERT INTO [elite_pos].[dbo].[salesretail_Trans]
+        INSERT INTO salesretail_Trans
         ([salesId], [product], [batchNo],[expiryDate], [tax], [quantity],[free], [uom],[purcRate], [mrp],[rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
         VALUES
         (${salesId}, ${productId}, ${batchNo},${expiryDate}, ${tax}, ${quantity}, ${free}, ${uom}, ${purcRate}, ${mrp}, ${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
       `;
 
-      await reduceretailStock(productId, quantity, free, batchNo);
+      // Only call reduceretailStock if isDraft is 0 (indicating a confirmed sale)
+     if (Number(isDraft) !== 1) {
+       await reduceretailStock(productId, quantity, free, batchNo, expiryDate);
+     }
+
     }
 
     res
@@ -1213,15 +1290,22 @@ exports.salesretailadd = async (req, res) => {
   }
 };
 
-async function reduceretailStock(productId, quantity, free, batchNo) {
+
+async function reduceretailStock(
+  productId,
+  quantity,
+  free,
+  batchNo,
+  expiryDate
+) {
   try {
     // Sum of quantity and free
     const totalQuantity = Number(quantity) + Number(free);
 
-    // Fetch the current stock and retail quantity for the given product and batch number
+    // Fetch the current stock and retail quantity for the given product, batch number, and expiry date
     const result = await pool.query`
-      SELECT op_quantity AS stockQty, retailQty FROM [elite_pos].[dbo].[stock_Ob]
-      WHERE product = ${productId} AND batchNo = ${batchNo};
+      SELECT op_quantity AS stockQty, retailQty FROM stock_Ob
+      WHERE product = ${productId} AND batchNo = ${batchNo} AND expiryDate = ${expiryDate};
     `;
 
     if (result.recordset.length > 0) {
@@ -1239,16 +1323,18 @@ async function reduceretailStock(productId, quantity, free, batchNo) {
 
       // Update the stock with new quantities
       await pool.query`
-        UPDATE [elite_pos].[dbo].[stock_Ob]
+        UPDATE stock_Ob
         SET retailQty = ${newRetailQty}, op_quantity = ${newStockQty}
-        WHERE product = ${productId} AND batchNo = ${batchNo};
+        WHERE product = ${productId} AND batchNo = ${batchNo} AND expiryDate = ${expiryDate};
       `;
 
       console.log(
         `Stock updated: New Retail Qty = ${newRetailQty}, New Stock Qty = ${newStockQty}`
       );
     } else {
-      console.error("Product or Batch not found in stock_Ob");
+      console.error(
+        "Product or Batch not found in stock_Ob with the given expiry date."
+      );
     }
   } catch (error) {
     console.error("Error updating stock:", error);
@@ -1256,34 +1342,39 @@ async function reduceretailStock(productId, quantity, free, batchNo) {
   }
 }
 
+
 exports.salesretailEdit = async (req, res) => {
   const { id } = req.params;
-
   const { purchaseDetails, products } = req.body;
+
   try {
     console.log("Received request to edit purchase:", req.body);
+
+    // Update salesretail_Master
     await pool.query`
-        UPDATE [elite_pos].[dbo].[salesretail_Master]
-        SET
-            [saledate] = ${purchaseDetails.saledate}, 
-            [paymentmode] = ${purchaseDetails.paymentmode},
-            [customername] = ${purchaseDetails.customername},
-             [doctorname] = ${purchaseDetails.doctorname},
-            [amount] = ${purchaseDetails.pamount},
-            [cgst] = ${purchaseDetails.pcgst},
-            [sgst] = ${purchaseDetails.psgst},
-            [igst] = ${purchaseDetails.pigst},
-            [netAmount] = ${purchaseDetails.pnetAmount},
-            [cess] = ${purchaseDetails.pcess},
-            [tcs] = ${purchaseDetails.ptcs},
-            [discMode] = ${purchaseDetails.pdiscMode_},
-            [discount] = ${purchaseDetails.pdiscount},
-            [subtotal] = ${purchaseDetails.psubtotal},
-            [roundoff] = ${purchaseDetails.proundOff},
+      UPDATE salesretail_Master
+      SET
+          [saledate] = ${purchaseDetails.saledate}, 
+          [paymentmode] = ${purchaseDetails.paymentmode},
+          [customername] = ${purchaseDetails.customername},
+          [doctorname] = ${purchaseDetails.doctorname},
+          [amount] = ${purchaseDetails.pamount},
+          [cgst] = ${purchaseDetails.pcgst},
+          [sgst] = ${purchaseDetails.psgst},
+          [igst] = ${purchaseDetails.pigst},
+          [netAmount] = ${purchaseDetails.pnetAmount},
+          [cess] = ${purchaseDetails.pcess},
+          [tcs] = ${purchaseDetails.ptcs},
+          [discMode] = ${purchaseDetails.pdiscMode_},
+          [discount] = ${purchaseDetails.pdiscount},
+          [subtotal] = ${purchaseDetails.psubtotal},
+          [roundoff] = ${purchaseDetails.proundOff},
           [isDraft] = ${purchaseDetails.isDraft}
-        WHERE
-            [id] = ${id};
+      WHERE
+          [id] = ${id};
     `;
+
+    // Iterate through each product in the products array
     for (const product of products) {
       const {
         Id,
@@ -1305,9 +1396,11 @@ exports.salesretailEdit = async (req, res) => {
         igst,
         totalAmount,
       } = product;
+
+      // If the product already exists in the database (i.e., it's being updated)
       if (Id) {
         await pool.query`
-          UPDATE [elite_pos].[dbo].[salesretail_Trans]
+          UPDATE salesretail_Trans
           SET
               [product] = ${productId},
               [batchNo] = ${batchNo},
@@ -1316,8 +1409,8 @@ exports.salesretailEdit = async (req, res) => {
               [quantity] = ${quantity},
               [free] = ${free},
               [uom] = ${uom},
-              [purcRate]=${purcRate},
-               [mrp]=${mrp},
+              [purcRate] = ${purcRate},
+              [mrp] = ${mrp},
               [rate] = ${rate},
               [discMode] = ${discMode},
               [discount] = ${discount},
@@ -1329,14 +1422,39 @@ exports.salesretailEdit = async (req, res) => {
           WHERE
               [Id] = ${Id};
         `;
+
+        if (purchaseDetails.isDraft != 1) {
+          // Loose equality check
+          console.log("Attempting to reduce stock for existing product...");
+          await reduceretailStock(
+            productId,
+            quantity,
+            free,
+            batchNo,
+            expiryDate
+          );
+        }
       } else {
+        // If the product is being added (i.e., it's a new product in the transaction)
         await pool.query`
-          INSERT INTO [elite_pos].[dbo].[salesretail_Trans] ([salesId], [product], [batchNo],[expiryDate] ,[tax], [quantity], [uom],[purcRate],[mrp], [rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
-          VALUES ( ${purchaseDetails.id}, ${productId}, ${batchNo},${expiryDate}, ${tax}, ${quantity}, ${uom},${purcRate},${mrp} ,${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
+          INSERT INTO salesretail_Trans ([salesId], [product], [batchNo], [expiryDate], [tax], [quantity], [uom], [purcRate], [mrp], [rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
+          VALUES (${purchaseDetails.id}, ${productId}, ${batchNo}, ${expiryDate}, ${tax}, ${quantity}, ${uom}, ${purcRate}, ${mrp}, ${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
         `;
-        await reduceretailStock(productId, quantity, free, batchNo);
+
+        if (purchaseDetails.isDraft != 1) {
+          // Loose equality check
+          console.log("Attempting to reduce stock for new product...");
+          await reduceretailStock(
+            productId,
+            quantity,
+            free,
+            batchNo,
+            expiryDate
+          );
+        }
       }
     }
+
     console.log("salesretail edited successfully");
     res
       .status(200)
@@ -1349,6 +1467,65 @@ exports.salesretailEdit = async (req, res) => {
     });
   }
 };
+
+
+async function increaseRetailStock(
+  productId,
+  quantity,
+  free,
+  batchNo,
+  expiryDate
+) {
+  try {
+    // Sum of quantity and free
+    const totalQuantity = Number(quantity) + Number(free);
+
+    // Fetch the current stock and retail quantity for the given product, batch number, and expiry date
+    const result = await pool.query`
+      SELECT op_quantity AS stockQty, retailQty FROM stock_Ob
+      WHERE product = ${productId} AND batchNo = ${batchNo} AND expiryDate = ${expiryDate};
+    `;
+
+    if (result.recordset.length > 0) {
+      let { stockQty, retailQty } = result.recordset[0];
+
+      // Treat stockQty as 0 if it's NULL
+      stockQty = stockQty || 0;
+
+      // Treat retailQty as 0 if it's NULL (if needed, modify based on your logic)
+      retailQty = retailQty || 0;
+
+      // Calculate the new retail quantity and stock quantity
+      const newRetailQty = retailQty + totalQuantity;
+
+      // Avoid division by zero if retailQty is zero
+      const stockIncrease =
+        retailQty > 0 ? (totalQuantity * stockQty) / retailQty : totalQuantity;
+
+      const newStockQty = stockQty + stockIncrease;
+
+      // Update the stock with new quantities
+      await pool.query`
+        UPDATE stock_Ob
+        SET retailQty = ${newRetailQty}, op_quantity = ${newStockQty}, IsActive = '1'
+        WHERE product = ${productId} AND batchNo = ${batchNo} AND expiryDate = ${expiryDate};
+      `;
+
+      console.log(
+        `Stock updated: New Retail Qty = ${newRetailQty}, New Stock Qty = ${newStockQty}`
+      );
+    } else {
+      console.error(
+        "Product or Batch not found in stock_Ob with the given expiry date."
+      );
+    }
+  } catch (error) {
+    console.error("Error updating stock:", error);
+    throw error;
+  }
+}
+
+
 
 // async function reduceStock(productId, quantity,batchNo) {
 //   try {
@@ -1363,43 +1540,6 @@ exports.salesretailEdit = async (req, res) => {
 //   }
 // };
 
-async function increaseRetailStock(productId, quantity, free, batchNo) {
-  try {
-    // Sum of quantity and free
-    const totalQuantity = Number(quantity) + Number(free);
-
-    // Fetch the current stock and retail quantity for the given product and batch number
-    const result = await pool.query`
-      SELECT op_quantity AS stockQty, retailQty FROM [elite_pos].[dbo].[stock_Ob]
-      WHERE product = ${productId} AND batchNo = ${batchNo};
-    `;
-
-    if (result.recordset.length > 0) {
-      let { stockQty, retailQty } = result.recordset[0];
-
-      // Calculate the new retail and stock quantities
-      const newRetailQty = retailQty + totalQuantity;
-      const stockIncrease = (totalQuantity * stockQty) / retailQty;
-      const newStockQty = stockQty + stockIncrease;
-
-      // Update the stock with new quantities
-      await pool.query`
-        UPDATE [elite_pos].[dbo].[stock_Ob]
-        SET retailQty = ${newRetailQty}, op_quantity = ${newStockQty}
-        WHERE product = ${productId} AND batchNo = ${batchNo};
-      `;
-
-      console.log(
-        `Stock updated: New Retail Qty = ${newRetailQty}, New Stock Qty = ${newStockQty}`
-      );
-    } else {
-      console.error("Product or Batch not found in stock_Ob");
-    }
-  } catch (error) {
-    console.error("Error updating stock:", error);
-    throw error;
-  }
-}
 
 exports.salesretailids = (req, res) => {
   pool.connect((err, connection) => {
@@ -1516,38 +1656,63 @@ exports.salesretaildelete = async (req, res) => {
       throw new Error("No salesId provided");
     }
 
-    // Fetch transaction details associated with the salesId
-    const transDetailsResult = await pool.query`
-      SELECT Id, product, batchNo, quantity,free, tax, uom, rate
-      FROM [elite_pos].[dbo].[salesretail_Trans]
-      WHERE [salesId] = ${salesId};
-    `;
-
-    const transactions = transDetailsResult.recordset;
-
-    // Iterate through each transaction
-    for (const transaction of transactions) {
-      const { product, batchNo, free, quantity } = transaction;
-
-      // Increase the stock quantities
-      await increaseRetailStock(product, quantity, free, batchNo);
-    }
-
-    // Delete from sales_Master
-    await pool.query`
-      DELETE FROM [elite_pos].[dbo].[salesretail_Master]
+    // Fetch the isDraft status for the salesId
+    const salesRecordResult = await pool.query`
+      SELECT isDraft 
+      FROM salesretail_Master 
       WHERE [id] = ${salesId};
     `;
 
-    // Delete associated products from sales_Trans
+    if (salesRecordResult.recordset.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Sales record not found",
+      });
+    }
+
+    const { isDraft } = salesRecordResult.recordset[0];
+    console.log(`Sales ID ${salesId} isDraft Value:`, isDraft);
+
+    // Ensure correct type for comparison
+    if (Number(isDraft) !== 1) {
+      console.log(
+        `Sales ID ${salesId} is not a draft. Updating stock quantities.`
+      );
+
+      // Fetch associated transactions
+      const transDetailsResult = await pool.query`
+        SELECT Id, product, batchNo, quantity, free,expiryDate
+        FROM salesretail_Trans
+        WHERE [salesId] = ${salesId};
+      `;
+
+      const transactions = transDetailsResult.recordset;
+
+      for (const transaction of transactions) {
+        const { product, batchNo, free, quantity, expiryDate } = transaction;
+
+        // Update stock quantities
+        await increaseRetailStock(product, quantity, free, batchNo, expiryDate);
+      }
+    } else {
+      console.log(`Sales ID ${salesId} is a draft. Skipping stock updates.`);
+    }
+
+    // Delete the master record
     await pool.query`
-      DELETE FROM [elite_pos].[dbo].[salesretail_Trans]
+      DELETE FROM salesretail_Master
+      WHERE [id] = ${salesId};
+    `;
+
+    // Delete associated transactions
+    await pool.query`
+      DELETE FROM salesretail_Trans
       WHERE [salesId] = ${salesId};
     `;
 
     res.status(200).json({
       success: true,
-      message: "Sales retail and associated products deleted successfully",
+      message: `Sales ID ${salesId} and associated transactions deleted successfully.`,
     });
   } catch (error) {
     console.error("Error during salesretail deletion:", error);
@@ -1557,49 +1722,81 @@ exports.salesretaildelete = async (req, res) => {
 
 exports.salesretailtransdelete = async (req, res) => {
   const transactionId = req.params.id;
+
   try {
     await poolConnect();
 
-    const { recordset } = await pool
-      .request()
-      .input("transactionId", sql.Int, transactionId)
-      .query(
-        "SELECT quantity,free, Product, batchNo FROM [elite_pos].[dbo].[salesretail_Trans] WHERE Id = @transactionId"
-      );
+    // Check if the parent sales record is in draft mode
+    const salesRecordResult = await pool.query`
+      SELECT M.isDraft
+      FROM salesretail_Trans T
+      INNER JOIN salesretail_Master M
+      ON T.salesId = M.id
+      WHERE T.Id = ${transactionId};
+    `;
 
-    if (recordset.length === 0) {
-      return res
-        .status(404)
-        .json({ success: false, error: "Purchased product not found" });
+    if (salesRecordResult.recordset.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Transaction or parent sales record not found",
+      });
     }
 
-    const { quantity, free, Product: productId, batchNo } = recordset[0];
+    const { isDraft } = salesRecordResult.recordset[0];
+    console.log(`Transaction ID ${transactionId}, isDraft Value:`, isDraft);
 
-    const result = await pool
-      .request()
-      .input("transactionId", sql.Int, transactionId)
-      .query(
-        "DELETE FROM [elite_pos].[dbo].[salesretail_Trans] WHERE Id = @transactionId"
-      );
+    // Fetch transaction details
+    const transactionDetailsResult = await pool.query`
+      SELECT quantity, free, Product AS productId, batchNo,expiryDate
+      FROM salesretail_Trans
+      WHERE Id = ${transactionId};
+    `;
 
-    // Update the stock in the stock_Ob table based on the productId, batchNo, and retrieved quantity
-    await increaseRetailStock(productId, quantity, free, batchNo);
+    if (transactionDetailsResult.recordset.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Transaction not found",
+      });
+    }
 
-    if (result.rowsAffected[0] > 0) {
+    const { quantity, free, productId, batchNo,expiryDate } =
+      transactionDetailsResult.recordset[0];
+
+    // Delete the transaction
+    const deleteResult = await pool.query`
+      DELETE FROM salesretail_Trans
+      WHERE Id = ${transactionId};
+    `;
+
+    if (deleteResult.rowsAffected[0] > 0) {
+      // Only update stock if the sales record is not in draft mode
+      if (isDraft === 0) {
+        await increaseRetailStock(productId, quantity, free, batchNo,expiryDate);
+        console.log(
+          `Stock updated for Product: ${productId}, Batch: ${batchNo}`
+        );
+      } else {
+        console.log(
+          `Stock update skipped as the sales record is in draft mode.`
+        );
+      }
+
       return res.json({
         success: true,
-        message: "Purchased product deleted successfully",
+        message: "Transaction deleted successfully",
       });
     } else {
-      return res
-        .status(404)
-        .json({ success: false, error: "Purchased product not found" });
+      return res.status(404).json({
+        success: false,
+        error: "Failed to delete transaction",
+      });
     }
   } catch (error) {
-    console.error(error);
-    return res
-      .status(500)
-      .json({ success: false, error: "Internal Server Error" });
+    console.error("Error during transaction deletion:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Internal Server Error",
+    });
   }
 };
 
@@ -1690,8 +1887,31 @@ exports.salesretaildraft = (req, res) => {
 
     pool.query(
       `
-    SELECT *
-    FROM [elite_pos].[dbo].[salesretail_Master] 
+  SELECT 
+    sm.[id] ,
+    sm.[saledate],
+    sm.[paymentmode],
+    sm.[doctorname],
+    rc.[customername],
+    rc.[mobileno],
+    sm.[amount],
+    sm.[cdAmount],
+    sm.[igst],
+    sm.[cgst],
+    sm.[sgst],
+    sm.[subtotal],
+    sm.[cess],
+    sm.[tcs],
+    sm.[discMode],
+    sm.[discount],
+    sm.[roundoff],
+    sm.[netAmount],
+    sm.[isDraft],
+     dbo.GetBillMargin(sm.id) as billmargin
+FROM 
+    salesretail_Master sm
+LEFT JOIN 
+   retailcustomer rc ON sm.customername = rc.[id]
     where isDraft = 1;
     
    ;
@@ -2015,9 +2235,18 @@ exports.purchaseoutstanding = (req, res) => {
 //purchasesales report
 //batchsummary
 exports.currentstock = (req, res) => {
+  const productType = req.query.producttype; // Capture the producttype parameter
+
+  // Check if productType is provided, if not return an empty response or handle accordingly
+  if (!productType) {
+    return res.status(400).json({ error: "Product type is required" });
+  }
+
   poolConnect()
     .then((pool) => {
       const request = pool.request();
+
+      request.input("ProductType", sql.NVarChar, productType);
 
       request.execute("dbo.GetCurrentStock", (err, result) => {
         if (err) {
@@ -2067,11 +2296,11 @@ exports.stocksummary = async (req, res) => {
     return res.status(400).json({ error: "Missing date parameters." });
   }
 
-  // Parse the dates and check validity
-  const fromDate = moment(ParamFrDate);
-  const toDate = moment(ParamToDate);
-
-  if (!fromDate.isValid() || !toDate.isValid()) {
+  // Check validity of date format without parsing
+  if (
+    !moment(ParamFrDate, "DD-MM-YYYY", true).isValid() ||
+    !moment(ParamToDate, "DD-MM-YYYY", true).isValid()
+  ) {
     return res.status(400).json({ error: "Invalid date format." });
   }
 
@@ -2079,8 +2308,9 @@ exports.stocksummary = async (req, res) => {
     const pool = await poolConnect(); // Establish database connection
     const request = pool.request();
 
-    request.input("ParamFrDate", sql.Date, fromDate.toDate());
-    request.input("ParamToDate", sql.Date, toDate.toDate());
+    // Pass dates as strings (VarChar) in the format dd-MM-YYYY
+    request.input("ParamFrDate", sql.VarChar, ParamFrDate);
+    request.input("ParamToDate", sql.VarChar, ParamToDate);
 
     request.execute("dbo.GetStockSummaryNew", (err, result) => {
       if (err) {
@@ -2099,9 +2329,6 @@ exports.stocksummary = async (req, res) => {
       .json({ error: "Internal Server Error", details: error });
   }
 };
-
-
-
 
 exports.stockanalysis = (req, res) => {
   poolConnect()
@@ -2191,6 +2418,67 @@ exports.billwise = (req, res) => {
       return res.status(500).json({ error: "Internal Server Error" });
     });
 };
+
+exports.producthistory = async (req, res) => {
+  try {
+    await poolConnect(); // Ensure the DB connection pool is set up
+
+    const { productId } = req.query; // Retrieve the product ID from the request query
+
+    if (!productId) {
+      return res.status(400).json({ error: "Product ID is required" });
+    }
+
+    // Log the productId to check if it's being passed correctly
+    console.log("Selected Product ID:", productId);
+
+    // Execute the stored procedure with the correct input parameter name '@SelectedProduct'
+    const result = await pool
+      .request()
+      .input("SelectedProduct", sql.VarChar, productId)
+      .execute("GetProductHistory");
+
+    // Log the result to check all recordsets
+    console.log("All Recordsets from stored procedure:", result.recordsets);
+
+    // Initialize quantityData
+    const quantityData = result.recordsets[3] || []; // Default to empty array if no data
+    console.log("Quantity Data:", quantityData);
+
+    // Check if there are any recordsets and send them as a response
+    if (result.recordsets.length > 0) {
+      if (quantityData.length > 0) {
+        res.json({
+          purchaseData: result.recordsets[0],
+          salesRetailData: result.recordsets[1],
+          salesData: result.recordsets[2],
+          quantity: quantityData,
+        });
+      } else {
+        console.log("Quantity Data not found or is empty.");
+        res.json({
+          purchaseData: result.recordsets[0],
+          salesRetailData: result.recordsets[1],
+          salesData: result.recordsets[2],
+          quantity: [], // Return empty array for quantity
+        });
+      }
+    } else {
+      res.json({ data: [] }); // Send an empty array if no data
+    }
+  } catch (error) {
+    console.error(
+      "Error in fetching product details with transactions:",
+      error
+    );
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+
+
+
 //mis
 
 //accounts
@@ -3394,16 +3682,12 @@ exports.retailbatchDetails = async (req, res) => {
   try {
     console.log("Selected Product ID:", selectedProductId);
     const result = await pool.query(`
-          SELECT 
-              [batchNo],
-              [tax],
-              [retailQty],
-               [expiryDate],
-              [uom],
-              [retailMrp] ,
-		          [retailRate]
+	   SELECT 
+              ST.batchNo,ST.tax,ST.retailQty,ST.expiryDate,ST.uom,ST.retailMrp ,ST.retailRate,ISNULL(PT.profitMargin,0) AS profitMargin
           FROM 
-              [elite_pos].[dbo].[stock_Ob]
+             stock_Ob ST
+	  INNER JOIN product PR ON ST.product = PR.id
+	  INNER JOIN producttype PT ON PR.productType = PT.producttype
           WHERE 
           isActive = '1' AND 
               product = ${selectedProductId};
@@ -3429,23 +3713,84 @@ exports.retailbatchDetails = async (req, res) => {
   }
 };
 
+exports.checkStockAvailability = async (req, res) => {
+  const { productId, batchNo, quantity, expiryDate } = req.params;
+
+  try {
+    const query = `
+            SELECT 
+                ST.retailQty AS availableStock,
+                P.productname,
+                ST.batchNo,
+                ST.expiryDate
+            FROM 
+                product P
+            LEFT JOIN 
+                stock_Ob ST ON ST.product = P.id AND 
+                               ST.batchNo = @batchNo AND 
+                               ST.isActive = '1' AND 
+                               ST.expiryDate >= @expiryDate
+            WHERE 
+                P.id = @productId;
+        `;
+
+    const result = await pool
+      .request()
+      .input("productId", productId)
+      .input("batchNo", batchNo)
+      .input("expiryDate", expiryDate)
+      .query(query);
+
+    if (result.recordset.length > 0) {
+      const { availableStock, productname, batchNo, expiryDate } =
+        result.recordset[0];
+
+      if (availableStock !== null && availableStock >= quantity) {
+        res.status(200).json({
+          success: true,
+          availableStock,
+          productName: productname,
+          batchNo,
+          expiryDate,
+        });
+      } else {
+        res.status(200).json({
+          success: false,
+          availableStock: availableStock || 0,
+          productName: productname,
+          batchNo,
+          expiryDate,
+          message: `Insufficient stock. Available: ${
+            availableStock || 0
+          }, Requested: ${quantity}`,
+        });
+      }
+    } else {
+      res.status(200).json({
+        success: false,
+        productName: "Unknown Product", // Fallback for missing product names
+        message: "No valid stock found or product is expired.",
+      });
+    }
+  } catch (error) {
+    console.error("Error checking stock availability:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 exports.batchDetails = async (req, res) => {
   const { selectedProductId } = req.body;
   try {
     console.log("Selected Product ID:", selectedProductId);
     const result = await pool.query(`
-          SELECT 
-              [batchNo],
-              [tax],
-             CAST([op_quantity] AS INT) AS op_quantity,
-              [expiryDate],
-              [uom],
-              [rate] ,
-              [mrp]
-          FROM 
-              [elite_pos].[dbo].[stock_Ob]
-          WHERE 
-              isActive='1' and product = ${selectedProductId} ;
+SELECT 
+      ST.batchNo,ST.tax,CAST(ST.op_quantity AS INT) AS op_quantity,ST.expiryDate,ST.uom,ST.rate ,ST.mrp,ISNULL(PT.profitMargin,0) AS profitMargin
+FROM 
+      stock_Ob ST
+	  INNER JOIN product PR ON ST.product = PR.id
+	  INNER JOIN producttype PT ON PR.productType = PT.producttype
+WHERE 
+      ST.isActive='1' and ST.product = ${selectedProductId} ;
       `);
     if (result.recordset.length > 0) {
       console.log("Batch details retrieved successfully:", result.recordset);
@@ -3518,7 +3863,7 @@ exports.salesproductname = async (req, res) => {
 };
 
 exports.salesadd = async (req, res) => {
-  console.log(req.body);
+  console.log("Request body:", req.body);
   const {
     saledate,
     paymentmode,
@@ -3546,25 +3891,44 @@ exports.salesadd = async (req, res) => {
   const formattedSaleDate = saledate ? saledate : null;
 
   try {
-    // Establish database connection
+    // Ensure database connection
     await poolConnect();
 
-    // Parse products array from request body
-    parsedProducts = JSON.parse(productsString);
+    // Parse the products array safely
+    try {
+      parsedProducts = JSON.parse(productsString);
+    } catch (parseError) {
+      console.error("Error parsing products string:", parseError);
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid products data format" });
+    }
 
-    // Insert sales master record
+    // Insert into sales master table
     const result = await pool.query`
-          INSERT INTO [elite_pos].[dbo].[sales_Master]
-          ([saledate], [paymentmode], [referno], [transportno], [customermobileno], [customer],[salesman] ,[amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft])
-          VALUES
-          (${formattedSaleDate}, ${paymentmode}, ${referno}, ${transportno}, ${customermobileno}, ${customername},${salesmanname}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft});
+      INSERT INTO sales_Master
+      ([saledate], [paymentmode], [referno], [transportno], [customermobileno], [customer], [salesman], [amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft])
+      VALUES
+      (${formattedSaleDate}, ${paymentmode}, ${referno}, ${transportno}, ${customermobileno}, ${customername}, ${salesmanname}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft});
 
-          SELECT SCOPE_IDENTITY() as salesId;
-      `;
+      SELECT SCOPE_IDENTITY() as salesId;
+    `;
+
+    if (
+      !result.recordset ||
+      !result.recordset[0] ||
+      !result.recordset[0].salesId
+    ) {
+      console.error("Failed to retrieve sales ID");
+      return res
+        .status(500)
+        .json({ success: false, message: "Failed to retrieve sales ID" });
+    }
 
     const salesId = result.recordset[0].salesId;
     console.log("Number of products:", parsedProducts.length);
 
+    // Insert each product into sales transaction table
     for (const product of parsedProducts) {
       const {
         productId,
@@ -3585,16 +3949,27 @@ exports.salesadd = async (req, res) => {
         totalAmount,
       } = product;
 
-      // Insert sales transaction record
-      await pool.query`
-            INSERT INTO [elite_pos].[dbo].[sales_Trans]
-            ([salesId], [product], [batchNo], [tax], [quantity],[free], [uom],[purcRate], [mrp],[rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
-            VALUES
-            (${salesId}, ${productId}, ${batchNo}, ${tax}, ${quantity},${free}, ${uom},${purcRate},${mrp} ,${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
+      try {
+        await pool.query`
+          INSERT INTO sales_Trans
+          ([salesId], [product], [batchNo], [tax], [quantity], [free], [uom], [purcRate], [mrp], [rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
+          VALUES
+          (${salesId}, ${productId}, ${batchNo}, ${tax}, ${quantity}, ${free}, ${uom}, ${purcRate}, ${mrp}, ${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
         `;
 
-      // Reduce stock quantity
-      await reduceStock(productId, quantity, free, batchNo);
+        if (Number(isDraft) === 0) {
+          console.log(`Reducing stock for product ${productId}`);
+          await reduceStock(productId, quantity, free, batchNo);
+        }
+      } catch (productError) {
+        console.error(`Error inserting product ${productId}:`, productError);
+        return res
+          .status(500)
+          .json({
+            success: false,
+            message: `Failed to insert product ${productId}`,
+          });
+      }
     }
 
     res
@@ -3606,6 +3981,7 @@ exports.salesadd = async (req, res) => {
   }
 };
 
+
 exports.salesEdit = async (req, res) => {
   const { purchaseId } = req.params;
   const { purchaseDetails, products } = req.body;
@@ -3613,7 +3989,7 @@ exports.salesEdit = async (req, res) => {
     console.log("Received request to edit purchase:", req.body);
     // Update sales master table
     await pool.query`
-        UPDATE [elite_pos].[dbo].[sales_Master]
+        UPDATE sales_Master
         SET
             [saledate] = ${purchaseDetails.saledate},
             [paymentmode] = ${purchaseDetails.paymentmode},
@@ -3659,7 +4035,7 @@ exports.salesEdit = async (req, res) => {
       } = product;
       if (Id) {
         await pool.query`
-          UPDATE [elite_pos].[dbo].[sales_Trans]
+          UPDATE sales_Trans
           SET
               [product] = ${productId},
               [batchNo] = ${batchNo},
@@ -3680,13 +4056,18 @@ exports.salesEdit = async (req, res) => {
           WHERE
               [Id] = ${Id};
         `;
+       if (Number(purchaseDetails.isDraft) === 0) {
+         console.log("Reducing stock for updated product...");
+         await reduceStock(productId, quantity, free, batchNo);
+       }
+
       } else {
         await pool.query`
-          INSERT INTO [elite_pos].[dbo].[sales_Trans] ([salesId], [product], [batchNo], [tax], [quantity],[free], [uom],[purcRate],[mrp], [rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
+          INSERT INTO sales_Trans ([salesId], [product], [batchNo], [tax], [quantity],[free], [uom],[purcRate],[mrp], [rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
           VALUES ( ${purchaseDetails.id}, ${productId}, ${batchNo}, ${tax}, ${quantity},${free}, ${uom},${purcRate} ,${mrp} ,${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
         `;
         // Reduce stock quantity
-        await reduceStock(productId, quantity, free, batchNo);
+       
       }
     }
     console.log("Sales edited successfully");
@@ -3831,42 +4212,59 @@ exports.salesdelete = async (req, res) => {
       throw new Error("No salesId provided");
     }
 
-    // Fetch transaction details associated with the salesId
-    const transDetailsResult = await pool.query`
-      SELECT Id, product, batchNo, quantity, free, tax, uom, rate, mrp
-      FROM [elite_pos].[dbo].[sales_Trans]
-      WHERE [salesId] = ${salesId};
+    // Check if the associated sales_Master record has isDraft set to 1
+    const masterResult = await pool.query`
+      SELECT isDraft
+      FROM [elite_pos].[dbo].[sales_Master]
+      WHERE [id] = ${salesId};
     `;
 
-    const transactions = transDetailsResult.recordset;
+    if (masterResult.recordset.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Sales record not found" });
+    }
 
-    // If transactions exist, iterate through and increase stock quantity
-    if (transactions.length > 0) {
-      for (const transaction of transactions) {
-        const { product, batchNo, quantity, free, uom, rate, tax, mrp } =
-          transaction;
+    const { isDraft } = masterResult.recordset[0];
 
-        // Increase stock quantity using the increaseStock function
-        await increaseStock(
-          product,
-          batchNo,
-          quantity,
-          free,
-          uom,
-          rate,
-          tax,
-          mrp
-        );
+    // If isDraft is not 1, increase the stock; otherwise, skip this step
+    // Ensure `isDraft` is checked as a number
+    if (Number(isDraft) !== 1) {
+      // Get transaction details from sales_Trans
+      const transDetailsResult = await pool.query`
+        SELECT Id, product, batchNo, quantity, free, tax, uom, rate, mrp
+        FROM [elite_pos].[dbo].[sales_Trans]
+        WHERE [salesId] = ${salesId};
+      `;
+
+      const transactions = transDetailsResult.recordset;
+
+      if (transactions.length > 0) {
+        for (const transaction of transactions) {
+          const { product, batchNo, quantity, free, uom, rate, tax, mrp } =
+            transaction;
+
+          // Increase stock for each transaction if isDraft is not 1
+          await increaseStock(
+            product,
+            batchNo,
+            quantity,
+            free,
+            uom,
+            rate,
+            tax,
+            mrp
+          );
+        }
       }
     }
 
-    // Delete from sales_Master regardless of transactions
+    // Delete records from sales_Master and sales_Trans
     await pool.query`
       DELETE FROM [elite_pos].[dbo].[sales_Master]
       WHERE [id] = ${salesId};
     `;
 
-    // Delete associated products from sales_Trans regardless of transactions
     await pool.query`
       DELETE FROM [elite_pos].[dbo].[sales_Trans]
       WHERE [salesId] = ${salesId};
@@ -3881,6 +4279,8 @@ exports.salesdelete = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
+
 
 exports.salestransdelete = async (req, res) => {
   const manufacturerId = req.params.id;
@@ -4623,14 +5023,19 @@ exports.purchasedelete = async (req, res) => {
       throw new Error("No purchaseId provided");
     }
 
-    // Fetch the Ids of the PurchaseTable_Trans records for the given purchaseId
-    const transIdsResult = await pool.query`
-      SELECT Id FROM [elite_pos].[dbo].[PurchaseTable_Trans]
+    // Fetch the productId, expiryDate, and batchNo of the PurchaseTable_Trans records for the given purchaseId
+    const transDetailsResult = await pool.query`
+      SELECT product, expiryDate, batchNo
+      FROM PurchaseTable_Trans
       WHERE [purchaseId] = ${purchaseId};
     `;
 
-    // Extracting the Ids from the result
-    const transIds = transIdsResult.recordset.map((record) => record.Id);
+    // Extracting the details from the result
+    const transDetails = transDetailsResult.recordset;
+
+    if (transDetails.length === 0) {
+      throw new Error("No transaction details found for the given purchaseId");
+    }
 
     // Begin a transaction
     const transaction = await pool.transaction();
@@ -4641,22 +5046,28 @@ exports.purchasedelete = async (req, res) => {
       await transaction
         .request()
         .query(
-          `DELETE FROM [elite_pos].[dbo].[PurchaseTable_Master] WHERE [id] = ${purchaseId}`
+          `DELETE FROM PurchaseTable_Master WHERE [id] = ${purchaseId}`
         );
 
       // Delete from PurchaseTable_Trans
       await transaction
         .request()
         .query(
-          `DELETE FROM [elite_pos].[dbo].[PurchaseTable_Trans] WHERE [purchaseId] = ${purchaseId}`
+          `DELETE FROM PurchaseTable_Trans WHERE [purchaseId] = ${purchaseId}`
         );
 
-      // Delete corresponding records from stock_Ob
-      for (const transId of transIds) {
+      // Delete corresponding records from stock_Ob using product, expiryDate, and batchNo
+      for (const { product: productId, expiryDate, batchNo } of transDetails) {
         await transaction
           .request()
+          .input("productId", productId)
+          .input("expiryDate", expiryDate)
+          .input("batchNo", batchNo)
           .query(
-            `DELETE FROM [elite_pos].[dbo].[stock_Ob] WHERE [Id] = ${transId}`
+            `DELETE FROM stock_Ob
+             WHERE [product] = @productId
+             AND [expiryDate] = @expiryDate
+             AND [batchNo] = @batchNo`
           );
       }
 
@@ -5081,7 +5492,7 @@ exports.purchaseadd = async (req, res) => {
       BEGIN TRANSACTION;
       DECLARE @purchaseId INT;
 
-      INSERT INTO [elite_pos].[dbo].[PurchaseTable_Master]
+      INSERT INTO PurchaseTable_Master
       ([purchasedate], [paymentmode], [supplierinvoicedate], [modeoftransport], [transportno], [supplierinvoiceamount], [supplierinvoiceno], [suppliername], [amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft])
       VALUES
       (${formattedPurchaseDate}, ${paymentmode}, ${formattedsupplierinvoicedate}, ${modeoftransport}, ${transportno}, ${supplierinvoiceamount}, ${supplierinvoiceno}, ${suppliername}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft});
@@ -5126,7 +5537,7 @@ exports.purchaseadd = async (req, res) => {
         : null;
 
       await pool.query`
-        INSERT INTO [elite_pos].[dbo].[PurchaseTable_Trans]
+        INSERT INTO PurchaseTable_Trans
         ([purchaseId], [product], [batchNo], [expiryDate], [tax], [quantity], [free], [package], [retailQty], [retailRate], [uom], [rate], [mrp], [retailMrp], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
         VALUES
         (${purchaseId}, ${productId}, ${batchNo}, ${formattedExpiryDate}, ${tax}, ${quantityValue}, ${freeValue}, ${package}, ${retailQty}, ${retailRate}, ${uom}, ${rate}, ${mrp}, ${retailMrp}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
@@ -5134,11 +5545,31 @@ exports.purchaseadd = async (req, res) => {
 
       // Conditionally add stock only if isDraft is 0
       if (isDraft == 0) {
-        await pool.query`
-          INSERT INTO [elite_pos].[dbo].[stock_Ob]
-          (product, batchNo, expiryDate, quantity, retailQty, retailRate, [op_quantity], tax, uom, rate, mrp, retailMrp,transDate)
-          VALUES (${productId}, ${batchNo}, ${formattedExpiryDate}, (${quantityValue} + ${freeValue}), ${retailQty}, ${retailRate}, (${quantityValue} + ${freeValue}), ${tax}, ${uom}, ${rate}, ${mrp}, ${retailMrp},${formattedPurchaseDate});
+        // Check if the product with the same batchNo and expiryDate already exists in stock_Ob
+        const existingStock = await pool.query`
+          SELECT * FROM stock_Ob
+          WHERE product = ${productId} AND batchNo = ${batchNo} AND expiryDate = ${formattedExpiryDate}
         `;
+
+        if (existingStock.recordset.length > 0) {
+          // Update existing record
+          await pool.query`
+            UPDATE stock_Ob
+            SET 
+              quantity = quantity + ${quantityValue} + ${freeValue},
+              retailQty = retailQty + ${retailQty},
+              [op_quantity] = [op_quantity] + ${quantityValue} + ${freeValue},
+              [IsActive]=1
+            WHERE product = ${productId} AND batchNo = ${batchNo} AND expiryDate = ${formattedExpiryDate}
+          `;
+        } else {
+          // Insert new record if not found
+          await pool.query`
+            INSERT INTO stock_Ob
+            (product, batchNo, expiryDate, quantity, retailQty, retailRate, [op_quantity], tax, uom, rate, mrp, retailMrp, transDate)
+            VALUES (${productId}, ${batchNo}, ${formattedExpiryDate}, (${quantityValue} + ${freeValue}), ${retailQty}, ${retailRate}, (${quantityValue} + ${freeValue}), ${tax}, ${uom}, ${rate}, ${mrp}, ${retailMrp}, ${formattedPurchaseDate});
+          `;
+        }
       }
     }
 
@@ -5151,6 +5582,59 @@ exports.purchaseadd = async (req, res) => {
   }
 };
 
+
+async function upsertStockWithExpiryCheck(
+  productId,
+  batchNo,
+  formattedExpiryDate,
+  quantityValue,
+  freeValue,
+  retailQty,
+  retailRate,
+  tax,
+  uom,
+  rate,
+  mrp,
+  retailMrp,
+  purchaseDate
+) {
+  return pool.query`
+    IF EXISTS (
+      SELECT 1 
+      FROM stock_Ob
+      WHERE product = ${productId} 
+        AND LTRIM(RTRIM(batchNo)) = LTRIM(RTRIM(${batchNo})) 
+        AND expiryDate = ${formattedExpiryDate}
+    )
+    BEGIN
+      -- Stock exists with matching expiry date, update it
+      UPDATE stock_Ob
+      SET 
+        [quantity] = [quantity] + ${quantityValue} + ${freeValue},
+        [op_quantity] = [op_quantity] + ${quantityValue} + ${freeValue},
+        [retailQty] = [retailQty] + ${retailQty},
+        [retailRate] = ${retailRate},
+        [tax] = ${tax},
+        [expiryDate] = ${formattedExpiryDate},
+        [rate] = ${rate},
+        [mrp] = ${mrp},
+        [retailMrp] = ${retailMrp},
+        [uom] = ${uom},
+        [transDate] = ${purchaseDate}
+      WHERE product = ${productId} AND LTRIM(RTRIM(batchNo)) = LTRIM(RTRIM(${batchNo})) AND expiryDate = ${formattedExpiryDate};
+    END
+    ELSE
+    BEGIN
+      -- Stock does not exist or expiry date differs, insert a new record
+      INSERT INTO stock_Ob
+      ([product], [batchNo], [expiryDate], [quantity], [retailQty], [retailRate], [op_quantity], [tax], [uom], [rate], [mrp], [retailMrp], [transDate])
+      VALUES
+      (${productId}, ${batchNo}, ${formattedExpiryDate}, (${quantityValue} + ${freeValue}), ${retailQty}, ${retailRate}, (${quantityValue} + ${freeValue}), ${tax}, ${uom}, ${rate}, ${mrp}, ${retailMrp}, ${purchaseDate});
+    END;
+  `;
+}
+
+
 exports.purchaseEdit = async (req, res) => {
   const { purchaseId } = req.params;
   const { purchaseDetails, products } = req.body;
@@ -5159,7 +5643,7 @@ exports.purchaseEdit = async (req, res) => {
 
     // Update purchase master record
     await pool.query`
-      UPDATE [elite_pos].[dbo].[PurchaseTable_Master]
+      UPDATE PurchaseTable_Master
       SET
           [purchaseDate] = ${purchaseDetails.purchaseDate},
           [paymentmode] = ${purchaseDetails.paymentMode},
@@ -5222,7 +5706,7 @@ exports.purchaseEdit = async (req, res) => {
       if (Id) {
         // Update existing product in PurchaseTable_Trans
         await pool.query`
-          UPDATE [elite_pos].[dbo].[PurchaseTable_Trans]
+          UPDATE PurchaseTable_Trans
           SET
               [product] = ${productId},
               [batchNo] = ${batchNo},
@@ -5251,7 +5735,7 @@ exports.purchaseEdit = async (req, res) => {
       } else {
         // Insert new product into PurchaseTable_Trans
         const insertProductResult = await pool.query`
-          INSERT INTO [elite_pos].[dbo].[PurchaseTable_Trans]
+          INSERT INTO PurchaseTable_Trans
           ([purchaseId], [product], [batchNo], [expiryDate], [tax], [quantity], [free], [package], [retailQty], [retailRate], [uom], [rate], [mrp], [retailMrp], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
           VALUES
           (${purchaseDetails.id}, ${productId}, ${batchNo}, ${formattedExpiryDate}, ${tax}, ${quantity}, ${free}, ${package}, ${retailQty}, ${retailRate}, ${uom}, ${rate}, ${mrp}, ${retailMrp}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
@@ -5265,32 +5749,39 @@ exports.purchaseEdit = async (req, res) => {
       if (purchaseDetails.isDraft === "") {
         await pool.query`
         -- Conditionally update or insert stock only if isDraft is 0
-IF EXISTS (SELECT 1 FROM [elite_pos].[dbo].[stock_Ob] WHERE product = ${productId} AND LTRIM(RTRIM(batchNo)) = LTRIM(RTRIM(${batchNo})))
-BEGIN
-  -- Stock exists, update it
-  UPDATE [elite_pos].[dbo].[stock_Ob]
-  SET 
-    [quantity] =  ${quantityValue} + ${freeValue},
-    [op_quantity] =  ${quantityValue} + ${freeValue},
-    [retailQty] = ${retailQty},
-    [retailRate] = ${retailRate},
-    [tax] = ${tax},
-    [expiryDate] = ${formattedExpiryDate},
-    [rate] = ${rate},
-    [mrp] = ${mrp},
-    [retailMrp] = ${retailMrp},
-    [uom] = ${uom}
-  WHERE product = ${productId} AND LTRIM(RTRIM(batchNo)) = LTRIM(RTRIM(${batchNo}));
-END
-ELSE
-BEGIN
-  -- Stock does not exist, insert it
-  INSERT INTO [elite_pos].[dbo].[stock_Ob]
-  ([product], [batchNo], [expiryDate], [quantity], [retailQty], [retailRate], [op_quantity], [tax], [uom], [rate], [mrp], [retailMrp],[transDate])
-  VALUES
-  (${productId}, ${batchNo}, ${formattedExpiryDate}, (${quantityValue} + ${freeValue}), ${retailQty}, ${retailRate}, (${quantityValue} + ${freeValue}), ${tax}, ${uom}, ${rate}, ${mrp}, ${retailMrp},${purchaseDetails.purchaseDate});
-END;
-
+ IF EXISTS (
+      SELECT 1 
+      FROM stock_Ob 
+      WHERE product = ${productId} 
+        AND LTRIM(RTRIM(batchNo)) = LTRIM(RTRIM(${batchNo})) 
+        AND expiryDate = ${formattedExpiryDate}
+    )
+    BEGIN
+      -- Stock exists with matching expiry date, update it
+      UPDATE stock_Ob
+      SET 
+        [quantity] = [quantity] + ${quantityValue} + ${freeValue},
+        [op_quantity] = [op_quantity] + ${quantityValue} + ${freeValue},
+        [retailQty] = [retailQty] + ${retailQty},
+        [retailRate] = ${retailRate},
+        [tax] = ${tax},
+        [expiryDate] = ${formattedExpiryDate},
+        [rate] = ${rate},
+        [mrp] = ${mrp},
+        [retailMrp] = ${retailMrp},
+        [uom] = ${uom},
+        [transDate] = ${purchaseDetails.purchaseDate},
+         [IsActive]=1
+      WHERE product = ${productId} AND LTRIM(RTRIM(batchNo)) = LTRIM(RTRIM(${batchNo})) AND expiryDate = ${formattedExpiryDate};
+    END
+    ELSE
+    BEGIN
+      -- Stock does not exist or expiry date differs, insert a new record
+      INSERT INTO stock_Ob
+      ([product], [batchNo], [expiryDate], [quantity], [retailQty], [retailRate], [op_quantity], [tax], [uom], [rate], [mrp], [retailMrp], [transDate])
+      VALUES
+      (${productId}, ${batchNo}, ${formattedExpiryDate}, (${quantityValue} + ${freeValue}), ${retailQty}, ${retailRate}, (${quantityValue} + ${freeValue}), ${tax}, ${uom}, ${rate}, ${mrp}, ${retailMrp},${purchaseDetails.purchaseDate});
+    END;
         `;
       }
     }
@@ -5429,6 +5920,37 @@ exports.productname = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+exports.productlastdetails = async (req, res) => {
+  try {
+    await poolConnect();
+
+    const { productId } = req.query; // Retrieve the product ID from the request query
+
+    if (!productId) {
+      return res.status(400).json({ error: "Product ID is required" });
+    }
+
+    const result = await pool
+      .request()
+      .input("ProductId", productId) // Pass the ProductId as an input to the stored procedure
+      .execute("GetProductDetailsWithTransactions");
+
+    // If result.recordsets has more than one recordset, pick the first one or combine them as needed
+    if (result.recordsets.length > 0) {
+      res.json({ data: result.recordsets[0] }); // Send only the first recordset
+    } else {
+      res.json({ data: [] }); // Send an empty array if no data
+    }
+  } catch (error) {
+    console.error(
+      "Error in fetching product details with transactions:",
+      error
+    );
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 
 exports.discmode = async (req, res) => {
   try {
@@ -7876,7 +8398,7 @@ exports.drugtype = (req, res) => {
 exports.producttypeadd = async (req, res) => {
   console.log(req.body);
 
-  const { typecode, producttype } = req.body;
+  const { typecode, producttype,profitMargin } = req.body;
 
   try {
     // Ensure the database connection is established before proceeding
@@ -7884,9 +8406,9 @@ exports.producttypeadd = async (req, res) => {
 
     const result = await pool.query`
       INSERT INTO [elite_pos].[dbo].[producttype]
-      (typecode, producttype)
+      (typecode, producttype,profitMargin)
       VALUES
-      ( ${typecode}, ${producttype})
+      ( ${typecode}, ${producttype},${profitMargin})
     `;
     console.log(result);
     console.log(result.toString());
@@ -7914,7 +8436,7 @@ exports.producttypedelete = async (req, res) => {
         producttypeId
       )
       .query(
-        "DELETE FROM [elite_pos].[dbo].[producttype] WHERE id = @producttypeId"
+        "DELETE FROM producttype WHERE id = @producttypeId"
       );
 
     if (result.rowsAffected[0] > 0) {
@@ -7939,17 +8461,18 @@ exports.producttypeedit = async (req, res) => {
   const productId = req.params.id;
 
   // Extract the product data from the request body
-  const { typecode, producttype } = req.body;
+  const { typecode, producttype,profitMargin } = req.body;
 
   try {
     // Ensure the database connection is established before proceeding
     await poolConnect();
 
     const result = await pool.query`
-      UPDATE [elite_pos].[dbo].[producttype]
+      UPDATE producttype
       SET
       typecode = ${typecode},
-      producttype = ${producttype}
+      producttype = ${producttype},
+      profitMargin=${profitMargin}
       WHERE
         id = ${productId}
     `;
@@ -7985,7 +8508,7 @@ exports.producttype = (req, res) => {
     }
 
     pool.query(
-      "SELECT *  FROM [elite_pos].[dbo].[producttype]",
+      "SELECT * FROM producttype ",
       (err, result) => {
         connection.release(); // Release the connection back to the pool
 

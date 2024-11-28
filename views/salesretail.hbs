@@ -12,7 +12,7 @@
             width: 200px;
             /* Adjust the width as needed */
             padding: 5px;
-            ;
+
         }
 
         .non-selectable {
@@ -26,7 +26,7 @@
             width: 200px;
             /* Adjust the width as needed */
             padding: 5px;
-            ;
+
         }
 
         .editForm {
@@ -219,7 +219,6 @@
                         <button type="button" class="btn btn-danger deletemasBtn">Delete</button>
                     </div>
                 </div>
-
                 <form id="purchaseDetails" class="form-control" style="display: block; align-item: start;"
                     method="post">
                     <div class="row mt-2">
@@ -303,7 +302,6 @@
 
                     </div>
                 </form>
-
                 <div class="custom-input-container">
                     <a class="opener" id="openPurchaseForm"><i class="fa-solid fa-folder-plus fa-2x"></i></a>
                 </div>
@@ -320,8 +318,8 @@
                             <th class="d-none">Free</th>
                             <th class="d-none">UOM</th>
                             <th>Purc.Rate</th>
-                            <th class="d-none">MRP</th>
-                            <th>MRP</th>
+                            <th >MRP</th>
+                            <th>Rate</th>
                             <th>Disc.Mode</th>
                             <th>Disc</th>
                             <th>Amount</th>
@@ -380,9 +378,8 @@
                         <input type="hidden" name="is_Draft" id="is_Draft" value="0">
                     </div>
                 </div>
-
-                <form id="purchaseDetails" class="form-control p-0 bg-primary text-white" style="display: block; align-item: start;"
-                    action="auth/salesretail" method="post">
+                <form id="purchaseDetails" class="form-control p-0 bg-primary text-white"
+                    style="display: block; align-item: start;" action="auth/salesretail" method="post">
                     <div class="row d-flex justify-content-between  mb-0 gx-0 w-100 ">
                         <div class="labels">
 
@@ -490,6 +487,26 @@
             <strong>Warning!</strong> Quantity cannot be greater than the purchase quantity.
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+        <!-- Modal structure -->
+        <div class="modal fade" id="stockAlertModal" tabindex="-1" aria-labelledby="stockAlertModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg"> <!-- Use modal-lg for a larger modal -->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="stockAlertModalLabel">Stock Availability Alert</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Stock message and table will be inserted dynamically here -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
 
 
         <div id="newCustomerFormOverlay"
@@ -503,11 +520,12 @@
                         <label for="customer" class="form-label">Customer Name</label>
                         <input type="text" class="form-control" id="customer" required>
                     </div>
-<div class="mb-3">
-    <label for="mobileno" class="form-label">Phone Number</label>
-    <input type="tel" class="form-control" id="cmobileno" maxlength="10" oninput="checkMobileNumber()" required>
-    <span id="mobileValidationMessage"></span> <!-- Display validation messages here -->
-</div>
+                    <div class="mb-3">
+                        <label for="mobileno" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="cmobileno" maxlength="10"
+                            oninput="checkMobileNumber()" required>
+                        <span id="mobileValidationMessage"></span> <!-- Display validation messages here -->
+                    </div>
 
 
                     <div class="mb-3">
@@ -545,40 +563,40 @@
     </main>
     {{>color}}
 
-<script>
-    async function checkMobileNumber() {
-        const mobileNo = document.getElementById('cmobileno').value;
+    <script>
+        async function checkMobileNumber() {
+            const mobileNo = document.getElementById('cmobileno').value;
 
-        // Check if the mobile number is exactly 10 digits
-        if (mobileNo.length !== 10 || isNaN(mobileNo)) {
-            document.getElementById('mobileValidationMessage').innerHTML = '<span style="color: red;">Please enter a valid 10-digit mobile number</span>';
-            return;
-        } else {
-            document.getElementById('mobileValidationMessage').innerHTML = ''; // Clear validation message if valid
-        }
-
-        try {
-            // Send request to check if the mobile number exists in the database
-            const response = await fetch(`/auth/salesretail/checkMobileNumber?mobileNo=${mobileNo}`);
-            const data = await response.json();
-
-            if (data.exists) {
-                // If the number exists, show an error message and prevent further action
-                document.getElementById('mobileValidationMessage').innerHTML = '<span style="color: red;">Mobile number already exists</span>';
-                // You can also disable the submit button if needed
-                document.getElementById('saveCustomerBtn').disabled = true;
+            // Check if the mobile number is exactly 10 digits
+            if (mobileNo.length !== 10 || isNaN(mobileNo)) {
+                document.getElementById('mobileValidationMessage').innerHTML = '<span style="color: red;">Please enter a valid 10-digit mobile number</span>';
+                return;
             } else {
-                // If the number is not found, show a success message
-                document.getElementById('mobileValidationMessage').innerHTML = '<span style="color: green;">Mobile number is available</span>';
-                // Enable the submit button
-                document.getElementById('saveCustomerBtn').disabled = false;
+                document.getElementById('mobileValidationMessage').innerHTML = ''; // Clear validation message if valid
             }
-        } catch (error) {
-            console.error('Error checking mobile number:', error);
-            document.getElementById('mobileValidationMessage').innerHTML = '<span style="color: red;">Error checking mobile number</span>';
+
+            try {
+                // Send request to check if the mobile number exists in the database
+                const response = await fetch(`/auth/salesretail/checkMobileNumber?mobileNo=${mobileNo}`);
+                const data = await response.json();
+
+                if (data.exists) {
+                    // If the number exists, show an error message and prevent further action
+                    document.getElementById('mobileValidationMessage').innerHTML = '<span style="color: red;">Mobile number already exists</span>';
+                    // You can also disable the submit button if needed
+                    document.getElementById('saveCustomerBtn').disabled = true;
+                } else {
+                    // If the number is not found, show a success message
+                    document.getElementById('mobileValidationMessage').innerHTML = '<span style="color: green;">Mobile number is available</span>';
+                    // Enable the submit button
+                    document.getElementById('saveCustomerBtn').disabled = false;
+                }
+            } catch (error) {
+                console.error('Error checking mobile number:', error);
+                document.getElementById('mobileValidationMessage').innerHTML = '<span style="color: red;">Error checking mobile number</span>';
+            }
         }
-    }
-</script>
+    </script>
 
 
 
@@ -822,7 +840,7 @@
                 var id = row.find('td:eq(0)').text();
                 var product = row.find('td:eq(1)').text().trim();
                 var batchNo = row.find('td:eq(2)').text();
-                 var expiryDate = row.find('td:eq(3)').text();
+                var expiryDate = row.find('td:eq(3)').text();
                 var tax = row.find('td:eq(4)').text();
                 var quantity = row.find('td:eq(5)').text();
                 var free = row.find('td:eq(6)').text();
@@ -841,14 +859,14 @@
                 row.html("<td><input type='number' readonly name='Id' class='input-field  purchase-id w2' value='" + id + "'></td>" +
                     "<td><select name='product' class='input-field product-name dropdown' id='productname_" + id + "'><option selected disabled>Select product</option></select></td>" +
                     "<td><input type='text' name='batchNo' class='input-field' value='" + batchNo + "' readonly></td>" +
-                                       "<td><input type='text' name='expiryDate' class='input-field' value='" + expiryDate + "' readonly></td>" +
+                    "<td><input type='text' name='expiryDate' class='input-field' value='" + expiryDate + "' readonly></td>" +
 
                     "<td><input type='text' name='tax' class='input-field' value='" + tax + "' readonly></td>" +
                     "<td><input type='number' name='quantity' class='input-field' value='" + quantity + "'></td>" +
                     "<td class='d-none'><input type='number' name='free' class='input-field' value='" + free + "'></td>" +
                     "<td class='d-none'><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
                     "<td><input type='number' name='purcRate' class='input-field' value='" + purcRate + "' readonly></td>" +
-                    "<td class='d-none'><input type='number' name='mrp' class='input-field' value='" + mrp + " readonly'></td>" +
+                    "<td ><input type='number' name='mrp' class='input-field' value='" + mrp + " readonly'></td>" +
                     "<td><input type='number' name='rate' class='input-field  w-200' value='" + rate + "'></td>" +
                     "<td><select name='discMode' class='input-field disc-mode dropdown' id='discMode_" + id + "'><option selected disabled>Select Disc Mode</option></select></td>" +
                     "<td><input type='number' name='discount' class='input-field' value='" + discount + "'></td>" +
@@ -864,11 +882,13 @@
                 fetchDiscModeOptions(id, discMode);
             });
 
+
+
             calculateTotals();
             adjustColumnWidths();
         });
-     
-     
+
+
         function adjustColumnWidths() {
             $('#customerTable').DataTable().columns.adjust().draw();
         }
@@ -898,28 +918,137 @@
             });
         });
 
-        $(document).ready(function () {
+    $(document).ready(function () {
+        console.log('Document is ready');
 
-            $('#paymentmode').change(function () {
-                $('#ppaymentMode').val($(this).val());
+        $('#paymentmode').change(function () {
+            $('#ppaymentMode').val($(this).val());
+        });
+
+        $('#draftBtn').on('click', function () {
+            // Set the value of is_Draft to 1
+            $('#is_Draft').val('1');
+            console.log('Draft button clicked, is_Draft value set to 1');
+            // Trigger the click event of the update button
+            $('.updateBtn').click();
+        });
+
+        // Sanitize payload
+        function sanitizePayload(payload) {
+            const sanitizedPayload = { ...payload };
+            // Validate and remove unwanted fields
+            delete sanitizedPayload.unwantedField;
+            return sanitizedPayload;
+        }
+
+        // Utility function to format date
+        function formateDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            const options = { year: 'numeric', month: 'short' }; // Example: Dec 2024
+            return date.toLocaleDateString(undefined, options);
+        }
+
+        // Display stock alert in a modal
+        function showStockAlert(insufficientStock) {
+            const modalBody = $('#stockAlertModal .modal-body');
+            modalBody.empty();
+
+            let table = `
+            <p>The following products have insufficient stock or other issues:</p>
+            <table class="table table-striped table-hover table-sm">
+                <thead class="bg-primary">
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Batch No</th>
+                        <th>Expiry Date</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+            insufficientStock.forEach(function (result) {
+                table += `
+                <tr>
+                    <td>${result.productName}</td>
+                    <td>${result.batchNo || 'N/A'}</td>
+                    <td>${formateDate(result.expiryDate)}</td>
+                    <td>${result.message}</td>
+                </tr>`;
             });
 
-            $('#draftBtn').on('click', function () {
-                // Set the value of is_Draft to 1
-                $('#is_Draft').val('1');
-                console.log('Draft button clicked, is_Draft value set to 1');
-                // Trigger the click event of the update button
-                $('.updateBtn').click();
+            table += `
+            </tbody>
+        </table>`;
+
+            modalBody.append(table);
+            $('#stockAlertModal').modal('show');
+        }
+
+        // Check stock availability for a product
+        function checkStockAvailability(product) {
+            return new Promise((resolve) => {
+                const requestUrl = `/auth/salesretail/checkStockAvailability/${encodeURIComponent(product.productId)}/${encodeURIComponent(product.batchNo)}/${encodeURIComponent(product.quantity)}/${encodeURIComponent(product.expiryDate)}`;                $.ajax({
+                    type: 'GET',
+                    url: requestUrl,
+                    contentType: 'application/json',
+                    success: function (response) {
+                        let productName = response.productName || product.productName || 'Unknown Product';
+                         const maxLength = 30; // Set the maximum length for the product name
+                        if (productName.length > maxLength) {
+                            productName = productName.substring(0, maxLength) + '...'; // Truncate and add ellipsis
+                        }
+                        resolve({
+                            status: response.success && response.availableStock >= product.quantity,
+                            message: response.success ? '' : response.message || `Insufficient stock for ${productName}. Available: ${response.availableStock || 0}, Requested: ${product.quantity}`,
+                            productName,
+                            batchNo: response.batchNo || product.batchNo,
+                            expiryDate: response.expiryDate || product.expiryDate,
+                            availableStock: response.availableStock || 0,
+                        });
+                    },
+                    error: function () {
+                        resolve({
+                            status: false,
+                            message: `Failed to check stock for ${product.productName || 'Unknown Product'}`,
+                            productName: product.productName || 'Unknown Product',
+                            batchNo: product.batchNo,
+                            expiryDate: product.expiryDate,
+                            availableStock: 0,
+                        });
+                    }
+                });
             });
-            $(document).on('click', '.updateBtn', function (event) {
-                event.preventDefault();
-                var purchaseId = $('input[name="id"]').val();
-                if (!purchaseId) {
-                    console.error('No purchase ID entered.');
-                    alert('No purchase ID entered. Please enter a purchase ID to update.');
-                    return;
-                }
-                var purchaseDetails = {
+        }
+
+
+
+        // Handle update button click
+        $(document).on('click', '.updateBtn', function (event) {
+            event.preventDefault();
+
+            const purchaseId = $('input[name="id"]').val();
+            if (!purchaseId) {
+                alert('No purchase ID entered. Please enter a purchase ID to update.');
+                return;
+            }
+
+            showLoadingOverlay();
+
+            // Check if the action is a draft
+            const isDraft = $('#is_Draft').val() === '1';
+
+            // Get updated product data
+            const updatedProducts = getUpdatedProductsData();
+            console.log('Updated Products:', updatedProducts); // Log to ensure correct data
+
+            if (isDraft) {
+                // Skip stock availability checks and proceed directly to update request
+                console.log('Draft mode: skipping stock checks.');
+
+                // Gather all purchase details
+                const purchaseDetails = {
                     id: $('#id').val(),
                     saledate: $('#saledate').val(),
                     paymentmode: $('#ppaymentMode').val(),
@@ -934,57 +1063,130 @@
                     ptcs: parseFloat($('#ptcs_').val()),
                     proundOff: parseFloat($('#proundOff_').val()),
                     pnetAmount: parseFloat($('#pnetAmount_').val()),
-                    pdiscMode_: parseFloat($('#pdiscMode_').val()) || 3, // Make sure this ID matches the discount mode field ID in the HTML
+                    pdiscMode_: parseFloat($('#pdiscMode_').val()) || 3,
                     pdiscount: parseFloat($('#pdiscount_').val()),
-                    isDraft: $('#is_Draft').val() || 0// Make sure this ID matches the discount field ID in the HTML
+                    isDraft: $('#is_Draft').val() || 0
                 };
-                console.log('Purchase Details:', purchaseDetails);
-                var payload = {
+
+                console.log('Purchase Details:', purchaseDetails); // Log purchase details
+
+                const payload = {
                     purchaseId: purchaseId,
                     purchaseDetails: purchaseDetails,
-                    products: getUpdatedProductsData()
+                    products: updatedProducts,
                 };
-                // Collect values before form submission
-                let formData = $('#purchaseDetails').serialize();
-                console.log(formData);  // Check what data is being sent
-
-                console.log('Payload:', payload);
+ 
+                // Send update request
                 $.ajax({
                     type: 'PUT',
-                    url: '/auth/salesretailEdit/' + purchaseId, // Ensure this uses purchaseId
+                    url: '/auth/salesretailEdit/' + purchaseId, // Ensure the correct endpoint
                     contentType: 'application/json',
                     data: JSON.stringify(payload),
-                     success: function (response) {
+                    success: function (response) {
+                        hideLoadingOverlay();
                         console.log(response);
                         if (response.success) {
-                            // Check if the response contains a draft value
-                            if ($('#is_Draft').val() === '1') {
-                                showBootstrapModal('Sale Saved as Draft Successfully 🖋', function () {
-                                    window.location.href = '/salesretaildraft'; // Redirect to draft page
-                                });
-                            } else {
-                                showBootstrapModal('Sales Added Successfully 🖋', function () {
-                                    window.location.href = '/salesretailregister'; // Redirect to sales register
-                                });
-                            }
+                            const successMessage = 'Sale Saved as Draft Successfully 🖋';
+                            showBootstrapModal(successMessage, function () {
+                                window.location.href = '/salesretaildraft';
+                            });
                         } else {
                             alert("Failed to update purchase: " + response.message);
                         }
                     },
                     error: function (xhr, status, error) {
                         console.error('Error updating purchase:', error);
-                        console.error('Response:', xhr.responseText); // Log the response for more detail
+                        console.error('Response:', xhr.responseText); // Log response for details
                         alert("Failed to update purchase. Check console for details.");
                     }
                 });
+                return; // Exit the function after processing the draft
+            }
 
-            
+            // Perform stock availability checks
+            const allStockChecks = updatedProducts.map(checkStockAvailability);
+
+            Promise.allSettled(allStockChecks).then((results) => {
+                const insufficientStock = results
+                    .filter((result) => result.status === 'fulfilled' && !result.value.status)
+                    .map((result) => result.value);
+
+                const validProducts = results
+                    .filter((result) => result.status === 'fulfilled' && result.value.status)
+                    .map((result) => result.value);
+
+                // If insufficient stock, show alert and stop update
+                if (insufficientStock.length > 0) {
+                    hideLoadingOverlay();
+                    showStockAlert(insufficientStock); // Display stock alert
+                } else {
+                    // Proceed with update logic (same as draft mode, excluding the "isDraft" handling)
+                    const purchaseDetails = {
+                        id: $('#id').val(),
+                        saledate: $('#saledate').val(),
+                        paymentmode: $('#ppaymentMode').val(),
+                        customername: $('#customerSelect').val() || $('#customerId').val(),
+                        doctorname: $('#doctorname').val(),
+                        pamount: parseFloat($('#pamount_').val()) || 0,
+                        pigst: parseFloat($('#pigst_').val()),
+                        pcgst: parseFloat($('#pcgst_').val()),
+                        psgst: parseFloat($('#psgst_').val()),
+                        psubtotal: parseFloat($('#psubtotal_').val()),
+                        pcess: parseFloat($('#pcess_').val()),
+                        ptcs: parseFloat($('#ptcs_').val()),
+                        proundOff: parseFloat($('#proundOff_').val()),
+                        pnetAmount: parseFloat($('#pnetAmount_').val()),
+                        pdiscMode_: parseFloat($('#pdiscMode_').val()) || 3,
+                        pdiscount: parseFloat($('#pdiscount_').val()),
+                        isDraft: $('#is_Draft').val() || 0
+                    };
+
+                    console.log('Purchase Details:', purchaseDetails); // Log purchase details
+
+                    const payload = {
+                        purchaseId: purchaseId,
+                        purchaseDetails: purchaseDetails,
+                        products: updatedProducts,
+                    };
+
+                    // Send update request
+                    $.ajax({
+                        type: 'PUT',
+                        url: '/auth/salesretailEdit/' + purchaseId, // Ensure the correct endpoint
+                        contentType: 'application/json',
+                        data: JSON.stringify(payload),
+                        success: function (response) {
+                            hideLoadingOverlay();
+                            console.log(response);
+                            if (response.success) {
+                                const successMessage = 'Sale Updated Successfully 🖋';
+                                showBootstrapModal(successMessage, function () {
+                                    window.location.href = '/salesretailregister';
+                                });
+                            } else {
+                                alert("Failed to update purchase: " + response.message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error updating purchase:', error);
+                            console.error('Response:', xhr.responseText); // Log response for details
+                            alert("Failed to update purchase. Check console for details.");
+                        }
+                    });
+                }
             });
-     
-     
         });
+    });
 
 
+        function showLoadingOverlay() {
+            $('body').append('<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;"><img src="/assets/img/6Gl.gif" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>');
+        }
+
+        // Function to hide loading overlay
+        function hideLoadingOverlay() {
+            $('#loadingOverlay').remove();
+        }
 
         function getUpdatedProductsData() {
             var products = [];
@@ -993,7 +1195,7 @@
                     var Id = $(this).find('.purchase-id').val();
                     var product = $(this).find('.product-name').val();
                     var batchNo = $(this).find('[name="batchNo"]').val();
-                                     var expiryDate = $(this).find('[name="expiryDate"]').val();
+                    var expiryDate = $(this).find('[name="expiryDate"]').val();
 
                     var tax = $(this).find('[name="tax"]').val();
                     var quantity = $(this).find('[name="quantity"]').val();
@@ -1013,6 +1215,7 @@
                         Id: Id,
                         productId: product,
                         batchNo: batchNo,
+                        expiryDate: expiryDate,
                         tax: tax,
                         quantity: quantity,
                         free: free,
@@ -1037,26 +1240,26 @@
             return products;
         }
 
-                async function fetchProductOptions(id, selectedProduct) {
-                    try {
-                        const response = await fetch('/auth/sales/salesproductname');
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        const data = await response.json();
-                        console.log('Product Options:', data); // Log the fetched data for debugging
-
-                        // Ensure data is an array and populate the dropdown
-                        if (Array.isArray(data.data)) {
-                            console.log('Populating dropdown for ID:', id); // Debugging
-                            populateDropdown('#productname_' + id, data.data, selectedProduct);
-                        } else {
-                            console.error('Fetched data is not an array:', data.data);
-                        }
-                    } catch (error) {
-                        console.error('Error fetching product options:', error);
-                    }
+        async function fetchProductOptions(id, selectedProduct) {
+            try {
+                const response = await fetch('/auth/sales/salesproductname');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
                 }
+                const data = await response.json();
+                console.log('Product Options:', data); // Log the fetched data for debugging
+
+                // Ensure data is an array and populate the dropdown
+                if (Array.isArray(data.data)) {
+                    console.log('Populating dropdown for ID:', id); // Debugging
+                    populateDropdown('#productname_' + id, data.data, selectedProduct);
+                } else {
+                    console.error('Fetched data is not an array:', data.data);
+                }
+            } catch (error) {
+                console.error('Error fetching product options:', error);
+            }
+        }
 
         function fetchDiscModeOptions(id, discModeData) {
             $.ajax({
@@ -1101,7 +1304,7 @@
                     success: function (response) {
                         console.log(response);
                         if (response.success) {
-                         showBootstrapModal('Sales Retail Deleted Successfully 🖋', function () {
+                            showBootstrapModal('Sales Retail Deleted Successfully 🖋', function () {
                                 window.location.href = '/salesretailregister';
                             });
                         } else {
@@ -1233,22 +1436,22 @@
                 }
             }
         }
-            function showBootstrapModal(message, callback) {
-                // Set the message in the modal
-                $('#modalMessage').text(message);
+        function showBootstrapModal(message, callback) {
+            // Set the message in the modal
+            $('#modalMessage').text(message);
 
-                // Show the modal
-                var myModal = new bootstrap.Modal(document.getElementById('alertModal'));
-                myModal.show();
+            // Show the modal
+            var myModal = new bootstrap.Modal(document.getElementById('alertModal'));
+            myModal.show();
 
-                // When the modal is hidden, execute the callback if provided
-                $('#alertModal').on('hide.bs.modal', function () {
-                    if (typeof callback === 'function') {
-                        callback();
-                    }
-                });
-            }
-     
+            // When the modal is hidden, execute the callback if provided
+            $('#alertModal').on('hide.bs.modal', function () {
+                if (typeof callback === 'function') {
+                    callback();
+                }
+            });
+        }
+
         $(document).ready(function () {
             // Initialize DataTable
             let table = $('#customerTable').DataTable();
@@ -1289,13 +1492,13 @@
                     "<td><input type='hidden' name='purchaseId' class='input-field purchase-id' value='" + purchaseId + "'></td>" +
                     "<td><select name='productname' class='input-field product-name dropdown' id='productname_" + uniqueId + "' placeholder='Product Name' required><option selected disabled>Select product</option></select></td>" +
                     "<td><input type='text' name='batchNo' class='input-field' id='batchNo_" + uniqueId + "' placeholder='Batch No' readonly></td>" +
-                     "<td><input type='text' name='expiryDate' class='input-field' id='expiryDate_" + uniqueId + "' placeholder='Expiry Date' readonly></td>" +
+                    "<td><input type='text' name='expiryDate' class='input-field' id='expiryDate_" + uniqueId + "' placeholder='Expiry Date' readonly></td>" +
                     "<td><input type='text' name='tax' class='input-field' id='tax_" + uniqueId + "' placeholder='Tax(%)'readonly ></td>" +
                     "<td><input type='number' name='quantity' min='1' class='input-field quantity' id='quantity_" + uniqueId + "' placeholder='Quantity' oninput='this.value = this.value.replace(/[^0-9]/g, \"\")' required></td>" +
                     "<td class='d-none'><input type='number' name='free'min='0' class='input-field' id='free_" + uniqueId + "' placeholder='Free' oninput='this.value = this.value.replace(/[^0-9]/g, \"\")'></td>" +
                     "<td class='d-none'><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
                     "<td><input type='number' name='purcRate' class='input-field' id='purcRate_" + uniqueId + "' placeholder='purcRate' readonly></td>" +
-                    "<td class='d-none'><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='MRP' readonly></td>" +
+                    "<td ><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='MRP' readonly></td>" +
                     "<td><input type='number' name='rate' class='input-field' id='rate_" + uniqueId + "' placeholder='Rate' required></td>" +
                     "<td><select name='discMode' class='input-field product-name dropdown' id='discMode_" + uniqueId + "' placeholder='Disc.Mode' ><option selected disabled>Select Disc Mode</option></select></td>" +
                     "<td><input type='number' name='discount' class='input-field' id='discount_" + uniqueId + "' placeholder='Discount' disabled></td>" +
@@ -1308,7 +1511,7 @@
                     "</tr>");
                 $('#customerTable tbody').append(newRow);
                 table.rows.add([newRow[0]]).draw();
-                   // Scroll to the newly added row
+                // Scroll to the newly added row
                 let rowElement = newRow[0];
                 rowElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
 
@@ -1316,7 +1519,7 @@
                 $(newRow).find('input:first').focus();
                 // Fetch product options and populate the product dropdown
                 $.ajax({
-                       url: '/auth/sales/salesproductname',
+                    url: '/auth/sales/salesproductname',
                     method: 'GET',
                     success: function (response) {
                         var options = response.data;
@@ -1374,7 +1577,7 @@
             });
 
 
-          // Delete Row
+            // Delete Row
             function disableOpener() {
                 $('#openPurchaseForm').prop('disabled', true);
             }
@@ -1450,6 +1653,7 @@
                     let formData = $('#purchaseDetails').serializeArray();
                     let products = getProductsData();
                     // formData.push({ name: 'customerId', value: $('#customerId').val() });
+                    showLoadingOverlay();
                     formData.push({ name: 'products', value: JSON.stringify(products) });
                     formData.push({ name: 'isDraft', value: $('#is_Draft').val() });
                     console.log("Serialized Form Data:", formData);
@@ -1477,6 +1681,9 @@
                         error: function (error) {
                             console.error("Error submitting form:", error);
                             alert("Error submitting form: " + error.statusText);
+                        },
+                        complete: function () {
+                            hideLoadingOverlay(); // Hide loading overlay when request completes
                         }
                     });
 
@@ -1536,7 +1743,7 @@
                     let uniqueId = $(this).attr('id').split('_')[1];
                     validateRate(uniqueId);
                 });
-              
+
                 function validateRate(uniqueId) {
                     let rate = parseFloat($('#rate_' + uniqueId).val());
                     let purcRate = parseFloat($('#purcRate_' + uniqueId).val());
@@ -1550,7 +1757,7 @@
                         $('#alertMessage').addClass('d-none'); // Hide the alert if the condition is corrected
                     }
                 }
-              
+
                 function validateRows() {
                     let isValid = true;
                     let rows = $('#customerTable tbody tr');
@@ -1611,7 +1818,17 @@
                     $('#alertMessage').removeClass('d-none').html(alertMessage +
                         '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>');
                 }
+                function showLoadingOverlay() {
+                    $('body').append('<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;"><img src="/assets/img/6Gl.gif" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>');
+                }
+
+                function hideLoadingOverlay() {
+                    $('#loadingOverlay').remove();
+                }
             });
+
+
+
             // Get Product Data
             function getProductsData() {
                 var products = [];
@@ -1695,25 +1912,25 @@
                                     backgroundColor = ''; // Default background
                                     color = '';
                                 }
-                                 let isAlreadySelected = isProductBatchAlreadySelected(selectedProductId, batch.batchNo);
+                                let isAlreadySelected = isProductBatchAlreadySelected(selectedProductId, batch.batchNo);
                                 // Skip adding the batch if it is already selected for this product
-                               
-                                    rows.push({
-                                        uniqueId: uniqueId,
-                                        batchNo: batch.batchNo,
-                                        expiryDate: batch.expiryDate,
-                                        tax: batch.tax,
-                                        quantity: batch.retailQty,
-                                        uom: batch.uom,
-                                        rate: batch.retailRate,
-                                        mrp: batch.retailMrp,
-                                        backgroundColor: backgroundColor,
-                                        color: color,
-                                        selectable: !isAlreadySelected && selectable,
-                                        formattedExpiry: formattedExpiry,
-                                        alreadySelected: isAlreadySelected
-                                    });
-                                
+
+                                rows.push({
+                                    uniqueId: uniqueId,
+                                    batchNo: batch.batchNo,
+                                    expiryDate: batch.expiryDate,
+                                    tax: batch.tax,
+                                    quantity: batch.retailQty,
+                                    uom: batch.uom,
+                                    rate: batch.retailRate,
+                                    mrp: batch.retailMrp,
+                                    backgroundColor: backgroundColor,
+                                    color: color,
+                                    selectable: !isAlreadySelected && selectable,
+                                    formattedExpiry: formattedExpiry,
+                                    alreadySelected: isAlreadySelected
+                                });
+
                             });
                             // Sort rows by color priority: Orange first, Normal second, Red last
                             rows.sort(function (a, b) {
@@ -1909,96 +2126,96 @@
                 }
             });
         }
-    function calculateTotals() {
-        let totalAmount = 0;
-        let totalCGST = 0;
-        let totalSGST = 0;
-        let totalIGST = 0;
-        let totalNetAmount = parseFloat($('#supplierinvoiceamount').val()) || 0;
+        function calculateTotals() {
+            let totalAmount = 0;
+            let totalCGST = 0;
+            let totalSGST = 0;
+            let totalIGST = 0;
+            let totalNetAmount = parseFloat($('#supplierinvoiceamount').val()) || 0;
 
-        // Loop through each row in the customer table
-        $('#customerTable tbody tr').each(function () {
-            let row = $(this);
-            let amount = parseFloat(row.find('input[name="amount"]').val()) || 0;
-            let cgst = parseFloat(row.find('input[name="cgst"]').val()) || 0;
-            let sgst = parseFloat(row.find('input[name="sgst"]').val()) || 0;
-            let igst = parseFloat(row.find('input[name="igst"]').val()) || 0;
+            // Loop through each row in the customer table
+            $('#customerTable tbody tr').each(function () {
+                let row = $(this);
+                let amount = parseFloat(row.find('input[name="amount"]').val()) || 0;
+                let cgst = parseFloat(row.find('input[name="cgst"]').val()) || 0;
+                let sgst = parseFloat(row.find('input[name="sgst"]').val()) || 0;
+                let igst = parseFloat(row.find('input[name="igst"]').val()) || 0;
 
-            totalAmount += amount;
-            totalCGST += cgst;
-            totalSGST += sgst;
-            totalIGST += igst;
+                totalAmount += amount;
+                totalCGST += cgst;
+                totalSGST += sgst;
+                totalIGST += igst;
+            });
+
+            let totalTax = totalCGST + totalSGST + totalIGST;
+
+            // Update displayed totals
+            $('#pamount').text(totalAmount.toFixed(2));
+            $('#pcgst').text(totalCGST.toFixed(2));
+            $('#psgst').text(totalSGST.toFixed(2));
+            $('#pigst').text(totalIGST.toFixed(2));
+            $('#pnetAmount').text(totalNetAmount.toFixed(2));
+            $('#psubtotal').text(totalAmount.toFixed(2));
+
+            // Update hidden inputs
+            $('#pamount_').val(totalAmount.toFixed(2));
+            $('#pcgst_').val(totalCGST.toFixed(2));
+            $('#psgst_').val(totalSGST.toFixed(2));
+            $('#pigst_').val(totalIGST.toFixed(2));
+            $('#pnetAmount_').val(totalNetAmount.toFixed(2));
+            $('#psubtotal_').val(totalAmount.toFixed(2));
+
+            // Subtotal and net amount
+            let subtotal = parseFloat($('#psubtotal').text()) || 0;
+            let netAmount = parseFloat($('#pnetAmount').text()) || 0;
+
+            // Get discount mode and discount value from the input fields
+            let discMode = $('#pdiscMode').val() || "3"; // Default to "3" if not selected
+            let discountInput = parseFloat($('#pdiscount').val()) || 0; // This will hold the raw input value
+
+            let discountAmount = 0; // Variable for calculated discount amount
+
+            if (isNaN(discountInput)) {
+                discountInput = 0;
+            }
+
+            // Apply discount logic
+            if (discMode === "3" || discMode === "N/A") {
+                // No discount
+                discountAmount = 0;
+                $('#pdiscount').val('0');  // Reset input field to 0
+            } else if (discMode === "percentage" || discMode === "1") {
+                // Calculate discount as a percentage of the subtotal
+                discountAmount = (subtotal * discountInput) / 100;  // Calculate discount amount
+            } else {
+                // If a fixed amount discount, use it directly
+                discountAmount = discountInput;
+            }
+
+            // Subtotal minus calculated discount amount
+            subtotal -= discountAmount;
+
+            // Implement rounding rule for subtotal
+            let roundedSubtotal = Math.round(subtotal);
+
+            // Calculate roundOff (optional, adjust as needed)
+            let roundOff = 0;
+
+            // Update displayed and hidden inputs with calculated values
+            $('#psubtotal').text(roundedSubtotal.toFixed(2));
+            $('#psubtotal_').val(roundedSubtotal.toFixed(2));
+            $('#proundOff').text(roundOff.toFixed(2));
+            $('#proundOff_').val(roundOff.toFixed(2));
+
+            // Store discount mode and raw discount input value, not the calculated amount
+            $('#pdiscMode_').val(discMode);   // Send discount mode as-is
+            $('#pdiscount_').val($('#pdiscount').val());  // Send raw input value (percentage or amount)
+        }
+
+        // Trigger recalculation when discount mode or discount value changes
+        $('#pdiscMode, #pdiscount').change(function () {
+            calculateTotals();
         });
-
-        let totalTax = totalCGST + totalSGST + totalIGST;
-
-        // Update displayed totals
-        $('#pamount').text(totalAmount.toFixed(2));
-        $('#pcgst').text(totalCGST.toFixed(2));
-        $('#psgst').text(totalSGST.toFixed(2));
-        $('#pigst').text(totalIGST.toFixed(2));
-        $('#pnetAmount').text(totalNetAmount.toFixed(2));
-        $('#psubtotal').text(totalAmount.toFixed(2));
-
-        // Update hidden inputs
-        $('#pamount_').val(totalAmount.toFixed(2));
-        $('#pcgst_').val(totalCGST.toFixed(2));
-        $('#psgst_').val(totalSGST.toFixed(2));
-        $('#pigst_').val(totalIGST.toFixed(2));
-        $('#pnetAmount_').val(totalNetAmount.toFixed(2));
-        $('#psubtotal_').val(totalAmount.toFixed(2));
-
-        // Subtotal and net amount
-        let subtotal = parseFloat($('#psubtotal').text()) || 0;
-        let netAmount = parseFloat($('#pnetAmount').text()) || 0;
-
-        // Get discount mode and discount value from the input fields
-        let discMode = $('#pdiscMode').val() || "3"; // Default to "3" if not selected
-        let discountInput = parseFloat($('#pdiscount').val()) || 0; // This will hold the raw input value
-
-        let discountAmount = 0; // Variable for calculated discount amount
-
-        if (isNaN(discountInput)) {
-            discountInput = 0;
-        }
-
-        // Apply discount logic
-        if (discMode === "3" || discMode === "N/A") {
-            // No discount
-            discountAmount = 0;
-            $('#pdiscount').val('0');  // Reset input field to 0
-        } else if (discMode === "percentage" || discMode === "1") {
-            // Calculate discount as a percentage of the subtotal
-            discountAmount = (subtotal * discountInput) / 100;  // Calculate discount amount
-        } else {
-            // If a fixed amount discount, use it directly
-            discountAmount = discountInput;
-        }
-
-        // Subtotal minus calculated discount amount
-        subtotal -= discountAmount;
-
-        // Implement rounding rule for subtotal
-        let roundedSubtotal = Math.round(subtotal);
-
-        // Calculate roundOff (optional, adjust as needed)
-        let roundOff = 0;
-
-        // Update displayed and hidden inputs with calculated values
-        $('#psubtotal').text(roundedSubtotal.toFixed(2));
-        $('#psubtotal_').val(roundedSubtotal.toFixed(2));
-        $('#proundOff').text(roundOff.toFixed(2));
-        $('#proundOff_').val(roundOff.toFixed(2));
-
-        // Store discount mode and raw discount input value, not the calculated amount
-        $('#pdiscMode_').val(discMode);   // Send discount mode as-is
-        $('#pdiscount_').val($('#pdiscount').val());  // Send raw input value (percentage or amount)
-    }
-
-    // Trigger recalculation when discount mode or discount value changes
-    $('#pdiscMode, #pdiscount').change(function () {
-        calculateTotals();
-    });
 
 
         $(document).on('click', '#addmanufacturer', function () {
@@ -2015,13 +2232,13 @@
                 { data: 'Id' },
                 { data: 'product' },
                 { data: 'batchNo' },
-                {data:'expiryDate'},
+                { data: 'expiryDate' },
                 { data: 'tax' },
                 { data: 'quantity' },
                 { data: 'free', className: 'd-none' },
                 { data: 'uom', className: 'd-none' },
                 { data: 'purcRate' },
-                { data: 'mrp', className: 'd-none' },
+                { data: 'mrp' },
                 { data: 'rate' },
                 { data: 'discMode' },
                 { data: 'discount' },
@@ -2197,8 +2414,6 @@
             fetchSupplierNames();
         });
 
-
-
         $('.dropdown[name="customername"]').on('change', function () {
             var selectedSupplier = $(this).val();
             console.log('Selected Supplier:', selectedSupplier);
@@ -2327,9 +2542,20 @@
 
                 // Set discount mode and value
                 $('#pdiscMode').val(rowDetails.discMode);
-              
-                $('#pdiscount').val(rowDetails.discount);
 
+                $('#pdiscount').val(rowDetails.discount);
+                selectedOption.prop('selected', true);
+
+
+
+
+                if (rowDetails.isDraft === true) {
+                    $('.editmasbtn').prop('disabled', false);  // Editable
+                    console.log('Editing enabled: isDraft is true');
+                } else {
+                    $('.editmasbtn').prop('disabled', true);   // Not editable
+                    console.log('Editing disabled: isDraft is false');
+                }
                 // Fetch related product data
                 var purchaseId = parseFloat(rowDetails.id);
                 $.ajax({
@@ -2373,4 +2599,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -120,6 +120,22 @@
                             </tr>
                         </thead>
                         <tbody></tbody>
+<tfoot>
+    <tr id="totalAmountRow" style="display: none;">
+        <td style="text-align: left; font-weight: bold; color: #34495E;">
+            Total Amount: <span id="totalAmountDisplay"
+                style="text-align: left; font-weight: bold; color: #34495E;">0.00</span>
+        </td>
+        <td style="text-align: left; font-weight: bold; color: #34495E;">
+            Profit Amount: <span id="totalProfitDisplay"
+                style="text-align: left; font-weight: bold; color: #34495E;">0.00</span>
+        </td>
+        <td style="text-align: left; font-weight: bold; color: #34495E;">
+            Profit Rate: <span id="profitratedisplay"
+                style="text-align: left; font-weight: bold; color: #34495E;">0.00%</span>
+        </td>
+    </tr>
+</tfoot>
                     </table>
                 </form>
             </div>
@@ -130,75 +146,86 @@
 
 <script>
 
- document.getElementById("clear-button").addEventListener("click", function () {
-        clearFilters();
-    });
+        document.getElementById("clear-button").addEventListener("click", function () {
+            clearFilters();
+            $('#totalAmountRow').hide();
+            table.ajax.reload(); // Corrected to use table.ajax.reload() to refresh the DataTable
+        });
 
-  function clearFilters() {
-        var table = document.getElementById("customerTable");
-        var rows = table.getElementsByTagName("tr");
+            function clearFilters() {
+                var table = document.getElementById("customerTable");
+                var rows = table.getElementsByTagName("tr");
 
-        for (var i = 1; i < rows.length; i++) {
-            rows[i].style.display = "";
-        }
-
-        // Check if noDataRow is defined before accessing it
-        var noDataRow = document.getElementById("noDataRow");
-        if (noDataRow) {
-            noDataRow.style.display = "none";
-        }
-
-        // Clear the values of the input fields
-        document.getElementById("fromDate").value = "";
-        document.getElementById("toDate").value = "";
-    }
-
-    document.getElementById("filter-button").addEventListener("click", function() {
-        var fromDate = new Date(document.getElementById("fromDate").value);
-        var toDate = new Date(document.getElementById("toDate").value);
-        var table = document.getElementById("customerTable");
-        var rows = table.getElementsByTagName("tr");
-        var hasData = false;
-
-        console.log('From Date:', fromDate);
-        console.log('To Date:', toDate);
-
-        for (var i = 1; i < rows.length; i++) {
-            var cell = rows[i].getElementsByTagName("td")[1]; // Assuming "Recipt Date" is the second column
-            if (cell) {
-                var cellContent = cell.innerText.trim();
-
-                // Try to extract a valid date using moment.js
-                var cellDate = moment(cellContent, "DD-MM-YYYY");
-
-                // Skip rows with invalid or non-date content
-                if (!cellDate.isValid()) {
-                    console.log('Skipping row with invalid or non-date content:', cellContent);
-                    continue;
-                }
-
-                console.log('Cell Content:', cellContent);
-                console.log('Parsed Date:', cellDate.format("YYYY-MM-DD"));
-
-                if (cellDate.isSameOrAfter(fromDate) && cellDate.isSameOrBefore(toDate)) {
+                for (var i = 1; i < rows.length; i++) {
                     rows[i].style.display = "";
-                    hasData = true;
-                } else {
-                    rows[i].style.display = "none";
                 }
-            }
-        }
 
-        // Check if noDataRow is defined before accessing it
-        var noDataRow = document.getElementById("noDataRow");
-        if (noDataRow) {
-            if (!hasData) {
-                noDataRow.style.display = "block";
-            } else {
-                noDataRow.style.display = "none";
+                // Check if noDataRow is defined before accessing it
+                var noDataRow = document.getElementById("noDataRow");
+                if (noDataRow) {
+                    noDataRow.style.display = "none";
+                }
+
+                // Clear the values of the input fields
+                document.getElementById("fromDate").value = "";
+                document.getElementById("toDate").value = "";
             }
-        }
-    });
+        $(document).ready(function () {
+            // Filter by Date and Sum Total Amount
+            document.getElementById("filter-button").addEventListener("click", function () {
+                var fromDate = new Date(document.getElementById("fromDate").value);
+                var toDate = new Date(document.getElementById("toDate").value);
+                var totalAmountSum = 0;
+                var totalProfitSum = 0; // Initialize profit sum
+
+                table.rows().every(function () {
+                    var row = this.node();
+                    var billDateText = $(row).find("td").eq(1).text().trim();
+                    var totalAmountText = $(row).find("td").eq(5).text().trim();
+                    var profitRateText = $(row).find("td").eq(7).text().trim(); // Adjust index if needed
+                    var cellDate = moment(billDateText, "DD-MM-YYYY");
+
+                    // Log the data being processed
+                    console.log("Row Data - Date:", billDateText, "Total Amount:", totalAmountText, "Profit Rate:", profitRateText);
+
+                    if (cellDate.isSameOrAfter(moment(fromDate)) && cellDate.isSameOrBefore(moment(toDate))) {
+                        $(row).show();
+
+                        var parsedAmount = parseFloat(totalAmountText.replace(/[^0-9.-]+/g, ""));
+                        var parsedProfit = parseFloat(profitRateText.replace(/[^0-9.-]+/g, ""));
+
+                        if (!isNaN(parsedAmount)) {
+                            totalAmountSum += parsedAmount;
+                        } else {
+                            console.warn("Invalid Total Amount:", totalAmountText);
+                        }
+
+                        if (!isNaN(parsedProfit)) {
+                            totalProfitSum += parsedProfit;
+                        } else {
+                            console.warn("Invalid Profit Rate:", profitRateText);
+                        }
+                    } else {
+                        $(row).hide();
+                    }
+                });
+
+                // Calculate profit rate (as a percentage of total amount)
+                var profitRate = totalAmountSum !== 0 ? (totalProfitSum / totalAmountSum) * 100 : 0;
+
+                // Log the final calculated values
+                console.log("Total Amount Sum:", totalAmountSum, "Total Profit Sum:", totalProfitSum, "Calculated Profit Rate:", profitRate);
+
+                // Display the updated total amount, profit amount, and profit rate
+                $('#totalAmountRow').show();
+                $('#totalAmountDisplay').text(totalAmountSum.toFixed(2));
+                $('#totalProfitDisplay').text(totalProfitSum.toFixed(2)); // Display total profit amount
+                $('#profitratedisplay').text(profitRate.toFixed(2) + '%');
+            });
+        });
+
+    
+
 </script>
 
 
@@ -238,6 +265,7 @@
         dataType: 'json',
         dataSrc: 'data' // Change 'data' to match your server's response structure
     },
+     order: [[0, 'desc']],
     columns: [
           { data: 'id' },
         { data: 'saledate', render: function (data) {

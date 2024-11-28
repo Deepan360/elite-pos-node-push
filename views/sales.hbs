@@ -334,10 +334,10 @@
                             <th>Disc.Mode</th>
                             <th>Disc</th>
                             <th>Amount</th>
-                            <th>CGST</th>
-                            <th>SGST</th>
-                            <th>IGST</th>
-                            <th>Total Amount</th>
+                            <th class="d-none">CGST</th>
+                            <th class="d-none">SGST</th>
+                            <th class="d-none">IGST</th>
+                            <th >Total Amount</th>
                             <th class="action">Action</th>
                         </tr>
                     </thead>
@@ -456,6 +456,7 @@
                                             <th>UOM</th>
                                             <th>Rate</th>
                                             <th>MRP</th>
+                                            <th>Profit Margin</th>
                                         </tr>
                                     </thead>
                                     <tbody id="batchDetailsBody"></tbody>
@@ -463,14 +464,14 @@
                             </div>
 
                             <!-- Fixed Color Legend below the scrollable table -->
-                            <div style="margin-top: 10px;">
+                            <div class="text-dark" style="margin-top: 10px;">
                                 <strong>Color Legend:</strong>
                                 <ul style="list-style: none; padding-left: 0;">
                                     <li><span
-                                            style="background-color: red; color: white; padding: 2px 5px;">&nbsp;&nbsp;&nbsp;</span>
+                                            style="background-color: red;  padding: 2px 5px;">&nbsp;&nbsp;&nbsp;</span>
                                         Already expired</li>
                                     <li><span
-                                            style="background-color: orange; color: white; padding: 2px 5px;">&nbsp;&nbsp;&nbsp;</span>
+                                            style="background-color: orange;  padding: 2px 5px;">&nbsp;&nbsp;&nbsp;</span>
                                         Expiring in Three Months</li>
                                 </ul>
                             </div>
@@ -665,9 +666,9 @@
                     "<td><select name='discMode' class='input-field disc-mode dropdown' id='discMode_" + id + "'><option selected disabled>Select Disc Mode</option></select></td>" +
                     "<td><input type='number' name='discount' class='input-field' value='" + discount + "'></td>" +
                     "<td><input type='number' name='amount' class='input-field' value='" + amount + "'readonly></td>" +
-                    "<td><input type='number' name='cgst' class='input-field' value='" + cgst + "'readonly></td>" +
-                    "<td><input type='number' name='sgst' class='input-field' value='" + sgst + "'readonly></td>" +
-                    "<td><input type='number' name='igst' class='input-field' value='" + igst + "'readonly></td>" +
+                    "<td class='d-none'><input type='number' name='cgst' class='input-field' value='" + cgst + "'readonly></td>" +
+                    "<td class='d-none'><input type='number' name='sgst' class='input-field' value='" + sgst + "'readonly></td>" +
+                    "<td class='d-none'><input type='number' name='igst' class='input-field' value='" + igst + "'readonly></td>" +
                     "<td><input type='number' name='totalAmount' class='input-field' value='" + totalAmount + "'readonly></td>" +
                     "<td><i class='fa-solid fa-trash deletetransBtn' type='button' data-id='" + id + "'></i></td>");
 
@@ -725,7 +726,7 @@
                     alert('No purchase ID entered. Please enter a purchase ID to update.');
                     return;
                 }
-
+                showLoadingOverlay();
                 var purchaseDetails = {
                     id: $('#id').val(),
                     saledate: $('#saledate').val(),
@@ -765,7 +766,8 @@
                     contentType: 'application/json',
                     data: JSON.stringify(payload),
                    success: function (response) {
-                        console.log(response);
+                         hideLoadingOverlay(); // Ensure to hide the loading overlay
+                       console.log(response);
                         if (response.success) {
                             // Check if the response contains a draft value
                             if ($('#is_Draft').val() === '1')  {
@@ -788,7 +790,14 @@
                 });
             });
         });
+    function showLoadingOverlay() {
+        $('body').append('<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;"><img src="/assets/img/6Gl.gif" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>');
+    }
 
+    // Function to hide loading overlay
+    function hideLoadingOverlay() {
+        $('#loadingOverlay').remove();
+    }
 
 
         function getUpdatedProductsData() {
@@ -1008,6 +1017,76 @@
             checkRequiredFields();
         });
     });
+    // Add an event listener for the rate input field to ensure it stays within pmrate and mrp
+ document.addEventListener('input', function (event) {
+        if (event.target.matches('.input-field') && event.target.name === 'rate') {
+            let rateInput = event.target;
+            let uniqueId = rateInput.id.split('_')[1];  // Assuming ID format is rate_{uniqueId}
+
+            // Retrieve pmrate and mrp for the given uniqueId
+            let pmrate = parseFloat(rateInput.getAttribute('data-pmrate'));  // pmrate should be set as data attribute
+            let mrp = parseFloat(rateInput.getAttribute('data-mrp'));  // mrp should be set as data attribute
+            let rateValue = parseFloat(rateInput.value);
+
+            // Check if rate value falls below pmrate or above mrp
+            if (rateValue < pmrate) {
+                rateInput.classList.add('error'); // Visual feedback for invalid rate
+                rateInput.setCustomValidity(`Rate cannot be less than the minimum purchase rate of ${pmrate}.`);
+            } else if (rateValue > mrp) {
+                rateInput.classList.add('error'); // Visual feedback for invalid rate
+                rateInput.setCustomValidity(`Rate cannot exceed the maximum retail price of ${mrp}.`);
+            } else {
+                rateInput.classList.remove('error'); // Remove error class if rate is valid
+                rateInput.setCustomValidity(''); // Clear custom validity message
+            }
+        }
+    });
+
+    // Handle onBlur event to finalize the rate value
+    document.addEventListener('blur', function (event) {
+        if (event.target.matches('.input-field') && event.target.name === 'rate') {
+            let rateInput = event.target;
+            let uniqueId = rateInput.id.split('_')[1]; // Get the uniqueId
+
+            let pmrate = parseFloat(rateInput.getAttribute('data-pmrate'));  // Get pmrate
+            let mrp = parseFloat(rateInput.getAttribute('data-mrp'));  // Get mrp
+            let rateValue = parseFloat(rateInput.value);
+
+            // Correct the value if it's out of bounds
+            if (rateValue < pmrate) {
+                rateInput.value = pmrate; // Set to pmrate if less than minimum
+            } else if (rateValue > mrp) {
+                rateInput.value = mrp; // Set to mrp if greater than maximum
+            }
+        }
+    }, true);
+
+
+    // Prevent mouse wheel from changing the rate input value
+    document.addEventListener('wheel', function (event) {
+        if (event.target.matches('.input-field') && event.target.name === 'rate') {
+            event.preventDefault();  // Prevent mouse wheel input changes
+        }
+    }, { passive: false });
+
+    // Function to apply and validate rate and discount fields
+    function updateRateAndDiscount(uniqueId, pmrate, mrp, discount) {
+        let rateInput = document.getElementById('rate_' + uniqueId);
+        let discountInput = document.getElementById('discount_' + uniqueId);  // Assuming discount has unique ID
+
+        if (rateInput) {
+            // Adjust rate based on discount if needed
+            let adjustedRate = parseFloat(rateInput.value) * (1 - (discount / 100));
+
+            // Ensure adjusted rate falls within pmrate and mrp
+            if (adjustedRate < pmrate || adjustedRate > mrp) {
+                alert(`Adjusted rate must remain within ${pmrate} and ${mrp}.`);
+                rateInput.value = Math.min(Math.max(adjustedRate, pmrate), mrp);
+            } else {
+                rateInput.value = adjustedRate.toFixed(2);  // Update rate with adjusted value
+            }
+        }
+    }
 
 
         // Add an event listener to validate the quantity field on input
@@ -1115,16 +1194,16 @@
                         "<td><input type='text' name='tax' class='input-field' id='tax_" + uniqueId + "' placeholder='Tax(%)' readonly></td>" +
                         "<td><input type='number' name='quantity' min='1' class='input-field quantity' id='quantity_" + uniqueId + "' placeholder='Quantity' oninput='this.value = this.value.replace(/[^0-9]/g, \"\")' required></td>" +
                         "<td><input type='number' name='free'min='0' class='input-field' id='free_" + uniqueId + "' placeholder='Free' oninput='this.value = this.value.replace(/[^0-9]/g, \"\")'></td>" +
-                        "<td><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
+                        "<td class='d-none'><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
                         "<td><input type='number' name='purcRate' class='input-field' id='purcRate_" + uniqueId + "' placeholder='purcRate' readonly></td>" +
                         "<td><input type='number' name='mrp' class='input-field w2' id='mrp_" + uniqueId + "' placeholder='mrp' readonly></td>" +
                         "<td><input type='number' name='rate' class='input-field w-200' id='rate_" + uniqueId + "' placeholder='Rate' required></td>" +
                         "<td><select name='discMode' class='input-field product-name dropdown  ' id='discMode_" + uniqueId + "' placeholder='Disc.Mode'><option selected disabled>Select Disc Mode</option></select></td>" +
                         "<td><input type='number' name='discount' class='input-field' id='discount_" + uniqueId + "' placeholder='Discount' disabled></td>" +
                         "<td><input type='number' name='amount' class='input-field' id='amount_" + uniqueId + "' placeholder='Amount' readonly></td>" +
-                        "<td><input type='number' name='cgst' class='input-field' id='cgst_" + uniqueId + "' placeholder='CGST' readonly></td>" +
-                        "<td><input type='number' name='sgst' class='input-field' id='sgst_" + uniqueId + "' placeholder='SGST' readonly></td>" +
-                        "<td><input type='number' name='igst' class='input-field' id='igst_" + uniqueId + "' placeholder='IGST' readonly></td>" +
+                        "<td class='d-none'><input type='number' name='cgst' class='input-field' id='cgst_" + uniqueId + "' placeholder='CGST' readonly></td>" +
+                        "<td class='d-none'><input type='number' name='sgst' class='input-field' id='sgst_" + uniqueId + "' placeholder='SGST' readonly></td>" +
+                        "<td class='d-none'><input type='number' name='igst' class='input-field' id='igst_" + uniqueId + "' placeholder='IGST' readonly></td>" +
                         "<td><input type='number' name='totalAmount' class='input-field' id='totalAmount_" + uniqueId + "' placeholder='Total Amount' readonly></td>" +
                         "<td class='action new-row'><i class='fa-solid fa-trash deleteRowBtn text-danger' type='button'></i> <i class='fa-solid fa-plus addRowBtn text-success' type='button'></i></td>" +
                         "</tr>");
@@ -1262,9 +1341,10 @@
 
                 // Form submit logic
                 function submitForm() {
+
                     let formData = $('#purchaseDetails').serializeArray();
                     let products = getProductsData();
-
+                    showLoadingOverlay();
                     formData.push({ name: 'products', value: JSON.stringify(products) });
                     formData.push({ name: 'isDraft', value: $('#is_Draft').val() });
 
@@ -1291,6 +1371,10 @@
                         },
                         error: function (error) {
                             console.error("Error submitting form:", error);
+                        }
+                        ,
+                        complete: function () {
+                            hideLoadingOverlay(); // Hide loading overlay when request completes
                         }
                     });
                 }
@@ -1319,6 +1403,8 @@
                     }
                 }
                 // Real-time input validation on rate field
+           
+           
                 $(document).on('input', 'input[name="rate"]', function () {
                     let uniqueId = $(this).attr('id').split('_')[1];
                     validateRate(uniqueId);
@@ -1407,6 +1493,13 @@
                 function showAlert(alertMessage) {
                     $('#alertMessage').removeClass('d-none').html(alertMessage +
                         '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>');
+                }
+                  function showLoadingOverlay() {
+                    $('body').append('<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;"><img src="/assets/img/6Gl.gif" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>');
+                }
+
+                function hideLoadingOverlay() {
+                    $('#loadingOverlay').remove();
                 }
             });
 
@@ -1510,7 +1603,7 @@
 
                                 // Check if the batch is already selected
                                 let isAlreadySelected = isProductBatchAlreadySelected(selectedProductId, batch.batchNo);
-
+                                let adjustedRate = batch.rate * (1 + batch.profitMargin / 100);
                                 rows.push({
                                     uniqueId: uniqueId,
                                     batchNo: batch.batchNo,
@@ -1519,7 +1612,9 @@
                                     quantity: batch.op_quantity,
                                     uom: batch.uom,
                                     rate: batch.rate,
+                                   
                                     mrp: batch.mrp,
+                                    pmrate: adjustedRate.toFixed(2),
                                     backgroundColor: backgroundColor,
                                     color: color,
                                     selectable: !isAlreadySelected && selectable, // Mark non-selectable if already selected or expired
@@ -1548,6 +1643,7 @@
                              data-uom="${row.uom}" 
                              data-rate="${row.rate}" 
                              data-mrp="${row.mrp}" 
+                             data-pmrate="${row.pmrate}"
                              style="background-color: ${row.backgroundColor}; color: ${row.color};"
                              class="${row.selectable ? '' : 'non-selectable'} ${row.alreadySelected ? 'already-selected' : ''}">
                              <td>${row.batchNo}</td>
@@ -1556,7 +1652,9 @@
                              <td>${row.quantity}</td>
                              <td>${row.uom}</td>
                              <td>${row.rate}</td>
+                            
                              <td>${row.mrp}</td>
+                                <td>${row.pmrate}</td> 
                          </tr>`
                                 );
                             });
@@ -1571,7 +1669,7 @@
                     error: function (xhr, status, error) {
                         console.error('Error fetching batch details:', error);
                         $('#batchDetailsBody').empty().append(
-                            `<tr><td colspan="7">Error fetching batch details: ${error}</td></tr>`
+                            `<tr><td colspan="8">Error fetching batch details: ${error}</td></tr>`
                         );
                         $('#overlay').show();
                         $('#batchform').show();
@@ -1579,7 +1677,7 @@
                 });
             }
 
-            $('#batchDetailsBody').on('click', 'tr', function () {
+            {{!-- $('#batchDetailsBody').on('click', 'tr', function () {
                 // Check if the row has the class "non-selectable"
                 if ($(this).hasClass('non-selectable')) {
                     console.log('This row is not selectable');
@@ -1601,7 +1699,8 @@
                 var uom = $(this).find('td:eq(4)').text();
                 var rate = $(this).find('td:eq(5)').text();
                 var mrp = $(this).find('td:eq(6)').text();
-
+                var pmrate = $(this).find('td:eq(7)').text();
+                $('#rate_' + uniqueId).attr('data-pmrate', pmrate).attr('data-mrp', mrp);
                 // Update input fields in the customerTable with uniqueId
                 $('#batchNo_' + uniqueId).val(batchNo);
                 $('#tax_' + uniqueId).val(tax);
@@ -1609,11 +1708,15 @@
                 $('#uom_' + uniqueId).val(uom);
                 $('#purcRate_' + uniqueId).val(rate);
                 $('#mrp_' + uniqueId).val(mrp);
+                $('#rate_' + uniqueId).val(pmrate).attr('min', pmrate).attr('max', mrp);
+
 
                 // Hide overlay and batch form
                 $('#overlay').hide();
                 $('#batchform').hide();
             });
+ --}}
+
 
             function generateUniqueId() {
                 return uuidv4();
@@ -1626,41 +1729,12 @@
                     validateAmount(uniqueId);
                 });
 
-                // Validation function for amount check
-                function validateAmount(uniqueId) {
-                    // Check if the discount input is disabled; if yes, skip validation
-                    if ($('#discount_' + uniqueId).prop('disabled')) {
-                        // No need to run validation or show an alert if discount is disabled
-                        return;
-                    }
-
-                    // Parse values and handle potential NaN (Not-a-Number) issues
-                    let amount = parseFloat($('#amount_' + uniqueId).val()) || 0;
-                    let purcRate = parseFloat($('#purcRate_' + uniqueId).val()) || 0;
-                    let quantity = parseFloat($('#quantity_' + uniqueId).val()) || 0;
-
-                    // Calculate purchase rate * quantity
-                    let purcQuantityRate = purcRate * quantity;
-
-                    // Check if the amount is less than the purchase quantity rate
-                    if (amount < purcQuantityRate) {
-                        let productName = $('#productname_' + uniqueId + ' option:selected').text();
-                        let alertMessage = 'Amount cannot be less than Purchase Amount for product: ' + productName;
-                        showAlert(alertMessage); // Show the alert message
-                        $('#amount_' + uniqueId).addClass('error');
-                    } else {
-                        // If the amount is valid, remove error class and hide the alert
-                        $('#amount_' + uniqueId).removeClass('error');
-                        $('#alertMessage').addClass('d-none'); // Hide the alert if the condition is corrected
-                    }
-                }
-
                 // Trigger validation on discMode change
                 $(document).on('change', "select[name='discMode']", function () {
                     var uniqueId = $(this).attr('id').split('_')[1]; // Get the unique ID
                     var discountInput = $('#discount_' + uniqueId);   // Find the corresponding discount input
 
-                    if ($(this).val() !== null) {
+                    if ($(this).val()) {
                         // Enable the discount input if a valid option is selected
                         discountInput.prop('disabled', false);
                     } else {
@@ -1672,11 +1746,99 @@
                     validateAmount(uniqueId);
                 });
 
+                // Function to handle row click and populate fields
+                $('#batchDetailsBody').on('click', 'tr', function () {
+                    // Check if the row has the class "non-selectable"
+                    if ($(this).hasClass('non-selectable')) {
+                        console.log('This row is not selectable');
+                        return; // Prevent further actions if the row is not selectable
+                    }
+
+                    // Retrieve uniqueId from the clicked row
+                    var uniqueId = $(this).attr('data-uniqueId');
+                    console.log('Retrieved uniqueId:', uniqueId);
+
+                    // Retrieve values from the clicked row
+                    var batchNo = $(this).find('td:eq(0)').text();
+                    var tax = $(this).find('td:eq(2)').text();
+                    var quantity = $(this).find('td:eq(3)').text();
+                    var uom = $(this).find('td:eq(4)').text();
+                    var rate = $(this).find('td:eq(5)').text();
+                    var mrp = $(this).find('td:eq(6)').text();
+                    var pmrate = $(this).find('td:eq(7)').text(); // Initial pmrate value
+
+                    // Update input fields in the customerTable with uniqueId
+                    $('#batchNo_' + uniqueId).val(batchNo);
+                    $('#tax_' + uniqueId).val(tax);
+                    $('#quantity_' + uniqueId).val(quantity).attr('max', quantity);
+                    $('#uom_' + uniqueId).val(uom);
+                    $('#purcRate_' + uniqueId).val(rate);
+                    $('#mrp_' + uniqueId).val(mrp);
+                    $('#rate_' + uniqueId).val(pmrate).attr('min', pmrate).attr('max', mrp);
+
+                    // Store pmrate and mrp as data attributes for future reference
+                    $('#rate_' + uniqueId).attr('data-pmrate', pmrate).attr('data-mrp', mrp);
+
+                    // Hide overlay and batch form
+                    $('#overlay').hide();
+                    $('#batchform').hide();
+                });
+
+                // Validation function for amount and rate check
+                function validateAmount(uniqueId) {
+                    // Check if the discount input is disabled; if yes, skip validation
+                    if ($('#discount_' + uniqueId).prop('disabled')) {
+                        return;
+                    }
+
+                    // Parse values and handle potential NaN (Not-a-Number) issues
+                    let amount = parseFloat($('#amount_' + uniqueId).val()) || 0;
+                    let rate = parseFloat($('#rate_' + uniqueId).val()) || 0;
+                    let quantity = parseFloat($('#quantity_' + uniqueId).val()) || 0;
+
+                    // Retrieve the initial pmrate value stored in data-pmrate for the row
+                    let pmrate = parseFloat($('#rate_' + uniqueId).attr('data-pmrate')) || 0;
+                    let mrp = parseFloat($('#rate_' + uniqueId).attr('data-mrp')) || 0;
+
+                    // Set the min and max rate only when initializing or updating the row, but DO NOT reset the rate value
+                    if ($('#rate_' + uniqueId).attr('min') !== pmrate) {
+                        $('#rate_' + uniqueId).attr('min', pmrate); // Set the minimum rate
+                    }
+
+                    if ($('#rate_' + uniqueId).attr('max') !== mrp) {
+                        $('#rate_' + uniqueId).attr('max', mrp); // Set the maximum rate
+                    }
+
+                    // Ensure the rate is within the valid range without resetting its value
+                    if (rate < pmrate || rate > mrp) {
+                        showAlert(`Rate must be between ${pmrate} and ${mrp}.`);
+                        $('#rate_' + uniqueId).addClass('error');
+                    } else {
+                        $('#rate_' + uniqueId).removeClass('error');
+                    }
+
+                    // Validate the amount based on initial pmrate * quantity
+                    let rateQuantity = pmrate * quantity;
+
+                    // Check if the amount is less than pmrate * quantity
+                    if (amount < rateQuantity) {
+                        let productName = $('#productname_' + uniqueId + ' option:selected').text();
+                        let alertMessage = 'Amount cannot be less than Rate * Quantity for product: ' + productName;
+                        showAlert(alertMessage); // Show the alert message
+                        $('#amount_' + uniqueId).addClass('error');
+                    } else {
+                        // If the amount is valid, remove error class and hide the alert
+                        $('#amount_' + uniqueId).removeClass('error');
+                        $('#alertMessage').addClass('d-none'); // Hide the alert if the condition is corrected
+                    }
+                }
+
                 // Function to show alert message
                 function showAlert(message) {
                     $('#alertMessage').text(message).removeClass('d-none').addClass('alert alert-danger');
                 }
             });
+
 
         });
 
@@ -1836,9 +1998,9 @@
                 { data: 'discMode' },
                 { data: 'discount' },
                 { data: 'amount' },
-                { data: 'cgst' },
-                { data: 'sgst' },
-                { data: 'igst' },
+                { data: 'cgst', className: 'd-none' },
+                { data: 'sgst', className: 'd-none' },
+                { data: 'igst', className: 'd-none' },
                 { data: 'totalAmount' },
                 {
                     data: 'Id',
@@ -2152,7 +2314,13 @@
                         console.error('Invalid purchaseId:', purchaseId);
                         return;
                     }
-
+                    if (rowDetails.isDraft === true) {
+                        $('.editmasbtn').prop('disabled', false);  // Editable
+                        console.log('Editing enabled: isDraft is true');
+                    } else {
+                        $('.editmasbtn').prop('disabled', true);   // Not editable
+                        console.log('Editing disabled: isDraft is false');
+                    }
                     const productResponse = await $.ajax({
                         url: '/auth/sales/saleproductid',
                         method: 'GET',

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     {{>header}}
     <style>
@@ -18,7 +17,6 @@
             /* Ensure it's above other elements */
             border-radius: 10px;
         }
-
         .editForm {
             display: none;
             position: fixed;
@@ -30,7 +28,6 @@
             z-index: 1000;
             border-radius: 10px;
         }
-
         .container {
             margin-left: 20%;
         }
@@ -128,13 +125,30 @@
                                 <th>Payment Mode</th>
                                 <th>Total Amount</th>
                                 <th>Payment Status</th>
-                                <th>Profit Rate</th>
+                                <th>Profit Amt</th>
                                 <th>Payment</th>
                                 <th class="action">Action</th>
+                                <th>Return</th>
                                 <th>Print</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
+<tfoot>
+    <tr id="totalAmountRow" style="display: none;">
+        <td style="text-align: left; font-weight: bold; color: #34495E;">
+            Total Amount: <span id="totalAmountDisplay"
+                style="text-align: left; font-weight: bold; color: #34495E;">0.00</span>
+        </td>
+        <td style="text-align: left; font-weight: bold; color: #34495E;">
+            Profit Amount: <span id="totalProfitDisplay"
+                style="text-align: left; font-weight: bold; color: #34495E;">0.00</span>
+        </td>
+        <td style="text-align: left; font-weight: bold; color: #34495E;">
+            Profit Rate: <span id="profitratedisplay"
+                style="text-align: left; font-weight: bold; color: #34495E;">0.00%</span>
+        </td>
+    </tr>
+</tfoot>
                     </table>
                 </form>
             </div>
@@ -147,6 +161,8 @@
 
         document.getElementById("clear-button").addEventListener("click", function () {
             clearFilters();
+            $('#totalAmountRow').hide();
+            table.ajax.reload(); // Corrected to use table.ajax.reload() to refresh the DataTable
         });
 
         function clearFilters() {
@@ -168,54 +184,60 @@
             document.getElementById("toDate").value = "";
         }
 
+    $(document).ready(function () {
+        // Filter by Date and Sum Total Amount
         document.getElementById("filter-button").addEventListener("click", function () {
             var fromDate = new Date(document.getElementById("fromDate").value);
             var toDate = new Date(document.getElementById("toDate").value);
-            var table = document.getElementById("customerTable");
-            var rows = table.getElementsByTagName("tr");
-            var hasData = false;
+            var totalAmountSum = 0;
+            var totalProfitSum = 0; // Initialize profit sum
 
-            console.log('From Date:', fromDate);
-            console.log('To Date:', toDate);
+            table.rows().every(function () {
+                var row = this.node();
+                var billDateText = $(row).find("td").eq(1).text().trim();
+                var totalAmountText = $(row).find("td").eq(5).text().trim();
+                var profitRateText = $(row).find("td").eq(7).text().trim(); // Adjust index if needed
+                var cellDate = moment(billDateText, "DD-MM-YYYY");
 
-            for (var i = 1; i < rows.length; i++) {
-                var cell = rows[i].getElementsByTagName("td")[1]; // Assuming "Recipt Date" is the second column
-                if (cell) {
-                    var cellContent = cell.innerText.trim();
+                // Log the data being processed
+                console.log("Row Data - Date:", billDateText, "Total Amount:", totalAmountText, "Profit Rate:", profitRateText);
 
-                    // Try to extract a valid date using moment.js
-                    var cellDate = moment(cellContent, "DD-MM-YYYY");
+                if (cellDate.isSameOrAfter(moment(fromDate)) && cellDate.isSameOrBefore(moment(toDate))) {
+                    $(row).show();
 
-                    // Skip rows with invalid or non-date content
-                    if (!cellDate.isValid()) {
-                        console.log('Skipping row with invalid or non-date content:', cellContent);
-                        continue;
-                    }
+                    var parsedAmount = parseFloat(totalAmountText.replace(/[^0-9.-]+/g, ""));
+                    var parsedProfit = parseFloat(profitRateText.replace(/[^0-9.-]+/g, ""));
 
-                    console.log('Cell Content:', cellContent);
-                    console.log('Parsed Date:', cellDate.format("YYYY-MM-DD"));
-
-                    if (cellDate.isSameOrAfter(fromDate) && cellDate.isSameOrBefore(toDate)) {
-                        rows[i].style.display = "";
-                        hasData = true;
+                    if (!isNaN(parsedAmount)) {
+                        totalAmountSum += parsedAmount;
                     } else {
-                        rows[i].style.display = "none";
+                        console.warn("Invalid Total Amount:", totalAmountText);
                     }
-                }
-            }
 
-            // Check if noDataRow is defined before accessing it
-            var noDataRow = document.getElementById("noDataRow");
-            if (noDataRow) {
-                if (!hasData) {
-                    noDataRow.style.display = "block";
+                    if (!isNaN(parsedProfit)) {
+                        totalProfitSum += parsedProfit;
+                    } else {
+                        console.warn("Invalid Profit Rate:", profitRateText);
+                    }
                 } else {
-                    noDataRow.style.display = "none";
+                    $(row).hide();
                 }
-            }
-        });
-    </script>
+            });
 
+            // Calculate profit rate (as a percentage of total amount)
+            var profitRate = totalAmountSum !== 0 ? (totalProfitSum / totalAmountSum) * 100 : 0;
+
+            // Log the final calculated values
+            console.log("Total Amount Sum:", totalAmountSum, "Total Profit Sum:", totalProfitSum, "Calculated Profit Rate:", profitRate);
+
+            // Display the updated total amount, profit amount, and profit rate
+            $('#totalAmountRow').show();
+            $('#totalAmountDisplay').text(totalAmountSum.toFixed(2));
+            $('#totalProfitDisplay').text(totalProfitSum.toFixed(2)); // Display total profit amount
+            $('#profitratedisplay').text(profitRate.toFixed(2) + '%');
+        });
+    });
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Wait for the DOM to be fully loaded
@@ -236,7 +258,6 @@
             $('.div').hide();
             // Show the .add element initially
             $('.add').show();
-
             // Add change event listener to the dropdown with name="Id"
             $('.dropdown[name="Id"]').change(function () {
                 var selectedOption = $(this).find('option:selected');
@@ -251,13 +272,11 @@
                 }
             });
         });
-
         // Add event listener for the "addmanufacturer" button
         $(document).on('click', '#addmanufacturer', function () {
             $("#manufacturerform").show();
             $("#id").val('');
         });
-
         // Initialize DataTable with specified options
         var table = $("#customerTable").DataTable({
             dom: 'Bfrtip',
@@ -275,6 +294,7 @@
                 dataType: 'json',
                 dataSrc: 'data'
             },
+             order: [[0, 'desc']],
             columns: [
                 { data: 'id' },
                 {
@@ -334,6 +354,12 @@
                         return '<i class="fa-solid fa-file-pen fa-2x text-warning" type="button" data-id="' + data + '"></i>';
                     }
                 },
+                 {
+                    data: 'id',
+                    render: function (data) {
+                        return '<i class="fa-solid fa-arrows-turn-to-dots fa-2x text-danger" type="button" data-id="' + data + '"></i>';
+                    }
+                },
                 {
                     data: 'id',
                     render: function (data) {
@@ -341,20 +367,23 @@
                     }
                 }
             ],
-
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-id', data.id);
             }
         });
-
-
         // Handle click event for the edit icon
         $('#customerTable').on('click', 'i.fa-file-pen', function () {
             var salesId = $(this).data('id');
             console.log('sales ID:', salesId); // Debugging
             window.location.href = '/salesretail?id=' + salesId;
-        });
+        }); 
 
+
+        $('#customerTable').on('click', 'i.fa-arrows-turn-to-dots', function () {
+            var salesId = $(this).data('id');
+            console.log('sales ID:', salesId); // Debugging
+            window.location.href = '/salesreturnretail?id=' + salesId;
+        }); 
         // Handle click event for the print icon
         $(document).on('click', '#customerTable i.fa-print', function () {
             var salesId = $(this).closest('tr').data('id');

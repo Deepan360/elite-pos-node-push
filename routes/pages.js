@@ -669,6 +669,9 @@ router.get("/salesretailregister", (req, res) => {
 router.get("/salesretail", (req, res) => {
   res.render("retailbatchDetails", { id: req.body });
 });
+router.get("/salesretail", (req, res) => {
+  res.render("checkStockAvailability", { id: req.body });
+});
 router.get("/molecules", (req, res) => {
   res.render("molecules");
 });
@@ -751,6 +754,8 @@ router.get("/salesretail/checkMobileNumber", (req, res) => {
   console.log("Request received to check mobile number:", req.query.mobileNo); // Add this log
  res.render("checkMobileNumber");
 });
-
+router.get("/producthistory", (req, res) => {
+  res.render("producthistory");
+});
 
 module.exports=router;     

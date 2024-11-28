@@ -112,6 +112,7 @@
                                 <th>Supp Inv Date</th>
                                 <th>Total Amount</th>
                                 <th class="action">Action</th>
+                                <th>Print</th>
                                 {{!-- <th>Print</th> --}}
                             </tr>
                         </thead>
@@ -257,13 +258,13 @@ document.getElementById("filter-button").addEventListener("click", function() {
         return '<i class="fa-solid fa-file-pen text-warning fa-2x" type="button" data-id="' + data + '"></i>';
     }
 },
-        {{!-- { 
-            data: null,
+       {
+            data: 'id',
             render: function (data, type, row) {
-                // You can customize the print column content here
-                return '<i class="fa-solid fa-print  fa-2x" onclick="yourPrintFunction(' + data.id + ')"></i>';
+                // Render a print icon with the ID attached
+                return '<i class="fa-solid fa-print text-info fa-2x" type="button" data-id="' + data + '"></i>';
             }
-        } --}}
+        }
     ]
 });
 
@@ -272,7 +273,11 @@ $('#customerTable').on('click', 'i.fa-file-pen', function() {
     console.log('Purchase ID:', purchaseId); // Debugging
     window.location.href = '/purchase?id=' + purchaseId;
 });
-
+    $('#customerTable').on('click', 'i.fa-print', function () {
+        var purchaseId = $(this).data('id');
+        console.log('Purchase ID:', purchaseId); // Debugging
+        window.location.href = '/purchaseprintpage?id=' + purchaseId;
+    });
         if (table.rows().count() === 0) {
             $("#emptyMessage").show();
         }

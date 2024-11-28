@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    {{>header}}
+    <title>Product History Report</title>
+    <!-- Include DataTables CSS -->
+    {{!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css"> --}}
+    <style>
+   table {
+    width: 100%;
+    border-collapse: collapse; /* Ensures borders collapse into a single line */
+    margin-bottom: 30px;
+}
+
+th, td {
+    padding: 2px ; /* Reduced padding for less spacing */
+    text-align: left;
+    border: 1px solid #ddd;
+    box-sizing: border-box; /* Ensure padding and border are included in the element's size */
+}
+
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        h3 {
+            margin-top: 20px;
+        }
+
+        {{!-- .top {
+            padding: 20px;
+            background-color: #f9f9f9;
+            margin-bottom: 20px;
+        } --}}
+
+        select {
+            padding: 8px;
+            margin-left: 10px;
+            font-size: 16px;
+        }
+
+  
+    </style>
+</head>
+
+<body class="g-sidenav-show bg-gray-100">
+    {{>sidebar}}
+    <main class="main-content">
+        {{>navbar}}
+        <div class="p-2">
+        <div class="d-block">
+            <h3>Product History Report</h3>
+            <h5 for="productDropdown">Select Product:</h5>
+            <select id="productDropdown" onchange="fetchProductHistory(this.value)">
+                <option value="">--Select a Product--</option>
+            </select>
+                    <section id="container" class="d-flex justify-content-center align-items-center mt-4 border-success">
+                        <!-- Using Flexbox and centering content -->
+                        <div id="quantity" class="text-white w-75 text-center rounded-5 border-success" style="border-radius: 5px !important;"></div>
+                    </section>
+        </div>
+
+        <div class="box p-2">
+            <!-- Purchase Details Table -->
+            <section id="table1">
+                <h5>Purchase Details</h5>
+                <table id="purchaseDetails" class="table-responsive justify-content-between align-items-end" >
+                    <thead>
+                        <tr>
+                            <th>Invoice No</th>
+                            <th>Batch No</th>
+                            <th>Purchase Date</th>
+                            <th>Supplier Name</th>
+                            <th>Quantity</th>
+                            <th>Rate</th>
+                            <th>Amount</th>
+                            <th>Discount Mode</th>
+                            <th>Discount</th>
+                            <th>Total Amount</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </section>
+
+            <!-- Sales Details Table -->
+            <section id="table2">
+                <h5>Sales Details</h5>
+                <table id="salesDetails" class="table-responsive justify-content-between align-items-end" >
+                    <thead>
+                        <tr>
+                            <th>Bill No</th>
+                            <th>Batch No</th>
+                            <th>Sales Date</th>
+                            <th>Customer</th> 
+                            <th>Quantity</th>
+                            <th>Rate</th>
+                            <th>Amount</th>
+                            <th>Discount Mode</th>
+                            <th>Discount</th>
+                            <th>Total Amount</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </section>
+
+            <!-- Sales Retail Details Table -->
+            <section id="table3">
+                <h5>Retail Sales Details</h5>
+                <table id="salesRetailDetails" class="table-responsive justify-content-between align-items-end" >
+                    <thead>
+                        <tr>
+                            <th>Bill No</th>
+                            <th>Batch No</th>
+                            <th>Sales Date</th>
+                            <th>Customer</th>
+                            <th>Quantity</th>
+                            <th>Rate</th>
+                            <th>Amount</th>
+                            <th>Discount Mode</th>
+                            <th>Discount</th>
+                            <th>Total Amount</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </section>
+        </div></div>
+        {{>footer}}
+    </main>
+    {{>color}}
+
+   
+    <script>
+        // Wait for the DOM to be fully loaded
+        $(document).ready(function () {
+            populateProductDropdown();
+            initializeDataTables(); // Initialize the DataTables on page load
+        });
+
+        // Function to populate the product dropdown
+        function populateProductDropdown() {
+            $.ajax({
+                url: '/auth/purchase/productname',  // Replace with your API URL
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    if (response.data && Array.isArray(response.data)) {
+                        // Clear existing options before adding new ones
+                        $('#productDropdown').empty();
+
+                        // Add a default placeholder option
+                        $('#productDropdown').append('<option value="">Select a product</option>');
+
+                        // Populate dropdown with fetched product data
+                        response.data.forEach(function (product) {
+                            $('#productDropdown').append('<option value="' + product.id + '">' + product.productname + '</option>');
+                        });
+                    } else {
+                        console.error('No valid product data received');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching product data:', error);
+                }
+            });
+        }
+
+    async function fetchProductHistory(productId) {
+        if (!productId) return;
+
+        try {
+            const response = await fetch(`/auth/producthistory?productId=${productId}`);
+
+            if (!response.ok) throw new Error('Failed to fetch product history');
+
+            const data = await response.json();
+
+            // Log the quantity data specifically to inspect the structure
+            console.log('Quantity Data:', data.quantity);
+
+            if (data.quantity && data.quantity.length > 0) {
+                console.log('Quantity Data:', data.quantity); // Log quantity data specifically
+                updateQuantityRow(data.quantity); // Call the function to update the display
+            } else {
+                console.warn('Quantity Data not found or is empty in the response.');
+            }
+
+            // Populate tables with other data
+            populateTable('#purchaseDetails tbody', data.purchaseData);
+            populateTable('#salesDetails tbody', data.salesData);
+            populateTable('#salesRetailDetails tbody', data.salesRetailData);
+
+        } catch (error) {
+            console.error('Error fetching product history:', error);
+        }
+    }
+
+   
+    // Function to update the display of quantity data in a row
+    function updateQuantityRow(quantityData) {
+        if (!quantityData || quantityData.length === 0) {
+            console.error('No quantity data provided.');
+            return;
+        }
+
+        // Clear the container to avoid old rows piling up
+        const container = document.querySelector('#quantity');
+        container.innerHTML = ''; // This will remove all old rows before adding a new one
+
+        // Create a new row for displaying quantity details
+        const row = document.createElement('div');
+        row.classList.add('row', 'quantity-row','bg-primary'); // Add row class for styling
+
+        // Assuming quantityData is an array and we need the first item for now
+        const data = quantityData[0];
+
+        // Create columns to display the quantity details
+        const purQtyCol = document.createElement('div');
+        purQtyCol.classList.add('col');
+        purQtyCol.innerHTML = `<strong>PurQty:</strong> ${data.PurQty || 'N/A'}`;
+
+        const salQtyCol = document.createElement('div');
+        salQtyCol.classList.add('col');
+        salQtyCol.innerHTML = `<strong>SalQty:</strong> ${data.SalQty || 'N/A'}`;
+
+        const rSalQtyCol = document.createElement('div');
+        rSalQtyCol.classList.add('col');
+        rSalQtyCol.innerHTML = `<strong>RSalQty:</strong> ${data.RSalQty || 'N/A'}`;
+
+        const availableQtyCol = document.createElement('div');
+        availableQtyCol.classList.add('col');
+        availableQtyCol.innerHTML = `<strong>Available Qty:</strong> ${data.availableQty || (data.PurQty - data.SalQty - data.RSalQty) || 'N/A'}`;
+
+        // Append columns to the row
+        row.appendChild(purQtyCol);
+        row.appendChild(salQtyCol);
+        row.appendChild(rSalQtyCol);
+        row.appendChild(availableQtyCol);
+
+        // Append the row to the container
+        container.appendChild(row); // Only append the new row after clearing previous rows
+    }
+
+    // Function to populate a table with data
+    function populateTable(selector, tableData) {
+        const tbody = document.querySelector(selector);
+        tbody.innerHTML = ''; // Clear existing rows
+
+        if (Array.isArray(tableData) && tableData.length > 0) {
+            tableData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                <td>${row.invoicenumber || row.salesId || row.salesretailid}</td>
+                <td>${row.batchNo}</td>
+                <td>${row.purchasedate || row.saledate}</td>
+                <td>${row.suppliername || row.customerName}</td>
+                <td>${row.quantity}</td>
+                <td>${row.rate}</td>
+                <td>${row.amount}</td>
+                <td>${row.discmode || 'N/A'}</td>
+                <td>${row.discount}</td>
+                <td>${row.totalAmount}</td>
+                <td>
+                    <i class="fa fa-arrow-right text-success fa-2x cursor-pointer" data-id="${row.purchaseId || row.salesId || row.salesretailid}" data-type="${row.purchaseId ? 'purchase' : row.salesretailTransactionId ? 'salesretail' : 'sales'}"></i>
+                </td>
+            `;
+                tbody.appendChild(tr);
+            });
+        } else {
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            td.textContent = 'No data available';
+            td.colSpan = 11; // Adjust based on the number of columns
+            tr.appendChild(td);
+            tbody.appendChild(tr);
+        }
+    }
+
+
+        // Event delegation to handle icon clicks for navigation
+        $(document).on('click', 'i.fa-arrow-right', function () {
+            var id = $(this).data('id');
+            var type = $(this).data('type');
+
+            console.log('ID:', id, 'Type:', type); // Debugging
+
+            if (type === 'purchase') {
+                window.location.href = '/purchase?id=' + id;
+            } else if (type === 'sales') {
+                window.location.href = '/sales?id=' + id;
+            } else if (type === 'salesretail') {
+                window.location.href = '/salesretail?id=' + id;
+            }
+        });
+
+
+        // Initialize DataTables for each table
+        function initializeDataTables() {
+            $('#purchaseDetails').DataTable({
+                searching: false,
+                scrollY: '300px', // Set vertical scrolling height
+                scrollCollapse: true,
+                ordering: false, // Correct property to disable sorting
+                paging: false // Disable paging for internal scrolling
+            });
+
+            $('#salesDetails').DataTable({
+                searching: false,
+                scrollY: '300px', // Set vertical scrolling height
+                scrollCollapse: true,
+                ordering: false, // Correct property to disable sorting
+                paging: false // Disable paging for internal scrolling
+            });
+
+          $('#salesRetailDetails').DataTable({
+                searching: false,
+                scrollY: '300px', // Set vertical scrolling height
+                scrollCollapse: true,
+                ordering: false, // Correct property to disable sorting
+                paging: false // Disable paging for internal scrolling
+            });
+
+        }
+    </script>
+</body>
+
+</html>

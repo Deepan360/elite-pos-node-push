@@ -125,6 +125,14 @@
                             </tr>
                         </thead>
                         <tbody></tbody>
+            <tfoot>
+                <tr id="totalAmountRow" style="display: none;">
+                    <td style="text-align: left; font-weight: bold; color: #34495E;">Total Amount:<span id="totalAmountDisplay"
+                            style="text-align: left; font-weight: bold; color: #34495E;">0.00</span></td>
+            
+            
+                </tr>
+            </tfoot>
                     </table>
                 </form>
             </div>
@@ -135,71 +143,63 @@
 
 <script>
 
- document.getElementById("clear-button").addEventListener("click", function () {
-        clearFilters();
-    });
+     document.getElementById("clear-button").addEventListener("click", function () {
+            clearFilters();
+            $('#totalAmountRow').hide();
+            table.ajax.reload(); // Corrected to use table.ajax.reload() to refresh the DataTable
+        });
 
 
-  function clearFilters() {
-        var table = document.getElementById("customerTable");
-        var rows = table.getElementsByTagName("tr");
+            function clearFilters() {
+                var table = document.getElementById("customerTable");
+                var rows = table.getElementsByTagName("tr");
 
-        for (var i = 1; i < rows.length; i++) {
-            rows[i].style.display = "";
-        }
-
-        var noDataRow = document.getElementById("noDataRow");
-        if (noDataRow) {
-            noDataRow.style.display = "none";
-        }
-
-        document.getElementById("fromDate").value = "";
-        document.getElementById("toDate").value = "";
-    }
-
-    document.getElementById("filter-button").addEventListener("click", function() {
-        var fromDate = new Date(document.getElementById("fromDate").value);
-        var toDate = new Date(document.getElementById("toDate").value);
-        var table = document.getElementById("customerTable");
-        var rows = table.getElementsByTagName("tr");
-        var hasData = false;
-
-        console.log('From Date:', fromDate);
-        console.log('To Date:', toDate);
-
-        for (var i = 1; i < rows.length; i++) {
-            var cell = rows[i].getElementsByTagName("td")[1]; 
-            if (cell) {
-                var cellContent = cell.innerText.trim();
-
-                var cellDate = moment(cellContent, "DD-MM-YYYY");
-
-                if (!cellDate.isValid()) {
-                    console.log('Skipping row with invalid or non-date content:', cellContent);
-                    continue;
-                }
-
-                console.log('Cell Content:', cellContent);
-                console.log('Parsed Date:', cellDate.format("YYYY-MM-DD"));
-
-                if (cellDate.isSameOrAfter(fromDate) && cellDate.isSameOrBefore(toDate)) {
+                for (var i = 1; i < rows.length; i++) {
                     rows[i].style.display = "";
-                    hasData = true;
-                } else {
-                    rows[i].style.display = "none";
                 }
-            }
-        }
 
-        var noDataRow = document.getElementById("noDataRow");
-        if (noDataRow) {
-            if (!hasData) {
-                noDataRow.style.display = "block";
-            } else {
-                noDataRow.style.display = "none";
+                // Check if noDataRow is defined before accessing it
+                var noDataRow = document.getElementById("noDataRow");
+                if (noDataRow) {
+                    noDataRow.style.display = "none";
+                }
+
+                // Clear the values of the input fields
+                document.getElementById("fromDate").value = "";
+                document.getElementById("toDate").value = "";
             }
-        }
-    });
+
+            $(document).ready(function () {
+
+
+                // Filter by Date and Sum Total Amount
+                document.getElementById("filter-button").addEventListener("click", function () {
+
+                    var fromDate = new Date(document.getElementById("fromDate").value);
+                    var toDate = new Date(document.getElementById("toDate").value);
+                    var totalAmountSum = 0;
+
+                    table.rows().every(function () {
+                        var row = this.node();
+                        var billDateText = $(row).find("td").eq(1).text().trim();
+                        var totalAmountText = $(row).find("td").eq(6).text().trim();
+                        var cellDate = moment(billDateText, "DD-MM-YYYY");
+
+                        if (cellDate.isSameOrAfter(moment(fromDate)) && cellDate.isSameOrBefore(moment(toDate))) {
+                            $(row).show();
+                            totalAmountSum += parseFloat(totalAmountText.replace(/[^0-9.-]+/g, "")) || 0;
+                        } else {
+                            $(row).hide();
+                        }
+                    });
+
+                    // Display the updated total amount
+                    $('#totalAmountRow').show();
+                    $('#totalAmountDisplay').text(totalAmountSum.toFixed(2));
+                });
+            });
+        
+
 </script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -234,6 +234,7 @@
         dataType: 'json',
         dataSrc: 'data' // Change 'data' to match your server's response structure
     },
+     order: [[0, 'desc']],
        columns: [
            { data: 'id' },
            {

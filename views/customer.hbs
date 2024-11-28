@@ -122,7 +122,7 @@
                         <th>Disc(%)</th>
                         <th>Pmt Mode</th>
                         <th>Address</th>
-                        <th>City</th>
+                        <th>City</th> 
                         <th>State</th>
                         <th>Location</th>
                         <th>Pincode</th>
@@ -390,16 +390,13 @@ $(document).on('submit', '.editForm', function(event) {
         data: formData,
         success: function(response) {
             console.log(response);
-
             if (response.success) {
                 // Update the table row with the new data
                 var tableRow = table.row('#' + customerId); // Assuming each row has a unique ID
                 tableRow.data(response.updatedCustomerData); // Use the actual key from the response
-
                 // Optionally, you can hide the form after a successful update
                 $(".editForm").hide();
                               showBootstrapModal('Customer Updated Successfully 🖋');
-
                table.ajax.reload();
             } else {
                 alert('Failed to update customer');

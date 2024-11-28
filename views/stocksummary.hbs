@@ -153,32 +153,34 @@
 
     
 <script>
-   $(document).ready(function () {
+ $(document).ready(function () {
         var table = $('#customerTable').DataTable({
-                paging: false,
+            paging: false,
             scrollY: '400px',
             scrollX: true,
             ajax: {
                 url: '/auth/stocksummary',
-                type: 'GET', // Change from POST to GET
+                type: 'GET',
                 contentType: 'application/json',
                 data: function () {
+                    // Format the date inputs to dd-MM-YYYY before sending
                     const fromDate = $('#fromDate').val();
                     const toDate = $('#toDate').val();
-                    console.log("Sending parameters:", fromDate, toDate);
+                    const formattedFromDate = fromDate ? moment(fromDate, 'YYYY-MM-DD').format('DD-MM-YYYY') : '';
+                    const formattedToDate = toDate ? moment(toDate, 'YYYY-MM-DD').format('DD-MM-YYYY') : '';
 
-                    // Append dates as query parameters if using GET
+                    console.log("Sending parameters:", formattedFromDate, formattedToDate);
+
                     return {
-                        ParamFrDate: fromDate,
-                        ParamToDate: toDate
+                        ParamFrDate: formattedFromDate,
+                        ParamToDate: formattedToDate
                     };
                 },
-                dataSrc: 'data', // Adjust if your server responds with a different property
+                dataSrc: 'data',
                 error: function (xhr, status, error) {
                     console.error("DataTables AJAX error:", error);
                 }
             },
-
             columns: [
                 { data: 'product' },
                 { data: 'OPBal' },
@@ -204,6 +206,7 @@
             table.ajax.reload(); // Reload without filters
         });
     });
+
 
 </script>
 

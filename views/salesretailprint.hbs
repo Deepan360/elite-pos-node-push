@@ -137,7 +137,7 @@
     }
     .footer {
         bottom: 0;
-        color:  #000 !important;
+        color:  #ffffff !important;
     }
     .content {
         margin-left: 2mm;
@@ -179,6 +179,10 @@ table thead th {
     font-size: 12px !important;
     line-height: normal !important;
     padding: 5px !important;
+    
+}
+.content table tbody tr td{
+color: #000 !important;
 }
 }
  /* Set first column to 40%, prevent wrapping, and handle overflow */
@@ -317,37 +321,44 @@ table thead th {
 </div>
 
     <!-- Footer Section -->
-    <div class="invoice-summary footer" style="position: fixed; bottom: 0; width: 100%; background-color: white;">
-        <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%;">
-                    <strong>Amount:</strong>
-                </td>
-                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%;"><span
-                        id="invoiceAmount"></span></td>
-                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%;">
-                    <strong>Discount:</strong>
-                </td>
-                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%;">
-                    <span id="discount"></span> - <span id="discountMode"></span>
-                </td>
-                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%;"><strong>SGST:</strong>
-                </td>
-                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%;"><span
-                        id="sgst"></span>
-                </td>
-                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%;"><strong>CGST:</strong>
-                </td>
-                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%;"><span
-                        id="cgst"></span>
-                </td>
-                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%;"><strong>Total
-                        Amount:</strong></td>
-                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 30%;"><span
-                        id="subtotal"></span></td>
-            </tr>
-        </table>
-    </div>
+<div class="invoice-summary footer"
+    style="position: fixed; bottom: 0; width: 100%; background-color: #000; color: #fff;">
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%; background-color: #333;">
+                <strong>Amount:</strong>
+            </td>
+            <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%; background-color: #333;">
+                <span id="invoiceAmount"></span>
+            </td>
+            <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%; background-color: #333;">
+                <strong>Discount:</strong>
+            </td>
+            <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%; background-color: #333;">
+                <span id="discount"></span> - <span id="discountMode"></span>
+            </td>
+            <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%; background-color: #333;">
+                <strong>SGST:</strong>
+            </td>
+            <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%; background-color: #333;">
+                <span id="sgst"></span>
+            </td>
+            <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%; background-color: #333;">
+                <strong>CGST:</strong>
+            </td>
+            <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%; background-color: #333;">
+                <span id="cgst"></span>
+            </td>
+            <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%; background-color: #333;">
+                <strong>Total Amount:</strong>
+            </td>
+            <td style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 30%; background-color: #333;">
+                <span id="subtotal"></span>
+            </td>
+        </tr>
+    </table>
+</div>
+
 </div>
     <div class="d-flex justify-content-start align-item-start">
         <button class="btn btn-primary print-button" onclick="back()">Back</button>

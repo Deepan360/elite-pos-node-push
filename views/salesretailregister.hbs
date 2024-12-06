@@ -41,7 +41,9 @@
             width: 80px !important;
             height: 30px;
         }
-
+.text-return{
+    color: rgb(142, 62, 167);
+}
         button {
             margin: 1px;
         }
@@ -357,7 +359,7 @@
                  {
                     data: 'id',
                     render: function (data) {
-                        return '<i class="fa-solid fa-arrows-turn-to-dots fa-2x text-danger" type="button" data-id="' + data + '"></i>';
+                        return '<i class="fa-solid fa-reply-all fa-2x text-return" type="button" data-id="' + data + '"></i>';
                     }
                 },
                 {
@@ -379,7 +381,7 @@
         }); 
 
 
-        $('#customerTable').on('click', 'i.fa-arrows-turn-to-dots', function () {
+        $('#customerTable').on('click', 'i.fa-reply-all', function () {
             var salesId = $(this).data('id');
             console.log('sales ID:', salesId); // Debugging
             window.location.href = '/salesreturnretail?id=' + salesId;

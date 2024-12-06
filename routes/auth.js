@@ -274,7 +274,10 @@ router.get(
   userController.checkStockAvailability
 );
 
-
+router.get(
+  "/sales/checksalesStockAvailability/:productId/:batchNo/:quantity/:expiryDate",
+  userController.checksalesStockAvailability
+);
 
 router.get("/molecules", userController.molecules);
 router.post("/molecules", userController.moleculesadd);

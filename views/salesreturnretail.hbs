@@ -946,6 +946,7 @@
                 pdiscount: parseFloat($('#pdiscount_').val()) || 0
             };
 
+
             console.log('Purchase Details:', purchaseDetails); // Log purchase details
 
             // Call the function to get the products data
@@ -1639,8 +1640,6 @@
                 }
             });
 
-
-
             // Get Product Data
             function getProductsData() {
                 var products = [];
@@ -1789,9 +1788,6 @@
                     }
                 });
             }
-
-
-
 
             $('#batchDetailsBody').on('click', 'tr', function () {
                 // Check if the row has the class "non-selectable"
@@ -2082,15 +2078,12 @@
 
     });
 
-
     table.column('.action').visible(false);
 
     // Toggle visibility of the action column and buttons when Edit button is clicked
     $('.editmasbtn').click(function () {
         var isVisible = table.column('.action').visible();
         table.column('.action').visible(!isVisible);
-
-
     });
 
     $('#purchaseId').on('change', function () {

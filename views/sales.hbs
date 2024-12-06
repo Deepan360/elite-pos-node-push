@@ -324,6 +324,7 @@
                             <th>Id</th>
                             <th>Product Name</th>
                             <th>Batch No</th>
+                            <th>Expiry Date</th>
                             <th>Tax(%)</th>
                             <th>Quantity</th>
                             <th>Free</th>
@@ -534,6 +535,23 @@
                 </div>
             </div>
         </div>
+            <div class="modal fade" id="stockAlertModal" tabindex="-1" aria-labelledby="stockAlertModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg"> <!-- Use modal-lg for a larger modal -->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="stockAlertModalLabel">Stock Availability Alert</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Stock message and table will be inserted dynamically here -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
     </main>
     {{>color}}
 
@@ -638,24 +656,26 @@
                 var id = row.find('td:eq(0)').text();
                var product = row.find('td:eq(1)').text().trim();
                 var batchNo = row.find('td:eq(2)').text();
-                var tax = row.find('td:eq(3)').text();
-                var quantity = row.find('td:eq(4)').text();
-                var free = row.find('td:eq(5)').text();
-                var uom = row.find('td:eq(6)').text();
-                var purcRate = row.find('td:eq(7)').text();
-                var mrp = row.find('td:eq(8)').text();
-                var rate = row.find('td:eq(9)').text();
-                var discMode = row.find('td:eq(10)').text();
-                var discount = row.find('td:eq(11)').text();
-                var amount = row.find('td:eq(12)').text();
-                var cgst = row.find('td:eq(13)').text();
-                var sgst = row.find('td:eq(14)').text();
-                var igst = row.find('td:eq(15)').text();
-                var totalAmount = row.find('td:eq(16)').text();
+                 var expiryDate = row.find('td:eq(3)').text();
+                var tax = row.find('td:eq(4)').text();
+                var quantity = row.find('td:eq(5)').text();
+                var free = row.find('td:eq(6)').text();
+                var uom = row.find('td:eq(7)').text();
+                var purcRate = row.find('td:eq(8)').text();
+                var mrp = row.find('td:eq(9)').text();
+                var rate = row.find('td:eq(10)').text();
+                var discMode = row.find('td:eq(11)').text();
+                var discount = row.find('td:eq(12)').text();
+                var amount = row.find('td:eq(13)').text();
+                var cgst = row.find('td:eq(14)').text();
+                var sgst = row.find('td:eq(15)').text();
+                var igst = row.find('td:eq(16)').text();
+                var totalAmount = row.find('td:eq(17)').text();
 
                 row.html("<td><input type='number' readonly name='Id' class='input-field  purchase-id w2' value='" + id + "'></td>" +
                     "<td><select name='product' class='input-field product-name dropdown' id='productname_" + id + "'><option selected disabled>Select product</option></select></td>" +
                     "<td><input type='text' name='batchNo' class='input-field' value='" + batchNo + "' readonly></td>" +
+                     "<td><input type='text' name='expiryDate' class='input-field' value='" + expiryDate + "' readonly></td>" +
                     "<td><input type='text' name='tax' class='input-field' value='" + tax + "' readonly></td>" +
                     "<td><input type='number' name='quantity' class='input-field' value='" + quantity + "'></td>" +
                     "<td><input type='number' name='free' class='input-field' value='" + free + "'></td>" +
@@ -709,87 +729,257 @@
         });
 
         $(document).ready(function () {
+            console.log('Document is ready');
+
+            $('#paymentmode').change(function () {
+                $('#ppaymentMode').val($(this).val());
+            });
+
             $('#draftBtn').on('click', function () {
                 // Set the value of is_Draft to 1
                 $('#is_Draft').val('1');
                 console.log('Draft button clicked, is_Draft value set to 1');
-
                 // Trigger the click event of the update button
                 $('.updateBtn').click();
             });
+
+            // Sanitize payload
+            function sanitizePayload(payload) {
+                const sanitizedPayload = { ...payload };
+                // Validate and remove unwanted fields
+                delete sanitizedPayload.unwantedField;
+                return sanitizedPayload;
+            }
+
+            // Utility function to format date
+            function formateDate(dateString) {
+                if (!dateString) return 'N/A';
+                const date = new Date(dateString);
+                const options = { year: 'numeric', month: 'short' }; // Example: Dec 2024
+                return date.toLocaleDateString(undefined, options);
+            }
+
+            // Display stock alert in a modal
+            function showStockAlert(insufficientStock) {
+                const modalBody = $('#stockAlertModal .modal-body');
+                modalBody.empty();
+
+                const tableRows = insufficientStock.map(result => `
+        <tr>
+            <td>${result.productName}</td>
+            <td>${result.batchNo || 'N/A'}</td>
+            <td>${formateDate(result.expiryDate)}</td>
+            <td>${result.message}</td>
+        </tr>`).join('');
+
+                const table = `
+        <p>The following products have insufficient stock or other issues:</p>
+        <table class="table table-striped table-hover table-sm">
+            <thead class="bg-primary">
+                <tr>
+                    <th>Product Name</th>
+                    <th>Batch No</th>
+                    <th>Expiry Date</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody>${tableRows}</tbody>
+        </table>`;
+
+                modalBody.html(table);
+                $('#stockAlertModal').modal('show');
+            }
+
+
+            // Check stock availability for a product
+            function checkStockAvailability(product) {
+                return new Promise((resolve) => {
+                    const requestUrl = `/auth/sales/checksalesStockAvailability/${encodeURIComponent(product.productId)}/${encodeURIComponent(product.batchNo)}/${encodeURIComponent(product.quantity)}/${encodeURIComponent(product.expiryDate)}`;
+                    $.ajax({
+                        type: 'GET',
+                        url: requestUrl,
+                        contentType: 'application/json',
+                        success: function (response) {
+                            const productName = (response.productName || product.productName || 'Unknown Product').slice(0, 30) + (response.productName.length > 30 ? '...' : '');
+                            resolve({
+                                status: response.success && response.availableStock >= product.quantity,
+                                message: response.success ? '' : `Stock issue for ${productName}. Available: ${response.availableStock || 0}, Requested: ${product.quantity}`,
+                                ...response,
+                                productName,
+                            });
+                        },
+                        error: function () {
+                            resolve({
+                                status: false,
+                                message: `Failed to fetch stock info for ${product.productName || 'Unknown Product'}`,
+                                productName: product.productName || 'Unknown Product',
+                                batchNo: product.batchNo,
+                                expiryDate: product.expiryDate,
+                                availableStock: 0,
+                            });
+                        },
+                    });
+                });
+            }
+
+
+            // Handle update button click
             $(document).on('click', '.updateBtn', function (event) {
                 event.preventDefault();
 
-                var purchaseId = $('input[name="id"]').val();
+                const purchaseId = $('input[name="id"]').val();
                 if (!purchaseId) {
-                    console.error('No purchase ID entered.');
                     alert('No purchase ID entered. Please enter a purchase ID to update.');
                     return;
                 }
+
                 showLoadingOverlay();
-                var purchaseDetails = {
-                    id: $('#id').val(),
-                    saledate: $('#saledate').val(),
-                    paymentmode: $('#paymentmode').val(),
-                    referno: $('#referno').val(),
-                    transportno: $('#transportno').val(),
-                    customername: $('#supplierSelect').val(),
-                    salesmanname: $('#salesmannameSelect').val(), // Make sure this ID matches the customer name field ID in the HTML
-                    customermobileno: $('#customermobileno').val(),
-                    pamount: parseFloat($('#pamount_').val()),
-                    pigst: parseFloat($('#pigst_').val()),
-                    pcgst: parseFloat($('#pcgst_').val()),
-                    psgst: parseFloat($('#psgst_').val()),
-                    psubtotal: parseFloat($('#psubtotal_').val()),
-                    pcess: parseFloat($('#pcess_').val()),
-                    ptcs: parseFloat($('#ptcs_').val()),
-                    proundOff: parseFloat($('#proundOff_').val()),
-                    pnetAmount: parseFloat($('#pnetAmount_').val()),
-                    pdiscMode_: parseFloat($('#pdiscMode_').val()), // Make sure this ID matches the discount mode field ID in the HTML
-                    pdiscount: parseFloat($('#pdiscount_').val()),
-                    isDraft: $('#is_Draft').val()// Make sure this ID matches the discount field ID in the HTML
-                };
 
-                console.log('Purchase Details:', purchaseDetails);
+                // Check if the action is a draft
+                const isDraft = $('#is_Draft').val() === '1';
 
-                var payload = {
-                    purchaseId: purchaseId,
-                    purchaseDetails: purchaseDetails,
-                    products: getUpdatedProductsData()
-                };
+                // Get updated product data
+                const updatedProducts = getUpdatedProductsData();
+                console.log('Updated Products:', updatedProducts); // Log to ensure correct data
 
-                console.log('Payload:', payload);
+                if (isDraft) {
+                    // Skip stock availability checks and proceed directly to update request
+                    console.log('Draft mode: skipping stock checks.');
 
-                $.ajax({
-                    type: 'PUT',
-                    url: '/auth/salesEdit/' + purchaseId,
-                    contentType: 'application/json',
-                    data: JSON.stringify(payload),
-                   success: function (response) {
-                         hideLoadingOverlay(); // Ensure to hide the loading overlay
-                       console.log(response);
-                        if (response.success) {
-                            // Check if the response contains a draft value
-                            if ($('#is_Draft').val() === '1')  {
-                                showBootstrapModal('Sale Saved as Draft Successfully 🖋', function () {
-                                    window.location.href = '/salesdraftregister'; // Redirect to draft page
+                    // Gather all purchase details
+                    const purchaseDetails = {
+                        id: $('#id').val(),
+                        saledate: $('#saledate').val(),
+                        paymentmode: $('#ppaymentMode').val(),
+                        customername: $('#customerSelect').val() || $('#customerId').val(),
+                        doctorname: $('#doctorname').val(),
+                        pamount: parseFloat($('#pamount_').val()) || 0,
+                        pigst: parseFloat($('#pigst_').val()),
+                        pcgst: parseFloat($('#pcgst_').val()),
+                        psgst: parseFloat($('#psgst_').val()),
+                        psubtotal: parseFloat($('#psubtotal_').val()),
+                        pcess: parseFloat($('#pcess_').val()),
+                        ptcs: parseFloat($('#ptcs_').val()),
+                        proundOff: parseFloat($('#proundOff_').val()),
+                        pnetAmount: parseFloat($('#pnetAmount_').val()),
+                        pdiscMode_: parseFloat($('#pdiscMode_').val()) || 3,
+                        pdiscount: parseFloat($('#pdiscount_').val()),
+                        isDraft: $('#is_Draft').val() || 0
+                    };
+
+                    console.log('Purchase Details:', purchaseDetails); // Log purchase details
+
+                    const payload = {
+                        purchaseId: purchaseId,
+                        purchaseDetails: purchaseDetails,
+                        products: updatedProducts,
+                    };
+
+                    // Send update request
+                    $.ajax({
+                        type: 'PUT',
+                        url: '/auth/salesEdit/' + purchaseId, // Ensure the correct endpoint
+                        contentType: 'application/json',
+                        data: JSON.stringify(payload),
+                        success: function (response) {
+                            hideLoadingOverlay();
+                            console.log(response);
+                            if (response.success) {
+                                const successMessage = 'Sale Saved as Draft Successfully 🖋';
+                                showBootstrapModal(successMessage, function () {
+                                    window.location.href = '/salesretaildraft';
                                 });
                             } else {
-                                showBootstrapModal('Sales Updated Successfully 🖋', function () {
-                                    window.location.href = '/salesregister'; // Redirect to sales register
-                                });
+                                alert("Failed to update purchase: " + response.message);
                             }
-                        } else {
-                            alert("Failed to update purchase: " + response.message);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error updating purchase:', error);
+                            console.error('Response:', xhr.responseText); // Log response for details
+                            alert("Failed to update purchase. Check console for details.");
                         }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Error updating purchase:', error);
-                        alert("Failed to update purchase. Check console for details.");
+                    });
+                    return; // Exit the function after processing the draft
+                }
+
+                // Perform stock availability checks
+                const allStockChecks = updatedProducts.map(checkStockAvailability);
+
+                Promise.allSettled(allStockChecks).then((results) => {
+                    const insufficientStock = results
+                        .filter((result) => result.status === 'fulfilled' && !result.value.status)
+                        .map((result) => result.value);
+
+                    const validProducts = results
+                        .filter((result) => result.status === 'fulfilled' && result.value.status)
+                        .map((result) => result.value);
+
+                    // If insufficient stock, show alert and stop update
+                    if (insufficientStock.length > 0) {
+                        hideLoadingOverlay();
+                        showStockAlert(insufficientStock); // Display stock alert
+                    } else {
+                        var purchaseDetails = {
+                            id: $('#id').val(),
+                            saledate: $('#saledate').val(),
+                            paymentmode: $('#paymentmode').val(),
+                            referno: $('#referno').val(),
+                            transportno: $('#transportno').val(),
+                            customername: $('#supplierSelect').val(),
+                            salesmanname: $('#salesmannameSelect').val(), // Make sure this ID matches the customer name field ID in the HTML
+                            customermobileno: $('#customermobileno').val(),
+                            pamount: parseFloat($('#pamount_').val()),
+                            pigst: parseFloat($('#pigst_').val()),
+                            pcgst: parseFloat($('#pcgst_').val()),
+                            psgst: parseFloat($('#psgst_').val()),
+                            psubtotal: parseFloat($('#psubtotal_').val()),
+                            pcess: parseFloat($('#pcess_').val()),
+                            ptcs: parseFloat($('#ptcs_').val()),
+                            proundOff: parseFloat($('#proundOff_').val()),
+                            pnetAmount: parseFloat($('#pnetAmount_').val()),
+                            pdiscMode_: parseFloat($('#pdiscMode_').val()), // Make sure this ID matches the discount mode field ID in the HTML
+                            pdiscount: parseFloat($('#pdiscount_').val()),
+                            isDraft: $('#is_Draft').val()// Make sure this ID matches the discount field ID in the HTML
+                        };
+
+                        console.log('Purchase Details:', purchaseDetails); // Log purchase details
+
+                        const payload = {
+                            purchaseId: purchaseId,
+                            purchaseDetails: purchaseDetails,
+                            products: updatedProducts,
+                        };
+
+                        // Send update request
+                        $.ajax({
+                            type: 'PUT',
+                            url: '/auth/salesEdit/' + purchaseId, // Ensure the correct endpoint
+                            contentType: 'application/json',
+                            data: JSON.stringify(payload),
+                            success: function (response) {
+                                hideLoadingOverlay();
+                                console.log(response);
+                                if (response.success) {
+                                    const successMessage = 'Sale Updated Successfully 🖋';
+                                    showBootstrapModal(successMessage, function () {
+                                        window.location.href = '/salesretailregister';
+                                    });
+                                } else {
+                                    alert("Failed to update purchase: " + response.message);
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Error updating purchase:', error);
+                                console.error('Response:', xhr.responseText); // Log response for details
+                                alert("Failed to update purchase. Check console for details.");
+                            }
+                        });
                     }
                 });
             });
         });
+    
+
     function showLoadingOverlay() {
         $('body').append('<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;"><img src="/assets/img/6Gl.gif" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>');
     }
@@ -808,6 +998,7 @@
                     var Id = $(this).find('.purchase-id').val();
                     var product = $(this).find('.product-name').val();
                     var batchNo = $(this).find('[name="batchNo"]').val();
+                    var expiryDate = $(this).find('[name="expiryDate"]').val();
                     var tax = $(this).find('[name="tax"]').val();
                     var quantity = $(this).find('[name="quantity"]').val();
                     var free = $(this).find('[name="free"]').val() || 0;
@@ -827,6 +1018,7 @@
                         Id: Id,
                         productId: product,
                         batchNo: batchNo,
+                        expiryDate:expiryDate,
                         tax: tax,
                         quantity: quantity,
                         free: free,
@@ -852,6 +1044,8 @@
 
             return products;
         }
+      
+      
             async function fetchProductOptions(id, selectedProduct) {
                 try {
                     const response = await fetch('/auth/sales/salesproductname');
@@ -1191,6 +1385,8 @@
                         "<td><input type='hidden' name='purchaseId' class='input-field purchase-id' value='" + purchaseId + "'></td>" +
                         "<td><select name='productname' class='input-field product-name dropdown' id='productname_" + uniqueId + "' placeholder='Product Name' required><option selected disabled>Select product</option></select></td>" +
                         "<td><input type='text' name='batchNo' class='input-field' id='batchNo_" + uniqueId + "' placeholder='Batch No' readonly></td>" +
+                                           "<td><input type='text' name='expiryDate' class='input-field' id='expiryDate_" + uniqueId + "' placeholder='Expiry Date' readonly></td>" +
+
                         "<td><input type='text' name='tax' class='input-field' id='tax_" + uniqueId + "' placeholder='Tax(%)' readonly></td>" +
                         "<td><input type='number' name='quantity' min='1' class='input-field quantity' id='quantity_" + uniqueId + "' placeholder='Quantity' oninput='this.value = this.value.replace(/[^0-9]/g, \"\")' required></td>" +
                         "<td><input type='number' name='free'min='0' class='input-field' id='free_" + uniqueId + "' placeholder='Free' oninput='this.value = this.value.replace(/[^0-9]/g, \"\")'></td>" +
@@ -1515,6 +1711,7 @@
                                 purchaseId: $(this).find('.purchase-id').val(),
                                 productId: $('#productname_' + uniqueId).val() || "",
                                 batchNo: $('#batchNo_' + uniqueId).val() || "",
+                                expiryDate: $('#expiryDate_' + uniqueId).val() || "",
                                 tax: $('#tax_' + uniqueId).val() || "",
                                 quantity: $('#quantity_' + uniqueId).val() || "",
                                 free: $('#free_' + uniqueId).val() || 0,
@@ -1760,6 +1957,7 @@
 
                     // Retrieve values from the clicked row
                     var batchNo = $(this).find('td:eq(0)').text();
+                    var expiryDate = $(this).find('td:eq(1)').text();
                     var tax = $(this).find('td:eq(2)').text();
                     var quantity = $(this).find('td:eq(3)').text();
                     var uom = $(this).find('td:eq(4)').text();
@@ -1769,6 +1967,7 @@
 
                     // Update input fields in the customerTable with uniqueId
                     $('#batchNo_' + uniqueId).val(batchNo);
+                    $('#expiryDate_' + uniqueId).val(expiryDate);
                     $('#tax_' + uniqueId).val(tax);
                     $('#quantity_' + uniqueId).val(quantity).attr('max', quantity);
                     $('#uom_' + uniqueId).val(uom);
@@ -1988,6 +2187,7 @@
                 { data: 'Id' },
                 { data: 'product' },
                 { data: 'batchNo' },
+                {data:'expiryDate'},
                 { data: 'tax' },
                 { data: 'quantity' },
                 { data: 'free' },

@@ -1096,8 +1096,12 @@ exports.salesretailreturnregister = (req, res) => {
 
     pool.query(
       `
-    SELECT *
-    FROM [elite_pos].[dbo].[salesretailreturn_Master] 
+   SELECT 
+	SM.* ,SM.subtotal - SRT.totalAmount AS Amt
+FROM 
+	salesretailreturn_Trans SRT 
+	INNER JOIN salesretail_Trans ST ON SRT.salesreturnid = ST.id
+	INNER JOIN salesretail_Master SM ON SM.id = ST.salesId
    ;
     `,
       (err, result) => {
@@ -1861,8 +1865,19 @@ exports.salesretailreturn = (req, res) => {
 
     pool.query(
       `
-    SELECT *
-    FROM [elite_pos].[dbo].[salesretailreturn_Master] 
+ SELECT 
+    SM.*, 
+    RC.customername as customer, 
+    RC.mobileno ,
+    SM.subtotal - SRT.totalAmount AS Amt
+FROM 
+    salesretailreturn_Trans SRT 
+INNER JOIN 
+    salesretail_Trans ST ON SRT.salesreturnid = ST.id
+INNER JOIN 
+    salesretail_Master SM ON SM.id = ST.salesId
+LEFT JOIN 
+    retailcustomer RC ON SM.customername = RC.id; 
     
    ;
     `,

@@ -225,9 +225,7 @@
             background-color: #344767;
             color: white;
         }
-
 </style>
-
 </head>
 <body>
       <button class="btn btn-dark print-button" onclick="printData()">Print</button>
@@ -236,7 +234,7 @@
             <h2>Elite POS<img src="/assets/img/Untitled design (11)-modified.png"  style="height: 40px !important; margin: 2px !important;align-item:center !important;">
 </h2>
         <h2 style="color: rgb(255, 255, 255);background-color:#344767;">Invoice</h2>
-<div class="invoice-details" style="display: flex; justify-content: space-between;">
+<div class="invoice-details header" style="display: flex; justify-content: space-between;">
     <div class="company-info" style="background-color: rgb(196, 193, 193); padding: 20px; border-radius: 10px; flex-basis: 48%;">
         <h3 id="companyTitle" style="margin-bottom: 10px;"><strong>Company Name</strong></h3>
         <h6>GSTIN: <span id="gstin" class="company-detail"></span></h6>
@@ -255,8 +253,7 @@
         </div>
     </div>
 </div>
-  
-  <table id="productDetailsTable" >
+  <table id="productDetailsTable" class="maincontent">
             <thead class="bg-dark">
                 <tr>
                     <th>Product</th>
@@ -276,7 +273,7 @@
                 <!-- Table rows will be populated dynamically -->
             </tbody>
         </table>
-<div class="invoice-summary" style="background-color: #f0f0f0; padding: 20px; border-radius: 10px; margin: 10px;">
+<div class="invoice-summary footer" style="background-color: #f0f0f0; padding: 20px; border-radius: 10px; margin: 10px;">
     <h3 style="margin-bottom: 15px; text-align: center;">Invoice Summary</h3>
     <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
         <div style="font-size: 14px; flex-basis: 48%;">
@@ -313,16 +310,6 @@
         </div>
     </div>
 </div>
-<footer class="invoice-footer">
-    <div class="page-count">
-        Page <span class="page-number"></span> / <span class="total-pages"></span>
-    </div>
-</footer>
-
-<div class="other-info">
-    <h6 style="text-align: center;" ><span id="quotes"></span></h6>
-</div>
-
 </div>
 
 <script>

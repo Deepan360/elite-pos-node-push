@@ -127,7 +127,7 @@
                                 <th>Mobile no</th>
                                 <th>Total Amount</th>
                                 <th class="action">Action</th>
-                                <th>Print</th>
+                                {{!-- <th>Print</th> --}}
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -281,19 +281,19 @@
                     }
                 },
                 {
-                    data: 'customername',
+                    data: 'customer',
                     render: function (data) {
                         return data ? data : 'null';
                     }
                 },
                 {
-                    data: 'customermobileno',
+                    data: 'mobileno',
                     render: function (data) {
                         return data ? data : 'null';
                     }
                 },
                 {
-                    data: 'subtotal',
+                    data: 'Amt',
                     render: function (data) {
                         return data ? data : 'null';
                     }
@@ -301,15 +301,15 @@
                 {
                     data: 'id',
                     render: function (data) {
-                        return '<i class="fa-solid fa-file-pen fa-2x" type="button" data-id="' + data + '"></i>';
+                        return '<i class="fa-solid fa-file-pen fa-2x text-warning" type="button" data-id="' + data + '"></i>';
                     }
                 },
-                {
+                {{!-- {
                     data: 'id',
                     render: function (data) {
                         return '<i class="fa-solid fa-print fa-2x" type="button" data-id="' + data + '"></i>';
                     }
-                }
+                } --}}
             ],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-id', data.id);
@@ -320,7 +320,7 @@
         $('#customerTable').on('click', 'i.fa-file-pen', function () {
             var salesId = $(this).data('id');
             console.log('sales ID:', salesId); // Debugging
-            window.location.href = '/salesreturnretail?id=' + salesId;
+            window.location.href = '/salesretail?id=' + salesId;
         });
 
         // Handle click event for the print icon
@@ -328,7 +328,7 @@
             var salesId = $(this).closest('tr').data('id');
             console.log('Sales ID:', salesId); // Debugging
             if (salesId !== undefined) {
-                window.location.href = '/salesreturnretailprint?id=' + salesId;
+                window.location.href = '/salesretailprint?id=' + salesId;
             } else {
                 console.error('Sales ID is undefined.');
                 // Handle the case where salesId is undefined

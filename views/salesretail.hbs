@@ -314,7 +314,7 @@
                             <th>Tax(%)</th>
                             <th>Quantity</th>
                             <th class="d-none">Free</th>
-                            <th class="d-none">UOM</th>
+                            <th class="d-none">productPackage</th>
                             <th>Purc.Rate</th>
                             <th>MRP</th>
                             <th>Rate</th>
@@ -446,7 +446,7 @@
                                             <th>Expiry Date</th>
                                             <th>Tax</th>
                                             <th>Quantity</th>
-                                            <th>UOM</th>
+                                            <th>Packages</th>
                                             <th>Rate</th>
                                             <th>MRP</th>
                                         </tr>
@@ -862,7 +862,7 @@
                 var tax = row.find('td:eq(4)').text();
                 var quantity = row.find('td:eq(5)').text();
                 var free = row.find('td:eq(6)').text();
-                var uom = row.find('td:eq(7)').text();
+                var productPackage = row.find('td:eq(7)').text();
                 var purcRate = row.find('td:eq(8)').text();
                 var mrp = row.find('td:eq(9)').text();
                 var rate = row.find('td:eq(10)').text();
@@ -881,7 +881,7 @@
                     "<td><input type='text' name='tax' class='input-field' value='" + tax + "' readonly></td>" +
                     "<td><input type='number' name='quantity' class='input-field' value='" + quantity + "'></td>" +
                     "<td class='d-none'><input type='number' name='free' class='input-field' value='" + free + "'></td>" +
-                    "<td class='d-none'><input type='text' name='uom' class='input-field' value='" + uom + "'></td>" +
+                    "<td class='d-none'><input type='text' name='productPackage' class='input-field' value='" + productPackage + "'></td>" +
                     "<td><input type='number' name='purcRate' class='input-field' value='" + purcRate + "' readonly></td>" +
                     "<td><input type='number' name='mrp' class='input-field' value='" + mrp + "' readonly></td>" + // Fixed line
                     "<td><input type='number' name='rate' class='input-field w-200' value='" + rate + "'></td>" +
@@ -1217,7 +1217,7 @@
                     var tax = $(this).find('[name="tax"]').val();
                     var quantity = $(this).find('[name="quantity"]').val();
                     var free = $(this).find('[name="free"]').val() || 0;
-                    var uom = $(this).find('[name="uom"]').val();
+                    var productPackage = $(this).find('[name="productPackage"]').val();
                     var purcRate = $(this).find('[name="purcRate"]').val();
                     var mrp = $(this).find('[name="mrp"]').val() || 0;
                     var rate = $(this).find('[name="rate"]').val();
@@ -1236,7 +1236,7 @@
                         tax: tax,
                         quantity: quantity,
                         free: free,
-                        uom: uom,
+                        productPackage: productPackage,
                         purcRate: purcRate,
                         mrp: mrp,
                         rate: rate,
@@ -1513,7 +1513,7 @@
                     "<td><input type='text' name='tax' class='input-field' id='tax_" + uniqueId + "' placeholder='Tax(%)'readonly ></td>" +
                     "<td><input type='number' name='quantity' min='1' class='input-field quantity' id='quantity_" + uniqueId + "' placeholder='Quantity' oninput='this.value = this.value.replace(/[^0-9]/g, \"\")' required></td>" +
                     "<td class='d-none'><input type='number' name='free'min='0' class='input-field' id='free_" + uniqueId + "' placeholder='Free' oninput='this.value = this.value.replace(/[^0-9]/g, \"\")'></td>" +
-                    "<td class='d-none'><input type='text' name='uom' class='input-field' id='uom_" + uniqueId + "' placeholder='UOM'></td>" +
+                    "<td class='d-none'><input type='text' name='productPackage' class='input-field' id='uom_" + uniqueId + "' placeholder='productPackage'></td>" +
                     "<td><input type='number' name='purcRate' class='input-field' id='purcRate_" + uniqueId + "' placeholder='purcRate' readonly></td>" +
                     "<td ><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='MRP' readonly></td>" +
                     "<td><input type='number' name='rate' class='input-field' id='rate_" + uniqueId + "' placeholder='Rate' required></td>" +
@@ -1861,7 +1861,7 @@
                             tax: parseFloat($('#tax_' + uniqueId).val()) || 0,
                             quantity: parseFloat($('#quantity_' + uniqueId).val()) || 0,
                             free: parseFloat($('#free_' + uniqueId).val()) || 0,
-                            uom: $('#uom_' + uniqueId).val() || "",
+                            productPackage: $('#uom_' + uniqueId).val() || "",
                             purcRate: parseFloat($('#purcRate_' + uniqueId).val()) || 0,
                             mrp: parseFloat($('#mrp_' + uniqueId).val()) || 0,
                             rate: parseFloat($('#rate_' + uniqueId).val()) || 0,
@@ -1938,7 +1938,7 @@
                                     expiryDate: batch.expiryDate,
                                     tax: batch.tax,
                                     quantity: batch.retailQty,
-                                    uom: batch.uom,
+                                    productPackage: batch.productPackage,
                                     rate: batch.retailRate,
                                     mrp: batch.retailMrp,
                                     backgroundColor: backgroundColor,
@@ -1963,7 +1963,7 @@
                             data-expiryDate="${row.expiryDate}" 
                             data-tax="${row.tax}" 
                             data-quantity="${row.quantity}" 
-                            data-uom="${row.uom}" 
+                            data-productPackage="${row.productPackage}" 
                             data-rate="${row.rate}" 
                             data-mrp="${row.mrp}" 
                             style="background-color: ${row.backgroundColor}; color: ${row.color};" 
@@ -1972,7 +1972,7 @@
                             <td>${row.formattedExpiry}</td>
                             <td>${row.tax}</td>
                             <td>${row.quantity}</td>
-                            <td>${row.uom}</td>
+                            <td>${row.productPackage}</td>
                             <td>${row.rate}</td>
                             <td>${row.mrp}</td>
                         </tr>`
@@ -2011,7 +2011,7 @@
                 var formattedExpiry = $(this).find('td:eq(1)').text();
                 var tax = $(this).find('td:eq(2)').text();
                 var quantity = $(this).find('td:eq(3)').text();
-                var uom = $(this).find('td:eq(4)').text();
+                var productPackage = $(this).find('td:eq(4)').text();
                 var rate = $(this).find('td:eq(5)').text();
                 var mrp = $(this).find('td:eq(6)').text();
                 // Update input fields in the customerTable with uniqueId
@@ -2019,7 +2019,7 @@
                 $('#expiryDate_' + uniqueId).val(formattedExpiry);
                 $('#tax_' + uniqueId).val(tax);
                 $('#quantity_' + uniqueId).val(quantity).attr('max', quantity);
-                $('#uom_' + uniqueId).val(uom);
+                $('#uom_' + uniqueId).val(productPackage);
                 $('#purcRate_' + uniqueId).val(rate);
                 $('#mrp_' + uniqueId).val(mrp);
                 $('#rate_' + uniqueId).val(mrp).attr('max', mrp);

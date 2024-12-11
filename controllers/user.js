@@ -3698,16 +3698,25 @@ exports.retailbatchDetails = async (req, res) => {
   try {
     console.log("Selected Product ID:", selectedProductId);
     const result = await pool.query(`
-	   SELECT 
-              ST.batchNo,ST.tax,ST.retailQty,ST.expiryDate,ST.uom,ST.retailMrp ,ST.retailRate,ISNULL(PT.profitMargin,0) AS profitMargin
-          FROM 
-             stock_Ob ST
-	  INNER JOIN product PR ON ST.product = PR.id
-	  INNER JOIN producttype PT ON PR.productType = PT.producttype
-          WHERE 
-          isActive = '1' AND 
-              product = ${selectedProductId};
-      `);
+      SELECT 
+        ST.batchNo,
+        ST.tax,
+        ST.retailQty,
+        ST.expiryDate,
+        ST.uom,
+        ST.retailMrp,
+        ST.retailRate,
+        ISNULL(PT.profitMargin, 0) AS profitMargin,
+        PR.package AS productPackage  -- Assuming 'package' is the column in the product table
+      FROM 
+        stock_Ob ST
+      INNER JOIN product PR ON ST.product = PR.id
+      INNER JOIN producttype PT ON PR.productType = PT.producttype
+      WHERE 
+        ST.isActive = '1' AND 
+        ST.product = ${selectedProductId};
+    `);
+
     if (result.recordset.length > 0) {
       console.log("Batch details retrieved successfully:", result.recordset);
       res.status(200).json({ success: true, data: result.recordset });
@@ -3998,7 +4007,6 @@ exports.salesadd = async (req, res) => {
   }
 };
 
-
 exports.salesEdit = async (req, res) => {
   const { purchaseId } = req.params;
   const { purchaseDetails, products } = req.body;
@@ -4224,7 +4232,6 @@ async function reduceStock(productId, quantity, free, batchNo, expiryDate) {
   }
 }
 
-
 exports.salesids = (req, res) => {
   pool.connect((err, connection) => {
     if (err) {
@@ -4391,8 +4398,6 @@ exports.salesdelete = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
-
-
 
 exports.salestransdelete = async (req, res) => {
   const manufacturerId = req.params.id;

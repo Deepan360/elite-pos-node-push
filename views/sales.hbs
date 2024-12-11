@@ -2041,8 +2041,6 @@
 
         });
 
-
-
         function fetchDiscmodeOptions(uniqueId) {
             $.ajax({
                 url: '/auth/purchase/discmode',
@@ -2350,9 +2348,12 @@
                     const $dropdown = $('.dropdown[name="customername"]');
 
                     // Clear existing options
-                    // $dropdown.empty();
+                    $dropdown.empty(); // Ensures no duplicates
 
                     if (options && options.length) {
+                        // Add a default option
+                        $dropdown.append('<option value="" disabled selected>Select Customer</option>');
+
                         options.forEach((option) => {
                             const $option = $('<option>', {
                                 value: option.id,
@@ -2366,7 +2367,6 @@
                         });
 
                         // Optionally, set the first option as selected by default
-                        $dropdown.find('option:first').prop('selected', true);
                         $dropdown.trigger('change');
                     } else {
                         console.error('No options found for Customer Name');
@@ -2376,6 +2376,7 @@
                     console.error('Error fetching options for Customer Name:', error);
                 }
             }
+
 
             function initiateFetchCompanyState(customerState) {
                 fetchCompanyStateAndCalculateTax(customerState);

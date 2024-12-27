@@ -760,5 +760,15 @@ router.get("/salesretail/checkMobileNumber", (req, res) => {
 router.get("/producthistory", (req, res) => {
   res.render("producthistory");
 });
+router.get("/drugreport", (req, res) => {
+  res.render("drugreport");
+});
 
+router.get("/checkMobileNumberavini", (req, res) => {
+  console.log("Request received to check mobile number:", req.query.mobileNo); // Add this log
+ res.render("checkMobileNumberavini");
+});
+  router.post("/addCustomeravini",(req,res)=>{
+    res.render("addCustomeravini");
+});
 module.exports=router;     

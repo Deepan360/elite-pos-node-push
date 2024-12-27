@@ -210,12 +210,21 @@ table tbody tr td {
               <label for="quotes">Quotes:</label>
               <input type="text" name="quotes" id="quotes">
             </td>
+                    <td colspan="1">
+                      <label for="dl1">Drug Licence 1:</label>
+                      <input type="dl1" name="dl1" id="dl1">
+                    </td>
         </tr>
         <tr>
-          <td>
-           <img id="logoPreview" src="" alt="Preview" style="max-width: 100px; max-height: 100px; display: none;">
-
-          </td>
+                <td>
+                  <img id="logoPreview" src="" alt="Preview" style="max-width: 100px; max-height: 100px; display: none;">
+                
+                </td>
+                <td colspan="1">
+                  <label for="dl2">Drug Licence 2:</label>
+                  <input type="dl2" name="dl2" id="dl2">
+                </td>
+   
         </tr>
         </table>
        <input type="submit" class="btn btn-primary" value="Submit">
@@ -269,6 +278,8 @@ $.ajax({
             $('#bookStartDate').val(companyDetails.bookStartDate);
             $('#discLedger').val(companyDetails.discLedger);
             $('#quotes').val(companyDetails.quotes);
+             $('#dl1').val(companyDetails.dl1);
+              $('#dl2').val(companyDetails.dl2);
             if (companyDetails.logo) {
             // Assuming response contains logoSrc for each company row
             $('#logoPreview').attr('src', companyDetails.logoSrc);
@@ -325,6 +336,8 @@ $.ajax({
         console.error('Error fetching options for Supplier Ledger(dr):', error);
     }
 });
+
+
 
 $(document).ready(function () {
     $('#company').on('submit', function (event) {

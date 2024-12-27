@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {{>header}}
+    <style>
+        /* Your CSS styles remain unchanged */
+    </style>
+</head>
+
+<body class="g-sidenav-show bg-gray-100">
+    {{>sidebar}}
+    <main class="main-content position-relative border-radius-lg">
+        {{>navbar}}
+        <div class="table-responsive container-fluid py-4">
+            <div class="form-control card">
+                <h3>Drug Report</h3>
+                <div class="row">
+                    <div id="filterDateDiv" class="mb-3 col-3">
+                        <label for="fromDate">From Date:</label>
+                        <input type="date" id="fromDate" class="form-control input-field" placeholder="YYYY-MM-DD">
+
+                        <label class="h6 mt-3" for="drugtype">Drug Type:</label>
+                        <select id="drugtype" class="form-control dropdown" name="drugtype">
+                            <option value="" disabled selected>Select Drug Type</option>
+                        </select>
+
+                        <div class="mt-3">
+                            <button class="btn btn-primary" id="filter-button">Filter</button>
+                            <button class="btn btn-secondary" id="clear-button">Clear</button>
+                        </div>
+                    </div>
+                </div>
+                <table id="customerTable" class="table table-striped" style="width:100%">
+                    <thead class="bg-primary text-white">
+                        <tr>
+                            <th>Sale Date</th>
+                            <th>Customer Name</th>
+                            <th>Mobile No</th>
+                            <th>Product Name</th>
+                            <th>Drug Type</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        {{>footer}}
+    </main>
+    {{>color}}  
+
+    <script>
+   $(document).ready(function () {
+        fetchDrugTypes(); // Fetch drug types only once when the page loads
+    });
+
+    function fetchDrugTypes() {
+        $.ajax({
+            url: '/auth/drugtype/getdrugtype',
+            method: 'GET',
+            success: function (response) {
+                const drugtypeDropdown = $('#drugtype');
+                drugtypeDropdown.empty();
+                drugtypeDropdown.append('<option value="" disabled selected>Select Drug Type</option>');
+
+                response.data.forEach(option => {
+                    drugtypeDropdown.append(`<option value="${option.drugtype}">${option.drugtype}</option>`);
+                });
+
+                // Initialize the DataTable after fetching drug types
+                initializeDataTable();
+            },
+            error: function (xhr) {
+                console.error('Error fetching drug types:', xhr.responseText);
+            }
+        });
+    }
+
+    function initializeDataTable() {
+        const table = $('#customerTable').DataTable({
+            paging: false,
+            scrollY: '400px',
+            scrollX: true,
+            ajax: function (data, callback, settings) {
+                // Fetch the selected filter parameters
+                const fromDate = $('#fromDate').val();
+                const drugType = $('#drugtype').val() || ''; // If drugType is null or undefined, set it to ''
+
+                // Log the parameters to verify they are set correctly
+                console.log('fromDate:', fromDate, 'drugType:', drugType);
+
+                if (!fromDate) {
+                    console.log('Skipping AJAX call: Missing required parameters.');
+                    callback({ data: [] }); // Return empty data to prevent errors
+                    return;
+                }
+
+                // Perform the AJAX request with valid parameters
+                $.ajax({
+                    url: '/auth/drugreport',
+                    method: 'GET',
+                    data: {
+                        ParamSaleDate: fromDate,
+                        ParamDrugType: drugType // Pass the drugType, even if it's an empty string
+                    },
+                    success: function (response) {
+                        console.log('Server Response:', response);
+                        if (response && response.data) {
+                            // Format the date for each row using moment.js before passing to DataTable
+                            response.data.forEach(function (item) {
+                                if (item.saledate) {
+                                    item.saledate = moment(item.saledate).format('DD-MM-YYYY');
+                                }
+                            });
+
+                            if (response.data.length === 0) {
+                                // Display a message if no data is found
+                                $('#customerTable tbody').html('<tr><td colspan="5" class="text-center">No records found for the selected filter.</td></tr>');
+                            } else {
+                                // Pass the response to DataTables
+                                callback({
+                                    draw: settings.iDraw,
+                                    recordsTotal: response.totalRecords,
+                                    recordsFiltered: response.filteredRecords,
+                                    data: response.data
+                                });
+                            }
+                        } else {
+                            console.error('Invalid response structure from the server.');
+                            callback({ data: [] });
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error('Error fetching data:', xhr.responseText);
+                        alert('An error occurred while fetching the data. Please try again.');
+                        callback({ data: [] }); // Return empty data on error
+                    }
+                });
+            },
+            columns: [
+                { data: 'saledate', render: function (data) { return moment(data).format("DD-MM-YYYY"); } },
+                { data: 'customername', title: 'Customer Name' },
+                { data: 'mobileno', title: 'Mobile No' },
+                { data: 'productname', title: 'Product Name' },
+                { data: 'drugtype', title: 'Drug Type' }
+            ],
+            dom: 'Bfrtip',
+            buttons: ['copy', 'excel', 'pdf', 'csv'],
+            scrollCollapse: true,
+            processing: true,
+            serverSide: true // Enable server-side processing
+        });
+
+        // Filter button click event
+        $('#filter-button').on('click', function () {
+            const fromDate = $('#fromDate').val();
+            const drugType = $('#drugtype').val() || ''; // Ensure drugType is an empty string if null
+
+            console.log('fromDate value on filter button click:', fromDate);
+
+            if (!fromDate) {
+                alert('Please select a valid date.');
+                return;
+            }
+
+            const formattedDate = moment(fromDate).format('DD-MMM-YYYY');
+            console.log('Formatted Date:', formattedDate, 'Drug Type:', drugType);
+
+            // Reload DataTable with new filters (trigger the ajax reload)
+            table.ajax.url('/auth/drugreport?ParamSaleDate=' + formattedDate + '&ParamDrugType=' + drugType).load();
+        });
+
+        $('#clear-button').on('click', function () {
+            // Clear the filter fields
+            $('#fromDate').val('');
+            $('#drugtype').val('');
+            location.reload(); // Reload the page to reset the table and inputs
+        });
+    }
+
+    </script>
+</body>
+
+
+</html>

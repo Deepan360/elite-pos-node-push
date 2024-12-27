@@ -42,6 +42,104 @@ function formatDate(dateString) {
   return dateString;
 }
 
+
+///avinilabs
+
+exports.checkMobileNumberavini = (req, res) => {
+  const mobile = req.query.mobileno; // Ensure this matches the query parameter name
+  console.log("Received mobile number:", mobile); // Log the received mobile number
+
+  if (!mobile) {
+    return res.status(400).json({ error: "Mobile number is required" });
+  }
+
+  // Connect to the database using the pool
+  pool
+    .connect()
+    .then((connection) => {
+      console.log("Database connected successfully");
+
+      // Use the correct sql type for input binding
+      return connection
+        .request()
+        .input("mobile", sql.NVarChar, mobile) // Correctly use sql.NVarChar
+        .query(
+          "SELECT * FROM [AviniLabs].[dbo].[customers] WHERE mobileno = @mobile"
+        );
+    })
+    .then((result) => {
+      console.log("Query Result:", result); // Log the result
+
+      if (result.recordset.length > 0) {
+        res.json({ data: result.recordset });
+      } else {
+        res.json({ data: [] });
+      }
+    })
+    .catch((err) => {
+      console.error("Error during query execution:", err); // Log the error message
+      res.status(500).json({
+        error: "Internal Server Error",
+        message: err.message, // Include the actual error message for debugging
+        stack: err.stack, // Optionally, include the stack trace
+      });
+    });
+};
+
+
+exports.addCustomeravini = async (req, res) => {
+  const { customername, mobileno, dob, gender, address, city, state } =
+    req.body;
+
+  // Check if mobile number already exists in the database
+  const checkQuery = `
+    SELECT COUNT(*) AS count
+    FROM [AviniLabs].[dbo].[customers]
+    WHERE mobileno = @mobileno
+  `;
+
+  try {
+    const existingMobile = await pool
+      .request()
+      .input("mobileno", sql.NVarChar(255), mobileno)
+      .query(checkQuery);
+
+    if (existingMobile.recordset[0].count > 0) {
+      return res.status(400).json({ error: "Mobile number already subscribed." });
+    }
+
+    // Proceed to add customer if no duplicate found
+    const query = `
+      INSERT INTO [AviniLabs].[dbo].[customers]
+        ([customername], [mobileno], [dob], [gender], [address], [city], [state])
+      VALUES
+        (@customername, @mobileno, @dob, @gender, @address, @city, @state)
+    `;
+
+    // Insert the new customer
+    await pool
+      .request()
+      .input("customername", sql.NVarChar(255), customername)
+      .input("mobileno", sql.NVarChar(255), mobileno)
+      .input("dob", sql.Date, dob)
+      .input("gender", sql.NVarChar(255), gender)
+      .input("address", sql.NVarChar(255), address)
+      .input("city", sql.NVarChar(255), city)
+      .input("state", sql.NVarChar(255), state)
+      .query(query);
+
+    return res.status(200).json({ message: "Subscription added successfully" });
+  } catch (error) {
+    console.error(
+      "Error occurred while processing customer data:",
+      error.message || error
+    );
+    return res
+      .status(500)
+      .json({ error: "Failed to add customer. Please try again later." });
+  }
+};
+
 /*****customerretail */
 exports.checkMobileNumber = async (req, res) => {
   const { mobileno } = req.body;
@@ -2346,26 +2444,119 @@ exports.stocksummary = async (req, res) => {
   }
 };
 
-exports.stockanalysis = (req, res) => {
-  poolConnect()
-    .then((pool) => {
-      const request = pool.request();
+exports.stockanalysis = async (req, res) => {
+  console.log("Received query parameters:", req.query);
 
-      request.execute("dbo.GetStockAnalysis", (err, result) => {
-        if (err) {
-          console.error("Error executing stored procedure:", err);
-          return res.status(500).json({ error: "Internal Server Error" });
-        }
+  // Destructure the query parameters
+  const { ParamFrDate, ParamToDate, ParamProdTyp = "" } = req.query;
 
-        // Send the data as JSON response
-        res.json({ data: result.recordset });
-      });
-    })
-    .catch((error) => {
-      console.error("Error connecting to the database:", error.message);
-      return res.status(500).json({ error: "Internal Server Error" });
+  // Validate the date parameters
+  if (!ParamFrDate || !ParamToDate) {
+    return res.status(400).json({ error: "Missing date parameters." });
+  }
+
+  if (
+    !moment(ParamFrDate, "DD-MM-YYYY", true).isValid() ||
+    !moment(ParamToDate, "DD-MM-YYYY", true).isValid()
+  ) {
+    return res.status(400).json({ error: "Invalid date format." });
+  }
+
+  try {
+    const pool = await poolConnect(); // Establish database connection
+    const request = pool.request();
+
+    // Pass parameters to the stored procedure
+    request.input("ParamFrDate", sql.VarChar, ParamFrDate);
+    request.input("ParamToDate", sql.VarChar, ParamToDate);
+    request.input("ParamProdTyp", sql.VarChar, ParamProdTyp);
+
+    // Execute the stored procedure
+    const result = await request.execute("dbo.GetStockSummaryByPT");
+
+    // Handle multiple result sets
+    const [table1, table2] = result.recordsets;
+
+    res.json({
+      table1, // First result set
+      table2, // Second result set
     });
+  } catch (error) {
+    console.error("Error executing stock analysis:", error.message);
+    res.status(500).json({ error: "Internal Server Error", details: error });
+  }
 };
+
+exports.drugreport = async (req, res) => {
+  try {
+    const { ParamSaleDate, ParamDrugType = "" } = req.query;
+
+    // Log received parameters for debugging
+    console.log("Received parameters:", { ParamSaleDate, ParamDrugType });
+
+    // Validate the sale date parameter with the expected format (DD-MMM-YYYY)
+    if (
+      !ParamSaleDate ||
+      !moment(ParamSaleDate, "DD-MMM-YYYY", true).isValid()
+    ) {
+      return res
+        .status(400)
+        .json({ error: "Invalid or missing sale date parameter." });
+    }
+
+    // Convert the date to the required format for the database (YYYY-MM-DD)
+    const saleDateString = moment(ParamSaleDate, "DD-MMM-YYYY").format(
+      "YYYY-MM-DD"
+    );
+
+    // Log formatted sale date
+    console.log("Formatted Sale Date:", saleDateString);
+
+    // Connect to the database
+    const pool = await sql.connect(config); // Use the correct database config
+    const request = pool.request();
+
+    // Input parameters for the stored procedure
+    request.input("ParamSaleDate", sql.VarChar, saleDateString);
+    request.input("ParamDrugType", sql.NVarChar, ParamDrugType);
+
+    // Execute the stored procedure
+    console.log("Executing stored procedure with:", {
+      saleDateString,
+      ParamDrugType,
+    });
+
+    const result = await request.execute("dbo.GetDailyDrugReport");
+
+    // Log result for debugging
+    console.log("Stored procedure result:", result);
+
+    // Check for empty results
+    if (!result.recordset || result.recordset.length === 0) {
+      return res.status(404).json({ message: "No records found." });
+    }
+
+    // Send the result
+    res.json({ data: result.recordset });
+  } catch (error) {
+    console.error("Error fetching drug report:", error);
+
+    if (error.code === "ECONNREFUSED") {
+      res.status(500).json({ error: "Database connection refused" });
+    } else if (error.originalError) {
+      res.status(500).json({
+        error: "Database Error",
+        details: error.originalError.message,
+      });
+    } else {
+      res.status(500).json({
+        error: "Internal Server Error",
+        details: error.message,
+      });
+    }
+  }
+};
+
 
 //batchsummary
 
@@ -9910,6 +10101,8 @@ exports.updatecompany = async (req, res) => {
         bookStartDate,
         discLedger,
         quotes,
+        dl1,
+        dl2
       } = req.body;
 
       let logo = null;
@@ -9949,7 +10142,9 @@ exports.updatecompany = async (req, res) => {
         .input("BankLedger", sql.NVarChar, bankLedger)
         .input("BookStartDate", sql.Date, bookStartDate)
         .input("DiscLedger", sql.NVarChar, discLedger)
-        .input("quotes", sql.VarChar, quotes);
+        .input("quotes", sql.VarChar, quotes)
+        .input("dl1", sql.NVarChar, dl1)
+        .input("dl2", sql.NVarChar, dl2);
       if (logo !== null) {
         request.input("Logo", sql.VarBinary, logo);
       }

@@ -1,58 +1,50 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
- {{>header}}
+    {{>header}}
 
     <style>
-   #purchaseFormContainer {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #8f8f8f;
-    padding: 20px;
-    z-index: 1001; /* Ensure the popup is above the blurred background */
-    border-radius: 10px;
-}
-.new-row {
-        display: none;
-    }
-.input-field.product-name {
-    width: 200px; /* Adjust the width as needed */
-    padding: 5px; ;
-}
+        /* Custom Styles */
+        #purchaseFormContainer {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #8f8f8f;
+            padding: 20px;
+            z-index: 1001;
+            border-radius: 10px;
+        }
 
-.input-field.disc-mode {
-    width: 200px; /* Adjust the width as needed */
-    padding: 5px; ;
-}
+        .new-row {
+            display: none;
+        }
+
+        .input-field.product-name,
+        .input-field.disc-mode {
+            width: 200px;
+            padding: 5px;
+        }
+
         .editForm {
-              display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #8f8f8f;
-    padding: 20px;
-    z-index: 1001; /* Ensure the popup is above the blurred background */
-    border-radius: 10px;
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #8f8f8f;
+            padding: 20px;
+            z-index: 1001;
+            border-radius: 10px;
         }
 
         .container {
             margin-left: 20%;
         }
 
-        .updateManufacturer {
-            background-color: rgba(50, 141, 168) !important;
-            color: white !important;
-            border: none !important;
-            border-radius: 3px !important;
-            width: 80px !important;
-            height: 30px;
-        }
-
+        .updateManufacturer,
         .closeForm {
             background-color: rgba(50, 141, 168) !important;
             color: white !important;
@@ -61,9 +53,11 @@
             width: 80px !important;
             height: 30px;
         }
+
         button {
             margin: 1px;
         }
+
         #message {
             display: none;
             position: fixed;
@@ -74,236 +68,263 @@
             color: black;
             padding: 20px;
             z-index: 1000;
-            size: 200px;
             font-weight: 700;
-            justify-content: space-between;
-            align-content: space-between;
-            align-items: center;
             font-size: 14px;
             box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.3) !important;
             border-radius: 8px;
             overflow: hidden;
         }
+
         form input {
             margin: 2px;
         }
+
         form button {
             width: 100px !important;
             padding: 5px;
             margin: 5px;
         }
+
         .col input {
             width: 100%;
         }
+
         input[type=checkbox] {
             width: 100px;
             color: #8f8f8f !important;
         }
+
         #submitButton {
-    display: none;
-} 
-    </style>
-    <style>
+            display: none;
+        }
+
         .align-right-top {
             position: absolute;
             top: 0;
             right: 0;
             margin: 10px;
         }
+
+        .dropdown {
+            width: 200px;
+            /* Make dropdown visible */
+        }
+
+        .table-container {
+            padding: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .summary-column {
+            width: 45%;
+        }
     </style>
-    
 </head>
 
-<body class="g-sidenav-show   bg-gray-100">
-{{>sidebar}}
-  <main class="main-content position-relative border-radius-lg ">
-{{>navbar}}
-        <div class="table-responsive container-fluid py-4">
+<body class="g-sidenav-show bg-gray-100">
+    {{>sidebar}}
+    <main class="main-content position-relative border-radius-lg">
+        {{>navbar}}
+        <div class="table-container">
             <div class="form-control card">
                 <h3>Stock Analysis</h3>
-                <div class="align-right-top">
-                    <div id="filterDateDiv" class="mb-3">
-                        <label for="fromDate">From Date:</label>
-                        <input type="text" id="fromDate">
-                        <label for="toDate">To Date:</label>
-                        <input type="text" id="toDate">
-                        <button class="btn btn-primary" id="filter-button">Filter</button>
-                        <button class="btn btn-primary" id="clear-button">Clear</button>
+                <div class="row">
+                    <div id="filterDateDiv" class="mb-3 col-md-8">
+                        <div class="row p-2 rounded-5" style="border:1px solid #f0f0f0;">
+                            <div class="col-md-4">
+                                <label for="fromDate" class="form-label">From Date:</label>
+                                <input type="date" id="fromDate" class="form-control input-field"
+                                    placeholder="DD-MM-YYYY">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="toDate" class="form-label">To Date:</label>
+                                <input type="date" id="toDate" class="form-control input-field"
+                                    placeholder="DD-MM-YYYY">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="prodType" class="form-label">Product Type:</label>
+                                <select id="prodType" class="form-control dropdown" name="prodType">
+                                    <option value="">Select Product Type</option>
+                                    <!-- Options will be populated dynamically -->
+                                </select>
+                            </div>
+                            <div class="col-md-2 mt-2 d-flex align-items-end">
+                                <button class="btn btn-primary" id="filter-button">Filter</button>
+                            </div>
+                            <div class="col-md-2 mt-2 d-flex align-items-end">
+                                <button class="btn btn-secondary" id="clear-button">Clear</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <form action="/auth/customer" method="get">
-                    <table id="customerTable" class="table-responsive justify-content-between align-items-end" style="width:100% !important">
-                        <thead>
-                    <tr>
-                        <th>Particulars</th>
-                        <th>Qty</th>
-                        <th>Sale Rank</th>
-                    </tr>
-                </thead>
-                <tbody >
-                    <!-- Add your data rows here -->
-                </tbody>
+
+                <!-- Table 1 (DataTable) -->
+                <table id="table1" class="table table-responsive" style="width:100%">
+                    <thead class="bg-primary text-white">
+                        <tr>
+                            <th>Particulars</th>
+                            <th>Combination</th>
+                            <th>Manufacturer</th>
+                            <th>Opening</th>
+                            <th>Purchase</th>
+                            <th>Purchase Return</th>
+                            <th>Sales</th>
+                            <th>Sale Return</th>
+                            <th>Sales Retail</th>
+                            <th>Sales Retail Return</th>
+                            <th>Closing Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <!-- Table 2 (Stock Summary with Value) -->
+                <div id="table2-container">
+                    <table id="table2" class="table table-responsive" style="width:100%">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th>Opening Value</th>
+                                <th>Purchase Value</th>
+                                <th>Purchase Return Value</th>
+                                <th>Sales Value</th>
+                                <th>Sales Return Value</th>
+                                <th>Sales Retail Value</th>
+                                <th>Sales Retail Return Value</th>
+                                <th>Closing Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be dynamically inserted here -->
+                        </tbody>
                     </table>
-                </form>
+                </div>
             </div>
         </div>
-  {{>footer}}
-  </main>
-  {{>color}}
+
+        {{>footer}}
+    </main>
+    {{>color}}
+
     <script>
-      var table = $("#customerTable").DataTable({
-         debug: true,
-     ajax: {
-        'url': '/auth/stockanalysis',
-        'dataType': 'json',
-        'dataSrc': 'data',
-         type: 'GET', // Adjust 'rows' based on your server response structure
-    },
-    columns: [
-        { data: 'product' },
-        { data: 'total_quantity' },
-        { data: 'product_rank' }
-    ], 
-dom: 'Bfrtip',
-buttons: ['copy', 'excel', 'pdf', 'csv', 'print'], 
-    paging: false,
-    scrollY: '480px',
-    scrollX: '100px',
-    scrollCollapse: true,
-    responsive: true,
-     "bInfo": true, 
-    "bBorders": true, 
-});
-    </script>
-      <script>
-        document.getElementById("filter-button").addEventListener("click", function() {
-            var fromDate = new Date(document.getElementById("fromDate").value);
-            var toDate = new Date(document.getElementById("toDate").value);
-            var table = document.getElementById("productTable");
-            var rows = table.getElementsByTagName("tr");
-
-            for (var i = 1; i < rows.length; i++) {
-                var cell = rows[i].getElementsByTagName("td")[0];
-                if (cell) {
-                    var cellDate = new Date(cell.innerText);
-                    if (cellDate >= fromDate && cellDate <= toDate) {
-                        rows[i].style.display = "";
-                    } else {
-                        rows[i].style.display = "none";
-                    }
-                }
-            }
-        });
-    </script>
-
-      <script>
-        document.getElementById("filter-button").addEventListener("click", function() {
-            var fromDate = new Date(document.getElementById("fromDate").value);
-            var toDate = new Date(document.getElementById("toDate").value);
-            var table = document.getElementById("contraTable");
-            var rows = table.getElementsByTagName("tr");
-
-            for (var i = 1; i < rows.length; i++) {
-                var cell = rows[i].getElementsByTagName("td")[0];
-                if (cell) {
-                    var cellDate = new Date(cell.innerText);
-                    if (cellDate >= fromDate && cellDate <= toDate) {
-                        rows[i].style.display = "";
-                    } else {
-                        rows[i].style.display = "none";
-                    }
-                }
-            }
-            if (!hasData) {
-                noDataRow.style.display = "block";
-            } else {
-                noDataRow.style.display = "none";
-            }
-        });
-        
-    </script>
- <script>
-  $( function() {
-    $( "#fromDate" ).datepicker();
-  } );
-  </script>
- <script>
-  $( function() {
-    $( "#toDate" ).datepicker();
-  } );
-  </script>
-<script>
-
- document.getElementById("clear-button").addEventListener("click", function () {
-        clearFilters();
-    });
-
-  function clearFilters() {
-        var table = document.getElementById("customerTable");
-        var rows = table.getElementsByTagName("tr");
-
-        for (var i = 1; i < rows.length; i++) {
-            rows[i].style.display = "";
-        }
-
-        // Check if noDataRow is defined before accessing it
-        var noDataRow = document.getElementById("noDataRow");
-        if (noDataRow) {
-            noDataRow.style.display = "none";
-        }
-
-        // Clear the values of the input fields
-        document.getElementById("fromDate").value = "";
-        document.getElementById("toDate").value = "";
-    }
-
-    document.getElementById("filter-button").addEventListener("click", function() {
-        var fromDate = new Date(document.getElementById("fromDate").value);
-        var toDate = new Date(document.getElementById("toDate").value);
-        var table = document.getElementById("customerTable");
-        var rows = table.getElementsByTagName("tr");
-        var hasData = false;
-
-        console.log('From Date:', fromDate);
-        console.log('To Date:', toDate);
-
-        for (var i = 1; i < rows.length; i++) {
-            var cell = rows[i].getElementsByTagName("td")[1]; // Assuming "Recipt Date" is the second column
-            if (cell) {
-                var cellContent = cell.innerText.trim();
-
-                // Try to extract a valid date using moment.js
-                var cellDate = moment(cellContent, "DD-MM-YYYY");
-
-                // Skip rows with invalid or non-date content
-                if (!cellDate.isValid()) {
-                    console.log('Skipping row with invalid or non-date content:', cellContent);
-                    continue;
-                }
-
-                console.log('Cell Content:', cellContent);
-                console.log('Parsed Date:', cellDate.format("YYYY-MM-DD"));
-
-                if (cellDate.isSameOrAfter(fromDate) && cellDate.isSameOrBefore(toDate)) {
-                    rows[i].style.display = "";
-                    hasData = true;
+        // Fetch product types for dropdown
+        $.ajax({
+            url: '/auth/producttype/type',
+            method: 'GET',
+            success: function (response) {
+                console.log('Received response for product types:', response);
+                var options = response.data;
+                if (options && options.length) {
+                    options.forEach(function (option) {
+                        $('#prodType').append($('<option>', {
+                            value: option.producttype,
+                            text: option.producttype
+                        }));
+                    });
                 } else {
-                    rows[i].style.display = "none";
+                    console.error('No options found for product types');
                 }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching product types:', error);
             }
-        }
+        });
 
-        // Check if noDataRow is defined before accessing it
-        var noDataRow = document.getElementById("noDataRow");
-        if (noDataRow) {
-            if (!hasData) {
-                noDataRow.style.display = "block";
-            } else {
-                noDataRow.style.display = "none";
-            }
-        }
-    });
-</script>
+        $(document).ready(function () {
+            const table1 = $('#table1').DataTable({
+                paging: false,
+                searching: false,  // Disable the search box
+                scrollY: '400px',
+                scrollX: true,
+                columns: [
+                    { data: 'product' },
+                    { data: 'combination' },
+                     { data: 'manufacturer' },   
+                    { data: 'OPBal' },
+                    { data: 'PurQty' },
+                    { data: 'PurRetQty' },
+                    { data: 'SalQty' },
+                    { data: 'SalRetQty' },
+                    { data: 'RetaSalQty' },
+                    { data: 'RetaSalRetQty' },
+                    { data: 'ClBal' }
+                ],
+                scrollCollapse: true,
+                dom: 'Bfrtip',  // Enable buttons
+                buttons: [
+                    'copy',   // Allow copying to clipboard
+                    'excel'   // Enable Excel export
+                ]
+            });
+
+            const table2 = $('#table2').DataTable({
+                paging: false,
+                searching: false,  // Disable the search box
+                scrollY: '400px',
+                scrollX: true,
+                columns: [
+                    { data: 'OPBalVal' },
+                    { data: 'PurVal' },
+                    { data: 'PurRetVal' },
+                    { data: 'SalVal' },
+                    { data: 'SalRetVal' },
+                    { data: 'RetaSalVal' },
+                    { data: 'RetaSalRetVal' },
+                    { data: 'CLBalVal' }
+                ],
+                scrollCollapse: true
+            });
+
+            // Filter button logic
+            $("#filter-button").on("click", function () {
+                const fromDate = $('#fromDate').val();
+                const toDate = $('#toDate').val();
+                const prodType = $('#prodType').val();
+
+                $.ajax({
+                    url: '/auth/stockanalysis',
+                    type: 'GET',
+                    data: {
+                        ParamFrDate: moment(fromDate, 'YYYY-MM-DD').format('DD-MM-YYYY'),
+                        ParamToDate: moment(toDate, 'YYYY-MM-DD').format('DD-MM-YYYY'),
+                        ParamProdTyp: prodType
+                    },
+                    success: function (response) {
+                        console.log('Received response for table1:', response.table1);
+                        console.log('Received response for table2:', response.table2);
+
+                        // Populate table 1
+                        table1.clear().rows.add(response.table1).draw();
+
+                        // Populate table 2 (Check if data exists)
+                        if (response.table2 && response.table2.length > 0) {
+                            table2.clear().rows.add(response.table2).draw();
+                        } else {
+                            console.log('No data for table2');
+                            table2.clear().draw(); // Clear table if no data is found
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching stock analysis:", error);
+                    }
+                });
+            });
+
+            // Clear button logic
+            $("#clear-button").on("click", function () {
+                $('#fromDate, #toDate, #prodType').val('');
+                table1.clear().draw();
+                table2.clear().draw();
+            });
+        });
+  
+  
+  
+    </script>
 </body>
 
-</html> 
+</html>

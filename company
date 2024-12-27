@@ -1,0 +1,68 @@
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  // Validate required fields
+  if (!formData.customername || !formData.mobileno || !formData.city) {
+    setSnackbarMessage("Please fill all required fields.");
+    setSnackbarSeverity("error");
+    setOpenSnackbar(true);
+    return;
+  }
+
+  try {
+    setIsSubmitting(true);
+
+    // Send data to the backend
+    const response = await fetch(
+      "http://136.185.14.8:8776/auth/addCustomeravini",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      }
+    );
+    const result = await response.json();
+
+    if (response.ok) {
+      // Display success message
+      setSnackbarMessage(result.message);
+      setSnackbarSeverity("success");
+      setOpenSnackbar(true);
+
+      // Redirect to the success page
+      navigate("/LifetimemembershipPage");
+
+      // Send WhatsApp message
+      const message = `Hello ${formData.customername},\n\nWelcome to our lifetime discount program! 🎉\nYour registration is successful.\n\nFor more details, please check the card below.`;
+      const encodedMessage = encodeURIComponent(message);
+    const cardImageUrl = "/images/card.jpg"; // Relative path to the image in the public folder
+    const whatsappUrl = `https://wa.me/?text=${encodedMessage}%0A${window.location.origin}${cardImageUrl}`;
+
+   
+
+      // Clear the form data
+      setFormData({
+        customername: "",
+        mobileno: "",
+        dob: "",
+        gender: "",
+        address: "",
+        city: "",
+        state: "",
+      });
+    } else {
+      setSnackbarMessage(result.error || "Failed to add customer.");
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
+    }
+  } catch {
+    setSnackbarMessage("Failed to add customer. Please try again.");
+    setSnackbarSeverity("error");
+    setOpenSnackbar(true);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+

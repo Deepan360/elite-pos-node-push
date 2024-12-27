@@ -272,31 +272,42 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-fetch('/auth/sidebar/companyTitle')
+  fetch('/auth/sidebar/companyTitle')
     .then(response => response.json())
     .then(data => {
-        if (data.success) {
-            const companyDetails = data.companyDetails; 
-            const companyTitle = companyDetails.companyName;
-            const gstin = companyDetails.gstin;
-            const address = companyDetails.address;
-            const city = companyDetails.city;
-            const state = companyDetails.state;
-            const mobileNo = companyDetails.mobileNo;
-            const quotes = companyDetails.quotes; 
+      if (data.success) {
+        const companyDetails = data.companyDetails;
 
-            document.getElementById('companyTitle').textContent = companyTitle;
-            document.getElementById('gstin').textContent = gstin;
-            document.getElementById('address').textContent = address;
-            document.getElementById('city').textContent = city;
-            document.getElementById('state').textContent = state;
-            document.getElementById('mobileNo').textContent = mobileNo;
-            document.getElementById('quotes').textContent = quotes; 
-            document.getElementById('quotes').style.display = 'block'; 
+        // Destructure the company details for clarity
+        const {
+          companyName,
+          gstin,
+          address,
+          city,
+          state,
+          mobileNo,
+          quotes,
+          dl1,
+          dl2
+        } = companyDetails;
 
-        } else {
-            console.error('Error fetching company details:', data.message);
-        }
+        // Update the DOM elements
+        document.getElementById('companyTitle').textContent = companyDetails.companyName || "Not Available";
+        document.getElementById('id').textContent = companyDetails.billNo || "Not Available";
+        document.getElementById('gstin').textContent = gstin || "Not Available";
+        document.getElementById('mobileNo').textContent = mobileNo || "Not Available";
+
+        document.getElementById('dl1').textContent = dl1 || "Not Available";
+        document.getElementById('dl2').textContent = dl2 || "Not Available";
+
+        document.getElementById('address').textContent = address || "Not Available";
+        document.getElementById('city').textContent = city || "";
+        document.getElementById('state').textContent = state || "";
+
+        document.getElementById('quotes').style.display = 'block';
+      } else {
+        console.error('Error fetching company details:', data.message);
+      }
     })
     .catch(error => console.error('Error fetching company details:', error));
 </script>    

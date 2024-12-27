@@ -142,7 +142,7 @@
     .content {
         margin-left: 2mm;
         margin-right: 2mm;
-        margin-top: 90px; /* Adjust to the height of the header */
+        margin-top: 120px; /* Adjust to the height of the header */
         margin-bottom: 20px; /* Adjust to the height of the footer */
         page-break-after: avoid; /* Ensure content breaks after the main content */
       page-break-inside: auto;
@@ -253,29 +253,43 @@ table thead th {
         <h4 style="color: rgb(255, 255, 255);background-color:#344767;" class="mt-0 mb-1" id="companyTitle">Invoice</h4>
         <div class="invoice-details mb-0 mt-0" style="display: flex; justify-content: space-between;">
             <!-- Company Info -->
-            <div class="company-info" style="padding: 2px; border-radius: 8px; flex-basis: 48%;">
-                <table style="width: 100%; border-collapse: collapse; color: white;">
-                    <tr style="border: 1px solid #344767;">
-                        <td style="border: 1px solid #344767; padding: 10px; color: #344767;">
-                            <strong>Bill No:</strong> <span id="id" class="company-detail"></span>
-                        </td>
-                        <td style="border: 1px solid #344767; padding: 10px; color: #344767;">
-                            <strong>GSTIN:</strong> <span id="gstin" class="company-detail"></span>
-                        </td>
-                        <td style="border: 1px solid #344767; padding: 10px; color: #344767;">
-                            <strong>Mobile:</strong> <span id="mobileNo" class="company-detail"></span>
-                        </td>
-                    </tr>
-                    <tr style="border: 1px solid #344767;">
-                        <td colspan="3" style="border: 1px solid #344767; padding: 10px; color: #344767;">
-                            <strong>Address:</strong>
-                            <span id="address" class="company-detail"></span>,
-                            <span id="city" class="company-detail"></span>,
-                            <span id="state" class="company-detail"></span>
-                        </td>
-                    </tr>
-                </table>
-            </div>
+        <div class="company-info" style="padding: 2px; border-radius: 8px; flex-basis: 48%;">
+            <table style="width: 100%; border-collapse: collapse; color: white;">
+                <!-- First Row: Bill No, GSTIN, and Mobile -->
+                <tr style="border: 1px solid #344767;">
+                    <td style="border: 1px solid #344767; padding: 10px; color: #344767;">
+                        <strong>Bill No:</strong> <span id="id" class="company-detail"></span>
+                    </td>
+                    <td style="border: 1px solid #344767; padding: 10px; color: #344767;">
+                        <strong>GSTIN:</strong> <span id="gstin" class="company-detail"></span>
+                    </td>
+                    <td style="border: 1px solid #344767; padding: 10px; color: #344767;">
+                        <strong>Mobile:</strong> <span id="mobileNo" class="company-detail"></span>
+                    </td>
+                </tr>
+        
+                <!-- Second Row: Drug License 1 and Drug License 2 -->
+                <tr style="border: 1px solid #344767;">
+                    <td colspan="2" style="border: 1px solid #344767; padding: 10px; color: #344767;">
+                        <strong>Drug License 1:</strong> <span id="dl1" class="company-detail"></span>
+                    </td>
+                    <td colspan="2" style="border: 1px solid #344767; padding: 10px; color: #344767;">
+                        <strong>Drug License 2:</strong> <span id="dl2" class="company-detail"></span>
+                    </td>
+                </tr>
+        
+                <!-- Third Row: Address -->
+                <tr style="border: 1px solid #344767;">
+                    <td colspan="3" style="border: 1px solid #344767; padding: 10px; color: #344767;">
+                        <strong>Address:</strong>
+                        <span id="address" class="company-detail"></span>,
+                        <span id="city" class="company-detail"></span>,
+                        <span id="state" class="company-detail"></span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
             <!-- Customer Info -->
             <div class="customer-info" style="padding: 2px; border-radius: 8px; flex-basis: 48%;">
                 <table style="width: 100%; border-collapse: collapse; color: white;">
@@ -381,16 +395,15 @@ table thead th {
         // Print the page
         window.print();
     }
+    
     function back() {
         // This function can be used to navigate back to a previous page
         window.history.back();
     }
 
-
-
         // Document ready function
-        $(document).ready(function () {
-            var table;
+            $(document).ready(function () {
+                var table;
 
             // Function to initialize DataTable
             function initializeDataTable() {
@@ -508,6 +521,7 @@ table thead th {
                 console.error('Sales ID not found in URL');
             }
         });
+    
     </script>
 
 

@@ -288,7 +288,8 @@ $(document).on('click', '.editBtn', function() {
         $(".editForm #combination").val(data.combination);
         $(".editForm #package").val(data.package);
         $(".editForm #uom").val(data.uom);
-        $(".editForm #tax").val(data.tax);
+       $(".editForm #tax").val(formatDecimal(data.tax));
+
        
        
         // Check if 'active' property is true and set the checkbox accordingly
@@ -304,6 +305,11 @@ $(document).on('click', '.editBtn', function() {
         console.error('Invalid or undefined data:', data);
     }
 });
+    function formatDecimal(value) {
+        // Convert to float and remove unnecessary decimals
+        return parseFloat(value).toString();
+    }
+
 
 // Handle form submission for the edit form
 $(document).on('submit', '.editForm', function(event) {
@@ -359,7 +365,6 @@ $(document).on('click', '.editForm #closeForm', function() {
     $(".editForm").hide();
 });
 
-
     // Handle form close button for the add form
     $(document).on('click', '#closeForm', function() {
         $("#manufacturerform").hide();
@@ -403,8 +408,6 @@ $('#customerTable').on('click', '.deleteBtn', function() {
 });
 </script>
 <script>
-
-
 // Fetch options for cash/bank Ledger(dr)
 $.ajax({
     url: '/auth/productcategory/category',
@@ -415,7 +418,6 @@ $.ajax({
         if (options && options.length) {
             options.forEach(function (option) {
                 $('.dropdown[name="category"]').append($('<option>', {
-                 
                       value: option.Product_Category,
                     text: option.Product_Category
                 }));
@@ -535,6 +537,10 @@ $.ajax({
 });
 
 
+
+
+
+
     $.ajax({
         url: '/auth/drugtype/getdrugtype',
         method: 'GET',
@@ -618,10 +624,19 @@ $.ajax({
                 <label class="h6" for="HSNCode">HSNCode</label>
                 <input type="text" placeholder="HSNCode" name="hsnCode" id="hsnCode">
             </div>
-            <div class="row">
-                <label class="h6" for="Tax">Tax</label>
-                <input type="text" placeholder="Tax" name="tax" id="tax">
-            </div>
+<div class="row">
+    <label class="h6" for="tax">Tax</label>
+    <select name="tax" id="tax" class="form-control" required>
+        <option value="" disabled selected>Select Tax</option>
+        <option value="0">0%</option>
+        <option value="5">5%</option>
+        <option value="12">12%</option>
+        <option value="18">18%</option>
+        <option value="28">28%</option>
+    </select>
+    
+</div>
+
             <div class="row">
                 <label class="h6" for="Active">Active</label>
                 <label for="active" style="font-size: 14px;">Active -> <input type="checkbox" id="active" value="1"
@@ -637,7 +652,7 @@ $.ajax({
             </div>
             <div class="row">
                 <label class="h6" for="ProductType">ProductType:</label>
-                <select id="productType" class="form-control dropdown" name="productType">
+                <select id="productType" class="form-control dropdown" name="productType" required>
                     <option value="Disabled Select">Select Product Type</option>
                 </select>
             </div>
@@ -673,6 +688,7 @@ $.ajax({
             </div>
         </div>
     </div>
+
     <button type="submit" value="submit" class="btn btn-primary" id="saveManufacturer">Save</button>
     <button type="button" class="btn btn-primary" id="closeForm">Close</button>
 </form>
@@ -698,10 +714,18 @@ $.ajax({
             <label class="h6" for="HSNCode">HSNCode</label>
             <input type="text" placeholder="HSNCode" name="hsnCode" id="hsnCode">
         </div>
-        <div class="row">
-            <label class="h6" for="Tax">Tax</label>
-            <input type="text" placeholder="Tax" name="tax" id="tax">
-        </div>
+<div class="row">
+    <label class="h6" for="tax">Tax</label>
+    <select name="tax" id="tax" class="form-control" required>
+        <option value="" disabled selected>Select Tax</option>
+        <option value="0">0%</option>
+        <option value="5">5%</option>
+        <option value="12">12%</option>
+        <option value="18">18%</option>
+        <option value="28">28%</option>
+    </select>
+
+</div>
         <div class="row">
             <label class="h6" for="Active">Active</label>
             <label for="active" style="font-size: 14px;">Active -> <input type="checkbox" id="active" value="1"
@@ -717,7 +741,7 @@ $.ajax({
         </div>
         <div class="row">
             <label class="h6" for="ProductType">ProductType:</label>
-            <select id="productType" class="form-control dropdown" name="productType">
+            <select id="productType" class="form-control dropdown" name="productType" required>
                 <option value="Disabled Select">Select Product Type</option>
             </select>
         </div>

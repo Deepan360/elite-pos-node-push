@@ -132,6 +132,7 @@ router.get(
   userController.GetSupplierInvoiceData
 );
 router.get("/salesretail/checkMobileNumber", userController.checkMobileNumber);
+router.get("/checkMobileNumberavini", userController.checkMobileNumberavini);
 
 router.get("/purchase/checkInvoiceNumber", userController.checkInvoiceNumber);
 router.get('/city',userController.city);
@@ -364,8 +365,8 @@ router.delete(
   "/salesretail/customerretaildelete/:id",
   userController.customerretaildelete
 );
-
+router.get("/drugreport", userController.drugreport);
 router.get("/producthistory", userController.producthistory);
-
+router.post('/addCustomeravini',userController.addCustomeravini);
 module.exports = router;
  

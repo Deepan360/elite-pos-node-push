@@ -1,9 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {{>header}}
+    <link rel="apple-touch-icon" sizes="76x76" href="./assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="./assets/img/Untitled design (11)-modified.png">
+    <title>
+        elite POS
+    </title>
+ 
+    <!-- CSS Files -->
+    <link id="pagestyle" href="/assets/css/argon-dashboard.css?v=2.0.4" rel="stylesheet" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
@@ -13,13 +21,16 @@
             /* Define custom page size */
             margin: 0;
             /* Remove default margins */
-            font-size: 12px !important;
+            font-size: 14px !important;
+            font-weight: 800 !important;
             font-family: 'Courier New', Courier, monospace !important;
+
         }
 
         body {
             font-family: 'Courier New', Courier, monospace !important;
-            font-size: 12px !important;
+            font-size: 14px !important;
+            font-weight: 800 !important;
             line-height: 1.2;
             margin: 0;
             padding: 0;
@@ -29,6 +40,8 @@
             font-family: 'Courier New', Courier, monospace !important;
             white-space: normal !important;
             /* Use normal for standard spacing */
+            font-size: 14px !important;
+            font-weight: 800 !important;
             word-spacing: normal !important;
             /* Correct word spacing */
             letter-spacing: normal !important;
@@ -50,13 +63,15 @@
 
         .company-info td,
         .customer-info td {
-            font-weight: bold;
+            font-weight: 800;
         }
 
         @media print {
             * {
                 font-family: 'Courier New', Courier, monospace !important;
                 white-space: normal !important;
+                font-size: 14px !important;
+                font-weight: 800 !important;
                 /* Use normal for standard spacing */
                 word-spacing: normal !important;
                 /* Correct word spacing */
@@ -70,16 +85,18 @@
                 padding: 0;
                 height: auto;
 
-                font-size: 12px !important;
+                font-size: 14px !important;
                 line-height: normal !important;
             }
 
             .content {
                 margin-left: 10mm;
                 margin-right: 10mm;
-                margin-top: 105px !important;
+                margin-top: 140px !important;
                 margin-bottom: 5mm;
                 padding: 0;
+                font-size: 14px !important;
+                font-weight: 800 !important;
                 page-break-after: avoid;
                 overflow: visible;
             }
@@ -95,6 +112,8 @@
                 border: 1px solid #ccc;
                 padding: 5px;
                 text-align: left;
+                font-size: 14px !important;
+                font-weight: 800 !important;
             }
 
             /* Ensure the content fits within the page */
@@ -127,7 +146,7 @@
 
             .company-info td,
             .customer-info td {
-                font-weight: bold;
+                font-weight: 800;
             }
 
             thead tr td {
@@ -155,7 +174,7 @@
             #productDetailsTable th:nth-child(1),
             #productDetailsTable td:nth-child(1) {
                 width: 40% !important;
-                font-size: 12px;
+                font-size: 14px;
                 text-align: left;
                 white-space: nowrap;
                 /* Prevent text wrapping */
@@ -171,7 +190,10 @@
             table.dataTable td {
                 white-space: normal !important;
                 /* Allow wrapping of content for other columns */
+                font-size: 14px !important;
+                font-weight: 800 !important;
                 word-wrap: break-word;
+                font-weight: 800 !important;
                 /* Break long words if needed */
                 max-width: 350px !important;
                 /* Set a reasonable maximum width */
@@ -181,7 +203,8 @@
 
             .content table tbody tr td,
             table thead th {
-                font-size: 12px !important;
+                font-size: 14px !important;
+                font-weight: 800 !important;
                 line-height: normal !important;
                 padding: 5px !important;
 
@@ -203,40 +226,44 @@
             }
 
             span {
-                font-weight: bold !important;
+                font-weight: 800 !important;
             }
 
             .company-info td,
             .customer-info td,
             .company-info td span,
             .customer-info td span {
-
-                font-size: 12px;
+                font-size: 14px !important;
+                font-weight: 800 !important;
 
             }
 
             .company-info,
             .customer-info {
-                font-size: 12px !important;
-                font-weight: bold !important;
-                color: #344767 !important;
+                font-size: 14px !important;
+                font-weight: 800 !important;
+                color: #000 !important;
             }
 
+            .invoices {
+                page-break-after: always !important;
+                /* Allow the invoice content to break before next content */
+            }
         }
 
         .company-info td,
         .customer-info td,
         .company-info td span,
         .customer-info td span {
-
-            font-size: 12px;
+            font-size: 14px !important;
+            font-weight: 800 !important;
 
         }
 
         body {
             font-family: 'Courier New', Courier, monospace;
-            font-size: 12px;
-
+            font-size: 14px;
+            font-weight: 800 !important;
             margin: 0;
             padding: 0;
         }
@@ -268,21 +295,6 @@
         }
 
         /* Product Name Column Styles */
-        #productDetailsTable th:nth-child(1),
-        #productDetailsTable td:nth-child(1) {
-            width: 40% !important;
-            /* Ensure first column is 40% */
-            font-size: 12px;
-            text-align: left;
-            white-space: nowrap;
-            /* Prevent text wrapping */
-            overflow: hidden;
-            /* Hide overflowed content */
-            text-overflow: ellipsis;
-            /* Show '...' for overflowed text */
-            max-width: 40%;
-            /* Ensure the product name does not take more than 40% of the table */
-        }
 
         /* Additional table styles */
         table {
@@ -310,7 +322,7 @@
         }
 
         .content {
-            margin-top: 150px;
+            margin-top: 170px;
             /* Adjust to the height of the header */
             padding: 0px !important;
 
@@ -331,11 +343,12 @@
         }
 
         .invoices h4 {
-            font-size: large !important;
+            font-size: 800 !important;
             text-align: center;
             margin-bottom: 10px;
             width: 100% !important;
-            color: #344767;
+            color: #000;
+            font-size: 14px !important;
         }
 
         .invoice-details {
@@ -348,8 +361,8 @@
         .customer-info {
             padding: 10px;
             border-radius: 10px;
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 14px;
+            font-weight: 800;
         }
 
         table {
@@ -378,11 +391,12 @@
         #productDetailsTable th:nth-child(1),
         #productDetailsTable td:nth-child(1) {
             width: 40% !important;
-            font-size: 12px;
+            font-size: 14px;
             text-align: left;
             white-space: nowrap;
             /* Prevent text wrapping */
             overflow: hidden;
+            font-weight: 800 !important;
             /* Hide overflow */
             text-overflow: ellipsis;
             /* Show '...' for overflowed text */
@@ -390,21 +404,6 @@
             /* Ensure the product name does not take more than 40% of the table */
         }
 
-        /* Product name column styles */
-        #productDetailsTable th:nth-child(1),
-        #productDetailsTable td:nth-child(1) {
-            width: 40% !important;
-            font-size: 12px;
-            text-align: left;
-            white-space: nowrap;
-            /* Prevent text wrapping */
-            overflow: hidden;
-            /* Hide overflowed content */
-            text-overflow: ellipsis;
-            /* Show '...' for overflowed text */
-            max-width: 40%;
-            /* Ensure the product name does not take more than 40% of the table */
-        }
 
         /* Additional styles for the table */
         table.dataTable td {
@@ -420,9 +419,14 @@
 
         .content table tbody tr td,
         table thead th {
-            font-size: 12px !important;
+            font-size: 14px !important;
             line-height: normal !important;
             padding: 2px !important;
+        }
+
+        .invoices {
+            page-break-after: always !important;
+            /* Allow the invoice content to break before next content */
         }
 
         .print-button {
@@ -433,7 +437,7 @@
 
         .print-button button {
             padding: 10px 20px;
-            background-color: #344767;
+            background-color: #000;
             color: white;
             border: none;
             border-radius: 5px;
@@ -462,7 +466,7 @@
     <div class="invoices" style="  font-family: 'Courier New', Courier, monospace !important;">
         <!-- Header Section -->
         <div class="header"
-            style="position: fixed; top: 0; width: 100%; z-index: 100; background-color: white;font-size:12px;font-weight:bold;">
+            style="position: fixed; top: 0; width: 100%; z-index: 100; background-color: white;font-size:14px;font-weight:800;">
             <h4 style="color: rgb(0, 0, 0);background-color:#ffffff;" class="mt-0 mb-1" id="companyTitle">Invoice
             </h4>
             <div class="invoice-details mb-0 mt-0"
@@ -470,23 +474,20 @@
                 <!-- Company Info -->
                 <div class="company-info" style="padding: 2px; border-radius: 8px; flex-basis: 48%;">
                     <table style="width: 100%; border-collapse: collapse; color: rgb(0, 0, 0);">
-                        <tr style="border: 1px solid #344767;">
-                            <td
-                                style="border: 1px solid #344767; padding: 10px; color: #344767;font-size:12px;font-weight:bold;">
+                        <tr style="border: 1px solid #000;">
+                            <td style=" padding: 10px; color: #000;font-size:14px;font-weight:800;">
                                 <span> Bill No:</span> <span id="id" class="company-detail"></span>
                             </td>
-                            <td
-                                style="border: 1px solid #344767; padding: 10px; color: #344767;font-size:12px;font-weight:bold;">
+                            <td style=" padding: 10px; color: #000;font-size:14px;font-weight:800;">
                                 <span> GSTIN:</span> <span id="gstin" class="company-detail"></span>
                             </td>
-                            <td
-                                style="border: 1px solid #344767; padding: 10px; color: #344767;font-size:12px;font-weight:bold;">
+                            <td style=" padding: 10px; color: #000;font-size:14px;font-weight:800;">
                                 <span> Mobile: </span><span id="mobileNo" class="company-detail"></span>
                             </td>
                         </tr>
-                        <tr style="border: 1px solid #344767;">
-                            <td colspan="3"
-                                style="border: 1px solid #344767; padding: 10px; color: #344767;font-size:12px;font-weight:bold;">
+                        <tr style="">
+                            <td colspan="3" style=" padding: 10px; color: #000;font-size:14px;font-weight:800;">
+
                                 <span>Address:</span>
                                 <span id="address" class="company-detail"></span>,
                                 <span id="city" class="company-detail"></span>,
@@ -498,22 +499,20 @@
                 <!-- Customer Info -->
                 <div class="customer-info" style="padding: 2px; border-radius: 8px; flex-basis: 48%;">
                     <table style="width: 100%; border-collapse: collapse; color: white;">
-                        <tr style="border: 1px solid #344767;">
-                            <td style="border: 1px solid #344767; padding: 10px; color: #344767;">
+                        <tr style="">
+                            <td style="padding: 10px; color: #000;font-size:14px;font-weight:800;">
                                 <span>Customer:</span> <span id="customername"></span>
                             </td>
-                            <td style="border: 1px solid #344767; padding: 10px; color: #344767;">
+                            <td style=" padding: 10px; color: #000;font-size:14px;font-weight:800;">
                                 <span>Mobile:</span> <span id="customermobileno"></span>
                             </td>
                         </tr>
-                        <tr style="border: 1px solid #344767; padding: 10px; color: #344767;">
+                        <tr style=" padding: 10px; color: #000;">
                             <!-- Make sure to match border and font styling here -->
-                            <td colspan="1"
-                                style="border: 1px solid #344767; padding: 10px; color: #344767; font-weight: bold;">
+                            <td colspan="1" style=" padding: 10px; color: #000; font-size:14px;font-weight:800;">
                                 <span>Sale Date:</span> <span id="saledate"></span>
                             </td>
-                            <td colspan="2"
-                                style="border: 1px solid #344767; padding: 10px; color: #344767; font-weight: bold;">
+                            <td colspan="2" style=" padding: 10px; color: #000; font-size:14px;font-weight:800;">
                                 <span> Doctor:</span> <span id="doctorname"></span>
                             </td>
                         </tr>
@@ -600,45 +599,48 @@
     </div>
     <script>
         // Function to print the invoice
-    function printData() {
-        // Hide print button
-        var printButtons = document.querySelectorAll('.print-button');
-        if (printButtons.length === 0) {
-            console.error('No .print-button elements found.');
-            return;
-        }
-        printButtons.forEach(function (el) {
-            el.style.display = 'none';
-        });
+        function printData() {
+            // Hide print button
+            var printButtons = document.querySelectorAll('.print-button');
+            if (printButtons.length === 0) {
+                console.error('No .print-button elements found.');
+                return;
+            }
+            printButtons.forEach(function (el) {
+                el.style.display = 'none';
+            });
 
-        // Select the invoice div
-        var invoiceContent = document.querySelector('.invoices');
-        if (!invoiceContent) {
-            console.error('No .invoices element found.');
-            return;
-        }
+            // Select the invoice div
+            var invoiceContent = document.querySelector('.invoices');
+            if (!invoiceContent) {
+                console.error('No .invoices element found.');
+                return;
+            }
 
-        // Clone the invoice content
-        var printWindow = window.open('', '_blank');
-        printWindow.document.open();
-        printWindow.document.write(`
+            // Clone the invoice content
+            var printWindow = window.open('', '_blank');
+            printWindow.document.open();
+            printWindow.document.write(`
         <!DOCTYPE html>
         <html>
         <head>
             <title>Print Invoice</title>
            <style>
+            .invoices {
+        page-break-after: always !important; /* Allow the invoice content to break before next content */
+    }
         @page {
             size: 10in 12in;
             /* Define custom page size */
             margin: 2;
             /* Remove default margins */
-            font-size: 12px !important;
+          font-size: 14px !important;
             font-family: 'Courier New', Courier, monospace !important;
         }
 
         body {
             font-family: 'Courier New', Courier, monospace !important;
-            font-size: 12px !important;
+          font-size: 14px !important;
             line-height: 1.2;
             margin: 2;
             padding: 0;
@@ -669,10 +671,13 @@
 
         .company-info td,
         .customer-info td {
-            font-weight: bold;
+            font-weight: 800;
         }
 
         @media print {
+                    .invoices {
+        page-break-after: always !important; /* Allow the invoice content to break before next content */
+    }
             * {
                 font-family: 'Courier New', Courier, monospace !important;
                 white-space: normal !important;
@@ -689,14 +694,14 @@
                 padding: 2;
                 height: auto;
 
-                font-size: 12px !important;
+              font-size: 14px !important;
                 line-height: normal !important;
             }
 
             .content {
                 margin-left: 10mm;
                 margin-right: 10mm;
-                margin-top: 140px !important;
+                margin-top: 160px !important;
                 margin-bottom: 5mm;
                 padding: 0;
                 page-break-after: avoid;
@@ -746,7 +751,7 @@
 
             .company-info td,
             .customer-info td {
-                font-weight: bold;
+                font-weight: 800;
             }
 
             thead tr td {
@@ -774,7 +779,8 @@
             #productDetailsTable th:nth-child(1),
             #productDetailsTable td:nth-child(1) {
                 width: 40% !important;
-                font-size: 12px;
+              font-size: 14px !important;
+              font-weight: 800 !important;
                 text-align: left;
                 white-space: nowrap;
                 /* Prevent text wrapping */
@@ -789,6 +795,8 @@
             /* Additional styles for the table */
             table.dataTable td {
                 white-space: normal !important;
+                    font-size: 14px !important;
+              font-weight: 800 !important;
                 /* Allow wrapping of content for other columns */
                 word-wrap: break-word;
                 /* Break long words if needed */
@@ -800,7 +808,7 @@
 
             .content table tbody tr td,
             table thead th {
-                font-size: 12px !important;
+              font-size: 14px !important;
                 line-height: normal !important;
                 padding: 5px !important;
 
@@ -822,7 +830,7 @@
             }
 
             span {
-                font-weight: bold !important;
+                font-weight: 800 !important;
             }
 
             .company-info td,
@@ -830,15 +838,15 @@
             .company-info td span,
             .customer-info td span {
 
-                font-size: 12px;
+              font-size: 14px;
 
             }
 
             .company-info,
             .customer-info {
-                font-size: 12px !important;
-                font-weight: bold !important;
-                color: #344767 !important;
+              font-size: 14px !important;
+                font-weight: 800 !important;
+                color: #000 !important;
             }
 
         }
@@ -848,13 +856,13 @@
         .company-info td span,
         .customer-info td span {
 
-            font-size: 12px;
+          font-size: 14px;
 
         }
 
         body {
             font-family: 'Courier New', Courier, monospace;
-            font-size: 12px;
+          font-size: 14px;
 
             margin: 0;
             padding: 0;
@@ -891,7 +899,8 @@
         #productDetailsTable td:nth-child(1) {
             width: 40% !important;
             /* Ensure first column is 40% */
-            font-size: 12px;
+             font-size: 14px !important;
+              font-weight: 800 !important;
             text-align: left;
             white-space: nowrap;
             /* Prevent text wrapping */
@@ -954,7 +963,7 @@
             text-align: center;
             margin-bottom: 10px;
             width: 100% !important;
-            color: #344767;
+            color: #000;
         }
 
         .invoice-details {
@@ -967,8 +976,8 @@
         .customer-info {
             padding: 10px;
             border-radius: 10px;
-            font-size: 12px;
-            font-weight: bold;
+          font-size: 14px;
+            font-weight: 800;
         }
 
         table {
@@ -997,7 +1006,7 @@
         #productDetailsTable th:nth-child(1),
         #productDetailsTable td:nth-child(1) {
             width: 40% !important;
-            font-size: 12px;
+          font-size: 14px;
             text-align: left;
             white-space: nowrap;
             /* Prevent text wrapping */
@@ -1013,7 +1022,7 @@
         #productDetailsTable th:nth-child(1),
         #productDetailsTable td:nth-child(1) {
             width: 40% !important;
-            font-size: 12px;
+          font-size: 14px;
             text-align: left;
             white-space: nowrap;
             /* Prevent text wrapping */
@@ -1039,7 +1048,7 @@
 
         .content table tbody tr td,
         table thead th {
-            font-size: 12px !important;
+          font-size: 14px !important;
             line-height: normal !important;
             padding: 2px !important;
         }
@@ -1052,7 +1061,7 @@
 
         .print-button button {
             padding: 10px 20px;
-            background-color: #344767;
+            background-color: #000;
             color: white;
             border: none;
             border-radius: 5px;
@@ -1080,18 +1089,18 @@
         </body>
         </html>
     `);
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
-        printWindow.close();
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
 
-        // Show print buttons again after printing
-        printButtons.forEach(function (el) {
-            el.style.display = 'block';
-        });
-    }
+            // Show print buttons again after printing
+            printButtons.forEach(function (el) {
+                el.style.display = 'block';
+            });
+        }
 
-      
+
         function back() {
             // This function can be used to navigate back to a previous page
             window.history.back();
@@ -1219,6 +1228,34 @@
                 console.error('Sales ID not found in URL');
             }
         });
+
+        fetch('/auth/sidebar/companyTitle')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const companyDetails = data.companyDetails;
+                    const companyTitle = companyDetails.companyName;
+                    const gstin = companyDetails.gstin;
+                    const address = companyDetails.address;
+                    const city = companyDetails.city;
+                    const state = companyDetails.state;
+                    const mobileNo = companyDetails.mobileNo;
+                    const quotes = companyDetails.quotes;
+
+                    document.getElementById('companyTitle').textContent = companyTitle;
+                    document.getElementById('gstin').textContent = gstin;
+                    document.getElementById('address').textContent = address;
+                    document.getElementById('city').textContent = city;
+                    document.getElementById('state').textContent = state;
+                    document.getElementById('mobileNo').textContent = mobileNo;
+                    document.getElementById('quotes').textContent = quotes;
+                    document.getElementById('quotes').style.display = 'block';
+
+                } else {
+                    console.error('Error fetching company details:', data.message);
+                }
+            })
+            .catch(error => console.error('Error fetching company details:', error));
     </script>
 </body>
 

@@ -368,5 +368,24 @@ router.delete(
 router.get("/drugreport", userController.drugreport);
 router.get("/producthistory", userController.producthistory);
 router.post('/addCustomeravini',userController.addCustomeravini);
+
+router.get("/checkMobileNumberClinic", userController.checkMobileNumberClinic);
+router.post("/addCustomerClinic", userController.addCustomerClinic);
+
+router.get("/getRegCustomers", userController.getRegCustomers);
+router.put(
+  "/updateRegCustomer/${selectedCustomer.regid}",
+  userController.updateRegCustomer
+);
+router.delete("/deleteRegCustomer/${regid}", userController.deleteRegCustomer);
+
+
+// router.get("/regmember", userController.manufacturer);
+// router.post("/manufacturer", userController.manufactureradd);
+// router.put("/manufactureredit/:id", userController.manufactureredit);
+// router.delete("/manufacturerdelete/:id", userController.manufacturerdelete);
+
+
+
 module.exports = router;
  

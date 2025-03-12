@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="76x76" href="./assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="./assets/img/Untitled design (11)-modified.png">
+    <title>
+        elite POS
+    </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <style>
+        @page {
+            size: A5 Potrait;
+            /* A5 size in landscape orientation */
+            margin: 10mm;
+            /* Adjust margins for better content fit */
+            font-size: 14px !important;
+            font-family: 'Courier New', Courier, monospace !important;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace !important;
+            font-size: 14px !important;
+            line-height: 1.2;
+            margin: 0;
+            padding: 0;
+            transform: none;
+            /* Remove rotation */
+            width: 148mm;
+            /* Portrait width (height in landscape) */
+            height: 210mm;
+            /* Portrait height (width in landscape) */
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        * {
+            font-family: 'Courier New', Courier, monospace !important;
+            white-space: normal !important;
+            /* Use normal for standard spacing */
+            font-size: 14px !important;
+            font-weight: 800 !important;
+            word-spacing: normal !important;
+            /* Correct word spacing */
+            letter-spacing: normal !important;
+            /* Correct letter spacing */
+        }
+
+        .invoice {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            box-sizing: border-box;
+            position: relative;
+            padding: 10mm;
+            /* Adjust for content to fit within the page */
+        }
+
+        .company-info td,
+        .customer-info td {
+            font-weight: 800;
+        }
+
+        @media print {
+            * {
+                font-family: 'Courier New', Courier, monospace !important;
+                white-space: normal !important;
+                font-size: 14px !important;
+                font-weight: 800 !important;
+                /* Use normal for standard spacing */
+                word-spacing: normal !important;
+                /* Correct word spacing */
+                letter-spacing: normal !important;
+                /* Correct letter spacing */
+            }
+
+            body {
+                font-family: 'Courier New', Courier, monospace !important;
+                margin: 0;
+                padding: 0;
+                height: auto;
+                transform-origin: top left;
+                transform: rotate(90deg);
+                /* Keep rotated for print */
+                font-size: 14px !important;
+                line-height: normal !important;
+            }
+
+            .content {
+                margin-left: 5mm;
+                margin-right: 5mm;
+                margin-top: 100px !important;
+                margin-bottom: 5mm;
+                padding: 0;
+                font-size: 14px !important;
+                font-weight: 800 !important;
+                page-break-after: avoid;
+                overflow: visible;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+
+            }
+
+            th,
+            td {
+                border: 1px solid #ccc;
+                padding: 5px;
+                text-align: left;
+                font-size: 14px !important;
+                font-weight: 800 !important;
+            }
+
+            /* Ensure the content fits within the page */
+            #productDetailsTable th:nth-child(1),
+            #productDetailsTable td:nth-child(1) {
+                width: 40% !important;
+            }
+
+            .invoice-details {
+                margin-bottom: 20px;
+            }
+
+            .header,
+            .footer {
+
+                width: 100%;
+                z-index: 1000;
+                background-color: white;
+            }
+
+            .header {
+                top: 0;
+            }
+
+            .footer {
+                position: relative !important;
+                bottom: 0;
+                color: #000000 !important;
+            }
+
+            .company-info td,
+            .customer-info td {
+                font-weight: 800;
+            }
+
+            thead tr td {
+                page-break-after: always;
+                display: table-header-group;
+                color: #000000 !important;
+                /* Ensure thead repeats on each page */
+            }
+
+            .content thead th {
+
+                color: #000000 !important;
+                /* Ensure thead repeats on each page */
+            }
+
+            tbody tr td {
+                padding: 5px !important;
+                page-break-inside: avoid;
+
+                color: #000000;
+                /* Avoid breaking rows */
+            }
+
+
+
+
+            .content table tbody tr td,
+            table thead th {
+                font-size: 14px !important;
+                font-weight: 800 !important;
+                line-height: normal !important;
+                padding: 5px !important;
+
+            }
+
+            .invoice {
+                width: 100%;
+                margin: 10mm;
+                /* Adjust margin for the printable area */
+                padding: 0px;
+            }
+
+            .content table tbody tr td {
+                color: #000 !important;
+            }
+
+            .content table thead tr td {
+                color: #000 !important;
+            }
+
+            span {
+                font-weight: 800 !important;
+            }
+
+            .company-info td,
+            .customer-info td,
+            .company-info td span,
+            .customer-info td span {
+                font-size: 14px !important;
+                font-weight: 800 !important;
+
+            }
+
+            .company-info,
+            .customer-info {
+                font-size: 14px !important;
+                font-weight: 800 !important;
+                color: #000 !important;
+            }
+
+            .invoices {
+                page-break-after: always !important;
+                /* Allow the invoice content to break before next content */
+            }
+        }
+
+        .company-info td,
+        .customer-info td,
+        .company-info td span,
+        .customer-info td span {
+            font-size: 14px !important;
+            font-weight: 800 !important;
+
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            font-weight: 800 !important;
+            margin: 0;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #000;
+            padding: 4px;
+            white-space: nowrap;
+        }
+
+
+        /* Invoice Styles */
+        .invoice {
+            width: 100%;
+            /* Set width to full */
+            height: 100%;
+            /* Set height to full */
+            margin: 0;
+            padding: 0;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            box-sizing: border-box;
+        }
+
+        /* Product Name Column Styles */
+
+        /* Additional table styles */
+        table {
+            width: 100%;
+            /* Full width for the table */
+            border-collapse: collapse;
+            /* Collapse borders */
+            padding: 0px !important;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+
+            color: rgb(0, 0, 0);
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .content {
+            margin-top: 170px;
+            /* Adjust to the height of the header */
+            padding: 0px !important;
+
+        }
+
+        /* Header Styles */
+        .invoice {
+            font-family: 'Courier New', Courier, monospace !important;
+            width: 100%;
+            margin: 10px;
+            padding: 0px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #fff;
+            box-sizing: border-box;
+            position: relative;
+            /* Positioning for footer */
+        }
+
+        .invoices h4 {
+            font-size: 800 !important;
+            text-align: center;
+            margin-bottom: 10px;
+            width: 100% !important;
+            color: #000;
+            font-size: 14px !important;
+        }
+
+        .invoice-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .company-info,
+        .customer-info {
+            padding: 2px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #ffffff;
+            color: rgb(0, 0, 0);
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+
+        /* Ensure the first column takes 40% */
+        #productDetailsTable th:nth-child(1),
+        #productDetailsTable td:nth-child(1) {
+            width: 40% !important;
+            max-width: 40% !important;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            font-weight: 800;
+        }
+
+        /* Allow other columns to size based on their content */
+        #productDetailsTable th,
+        #productDetailsTable td {
+            width: auto;
+            white-space: nowrap;
+            overflow: hidden;
+            text-align: left;
+        }
+
+        /* Ensure the table respects defined widths */
+        #productDetailsTable {
+            width: 100%;
+            table-layout: auto;
+            border-collapse: collapse;
+        }
+
+
+
+        .content table tbody tr td,
+        table thead th {
+            font-size: 14px !important;
+            line-height: normal !important;
+            padding: 2px !important;
+        }
+
+        .invoices {
+            page-break-after: always !important;
+            /* Allow the invoice content to break before next content */
+        }
+
+        .print-button {
+            display: block;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        .print-button button {
+            padding: 10px 20px;
+            background-color: #000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .print-button button:hover {
+            background-color: #2c3e50;
+        }
+
+        .non-wrapping {
+            white-space: nowrap;
+            /* Prevent text from wrapping */
+            overflow: hidden;
+            /* Hide overflowed content */
+            text-overflow: ellipsis;
+            /* Show '...' for overflowed text */
+            max-width: 100%;
+            /* Set max width for the cell */
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="invoices" style="  font-family: 'Courier New', Courier, monospace !important;">
+        <!-- Header Section -->
+        <div class="header"
+            style="position: fixed; top: 0; width: 100%; z-index: 100; background-color: white;font-size:14px;font-weight:800;">
+            <h4 style="color: rgb(0, 0, 0);background-color:#ffffff;" class="mt-0 mb-1" id="companyTitle">Invoice
+            </h4>
+            <div class="invoice-details mb-0 mt-0"
+                style="display: flex; justify-content: space-between;font-size:12px !important;font-weight:bold !important;">
+                <!-- Company Info -->
+                <div class="company-info" style="padding: 2px; border-radius: 8px; flex-basis: 50%;">
+                    <table style="width: 100%; border-collapse: collapse; color: rgb(0, 0, 0);">
+                        <tr style="border: 1px solid #000;">
+                            <td style=" padding: 10px; color: #000;font-size:14px;font-weight:800;">
+                                <span>Bill:</span> <span id="id" class="company-detail"></span>
+                            </td>
+                            <td style=" padding: 10px; color: #000;font-size:14px;font-weight:800;">
+                                <span>GSTIN:</span> <span id="gstin" class="company-detail"></span>
+                            </td>
+                            <td style=" padding: 10px; color: #000;font-size:14px;font-weight:800;">
+                                <span>Mobile: </span><span id="mobileNo" class="company-detail"></span>
+                            </td>
+                        </tr>
+                        <tr style="">
+                            <td colspan="3" style=" padding: 10px; color: #000;font-size:14px;font-weight:800;">
+
+                                <span>Address:</span>
+                                <span id="address" class="company-detail"></span>,
+                                <span id="city" class="company-detail"></span>,
+                                <span id="state" class="company-detail"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <!-- Customer Info -->
+                <div class="customer-info" style="padding: 2px; border-radius: 8px; flex-basis: 50%;">
+                    <table style="width: 100%; border-collapse: collapse; color: white;">
+                        <tr style="">
+                            <td colspan="1" style="padding: 10px; color: #000;font-size:14px;font-weight:800;">
+                                <span>Customer:</span> <span id="customername"></span>
+                            </td>
+                            <td style=" padding: 10px; color: #000;font-size:14px;font-weight:800;">
+                                <span>Mobile:</span> <span id="customermobileno"></span>
+                            </td>
+                        </tr>
+                        <tr style=" padding: 10px; color: #000;">
+                            <!-- Make sure to match border and font styling here -->
+                            <td colspan="1" style=" padding: 10px; color: #000; font-size:14px;font-weight:800;">
+                                <span>Sale:</span> <span id="saledate"></span>
+                            </td>
+                            <td colspan="2" style=" padding: 10px; color: #000; font-size:14px;font-weight:800;">
+                                <span> Doctor:</span> <span id="doctorname"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Content Section (Scroll) -->
+        <div class="content">
+            <table id="productDetailsTable" style="width: 100vw;">
+                <thead>
+                    <tr>
+                        <th>Particulars</th>
+                        <th>Batch</th>
+                        <th>Expiry</th>
+                        <th>MRP</th>
+                        <th>Qty</th>
+                        <th>Disc</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Table rows will be populated dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer Section -->
+        <div class="invoice-summary footer"
+            style="position: fixed; bottom: 0; width: 100vw; background-color: #000; color: #fff;">
+            <table style="width: 100%; border-collapse: collapse; color: rgb(0, 0, 0);">
+                <tr>
+                    <td style="border: 1px solid #ccc; padding: 10px; text-align: right;  background-color: #ffffff;">
+                        <strong>Amount:</strong>
+                    </td>
+                    <td style="border: 1px solid #ccc; padding: 10px; text-align: right;  background-color: #ffffff;">
+                        <span id="invoiceAmount"></span>
+                    </td>
+                    <td style="border: 1px solid #ccc; padding: 10px; text-align: right;  background-color: #ffffff;">
+                        <strong>Discount:</strong>
+                    </td>
+                    <td style="border: 1px solid #ccc; padding: 10px; text-align: right;  background-color: #ffffff;">
+                        <span id="discount"></span> - <span id="discountMode"></span>
+                    </td>
+                    <td style="border: 1px solid #ccc; padding: 10px; text-align: right;  background-color: #ffffff;">
+                        <strong>SGST:</strong>
+                    </td>
+                    <td style="border: 1px solid #ccc; padding: 10px; text-align: right;  background-color: #ffffff;">
+                        <span id="sgst"></span>
+                    </td>
+                    <td style="border: 1px solid #ccc; padding: 10px; text-align: right;  background-color: #ffffff;">
+                        <strong>CGST:</strong>
+                    </td>
+                    <td style="border: 1px solid #ccc; padding: 10px; text-align: right; background-color: #ffffff;">
+                        <span id="cgst"></span>
+                    </td>
+                    <td style="border: 1px solid #ccc; padding: 10px; text-align: right;  background-color: #ffffff;">
+                        <strong>Total Amount:</strong>
+                    </td>
+                    <td style="border: 1px solid #ccc; padding: 10px; text-align: right;  background-color: #ffffff;">
+                        <span id="subtotal"></span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+    <div class="d-flex justify-content-start align-item-start">
+        <button class="btn btn-primary print-button" onclick="back()">Back</button>
+        <button class="btn  btn-success print-button" onclick="printData()">Print</button>
+
+    </div>
+    <script>
+        // Function to print the invoice
+        function printData() {
+            // Hide print button
+            var printButtons = document.querySelectorAll('.print-button');
+            if (printButtons.length === 0) {
+                console.error('No .print-button elements found.');
+                return;
+            }
+            printButtons.forEach(function (el) {
+                el.style.display = 'none';
+            });
+
+            // Select the invoice div
+            var invoiceContent = document.querySelector('.invoices');
+            if (!invoiceContent) {
+                console.error('No .invoices element found.');
+                return;
+            }
+
+            // Clone the invoice content
+            var printWindow = window.open('', '_blank');
+            printWindow.document.open();
+            printWindow.document.write(`
+        <!DOCTYPE html>S
+        <html>
+        <head>
+            <title>Print Invoice</title>
+           <style>
+            .invoices {
+        page-break-after: always !important; /* Allow the invoice content to break before next content */
+    }
+
+
+@page {
+    size: A5 Potrait; /* A5 size in landscape orientation */
+    margin: 10mm; /* Adjust margins for better content fit */
+    font-size: 14px !important;
+    font-family: 'Courier New', Courier, monospace !important;
+}
+
+body {
+    font-family: 'Courier New', Courier, monospace !important;
+    font-size: 14px !important;
+    line-height: 1.2;
+    margin: 0;
+    padding: 0;
+    transform: none; /* Remove rotation */
+    width: 148mm; /* Portrait width (height in landscape) */
+    height: 210mm; /* Portrait height (width in landscape) */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+        * {
+            font-family: 'Courier New', Courier, monospace !important;
+            white-space: normal !important;
+            /* Use normal for standard spacing */
+            word-spacing: normal !important;
+            /* Correct word spacing */
+            letter-spacing: normal !important;
+            /* Correct letter spacing */
+        }
+
+        .invoice {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            box-sizing: border-box;
+            position: relative;
+            padding: 10mm;
+            /* Adjust for content to fit within the page */
+        }
+
+        .company-info td,
+        .customer-info td {
+            font-weight: 800;
+        }
+
+        @media print {
+            .footer table{
+            
+            width:100%;}
+                    .invoices {
+        page-break-after: always !important; /* Allow the invoice content to break before next content */
+    }
+            * {
+                font-family: 'Courier New', Courier, monospace !important;
+                white-space: normal !important;
+                /* Use normal for standard spacing */
+                word-spacing: normal !important;
+                /* Correct word spacing */
+                letter-spacing: normal !important;
+                /* Correct letter spacing */
+            }
+
+            body {
+                font-family: 'Courier New', Courier, monospace !important;
+                margin: 2;
+                padding: 2;
+                height: auto;
+
+              font-size: 14px !important;
+                line-height: normal !important;
+            }
+
+        .content {
+                margin-left: 5mm;
+                margin-right: 5mm;
+                margin-top: 150px !important;
+                margin-bottom: 7mm;
+                padding: 0;
+                font-size: 14px !important;
+                font-weight: 800 !important;
+                page-break-after: avoid;
+                overflow: visible;
+            }
+            table {
+                width: 100vw;
+                
+                border-collapse: collapse;
+
+            }
+
+            th,
+            td {
+                border: 1px solid #ccc;
+                padding: 5px;
+                text-align: left;
+            }
+
+            /* Ensure the content fits within the page */
+            #productDetailsTable th:nth-child(1),
+            #productDetailsTable td:nth-child(1) {
+                width: 40% !important;
+            }
+
+            .invoice-details {
+                margin-bottom: 20px;
+            }
+
+            .header,
+            .footer {
+
+                width: 100%;
+                z-index: 1000;
+                background-color: white;
+            }
+
+            .header {
+                top: 0;
+            }
+
+            .footer {
+    width: 100%;
+                position: relative !important;
+                bottom: 0;
+                color: #000000 !important;
+            }
+        
+
+            .company-info td,
+            .customer-info td {
+                font-weight: 800;
+            }
+
+            thead tr td {
+                page-break-after: always;
+                display: table-header-group;
+                color: #000000 !important;
+                /* Ensure thead repeats on each page */
+            }
+
+            .content thead th {
+
+                color: #000000 !important;
+                /* Ensure thead repeats on each page */
+            }
+
+            tbody tr td {
+                padding: 5px !important;
+                page-break-inside: avoid;
+
+                color: #000000;
+                /* Avoid breaking rows */
+            }
+
+/* Ensure the first column takes 40% */
+#productDetailsTable th:nth-child(1),
+#productDetailsTable td:nth-child(1) {
+    width: 40% !important;
+    max-width: 40% !important;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-weight: 800;
+}
+
+/* Allow other columns to size based on their content */
+#productDetailsTable th,
+#productDetailsTable td {
+    width: auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-align: left;
+}
+
+/* Ensure the table respects defined widths */
+#productDetailsTable {
+    width: 100%;
+    table-layout: auto;
+    border-collapse: collapse;
+}
+
+
+            .content table tbody tr td,
+            table thead th {
+              font-size: 14px !important;
+                line-height: normal !important;
+                padding: 5px !important;
+
+            }
+
+            .invoice {
+                width: 100%;
+                margin: 10mm;
+                /* Adjust margin for the printable area */
+                padding: 0px;
+            }
+
+            .content table tbody tr td {
+                color: #000 !important;
+            }
+
+            .content table thead tr td {
+                color: #000 !important;
+            }
+
+            span {
+                font-weight: 800 !important;
+            }
+
+            .company-info td,
+            .customer-info td,
+            .company-info td span,
+            .customer-info td span {
+
+              font-size: 14px;
+
+            }
+
+            .company-info,
+            .customer-info {
+              font-size: 14px !important;
+                font-weight: 800 !important;
+                color: #000 !important;
+            }
+
+        }
+
+        .company-info td,
+        .customer-info td,
+        .company-info td span,
+        .customer-info td span {
+
+          font-size: 14px;
+
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+          font-size: 14px;
+
+            margin: 0;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #000;
+            padding: 4px;
+            white-space: nowrap;
+        }
+
+
+        /* Invoice Styles */
+        .invoice {
+            width: 100%;
+            /* Set width to full */
+            height: 100%;
+            /* Set height to full */
+            margin: 0;
+            padding: 0;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            box-sizing: border-box;
+        }
+
+        /* Product Name Column Styles */
+        #productDetailsTable th:nth-child(1),
+        #productDetailsTable td:nth-child(1) {
+            width: 40% !important;
+            /* Ensure first column is 40% */
+             font-size: 14px !important;
+              font-weight: 800 !important;
+            text-align: left;
+            white-space: nowrap;
+            /* Prevent text wrapping */
+            overflow: hidden;
+            /* Hide overflowed content */
+            text-overflow: ellipsis;
+            /* Show '...' for overflowed text */
+            max-width: 40%;
+            /* Ensure the product name does not take more than 40% of the table */
+        }
+
+        /* Additional table styles */
+        table {
+            width: 100%;
+            /* Full width for the table */
+            border-collapse: collapse;
+            /* Collapse borders */
+            padding: 0px !important;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+
+            color: rgb(0, 0, 0);
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+    
+
+        /* Header Styles */
+        .invoice {
+            font-family: 'Courier New', Courier, monospace !important;
+            width: 100%;
+            margin: 10px;
+            padding: 0px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #fff;
+            box-sizing: border-box;
+            position: relative;
+            /* Positioning for footer */
+        }
+
+        .invoices h4 {
+            font-size: large !important;
+            text-align: center;
+            margin-bottom: 10px;
+            width: 100% !important;
+            color: #000;
+        }
+
+        .invoice-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .company-info,
+        .customer-info {
+            padding: 2px;
+            border-radius: 10px;
+          font-size: 14px;
+            font-weight: 800;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #ffffff;
+            color: rgb(0, 0, 0);
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+
+        .content table tbody tr td,
+        table thead th {
+          font-size: 14px !important;
+            line-height: normal !important;
+            padding: 2px !important;
+        }
+
+        .print-button {
+            display: block;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        .print-button button {
+            padding: 10px 20px;
+            background-color: #000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .print-button button:hover {
+            background-color: #2c3e50;
+        }
+
+        .non-wrapping {
+            white-space: nowrap;
+            /* Prevent text from wrapping */
+            overflow: hidden;
+            /* Hide overflowed content */
+            text-overflow: ellipsis;
+            /* Show '...' for overflowed text */
+            max-width: 100%;
+            /* Set max width for the cell */
+        }
+    </style>
+        </head>
+        <body>
+            ${invoiceContent.outerHTML}
+        </body>
+        </html>
+    `);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+
+            // Show print buttons again after printing
+            printButtons.forEach(function (el) {
+                el.style.display = 'block';
+            });
+        }
+
+
+        function back() {
+            // This function can be used to navigate back to a previous page
+            window.history.back();
+        }
+
+
+
+        // Document ready function
+        $(document).ready(function () {
+            var table;
+
+            // Function to initialize DataTable
+            function initializeDataTable() {
+                // Destroy existing DataTable if it exists
+                if ($.fn.DataTable.isDataTable('#productDetailsTable')) {
+                    table.destroy();
+                }
+
+                // Re-initialize DataTable
+                table = $("#productDetailsTable").DataTable({
+                    paging: false,
+                    ordering: false,
+                    info: false,
+                    searching: false,
+                    responsive: true,
+                    autoWidth: false,
+                });
+
+                // Add pagination to the custom container
+                table.on('draw', function () {
+                    $('#paginationContainer').html($('.dataTables_paginate'));
+                });
+            }
+
+            // Function to load table data
+            function loadTableData(salesId) {
+                $.ajax({
+                    url: '/auth/salesretailprint/productdetails',
+                    method: 'GET',
+                    data: { salesId: salesId },
+                    success: function (response) {
+                        if (response && response.data && response.data.length > 0) {
+                            if (!table) {
+                                initializeDataTable();
+                            }
+                            // Clear table before adding new data
+                            table.clear();
+
+                            // Add rows to the table
+                            response.data.forEach(function (row) {
+                                table.row.add([
+                                    '<div class="non-wrapping">' + row.productname + '</div>',
+                                    row.batchNo,
+                                    row.expiryDate,
+                                    row.rate,
+                                    row.quantity,
+                                    row.discount + '-' + row.discMode,
+                                    row.totalAmount
+                                ]);
+                            });
+
+                            // Redraw table with new data
+                            table.draw();
+                        } else {
+                            console.error('No data received from the server.');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error loading table data:', error);
+                    }
+                });
+            }
+
+            function truncateText(text, maxLength) {
+                return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+            }
+            // Function to fetch sales details
+            function fetchsalesDetails(salesId) {
+                $.ajax({
+                    url: '/auth/salesretailprint/salesretaildetails',
+                    method: 'GET',
+                    data: { salesId: salesId },
+                    success: function (response) {
+                        if (response && response.data && response.data.length > 0) {
+                            var responseData = response.data[0];
+                            $('#id').text(responseData.id);
+                            $('#customername').text(truncateText(responseData.customername, 10));
+                            $('#customermobileno').text(responseData.mobileno);
+                            $('#saledate').text(formatDate(responseData.saledate));
+                            $('#doctorname').text(truncateText(responseData.doctorname, 19));
+                            $('#invoiceAmount').text(responseData.amount);
+                            $('#discountMode').text(responseData.discMode);
+                            $('#discount').text(responseData.discount);
+                            $('#cgst').text(responseData.cgst);
+                            $('#igst').text(responseData.igst);
+                            $('#sgst').text(responseData.sgst);
+                            $('#subtotal').text(responseData.total);
+                        } else {
+                            console.error('No data received from the server.');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching sales details:', error);
+                    }
+                });
+            }
+
+            // Function to format date
+            function formatDate(dateObject) {
+                const date = new Date(dateObject);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${day}-${month}-${year}`;
+            }
+
+            // Call functions to load data and initialize DataTable
+            const urlParams = new URLSearchParams(window.location.search);
+            const salesId = urlParams.get('id');
+
+            if (salesId) {
+                loadTableData(salesId);
+                fetchsalesDetails(salesId);
+            } else {
+                console.error('Sales ID not found in URL');
+            }
+        });
+
+        fetch('/auth/sidebar/companyTitle')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const companyDetails = data.companyDetails;
+                    const companyTitle = companyDetails.companyName;
+                    const gstin = companyDetails.gstin;
+                    const address = companyDetails.address;
+                    const city = companyDetails.city;
+                    const state = companyDetails.state;
+                    const mobileNo = companyDetails.mobileNo;
+                    const quotes = companyDetails.quotes;
+
+                    document.getElementById('companyTitle').textContent = companyTitle;
+                    document.getElementById('gstin').textContent = gstin;
+                    document.getElementById('address').textContent = address;
+                    document.getElementById('city').textContent = city;
+                    document.getElementById('state').textContent = state;
+                    document.getElementById('mobileNo').textContent = mobileNo;
+                    document.getElementById('quotes').textContent = quotes;
+                    document.getElementById('quotes').style.display = 'block';
+
+                } else {
+                    console.error('Error fetching company details:', data.message);
+                }
+            })
+            .catch(error => console.error('Error fetching company details:', error));
+    </script>
+</body>
+
+</html>

@@ -771,4 +771,28 @@ router.get("/checkMobileNumberavini", (req, res) => {
   router.post("/addCustomeravini",(req,res)=>{
     res.render("addCustomeravini");
 });
+
+
+router.get("/checkMobileNumberClinic", (req, res) => {
+  console.log("Request received to check mobile number:", req.query.mobileNo); // Add this log
+  res.render("checkMobileNumberClinic");
+});
+router.post("/addCustomerClinic", (req, res) => {
+  res.render("addCustomerClinic");
+});
+
+
+  router.get("/regmember", (req, res) => {
+    res.render("regmember");
+  });
+  router.post("/regmember", (req, res) => {
+    res.render("regmemberadd");
+  });
+  router.put("/regmember", (req, res) => {
+    res.render("regmemberedit", { id: req.params.id });
+  });
+  router.get("/regmember", (req, res) => {
+    res.render("regmemberdelete", { id: req.params.id });
+  });
+
 module.exports=router;     

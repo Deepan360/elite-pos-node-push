@@ -42,6 +42,240 @@ function formatDate(dateString) {
   return dateString;
 }
 
+exports.addCustomerClinic = async (req, res) => {
+  const {
+    name,
+    mobileno,
+    dob,
+    gender,
+    address,
+    city,
+    state,
+    country,
+    pincode,
+    age,
+    
+  } = req.body;
+
+  // Get current year (last 2 digits) and month
+  const currentYear = new Date().getFullYear().toString().slice(-2); // "25" for 2025
+  const currentMonth = (`0` + (new Date().getMonth() + 1)).slice(-2); // "03" for March
+  const prefix = `${currentYear}${currentMonth}`; // "2503"
+
+  try {
+    // Query to find the latest `regid` for the current month
+    const latestRegQuery = `
+      SELECT TOP 1 regid 
+      FROM [elitePOS_MedWell].[dbo].[reg_patient]
+      WHERE regid LIKE '${prefix}%'
+      ORDER BY regid DESC
+    `;
+
+    const latestRegResult = await pool.request().query(latestRegQuery);
+
+    let nextNumber = "001"; // Default if no record exists
+
+    if (latestRegResult.recordset.length > 0) {
+      const lastRegid = latestRegResult.recordset[0].regid;
+      const lastNumber = parseInt(lastRegid.slice(-3)); // Extract the last 3 digits
+      nextNumber = String(lastNumber + 1).padStart(3, "0"); // Increment and format
+    }
+
+    const newRegid = `${prefix}${nextNumber}`; // Generate final `regid`
+
+    // Query to check if both name and mobile number already exist
+    const checkQuery = `
+      SELECT COUNT(*) AS count
+      FROM [elitePOS_MedWell].[dbo].[reg_patient]
+      WHERE mobileno = @mobileno AND name = @name AND IsActive = 1
+    `;
+
+    const existingCustomer = await pool
+      .request()
+      .input("mobileno", sql.NVarChar(255), mobileno)
+      .input("name", sql.NVarChar(255), name)
+      .query(checkQuery);
+
+    if (existingCustomer.recordset[0].count > 0) {
+      return res
+        .status(400)
+        .json({
+          error:
+            "Customer with the same name and mobile number already exists.",
+        });
+    }
+
+    // Insert new record with generated `regid`
+    const query = `
+      INSERT INTO [elitePOS_MedWell].[dbo].[reg_patient]
+        ([regid], [name], [mobileno], [address], [city], [state], [country], [pincode], [age], [gender], [dob], [IsActive], [lastvisited])
+      VALUES
+        (@regid, @name, @mobileno, @address, @city, @state, @country, @pincode, @age, @gender, @dob, 1, GETDATE())
+    `;
+
+    await pool
+      .request()
+      .input("regid", sql.NVarChar(10), newRegid)
+      .input("name", sql.NVarChar(255), name)
+      .input("mobileno", sql.NVarChar(255), mobileno)
+      .input("address", sql.NVarChar(255), address)
+      .input("city", sql.NVarChar(255), city)
+      .input("state", sql.NVarChar(255), state)
+      .input("country", sql.NVarChar(255), country)
+      .input("pincode", sql.NVarChar(10), pincode)
+      .input("age", sql.Int, age)
+      .input("gender", sql.NVarChar(10), gender)
+      .input("dob", sql.Date, dob)
+      .query(query);
+
+    return res
+      .status(200)
+      .json({ message: "Customer added successfully", regid: newRegid });
+  } catch (error) {
+    console.error(
+      "Error occurred while processing customer data:",
+      error.message || error
+    );
+    return res
+      .status(500)
+      .json({ error: "Failed to add customer. Please try again later." });
+  }
+};
+
+
+exports.checkMobileNumberClinic = async (req, res) => {
+  const mobile = req.query.mobileno; // Ensure this matches the query parameter name
+  console.log("Received mobile number:", mobile); // Log the received mobile number
+
+  if (!mobile) {
+    return res.status(400).json({ error: "Mobile number is required" });
+  }
+
+  try {
+    // Query to get all records for the given mobile number
+    const result = await pool
+      .request()
+      .input("mobile", sql.NVarChar(15), mobile) // Ensure NVarChar length is sufficient
+      .query(
+        "SELECT * FROM [elitePOS_MedWell].[dbo].[reg_patient] WHERE mobileno = @mobile"
+      );
+
+    console.log("Query Result:", result.recordset); // Log the result for debugging
+
+    if (result.recordset.length > 0) {
+      // Return all matching records
+      return res.status(200).json({ data: result.recordset });
+    } else {
+      // No customer found, return empty array
+      return res.status(200).json({ data: [] });
+    }
+  } catch (error) {
+    console.error("Error during query execution:", error); // Log the error
+    return res.status(500).json({
+      error: "Internal Server Error",
+      message: error.message, // Include actual error message
+      stack: error.stack, // Optional: Provide stack trace for debugging
+    });
+  }
+};
+
+
+
+/**
+ * Get Single RegCustomer by regid
+ */
+exports.getRegCustomers = async (req, res) => {
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    pool.query(
+      "SELECT * FROM [elitePOS_MedWell].[dbo].[reg_patient] WHERE IsActive = 1 ORDER BY lastvisited DESC;",
+      (err, result) => {
+        connection.release(); // Release the connection back to the pool
+
+        if (err) {
+          console.error("Error in listing data:", err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+
+        // Send the data as JSON response
+        res.json({ data: result.recordset });
+      }
+    );
+  });
+};
+
+
+/**
+ * Update RegCustomer Details
+ */
+exports.updateRegCustomer = async (req, res) => {
+  await poolConnect(); // Ensure database connection
+  const { regid } = req.params;
+  const { name, mobileno, dob, gender, address, city, state, country, pincode, age } = req.body;
+
+  try {
+    const query = `
+      UPDATE [elitePOS_MedWell].[dbo].[reg_patient]
+      SET name = @name, mobileno = @mobileno, dob = @dob, gender = @gender, 
+          address = @address, city = @city, state = @state, country = @country, 
+          pincode = @pincode, age = @age, lastvisited = GETDATE()
+      WHERE regid = @regid AND IsActive = 1
+    `;
+
+    const result = await pool
+      .request()
+      .input("regid", sql.NVarChar(10), regid)
+      .input("name", sql.NVarChar(255), name)
+      .input("mobileno", sql.NVarChar(255), mobileno)
+      .input("dob", sql.Date, dob)
+      .input("gender", sql.NVarChar(10), gender)
+      .input("address", sql.NVarChar(255), address)
+      .input("city", sql.NVarChar(255), city)
+      .input("state", sql.NVarChar(255), state)
+      .input("country", sql.NVarChar(255), country)
+      .input("pincode", sql.NVarChar(10), pincode)
+      .input("age", sql.Int, age)
+      .query(query);
+
+    if (result.rowsAffected[0] === 0) {
+      return res.status(404).json({ error: "RegCustomer not found or not active." });
+    }
+
+    return res.status(200).json({ message: "RegCustomer updated successfully." });
+  } catch (error) {
+    console.error("Error updating RegCustomer:", error);
+    return res.status(500).json({ error: "Failed to update RegCustomer." });
+  }
+};
+
+/**
+ * Delete RegCustomer (Soft Delete)
+ */
+exports.deleteRegCustomer = async (req, res) => {
+  await poolConnect(); // Ensure database connection
+  const { regid } = req.params;
+
+  try {
+    const query = "UPDATE [elitePOS_MedWell].[dbo].[reg_patient] SET IsActive = 0 WHERE regid = @regid";
+    const result = await pool.request().input("regid", sql.NVarChar(10), regid).query(query);
+
+    if (result.rowsAffected[0] === 0) {
+      return res.status(404).json({ error: "RegCustomer not found." });
+    }
+
+    return res.status(200).json({ message: "RegCustomer deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting RegCustomer:", error);
+    return res.status(500).json({ error: "Failed to delete RegCustomer." });
+  }
+};
+
+
+
 
 ///avinilabs
 

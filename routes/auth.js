@@ -4,6 +4,7 @@ const userController = require('../controllers/user');
 
 
 
+
 router.post('/registration', userController.registration);
 router.post('/login', userController.login);
 router.post('/company', userController.company);
@@ -387,25 +388,25 @@ router.delete("/deleteRegCustomer/${regid}", userController.deleteRegCustomer);
 
 
 
-router.get("/inpatientreg/checkMobileNumber", userController.checkMobileNumber);
-router.get("/inpatientreg/inpatientDetails", userController.inpatientDetails);
+router.get("/inpatient/checkMobileNumber", userController.checkMobileNumber);
+router.get("/inpatient/inpatientDetails", userController.inpatientDetails);
 router.post("/inpatient", userController.inpatientadd);
 router.put("/inpatientEdit/:id", userController.inpatientEdit);
-router.get("/inpatientreg/inpatientids", userController.inpatientids);
+router.get("/inpatient/inpatientids", userController.inpatientids);
 router.delete("/inpatientdelete/:id", userController.inpatientdelete);
 router.delete("/inpatienttransdelete/:id", userController.inpatienttransdelete);
 router.get(
-  "/inpatientreg/inpatientproductid",
+  "/inpatient/inpatientproductid",
   userController.inpatientproductid
 );
 router.get("/inpatientregister", userController.inpatientregister);
 router.get("/inpatientdraft", userController.inpatientdraft);
-router.get("/inpatientreg/customername", userController.customername);
+router.get("/inpatient/customername", userController.customername);
 router.post(
-  "/inpatientreg/retailbatchDetails/:selectedProductId",
+  "/inpatient/retailbatchDetails/:selectedProductId",
   userController.retailbatchDetails
 );
-router.get("/inpatientreg/checkMobile", userController.checkMobileNumber);
+router.get("/inpatient/checkMobile", userController.checkMobileNumber);
 
 router.get(
   "/inpatientreg/checkStockAvailability/:productId/:batchNo/:quantity/:expiryDate",
@@ -417,7 +418,7 @@ router.get(
 // router.get("/inpatientreturn", userController.inpatientreturn);
 router.get(
   "/inpatientreturn/inpatientreturnDetails",
-  userController.inpatientDetails
+  userController.inpatientreturnDetails
 );
 router.post("/inpatientreturn", userController.inpatientreturnadd);
 router.put("/inpatientreturnEdit/:id", userController.inpatientreturnEdit);

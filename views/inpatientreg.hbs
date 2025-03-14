@@ -291,7 +291,7 @@
             "bInfo": true,
             "bBorders": true,
             ajax: {
-                url: '/auth/salesretailregister',
+                url: '/auth/inpatientregister',
                 type: 'GET',
                 dataType: 'json',
                 dataSrc: 'data'
@@ -377,7 +377,7 @@
         $('#customerTable').on('click', 'i.fa-file-pen', function () {
             var salesId = $(this).data('id');
             console.log('sales ID:', salesId); // Debugging
-            window.location.href = '/salesretail?id=' + salesId;
+            window.location.href = '/inpatientbilling?id=' + salesId;
         }); 
 
 
@@ -391,7 +391,7 @@
             var salesId = $(this).closest('tr').data('id');
             console.log('Sales ID:', salesId); // Debugging
             if (salesId !== undefined) {
-                window.location.href = '/salesretailprint?id=' + salesId;
+                window.location.href = '/inpatientbillprint?id=' + salesId;
             } else {
                 console.error('Sales ID is undefined.');
                 // Handle the case where salesId is undefined

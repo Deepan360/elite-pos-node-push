@@ -2,15 +2,11 @@ const sql = require("mssql");
 const bcrypt = require("bcrypt");
 
 const jwt = require("jsonwebtoken");
-const multer = require("multer");
+
 const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
 
-const storage = multer.memoryStorage();
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
-});
+
 
 const config = {
   user: process.env.DB_USER,
@@ -41,6 +37,29 @@ function formatDate(dateString) {
   //   // Implement your own date formatting logic here
   return dateString;
 }
+
+
+
+const multer = require("multer");
+const path = require("path");
+
+// Multer Storage Configuration
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./uploads/prescription"); // Store prescription images in this folder
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname)); // Generates a unique filename
+  },
+});
+
+// Multer Upload Middleware
+const upload = multer({ storage: storage }).single("prescriptionImage");
+
+
+
+
 
 exports.addCustomerClinic = async (req, res) => {
   const {
@@ -141,7 +160,6 @@ exports.addCustomerClinic = async (req, res) => {
       .json({ error: "Failed to add customer. Please try again later." });
   }
 };
-
 
 exports.checkMobileNumberClinic = async (req, res) => {
   const mobile = req.query.mobileno; // Ensure this matches the query parameter name
@@ -352,9 +370,6 @@ VALUES
   }
 };
 
-
-
-
 exports.inpatientreturnEdit = async (req, res) => {
   const { purchaseId } = req.params;
   const { purchaseDetails, products } = req.body;
@@ -445,8 +460,6 @@ exports.inpatientreturnEdit = async (req, res) => {
       .json({ success: false, message: "Failed to update salesretailreturn" });
   }
 };
-
-
 
 exports.inpatientreturnids = (req, res) => {
   pool.connect((err, connection) => {
@@ -758,6 +771,7 @@ exports.inpatientadd = async (req, res) => {
     pnetAmount,
     pdiscount,
     pdiscMode_,
+    prescriptionImage,
     isDraft,
     products: productsString,
   } = req.body;
@@ -773,9 +787,9 @@ exports.inpatientadd = async (req, res) => {
     // Make sure customerId is being used correctly
     const result = await pool.query`
       INSERT INTO inpatient_Master
-      ([saledate], [paymentmode], [customername],[doctorname] ,[amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft])
+      ([saledate], [paymentmode], [customername],[doctorname] ,[amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft],[prescriptionImage])
       VALUES
-      (${formattedSaleDate}, ${ppaymentMode}, ${customerId},${doctorname}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft});
+      (${formattedSaleDate}, ${ppaymentMode}, ${customerId},${doctorname}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft},${prescriptionImage});
     
       SELECT SCOPE_IDENTITY() as salesId;
     `;
@@ -826,10 +840,6 @@ exports.inpatientadd = async (req, res) => {
   }
 };
 
-
-
-
-
 exports.inpatientEdit = async (req, res) => {
   const { id } = req.params;
   const { purchaseDetails, products } = req.body;
@@ -839,7 +849,7 @@ exports.inpatientEdit = async (req, res) => {
 
     // Update salesretail_Master
     await pool.query`
-      UPDATE salesretail_Master
+      UPDATE inpatient_Master
       SET
           [saledate] = ${purchaseDetails.saledate}, 
           [paymentmode] = ${purchaseDetails.paymentmode},
@@ -1116,7 +1126,7 @@ JOIN
 JOIN
   [elite_pos].[dbo].[discmode] dm ON pt.discMode = dm.id
 LEFT JOIN
-  [elite_pos].[dbo].[inpatientregreturn_Trans] rt ON pt.Id = rt.salesreturnid
+  [elite_pos].[dbo].[inpatientreturn_Trans] rt ON pt.Id = rt.salesreturnid
 WHERE 
   pt.salesId = '${purchaseId}';
 

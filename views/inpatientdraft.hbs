@@ -267,7 +267,7 @@
             "bInfo": true,
             "bBorders": true,
             ajax: {
-                url: '/auth/salesretaildraft',
+                url: '/auth/inpatientdraft',
                 type: 'GET',
                 dataType: 'json',
                 dataSrc: 'data'
@@ -320,7 +320,7 @@
         $('#customerTable').on('click', 'i.fa-file-pen', function () {
             var salesId = $(this).data('id');
             console.log('sales ID:', salesId); // Debugging
-            window.location.href = '/salesretail?id=' + salesId;
+            window.location.href = '/inpatientbilling?id=' + salesId;
         });
 
         // Handle click event for the print icon

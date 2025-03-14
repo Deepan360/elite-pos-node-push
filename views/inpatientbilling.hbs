@@ -219,7 +219,7 @@
                         <button type="button" class="btn btn-danger deletemasBtn">Delete</button>
                     </div>
                 </div>
-                <form id="purchaseDetails" class="form-control" style="display: block; align-item: start;"
+                <form id="purchaseDetails" class="form-control" enctype="multipart/form-data" style="display: block; align-item: start;"
                     method="post">
                     <div class="row mt-2">
                         <div class="col-md-2 d-none">
@@ -281,6 +281,12 @@
                                 <label for="doctorname">Doctor Name</label>
                             </div>
                         </div>
+                    <div class="col-md-2">
+                        <div class="custom-input-container">
+                            <input type="file" name="prescriptionImage" accept="image/*" />
+                            <label for="prescription">Prescription Image</label>
+                        </div>
+                    </div>
 
                         <input type="hidden" id="customerId" name="customerId" value="">
 
@@ -491,11 +497,8 @@
                         <!-- Return data will be populated here -->
                     </tbody>
                 </table>
-
-
             </div>
             <div id="selectedRowDetails"></div>
-
         </div>
         <div id="alertMessage" class="alert alert-danger text-white d-none alert-dismissible show" role="alert"
             style="padding: 10px; border: 1px solid; margin-bottom: 10px; position: fixed; top: 0; right: 10px; width: 25%;">
@@ -525,10 +528,6 @@
                 </div>
             </div>
         </div>
-
-
-
-
         <div id="newCustomerFormOverlay"
             style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000;">
             <div id="newCustomerFormContainer"
@@ -582,7 +581,6 @@
         </div>
     </main>
     {{>color}}
-
     <script>
         async function checkMobileNumber() {
             const mobileNo = document.getElementById('cmobileno').value;
@@ -597,7 +595,7 @@
 
             try {
                 // Send request to check if the mobile number exists in the database
-                const response = await fetch(`/auth/salesretail/checkMobileNumber?mobileNo=${mobileNo}`);
+                const response = await fetch(`/auth/inpatient/checkMobileNumber?mobileNo=${mobileNo}`);
                 const data = await response.json();
 
                 if (data.exists) {
@@ -617,10 +615,6 @@
             }
         }
     </script>
-
-
-
-
     <script>
         $(document).ready(function () {
             // Initially hide the opener
@@ -646,8 +640,6 @@
             });
         });
 
-
-
         $(document).ready(function () {
             const $submitBtn = $('#submitFormBtn');
             const $paymentMode = $('#paymentmode'); // Select the select element directly
@@ -658,9 +650,6 @@
             checkRequiredFields(); // Initial check
         });
     </script>
-
-
-
     <script>
         $(document).ready(function () {
             $('#paymentmode').change(function () {
@@ -766,7 +755,7 @@
                 salesman: salesman
             };
             $.ajax({
-                url: '/auth/inpatient/customerretail',
+                url: '/auth/salesretail/customerretail',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(customerData),
@@ -920,7 +909,7 @@
             }
             $.ajax({
                 type: 'DELETE',
-                url: `/auth/salesretailtransdelete/${id}`,
+                url: `/auth/inpatienttransdelete/${id}`,
                 success: function (response) {
                     if (response.success) {
                         table.row(row).remove().draw(false);
@@ -1008,7 +997,7 @@
             // Check stock availability for a product
             function checkStockAvailability(product) {
                 return new Promise((resolve) => {
-                    const requestUrl = `/auth/inpatient/checkStockAvailability/${encodeURIComponent(product.productId)}/${encodeURIComponent(product.batchNo)}/${encodeURIComponent(product.quantity)}/${encodeURIComponent(product.expiryDate)}`; $.ajax({
+                    const requestUrl = `/auth/salesretail/checkStockAvailability/${encodeURIComponent(product.productId)}/${encodeURIComponent(product.batchNo)}/${encodeURIComponent(product.quantity)}/${encodeURIComponent(product.expiryDate)}`; $.ajax({
                         type: 'GET',
                         url: requestUrl,
                         contentType: 'application/json',
@@ -1073,6 +1062,7 @@
                         paymentmode: $('#ppaymentMode').val(),
                         customername: $('#customerSelect').val() || $('#customerId').val(),
                         doctorname: $('#doctorname').val(),
+                        prescriptionImage: $('#prescriptionImage').val(),
                         pamount: parseFloat($('#pamount_').val()) || 0,
                         pigst: parseFloat($('#pigst_').val()),
                         pcgst: parseFloat($('#pcgst_').val()),
@@ -1098,7 +1088,7 @@
                     // Send update request
                     $.ajax({
                         type: 'PUT',
-                        url: '/auth/salesretailEdit/' + purchaseId, // Ensure the correct endpoint
+                        url: '/auth/inpatientEdit/' + purchaseId, // Ensure the correct endpoint
                         contentType: 'application/json',
                         data: JSON.stringify(payload),
                         success: function (response) {
@@ -1146,6 +1136,7 @@
                             paymentmode: $('#ppaymentMode').val(),
                             customername: $('#customerSelect').val() || $('#customerId').val(),
                             doctorname: $('#doctorname').val(),
+                            prescriptionImage: $('#prescriptionImage').val(),
                             pamount: parseFloat($('#pamount_').val()) || 0,
                             pigst: parseFloat($('#pigst_').val()),
                             pcgst: parseFloat($('#pcgst_').val()),
@@ -1171,7 +1162,7 @@
                         // Send update request
                         $.ajax({
                             type: 'PUT',
-                            url: '/auth/salesretailEdit/' + purchaseId, // Ensure the correct endpoint
+                            url: '/auth/inpatientEdit/' + purchaseId, // Ensure the correct endpoint
                             contentType: 'application/json',
                             data: JSON.stringify(payload),
                             success: function (response) {
@@ -1316,7 +1307,7 @@
         $(document).ready(function () {
             $(document).on('click', '.deletemasBtn', function () {
                 var id = getSelectedPurchaseId();
-                var deleteUrl = '/auth/salesretaildelete/' + id;
+                var deleteUrl = '/auth/inpatientdelete/' + id;
                 $.ajax({
                     type: 'DELETE',
                     url: deleteUrl,
@@ -1675,7 +1666,10 @@
                     showLoadingOverlay();
                     formData.push({ name: 'products', value: JSON.stringify(products) });
                     formData.push({ name: 'isDraft', value: $('#is_Draft').val() });
+                    formData.push({name:prescriptionImage, value:$('#prescriptionImage').val()});
+                    
                     console.log("Serialized Form Data:", formData);
+                     console.log("prescriptionImage", $('#prescriptionImage').val());
                     $.ajax({
                         url: '/auth/inpatient',
                         method: 'POST',
@@ -1707,6 +1701,8 @@
                     });
 
                 }
+
+
 
                 // Attach event listeners to the inputs to trigger validation on change
                 $(document).on('change', '.input-field', function () {
@@ -2296,7 +2292,7 @@
 
         $('#purchaseId').on('change', function () {
             var selectedPurchaseId = $(this).val();
-            table.ajax.url('/auth/inpatient/salesretailproductid?purchaseId=' + selectedPurchaseId).load();
+            table.ajax.url('/auth/inpatient/inpatientproductid?purchaseId=' + selectedPurchaseId).load();
         });
 
         if (table.data().count() === 0) {
@@ -2469,7 +2465,7 @@
         var rowDetails;
 
         $.ajax({
-            url: '/auth/inpatient/salesretailids',
+            url: '/auth/inpatient/inpatientids',
             method: 'GET',
             data: { view: 'salesids' },
             success: function (response) {
@@ -2542,6 +2538,8 @@
                 console.log('Setting customer ID:', rowDetails.selectcustomer);
                 $('#customerId').val(rowDetails.selectcustomer); // Make sure 'selectcustomer' is the customerId
                 $('#doctorname').val(rowDetails.doctorname);
+             
+                $('#prescriptionImage').attr('src', rowDetails.prescriptionImage);
                 $('#customername').val(rowDetails.customername);
                 $('#mobileno').val(rowDetails.mobileno);
                 // Load existing data into the form
@@ -2578,7 +2576,7 @@
                 // Fetch related product data
                 var purchaseId = parseFloat(rowDetails.id);
                 $.ajax({
-                    url: '/auth/inpatient/salesretailproductid',
+                    url: '/auth/inpatient/inpatientproductid',
                     method: 'GET',
                     data: { purchaseId: purchaseId },
                     success: function (response) {

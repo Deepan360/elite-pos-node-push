@@ -763,7 +763,6 @@ router.get("/producthistory", (req, res) => {
 router.get("/drugreport", (req, res) => {
   res.render("drugreport");
 });
-
 router.get("/checkMobileNumberavini", (req, res) => {
   console.log("Request received to check mobile number:", req.query.mobileNo); // Add this log
  res.render("checkMobileNumberavini");
@@ -771,8 +770,6 @@ router.get("/checkMobileNumberavini", (req, res) => {
   router.post("/addCustomeravini",(req,res)=>{
     res.render("addCustomeravini");
 });
-
-
 router.get("/checkMobileNumberClinic", (req, res) => {
   console.log("Request received to check mobile number:", req.query.mobileNo); // Add this log
   res.render("checkMobileNumberClinic");
@@ -780,8 +777,6 @@ router.get("/checkMobileNumberClinic", (req, res) => {
 router.post("/addCustomerClinic", (req, res) => {
   res.render("addCustomerClinic");
 });
-
-
   router.get("/regmember", (req, res) => {
     res.render("regmember");
   });
@@ -794,5 +789,16 @@ router.post("/addCustomerClinic", (req, res) => {
   router.get("/regmember", (req, res) => {
     res.render("regmemberdelete", { id: req.params.id });
   });
+router.get("/inpatientbilling", (req, res) => {
+  res.render("inpatientbilling");
+});
+router.get("/inpatientreg", (req, res) => {
+  res.render("inpatientreg");
+});
+router.get("/inpatientdraft", (req, res) => {
+  res.render("inpatientdraft");
+});
+
+
 
 module.exports=router;     

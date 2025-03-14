@@ -379,7 +379,7 @@
                     </div>
                 </div>
                 <form id="purchaseDetails" class="form-control p-0 bg-primary text-white"
-                    style="display: block; align-item: start;" action="auth/salesretail" method="post">
+                    style="display: block; align-item: start;" action="auth/inpatient" method="post">
                     <div class="row d-flex justify-content-between  mb-0 gx-0 w-100 ">
                         <div class="labels">
 
@@ -535,7 +535,7 @@
                 style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #ccc; width: 80%; max-width: 600px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); border-radius: 10px;">
                 <h5 class="form-title" style="text-align: center; margin-bottom: 20px;">Add New Customer</h5>
 
-                <form id="newCustomerForm" method="post" action="/salesretail/customerretail">
+                <form id="newCustomerForm" method="post" action="/inpatient/customerretail">
                     <div class="mb-3">
                         <label for="customer" class="form-label">Customer Name</label>
                         <input type="text" class="form-control" id="customer" required>
@@ -766,7 +766,7 @@
                 salesman: salesman
             };
             $.ajax({
-                url: '/auth/salesretail/customerretail',
+                url: '/auth/inpatient/customerretail',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(customerData),
@@ -1008,7 +1008,7 @@
             // Check stock availability for a product
             function checkStockAvailability(product) {
                 return new Promise((resolve) => {
-                    const requestUrl = `/auth/salesretail/checkStockAvailability/${encodeURIComponent(product.productId)}/${encodeURIComponent(product.batchNo)}/${encodeURIComponent(product.quantity)}/${encodeURIComponent(product.expiryDate)}`; $.ajax({
+                    const requestUrl = `/auth/inpatient/checkStockAvailability/${encodeURIComponent(product.productId)}/${encodeURIComponent(product.batchNo)}/${encodeURIComponent(product.quantity)}/${encodeURIComponent(product.expiryDate)}`; $.ajax({
                         type: 'GET',
                         url: requestUrl,
                         contentType: 'application/json',
@@ -1677,7 +1677,7 @@
                     formData.push({ name: 'isDraft', value: $('#is_Draft').val() });
                     console.log("Serialized Form Data:", formData);
                     $.ajax({
-                        url: '/auth/salesretail',
+                        url: '/auth/inpatient',
                         method: 'POST',
                         data: formData,
                         success: function (response) {
@@ -2296,7 +2296,7 @@
 
         $('#purchaseId').on('change', function () {
             var selectedPurchaseId = $(this).val();
-            table.ajax.url('/auth/salesretail/salesretailproductid?purchaseId=' + selectedPurchaseId).load();
+            table.ajax.url('/auth/inpatient/salesretailproductid?purchaseId=' + selectedPurchaseId).load();
         });
 
         if (table.data().count() === 0) {
@@ -2400,7 +2400,7 @@
 
             function fetchSupplierNames() {
                 $.ajax({
-                    url: '/auth/salesretail/customername',
+                    url: '/auth/inpatient/customername',
                     method: 'GET',
                     success: function (response) {
                         var options = response.data;
@@ -2469,7 +2469,7 @@
         var rowDetails;
 
         $.ajax({
-            url: '/auth/salesretail/salesretailids',
+            url: '/auth/inpatient/salesretailids',
             method: 'GET',
             data: { view: 'salesids' },
             success: function (response) {
@@ -2578,7 +2578,7 @@
                 // Fetch related product data
                 var purchaseId = parseFloat(rowDetails.id);
                 $.ajax({
-                    url: '/auth/salesretail/salesretailproductid',
+                    url: '/auth/inpatient/salesretailproductid',
                     method: 'GET',
                     data: { purchaseId: purchaseId },
                     success: function (response) {
@@ -2668,7 +2668,7 @@
 
         $(document).ready(function () {
             $('#new').click(function () {
-                window.location.href = '/salesretail'
+                window.location.href = '/inpatient'
             });
         });
     </script>

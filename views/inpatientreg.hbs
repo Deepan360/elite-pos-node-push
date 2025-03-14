@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     {{>header}}
     <style>
@@ -18,7 +17,6 @@
             /* Ensure it's above other elements */
             border-radius: 10px;
         }
-
         .editForm {
             display: none;
             position: fixed;
@@ -30,7 +28,6 @@
             z-index: 1000;
             border-radius: 10px;
         }
-
         .container {
             margin-left: 20%;
         }
@@ -44,11 +41,9 @@
             width: 80px !important;
             height: 30px;
         }
-
-        .text-return {
-            color: rgb(142, 62, 167);
-        }
-
+.text-return{
+    color: rgb(142, 62, 167);
+}
         button {
             margin: 1px;
         }
@@ -109,7 +104,7 @@
         <div class="table-responsive container-fluid py-4">
             <div class="form-control card">
                 <h3>Retailer Sales Register</h3>
-                <div><a href="/salesretail"><i class="fa-solid fa-file-circle-plus fa-2x"></i></a></div>
+                <div><a href="/inpatientbilling"><i class="fa-solid fa-file-circle-plus fa-2x"></i></a></div>
                 <div class="align-right-top">
                     <div id="filterDateDiv" class="mb-3">
                         <label for="fromDate">From Date:</label>
@@ -140,22 +135,22 @@
                             </tr>
                         </thead>
                         <tbody></tbody>
-                        <tfoot>
-                            <tr id="totalAmountRow" style="display: none;">
-                                <td style="text-align: left; font-weight: bold; color: #34495E;">
-                                    Total Amount: <span id="totalAmountDisplay"
-                                        style="text-align: left; font-weight: bold; color: #34495E;">0.00</span>
-                                </td>
-                                <td style="text-align: left; font-weight: bold; color: #34495E;">
-                                    Profit Amount: <span id="totalProfitDisplay"
-                                        style="text-align: left; font-weight: bold; color: #34495E;">0.00</span>
-                                </td>
-                                <td style="text-align: left; font-weight: bold; color: #34495E;">
-                                    Profit Rate: <span id="profitratedisplay"
-                                        style="text-align: left; font-weight: bold; color: #34495E;">0.00%</span>
-                                </td>
-                            </tr>
-                        </tfoot>
+<tfoot>
+    <tr id="totalAmountRow" style="display: none;">
+        <td style="text-align: left; font-weight: bold; color: #34495E;">
+            Total Amount: <span id="totalAmountDisplay"
+                style="text-align: left; font-weight: bold; color: #34495E;">0.00</span>
+        </td>
+        <td style="text-align: left; font-weight: bold; color: #34495E;">
+            Profit Amount: <span id="totalProfitDisplay"
+                style="text-align: left; font-weight: bold; color: #34495E;">0.00</span>
+        </td>
+        <td style="text-align: left; font-weight: bold; color: #34495E;">
+            Profit Rate: <span id="profitratedisplay"
+                style="text-align: left; font-weight: bold; color: #34495E;">0.00%</span>
+        </td>
+    </tr>
+</tfoot>
                     </table>
                 </form>
             </div>
@@ -191,59 +186,59 @@
             document.getElementById("toDate").value = "";
         }
 
-        $(document).ready(function () {
-            // Filter by Date and Sum Total Amount
-            document.getElementById("filter-button").addEventListener("click", function () {
-                var fromDate = new Date(document.getElementById("fromDate").value);
-                var toDate = new Date(document.getElementById("toDate").value);
-                var totalAmountSum = 0;
-                var totalProfitSum = 0; // Initialize profit sum
+    $(document).ready(function () {
+        // Filter by Date and Sum Total Amount
+        document.getElementById("filter-button").addEventListener("click", function () {
+            var fromDate = new Date(document.getElementById("fromDate").value);
+            var toDate = new Date(document.getElementById("toDate").value);
+            var totalAmountSum = 0;
+            var totalProfitSum = 0; // Initialize profit sum
 
-                table.rows().every(function () {
-                    var row = this.node();
-                    var billDateText = $(row).find("td").eq(1).text().trim();
-                    var totalAmountText = $(row).find("td").eq(5).text().trim();
-                    var profitRateText = $(row).find("td").eq(7).text().trim(); // Adjust index if needed
-                    var cellDate = moment(billDateText, "DD-MM-YYYY");
+            table.rows().every(function () {
+                var row = this.node();
+                var billDateText = $(row).find("td").eq(1).text().trim();
+                var totalAmountText = $(row).find("td").eq(5).text().trim();
+                var profitRateText = $(row).find("td").eq(7).text().trim(); // Adjust index if needed
+                var cellDate = moment(billDateText, "DD-MM-YYYY");
 
-                    // Log the data being processed
-                    console.log("Row Data - Date:", billDateText, "Total Amount:", totalAmountText, "Profit Rate:", profitRateText);
+                // Log the data being processed
+                console.log("Row Data - Date:", billDateText, "Total Amount:", totalAmountText, "Profit Rate:", profitRateText);
 
-                    if (cellDate.isSameOrAfter(moment(fromDate)) && cellDate.isSameOrBefore(moment(toDate))) {
-                        $(row).show();
+                if (cellDate.isSameOrAfter(moment(fromDate)) && cellDate.isSameOrBefore(moment(toDate))) {
+                    $(row).show();
 
-                        var parsedAmount = parseFloat(totalAmountText.replace(/[^0-9.-]+/g, ""));
-                        var parsedProfit = parseFloat(profitRateText.replace(/[^0-9.-]+/g, ""));
+                    var parsedAmount = parseFloat(totalAmountText.replace(/[^0-9.-]+/g, ""));
+                    var parsedProfit = parseFloat(profitRateText.replace(/[^0-9.-]+/g, ""));
 
-                        if (!isNaN(parsedAmount)) {
-                            totalAmountSum += parsedAmount;
-                        } else {
-                            console.warn("Invalid Total Amount:", totalAmountText);
-                        }
-
-                        if (!isNaN(parsedProfit)) {
-                            totalProfitSum += parsedProfit;
-                        } else {
-                            console.warn("Invalid Profit Rate:", profitRateText);
-                        }
+                    if (!isNaN(parsedAmount)) {
+                        totalAmountSum += parsedAmount;
                     } else {
-                        $(row).hide();
+                        console.warn("Invalid Total Amount:", totalAmountText);
                     }
-                });
 
-                // Calculate profit rate (as a percentage of total amount)
-                var profitRate = totalAmountSum !== 0 ? (totalProfitSum / totalAmountSum) * 100 : 0;
-
-                // Log the final calculated values
-                console.log("Total Amount Sum:", totalAmountSum, "Total Profit Sum:", totalProfitSum, "Calculated Profit Rate:", profitRate);
-
-                // Display the updated total amount, profit amount, and profit rate
-                $('#totalAmountRow').show();
-                $('#totalAmountDisplay').text(totalAmountSum.toFixed(2));
-                $('#totalProfitDisplay').text(totalProfitSum.toFixed(2)); // Display total profit amount
-                $('#profitratedisplay').text(profitRate.toFixed(2) + '%');
+                    if (!isNaN(parsedProfit)) {
+                        totalProfitSum += parsedProfit;
+                    } else {
+                        console.warn("Invalid Profit Rate:", profitRateText);
+                    }
+                } else {
+                    $(row).hide();
+                }
             });
+
+            // Calculate profit rate (as a percentage of total amount)
+            var profitRate = totalAmountSum !== 0 ? (totalProfitSum / totalAmountSum) * 100 : 0;
+
+            // Log the final calculated values
+            console.log("Total Amount Sum:", totalAmountSum, "Total Profit Sum:", totalProfitSum, "Calculated Profit Rate:", profitRate);
+
+            // Display the updated total amount, profit amount, and profit rate
+            $('#totalAmountRow').show();
+            $('#totalAmountDisplay').text(totalAmountSum.toFixed(2));
+            $('#totalProfitDisplay').text(totalProfitSum.toFixed(2)); // Display total profit amount
+            $('#profitratedisplay').text(profitRate.toFixed(2) + '%');
         });
+    });
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -301,7 +296,7 @@
                 dataType: 'json',
                 dataSrc: 'data'
             },
-            order: [[0, 'desc']],
+             order: [[0, 'desc']],
             columns: [
                 { data: 'id' },
                 {
@@ -334,7 +329,7 @@
                         return data ? data : 'null';
                     }
                 },
-
+                 
                 {
                     data: 'paymentmode',
                     render: function (data, type, row) {
@@ -348,7 +343,7 @@
                         return data ? data : 'null';
                     }
                 },
-                {
+                 {
                     data: 'id',
                     render: function (data, type, row) {
                         // If payment mode is 'credit', show a credit card icon; otherwise, show the id
@@ -361,7 +356,7 @@
                         return '<i class="fa-solid fa-file-pen fa-2x text-warning" type="button" data-id="' + data + '"></i>';
                     }
                 },
-                {
+                 {
                     data: 'id',
                     render: function (data) {
                         return '<i class="fa-solid fa-reply-all fa-2x text-return" type="button" data-id="' + data + '"></i>';
@@ -383,14 +378,14 @@
             var salesId = $(this).data('id');
             console.log('sales ID:', salesId); // Debugging
             window.location.href = '/salesretail?id=' + salesId;
-        });
+        }); 
 
 
         $('#customerTable').on('click', 'i.fa-reply-all', function () {
             var salesId = $(this).data('id');
             console.log('sales ID:', salesId); // Debugging
             window.location.href = '/salesreturnretail?id=' + salesId;
-        });
+        }); 
         // Handle click event for the print icon
         $(document).on('click', '#customerTable i.fa-print', function () {
             var salesId = $(this).closest('tr').data('id');

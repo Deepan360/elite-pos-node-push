@@ -180,6 +180,1269 @@ exports.checkMobileNumberClinic = async (req, res) => {
 };
 
 
+//salesretailreturn retail
+
+exports.inpatientreturnDetails = async (req, res) => {
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    const query = "SELECT * FROM [elite_pos].[dbo].[inpatientregreturn_Master]";
+
+    pool.query(query, (err, result) => {
+      connection.release(); // Release the connection back to the pool
+
+      if (err) {
+        console.error("Error in listing data:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      console.log("Query Result:", result);
+
+      res.json({ data: result.recordset });
+    });
+  });
+};
+
+exports.inpatientreturnadd = async (req, res) => {
+  console.log("Received Data:", req.body);
+
+  const {
+    id: salesreturnid,
+    saledate,
+    paymentmode,
+    customername,
+    pamount,
+    pigst,
+    pcgst,
+    psgst,
+    psubtotal,
+    pcess,
+    ptcs,
+    proundOff,
+    pnetAmount,
+    pdiscount,
+    pdiscMode_,
+    isDraft,
+    products,
+  } = req.body;
+
+  if (!Array.isArray(products)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid products data format" });
+  }
+
+  let transaction;
+  try {
+    // Establish connection to the pool
+    const poolConnection = await pool.connect();
+
+    // Create and begin a transaction
+    transaction = new sql.Transaction(poolConnection);
+    await transaction.begin();
+
+    // Insert into master table
+    const result = await transaction
+      .request()
+      .input("salesreturnid", salesreturnid)
+      .input("saledate", saledate || null)
+      .input("paymentmode", paymentmode)
+      .input("customername", customername)
+      .input("amount", pamount)
+      .input("cgst", pcgst)
+      .input("sgst", psgst)
+      .input("igst", pigst)
+      .input("netAmount", pnetAmount)
+      .input("cess", pcess)
+      .input("tcs", ptcs)
+      .input("discMode", pdiscMode_)
+      .input("discount", pdiscount)
+      .input("subtotal", psubtotal)
+      .input("roundoff", proundOff)
+      .input("isDraft", isDraft).query(`
+       INSERT INTO [elite_pos].[dbo].[inpatient_Master]
+([salesreturnid], [saledate], [paymentmode], [customername], 
+[amount],  [cgst], [sgst], [igst], [netAmount], [cess], [tcs], 
+[discMode], [discount], [subtotal], [roundoff], [isDraft])
+VALUES
+(@salesreturnid, @saledate, @paymentmode,  @customername, 
+@amount, @cgst, @sgst, @igst, @netAmount, @cess, @tcs, 
+@discMode, @discount, @subtotal, @roundoff, @isDraft);
+        SELECT SCOPE_IDENTITY() as salesId;
+      `);
+    const salesId = result.recordset[0].salesId;
+    // Insert products into the transaction table
+    for (const product of products) {
+      const {
+        Id,
+        productId,
+        batchNo,
+        expiryDate,
+        tax,
+        quantity,
+        free,
+        uom,
+        purcRate,
+        mrp,
+        rate,
+        discMode,
+        discount,
+        amount,
+        cgst,
+        sgst,
+        igst,
+        totalAmount,
+      } = product;
+
+      await transaction
+        .request()
+        .input("salesId", salesId)
+        .input("product", productId)
+        .input("batchNo", batchNo)
+        .input("expiryDate", expiryDate)
+        .input("tax", tax)
+        .input("quantity", quantity)
+        .input("free", free)
+        .input("uom", uom)
+        .input("purcRate", purcRate)
+        .input("mrp", mrp)
+        .input("rate", rate)
+        .input("discMode", discMode)
+        .input("discount", discount)
+        .input("amount", amount)
+        .input("cgst", cgst)
+        .input("sgst", sgst)
+        .input("igst", igst)
+        .input("totalAmount", totalAmount)
+        .input("salesreturnid", Id).query(`
+          INSERT INTO [elite_pos].[dbo].[inpatient_Trans]
+          ([salesId], [product], [batchNo], [expiryDate], [tax], [quantity], 
+          [free], [uom], [purcRate], [mrp], [rate], [discMode], [discount], 
+          [amount], [cgst], [sgst], [igst], [totalAmount], [salesreturnid])
+          VALUES
+          (@salesId, @product, @batchNo, @expiryDate, @tax, @quantity, 
+          @free, @uom, @purcRate, @mrp, @rate, @discMode, @discount, 
+          @amount, @cgst, @sgst, @igst, @totalAmount, @salesreturnid);
+        `);
+
+      // Update stock (your function)
+      await increaseRetailStock(productId, quantity, free, batchNo, expiryDate);
+    }
+
+    // Commit transaction
+    await transaction.commit();
+    res.status(200).json({
+      success: true,
+      message: "Sales retail return added successfully",
+    });
+  } catch (error) {
+    console.error("Error during salesretailreturn processing:", error);
+
+    if (transaction) {
+      await transaction.rollback(); // Rollback on error
+    }
+
+    res.status(500).json({
+      success: false,
+      message: `Internal Server Error: ${error.message}`,
+    });
+  }
+};
+
+
+
+
+exports.inpatientreturnEdit = async (req, res) => {
+  const { purchaseId } = req.params;
+  const { purchaseDetails, products } = req.body;
+  try {
+    console.log("Received request to edit purchase:", req.body);
+    await pool.query`
+        UPDATE [elite_pos].[dbo].[salesretailreturn_Master]
+        SET
+            [saledate] = ${purchaseDetails.saledate},
+            [paymentmode] = ${purchaseDetails.paymentmode},
+            [customermobileno] = ${purchaseDetails.customermobileno},
+            [customername] = ${purchaseDetails.customername},
+            [amount] = ${purchaseDetails.pamount},
+            [cgst] = ${purchaseDetails.pcgst},
+            [sgst] = ${purchaseDetails.psgst},
+            [igst] = ${purchaseDetails.pigst},
+            [netAmount] = ${purchaseDetails.pnetAmount},
+            [cess] = ${purchaseDetails.pcess},
+            [tcs] = ${purchaseDetails.ptcs},
+            [discMode] = ${purchaseDetails.pdiscMode_},
+            [discount] = ${purchaseDetails.pdiscount},
+            [subtotal] = ${purchaseDetails.psubtotal},
+            [roundoff] = ${purchaseDetails.proundOff},
+          [isDraft] = ${purchaseDetails.isDraft}
+        WHERE
+            [id] = ${purchaseDetails.id};
+    `;
+    for (const product of products) {
+      const {
+        Id,
+        productId,
+        batchNo,
+        tax,
+        quantity,
+        free,
+        uom,
+        purcRate,
+        mrp,
+        rate,
+        discMode,
+        discount,
+        amount,
+        cgst,
+        sgst,
+        igst,
+        totalAmount,
+      } = product;
+      if (Id) {
+        await pool.query`
+          UPDATE [elite_pos].[dbo].[inpatientregreturn_Trans]
+          SET
+              [product] = ${productId},
+              [batchNo] = ${batchNo},
+              [tax] = ${tax},
+              [quantity] = ${quantity},
+              [free] = ${free},
+              [uom] = ${uom},
+              [purcRate]=${purcRate},
+               [mrp]=${mrp},
+              [rate] = ${rate},
+              [discMode] = ${discMode},
+              [discount] = ${discount},
+              [amount] = ${amount},
+              [cgst] = ${cgst},
+              [sgst] = ${sgst},
+              [igst] = ${igst},
+              [totalAmount] = ${totalAmount}
+          WHERE
+              [Id] = ${Id};
+        `;
+      } else {
+        await pool.query`
+          INSERT INTO [elite_pos].[dbo].[inpatientregreturn_Trans] ([salesId], [product], [batchNo], [tax], [quantity], [uom],[purcRate],[mrp], [rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
+          VALUES ( ${purchaseDetails.id}, ${productId}, ${batchNo}, ${tax}, ${quantity}, ${uom},${purcRate},${mrp} ,${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
+        `;
+        await increaseRetailStock(productId, quantity, free, batchNo);
+      }
+    }
+    console.log("salesretailreturn edited successfully");
+    res.status(200).json({
+      success: true,
+      message: "salesretailreturn edited successfully",
+    });
+  } catch (error) {
+    console.error("Error updating salesretailreturn:", error);
+    res
+      .status(400)
+      .json({ success: false, message: "Failed to update salesretailreturn" });
+  }
+};
+
+
+
+exports.inpatientreturnids = (req, res) => {
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+    const query = `
+                  SELECT *
+                 
+              FROM 
+                  [elite_pos].[dbo].[inpatientregreturn_Master] 
+                  
+              
+              `;
+    pool.query(query, (err, result) => {
+      connection.release();
+      if (err) {
+        console.error("Error in fetching purchase IDs:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+      res.header("Content-Type", "application/json");
+      res.json({ data: result.recordset });
+    });
+  });
+};
+
+exports.inpatientreturnproductid = (req, res) => {
+  const purchaseId = req.query.purchaseId;
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+    const query = `
+    SELECT 
+    pt.Id,
+    pt.product, -- Assuming this is the product ID
+    p.productname,
+    dm.discMode,
+    pt.batchNo,
+    pt.tax,
+    pt.quantity,
+    pt.free,
+    pt.uom,
+    pt.purcRate,
+     pt.mrp,
+    pt.rate,
+    pt.discount,
+    pt.amount,
+    pt.cgst,
+    pt.sgst,
+    pt.igst,
+    pt.totalAmount
+FROM 
+    [elite_pos].[dbo].[inpatientregreturn_Trans] pt
+JOIN
+    [elite_pos].[dbo].[product] p ON pt.product = p.id
+JOIN
+    [elite_pos].[dbo].[discmode] dm ON pt.discMode = dm.id
+WHERE 
+    pt.salesId = '${purchaseId}';
+`;
+
+    pool.query(query, (err, result) => {
+      connection.release();
+
+      if (err) {
+        console.error("Error in listing data:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      console.log("Query Result:", result);
+
+      res.json({
+        data: result.recordset.map((row) => ({
+          ...row,
+          product: row.productname,
+        })),
+      });
+    });
+  });
+};
+
+exports.inpatientreturndelete = async (req, res) => {
+  const salesId = req.params.id;
+
+  try {
+    await poolConnect();
+
+    if (!salesId) {
+      throw new Error("No salesId provided");
+    }
+
+    // Fetch transaction details associated with the salesId
+    const transDetailsResult = await pool.query`
+      SELECT Id, product, batchNo, quantity,free, tax, uom, rate
+      FROM [elite_pos].[dbo].[inpatientregreturn_Trans]
+      WHERE [salesId] = ${salesId};
+    `;
+
+    const transactions = transDetailsResult.recordset;
+
+    // Iterate through each transaction
+    for (const transaction of transactions) {
+      const { product, batchNo, free, quantity } = transaction;
+
+      // Increase the stock quantities
+      await reduceretailStock(product, quantity, free, batchNo);
+    }
+
+    // Delete from sales_Master
+    await pool.query`
+      DELETE FROM [elite_pos].[dbo].[inpatientregreturn_Master]
+      WHERE [id] = ${salesId};
+    `;
+
+    // Delete associated products from sales_Trans
+    await pool.query`
+      DELETE FROM [elite_pos].[dbo].[inpatientregreturn_Trans]
+      WHERE [salesId] = ${salesId};
+    `;
+
+    res.status(200).json({
+      success: true,
+      message: "Sales retail and associated products deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error during salesretailreturn deletion:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+exports.inpatientreturntransdelete = async (req, res) => {
+  const transactionId = req.params.id;
+  try {
+    await poolConnect();
+
+    const { recordset } = await pool
+      .request()
+      .input("transactionId", sql.Int, transactionId)
+      .query(
+        "SELECT quantity,free, Product, batchNo FROM [elite_pos].[dbo].[inpatientregreturn_Trans] WHERE Id = @transactionId"
+      );
+
+    if (recordset.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Purchased product not found" });
+    }
+
+    const { quantity, free, Product: productId, batchNo } = recordset[0];
+
+    const result = await pool
+      .request()
+      .input("transactionId", sql.Int, transactionId)
+      .query(
+        "DELETE FROM [elite_pos].[dbo].[inpatientregreturn_Trans] WHERE Id = @transactionId"
+      );
+
+    // Update the stock in the stock_Ob table based on the productId, batchNo, and retrieved quantity
+    await reduceretailStock(productId, quantity, free, batchNo);
+
+    if (result.rowsAffected[0] > 0) {
+      return res.json({
+        success: true,
+        message: "Purchased product deleted successfully",
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ success: false, error: "Purchased product not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, error: "Internal Server Error" });
+  }
+};
+
+exports.inpatientreturnregister = (req, res) => {
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    pool.query(
+      `
+   SELECT 
+	SM.* ,SM.subtotal - SRT.totalAmount AS Amt
+FROM 
+	salesretailreturn_Trans SRT 
+	INNER JOIN inpatient_Trans ST ON SRT.salesreturnid = ST.id
+	INNER JOIN inpatient_Master SM ON SM.id = ST.salesId
+   ;
+    `,
+      (err, result) => {
+        connection.release();
+        if (err) {
+          console.error("Error in listing data:", err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+        // Send the data as JSON response
+        res.json({ data: result.recordset });
+      }
+    );
+  });
+};
+
+exports.inpatientreturndraft = (req, res) => {
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    pool.query(
+      `
+    SELECT *
+    FROM [elite_pos].[dbo].[inpatientregreturn_Master] 
+    where isDraft = 1;
+    
+   ;
+    `,
+      (err, result) => {
+        connection.release();
+        if (err) {
+          console.error("Error in listing data:", err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+        // Send the data as JSON response
+        res.json({ data: result.recordset });
+      }
+    );
+  });
+};
+//salesretailreturn
+
+//salesretail retail
+
+exports.inpatientDetails = async (req, res) => {
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    const query = `
+      SELECT 
+          sm.[id] ,
+          sm.[saledate],
+          sm.[paymentmode],
+          sm.[doctorname],
+          rc.[customername],
+          rc.[mobileno],
+          sm.[saledate],
+          sm.[doctorname],
+          sm.[amount],
+          sm.[cdAmount],  
+          sm.[igst],
+          sm.[cgst],
+          sm.[sgst],
+          sm.[subtotal],
+          sm.[cess],
+          sm.[tcs],
+          sm.[discMode],
+          sm.[discount],
+          sm.[roundoff],
+          sm.[netAmount],
+          sm.[isDraft]
+      FROM 
+          [elite_pos].[dbo].[inpatient_Master] sm
+      LEFT JOIN 
+          [elite_pos].[dbo].[retailcustomer] rc ON sm.[customername] = rc.[mobileno] -- Change the join condition if needed
+    `;
+
+    pool.query(query, (err, result) => {
+      connection.release(); // Release the connection back to the pool
+
+      if (err) {
+        console.error("Error in listing data:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      console.log("Query Result:", result);
+
+      res.json({ data: result.recordset });
+    });
+  });
+};
+
+exports.inpatientadd = async (req, res) => {
+  console.log(req.body);
+  const {
+    saledate,
+    ppaymentMode,
+    customerId, // Use customerId received from the client
+    doctorname,
+    pamount,
+    pigst,
+    pcgst,
+    psgst,
+    psubtotal,
+    pcess,
+    ptcs,
+    proundOff,
+    pnetAmount,
+    pdiscount,
+    pdiscMode_,
+    isDraft,
+    products: productsString,
+  } = req.body;
+
+  let parsedProducts = [];
+  const formattedSaleDate = saledate ? saledate : null;
+
+  try {
+    await poolConnect();
+
+    parsedProducts = JSON.parse(productsString);
+
+    // Make sure customerId is being used correctly
+    const result = await pool.query`
+      INSERT INTO inpatient_Master
+      ([saledate], [paymentmode], [customername],[doctorname] ,[amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft])
+      VALUES
+      (${formattedSaleDate}, ${ppaymentMode}, ${customerId},${doctorname}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft});
+    
+      SELECT SCOPE_IDENTITY() as salesId;
+    `;
+
+    const salesId = result.recordset[0].salesId;
+    console.log("Number of products:", parsedProducts.length);
+
+    for (const product of parsedProducts) {
+      const {
+        productId,
+        batchNo,
+        expiryDate,
+        tax,
+        quantity,
+        free,
+        uom,
+        purcRate,
+        mrp,
+        rate,
+        discMode,
+        discount,
+        amount,
+        cgst,
+        sgst,
+        igst,
+        totalAmount,
+      } = product;
+
+      await pool.query`
+        INSERT INTO inpatient_Trans
+        ([salesId], [product], [batchNo],[expiryDate], [tax], [quantity],[free], [uom],[purcRate], [mrp],[rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
+        VALUES
+        (${salesId}, ${productId}, ${batchNo},${expiryDate}, ${tax}, ${quantity}, ${free}, ${uom}, ${purcRate}, ${mrp}, ${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
+      `;
+
+      // Only call reduceretailStock if isDraft is 0 (indicating a confirmed sale)
+      if (Number(isDraft) !== 1) {
+        await reduceretailStock(productId, quantity, free, batchNo, expiryDate);
+      }
+    }
+
+    res
+      .status(200)
+      .json({ success: true, message: "salesretail added successfully" });
+  } catch (error) {
+    console.error("Error during salesretail processing:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+
+
+
+
+exports.inpatientEdit = async (req, res) => {
+  const { id } = req.params;
+  const { purchaseDetails, products } = req.body;
+
+  try {
+    console.log("Received request to edit purchase:", req.body);
+
+    // Update salesretail_Master
+    await pool.query`
+      UPDATE salesretail_Master
+      SET
+          [saledate] = ${purchaseDetails.saledate}, 
+          [paymentmode] = ${purchaseDetails.paymentmode},
+          [customername] = ${purchaseDetails.customername},
+          [doctorname] = ${purchaseDetails.doctorname},
+          [amount] = ${purchaseDetails.pamount},
+          [cgst] = ${purchaseDetails.pcgst},
+          [sgst] = ${purchaseDetails.psgst},
+          [igst] = ${purchaseDetails.pigst},
+          [netAmount] = ${purchaseDetails.pnetAmount},
+          [cess] = ${purchaseDetails.pcess},
+          [tcs] = ${purchaseDetails.ptcs},
+          [discMode] = ${purchaseDetails.pdiscMode_},
+          [discount] = ${purchaseDetails.pdiscount},
+          [subtotal] = ${purchaseDetails.psubtotal},
+          [roundoff] = ${purchaseDetails.proundOff},
+          [isDraft] = ${purchaseDetails.isDraft}
+      WHERE
+          [id] = ${id};
+    `;
+
+    // Iterate through each product in the products array
+    for (const product of products) {
+      const {
+        Id,
+        productId,
+        batchNo,
+        expiryDate,
+        tax,
+        quantity,
+        free,
+        uom,
+        purcRate,
+        mrp,
+        rate,
+        discMode,
+        discount,
+        amount,
+        cgst,
+        sgst,
+        igst,
+        totalAmount,
+      } = product;
+
+      // If the product already exists in the database (i.e., it's being updated)
+      if (Id) {
+        await pool.query`
+          UPDATE inpatient_Trans
+          SET
+              [product] = ${productId},
+              [batchNo] = ${batchNo},
+              [expiryDate] = ${expiryDate},
+              [tax] = ${tax},
+              [quantity] = ${quantity},
+              [free] = ${free},
+              [uom] = ${uom},
+              [purcRate] = ${purcRate},
+              [mrp] = ${mrp},
+              [rate] = ${rate},
+              [discMode] = ${discMode},
+              [discount] = ${discount},
+              [amount] = ${amount},
+              [cgst] = ${cgst},
+              [sgst] = ${sgst},
+              [igst] = ${igst},
+              [totalAmount] = ${totalAmount}
+          WHERE
+              [Id] = ${Id};
+        `;
+
+        if (purchaseDetails.isDraft != 1) {
+          // Loose equality check
+          console.log("Attempting to reduce stock for existing product...");
+          await reduceretailStock(
+            productId,
+            quantity,
+            free,
+            batchNo,
+            expiryDate
+          );
+        }
+      } else {
+        // If the product is being added (i.e., it's a new product in the transaction)
+        await pool.query`
+          INSERT INTO inpatient_Trans ([salesId], [product], [batchNo], [expiryDate], [tax], [quantity], [uom], [purcRate], [mrp], [rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
+          VALUES (${purchaseDetails.id}, ${productId}, ${batchNo}, ${expiryDate}, ${tax}, ${quantity}, ${uom}, ${purcRate}, ${mrp}, ${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
+        `;
+
+        if (purchaseDetails.isDraft != 1) {
+          // Loose equality check
+          console.log("Attempting to reduce stock for new product...");
+          await reduceretailStock(
+            productId,
+            quantity,
+            free,
+            batchNo,
+            expiryDate
+          );
+        }
+      }
+    }
+
+    console.log("salesretail edited successfully");
+    res
+      .status(200)
+      .json({ success: true, message: "salesretail edited successfully" });
+  } catch (error) {
+    console.error("Error updating salesretail:", error);
+    res.status(400).json({
+      success: false,
+      message: error.message || "Failed to update salesretail",
+    });
+  }
+};
+
+
+async function increaseRetailStock(
+  productId,
+  quantity,
+  free,
+  batchNo,
+  expiryDate
+) {
+  try {
+    // Sum of quantity and free
+    const totalQuantity = Number(quantity) + Number(free);
+
+    // Fetch the current stock and retail quantity for the given product, batch number, and expiry date
+    const result = await pool.query`
+      SELECT op_quantity AS stockQty, retailQty FROM stock_Ob
+      WHERE product = ${productId} AND batchNo = ${batchNo} AND expiryDate = ${expiryDate};
+    `;
+
+    if (result.recordset.length > 0) {
+      let { stockQty, retailQty } = result.recordset[0];
+
+      // Treat stockQty as 0 if it's NULL
+      stockQty = stockQty || 0;
+
+      // Treat retailQty as 0 if it's NULL (if needed, modify based on your logic)
+      retailQty = retailQty || 0;
+
+      // Calculate the new retail quantity and stock quantity
+      const newRetailQty = retailQty + totalQuantity;
+
+      // Avoid division by zero if retailQty is zero
+      const stockIncrease =
+        retailQty > 0 ? (totalQuantity * stockQty) / retailQty : totalQuantity;
+
+      const newStockQty = stockQty + stockIncrease;
+
+      // Update the stock with new quantities
+      await pool.query`
+        UPDATE stock_Ob
+        SET retailQty = ${newRetailQty}, op_quantity = ${newStockQty}, IsActive = '1'
+        WHERE product = ${productId} AND batchNo = ${batchNo} AND expiryDate = ${expiryDate};
+      `;
+
+      console.log(
+        `Stock updated: New Retail Qty = ${newRetailQty}, New Stock Qty = ${newStockQty}`
+      );
+    } else {
+      console.error(
+        "Product or Batch not found in stock_Ob with the given expiry date."
+      );
+    }
+  } catch (error) {
+    console.error("Error updating stock:", error);
+    throw error;
+  }
+}
+
+
+
+// async function reduceStock(productId, quantity,batchNo) {
+//   try {
+//     await pool.query`
+//         UPDATE [elite_pos].[dbo].[stock_Ob]
+//         SET [op_quantity] = [op_quantity] - ${quantity}
+//         WHERE [Product] = ${productId} AND [batchNo]=${batchNo};
+//     `;
+//   } catch (error) {
+//     console.error('Error reducing stock:', error);
+//     throw error;
+//   }
+// };
+
+
+exports.inpatientids = (req, res) => {
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    const query = `
+            SELECT 
+    sm.[id] ,
+    sm.[saledate],
+    sm.[paymentmode],
+    sm.[customername] as selectcustomer,
+    sm.[doctorname],
+    rc.[customername],
+    rc.[mobileno],
+    sm.[amount],
+    sm.[cdAmount],
+    sm.[igst],
+    sm.[cgst],
+    sm.[sgst],
+    sm.[subtotal],
+    sm.[cess],
+    sm.[tcs],
+    sm.[discMode],
+    sm.[discount],
+    sm.[roundoff],
+    sm.[netAmount],
+    sm.[isDraft]
+FROM 
+    [elite_pos].[dbo].[inpatient_Master] sm
+LEFT JOIN 
+    [elite_pos].[dbo].[retailcustomer] rc ON sm.[customername] = rc.[id] 
+        `;
+
+    pool.query(query, (err, result) => {
+      connection.release();
+      if (err) {
+        console.error("Error in fetching sales retail IDs:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+      res.header("Content-Type", "application/json");
+      res.json({ data: result.recordset });
+    });
+  });
+};
+
+exports.inpatientproductid = (req, res) => {
+  const purchaseId = req.query.purchaseId;
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+    const query = `
+SELECT 
+  pt.Id,
+  pt.product, 
+  p.productname,
+  dm.discMode,
+  pt.batchNo,
+  pt.expiryDate,
+  pt.tax,
+  pt.quantity,
+  pt.free,
+  pt.uom,
+  pt.purcRate,
+  pt.mrp,
+  pt.rate,
+  pt.discount,
+  pt.amount,
+  pt.cgst,
+  pt.sgst,
+  pt.igst,
+  pt.totalAmount,
+
+  -- Return data fields with COALESCE to handle null values
+  COALESCE(rt.salesreturnid, 0) AS salesreturnid,
+  COALESCE(rt.quantity, 0) AS returnQuantity,
+  COALESCE(rt.free, 0) AS returnFree,
+  COALESCE(rt.totalAmount, 0) AS returnTotalAmount
+FROM 
+  [elite_pos].[dbo].[inpatient_Trans] pt
+JOIN
+  [elite_pos].[dbo].[product] p ON pt.product = p.id
+JOIN
+  [elite_pos].[dbo].[discmode] dm ON pt.discMode = dm.id
+LEFT JOIN
+  [elite_pos].[dbo].[inpatientregreturn_Trans] rt ON pt.Id = rt.salesreturnid
+WHERE 
+  pt.salesId = '${purchaseId}';
+
+`;
+
+    pool.query(query, (err, result) => {
+      connection.release();
+
+      if (err) {
+        console.error("Error in listing data:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      console.log("Query Result:", result);
+
+      res.json({
+        data: result.recordset.map((row) => ({
+          ...row,
+          product: row.productname,
+        })),
+      });
+    });
+  });
+};
+
+exports.inpatientdelete = async (req, res) => {
+  const salesId = req.params.id;
+
+  try {
+    await poolConnect();
+
+    if (!salesId) {
+      throw new Error("No salesId provided");
+    }
+
+    // Fetch the isDraft status for the salesId
+    const salesRecordResult = await pool.query`
+      SELECT isDraft 
+      FROM inpatient_Master 
+      WHERE [id] = ${salesId};
+    `;
+
+    if (salesRecordResult.recordset.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Sales record not found",
+      });
+    }
+
+    const { isDraft } = salesRecordResult.recordset[0];
+    console.log(`Sales ID ${salesId} isDraft Value:`, isDraft);
+
+    // Ensure correct type for comparison
+    if (Number(isDraft) !== 1) {
+      console.log(
+        `Sales ID ${salesId} is not a draft. Updating stock quantities.`
+      );
+
+      // Fetch associated transactions
+      const transDetailsResult = await pool.query`
+        SELECT Id, product, batchNo, quantity, free,expiryDate
+        FROM inpatient_Trans
+        WHERE [salesId] = ${salesId};
+      `;
+
+      const transactions = transDetailsResult.recordset;
+
+      for (const transaction of transactions) {
+        const { product, batchNo, free, quantity, expiryDate } = transaction;
+
+        // Update stock quantities
+        await increaseRetailStock(product, quantity, free, batchNo, expiryDate);
+      }
+    } else {
+      console.log(`Sales ID ${salesId} is a draft. Skipping stock updates.`);
+    }
+
+    // Delete the master record
+    await pool.query`
+      DELETE FROM inpatient_Master
+      WHERE [id] = ${salesId};
+    `;
+
+    // Delete associated transactions
+    await pool.query`
+      DELETE FROM inpatient_Trans
+      WHERE [salesId] = ${salesId};
+    `;
+
+    res.status(200).json({
+      success: true,
+      message: `Sales ID ${salesId} and associated transactions deleted successfully.`,
+    });
+  } catch (error) {
+    console.error("Error during salesretail deletion:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+exports.inpatienttransdelete = async (req, res) => {
+  const transactionId = req.params.id;
+
+  try {
+    await poolConnect();
+
+    // Check if the parent sales record is in draft mode
+    const salesRecordResult = await pool.query`
+      SELECT M.isDraft
+      FROM inpatient_Trans T
+      INNER JOIN inpatient_Master M
+      ON T.salesId = M.id
+      WHERE T.Id = ${transactionId};
+    `;
+
+    if (salesRecordResult.recordset.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Transaction or parent sales record not found",
+      });
+    }
+
+    const { isDraft } = salesRecordResult.recordset[0];
+    console.log(`Transaction ID ${transactionId}, isDraft Value:`, isDraft);
+
+    // Fetch transaction details
+    const transactionDetailsResult = await pool.query`
+      SELECT quantity, free, Product AS productId, batchNo,expiryDate
+      FROM inpatient_Trans
+      WHERE Id = ${transactionId};
+    `;
+
+    if (transactionDetailsResult.recordset.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Transaction not found",
+      });
+    }
+
+    const { quantity, free, productId, batchNo, expiryDate } =
+      transactionDetailsResult.recordset[0];
+
+    // Delete the transaction
+    const deleteResult = await pool.query`
+      DELETE FROM inpatient_Trans
+      WHERE Id = ${transactionId};
+    `;
+
+    if (deleteResult.rowsAffected[0] > 0) {
+      // Only update stock if the sales record is not in draft mode
+      if (isDraft === 0) {
+        await increaseRetailStock(
+          productId,
+          quantity,
+          free,
+          batchNo,
+          expiryDate
+        );
+        console.log(
+          `Stock updated for Product: ${productId}, Batch: ${batchNo}`
+        );
+      } else {
+        console.log(
+          `Stock update skipped as the sales record is in draft mode.`
+        );
+      }
+
+      return res.json({
+        success: true,
+        message: "Transaction deleted successfully",
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        error: "Failed to delete transaction",
+      });
+    }
+  } catch (error) {
+    console.error("Error during transaction deletion:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Internal Server Error",
+    });
+  }
+};
+
+exports.inpatientregister = (req, res) => {
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    pool.query(
+      `
+ SELECT 
+    sm.[id] ,
+    sm.[saledate],
+    sm.[paymentmode],
+    sm.[doctorname],
+    rc.[customername],
+    rc.[mobileno],
+    sm.[amount],
+    sm.[cdAmount],
+    sm.[igst],
+    sm.[cgst],
+    sm.[sgst],
+    sm.[subtotal],
+    sm.[cess],
+    sm.[tcs],
+    sm.[discMode],
+    sm.[discount],
+    sm.[roundoff],
+    sm.[netAmount],
+    sm.[isDraft],
+     dbo.GetBillMargin(sm.id) as billmargin
+FROM 
+    [elite_pos].[dbo].[inpatient_Master] sm
+LEFT JOIN 
+    [elite_pos].[dbo].[retailcustomer] rc ON sm.[customername] = rc.[id] 
+
+    where  sm.[isDraft]='0';
+   ;
+    `,
+      (err, result) => {
+        connection.release();
+        if (err) {
+          console.error("Error in listing data:", err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+        // Send the data as JSON response
+        res.json({ data: result.recordset });
+      }
+    );
+  });
+};
+
+exports.salesretailreturn = (req, res) => {
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    pool.query(
+      `
+ SELECT 
+    SM.*, 
+    RC.customername as customer, 
+    RC.mobileno ,
+    SM.subtotal - SRT.totalAmount AS Amt
+FROM 
+    inpatientregreturn_Trans SRT 
+INNER JOIN 
+    inpatient_Trans ST ON SRT.salesreturnid = ST.id
+INNER JOIN 
+    inpatient_Master SM ON SM.id = ST.salesId
+LEFT JOIN 
+    retailcustomer RC ON SM.customername = RC.id; 
+    
+   ;
+    `,
+      (err, result) => {
+        connection.release();
+        if (err) {
+          console.error("Error in listing data:", err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+        // Send the data as JSON response
+        res.json({ data: result.recordset });
+      }
+    );
+  });
+};
+
+exports.inpatientdraft = (req, res) => {
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    pool.query(
+      `
+  SELECT 
+    sm.[id] ,
+    sm.[saledate],
+    sm.[paymentmode],
+    sm.[doctorname],
+    rc.[customername],
+    rc.[mobileno],
+    sm.[amount],
+    sm.[cdAmount],
+    sm.[igst],
+    sm.[cgst],
+    sm.[sgst],
+    sm.[subtotal],
+    sm.[cess],
+    sm.[tcs],
+    sm.[discMode],
+    sm.[discount],
+    sm.[roundoff],
+    sm.[netAmount],
+    sm.[isDraft],
+     dbo.GetBillMargin(sm.id) as billmargin
+FROM 
+    inpatient_Master sm
+LEFT JOIN 
+   retailcustomer rc ON sm.customername = rc.[id]
+    where isDraft = 1;
+    
+   ;
+    `,
+      (err, result) => {
+        connection.release();
+        if (err) {
+          console.error("Error in listing data:", err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+        // Send the data as JSON response
+        res.json({ data: result.recordset });
+      }
+    );
+  });
+};
+//salesretail
+
 
 /**
  * Get Single RegCustomer by regid

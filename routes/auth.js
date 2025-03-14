@@ -300,7 +300,6 @@ router.get(
 
 
 
-router.get("/salesretailreturn", userController.salesretailreturn);
 router.get("/package", userController.package);
 router.post("/package", userController.packageadd);
 router.put("/packageedit/:id", userController.packageedit);
@@ -309,6 +308,7 @@ router.delete("/packagedelete/:id", userController.packagedelete);
 router.get("/index/dashboardinfo", userController.dashboardinfo);
 
 
+router.get("/salesretailreturn", userController.salesretailreturn);
 router.get(
   "/salesretailreturn/salesretailreturnDetails",
   userController.salesretailDetails
@@ -384,6 +384,76 @@ router.delete("/deleteRegCustomer/${regid}", userController.deleteRegCustomer);
 // router.post("/manufacturer", userController.manufactureradd);
 // router.put("/manufactureredit/:id", userController.manufactureredit);
 // router.delete("/manufacturerdelete/:id", userController.manufacturerdelete);
+
+
+
+router.get("/inpatientreg/checkMobileNumber", userController.checkMobileNumber);
+router.get("/inpatientreg/inpatientDetails", userController.inpatientDetails);
+router.post("/inpatient", userController.inpatientadd);
+router.put("/inpatientEdit/:id", userController.inpatientEdit);
+router.get("/inpatientreg/inpatientids", userController.inpatientids);
+router.delete("/inpatientdelete/:id", userController.inpatientdelete);
+router.delete("/inpatienttransdelete/:id", userController.inpatienttransdelete);
+router.get(
+  "/inpatientreg/inpatientproductid",
+  userController.inpatientproductid
+);
+router.get("/inpatientregister", userController.inpatientregister);
+router.get("/inpatientdraft", userController.inpatientdraft);
+router.get("/inpatientreg/customername", userController.customername);
+router.post(
+  "/inpatientreg/retailbatchDetails/:selectedProductId",
+  userController.retailbatchDetails
+);
+router.get("/inpatientreg/checkMobile", userController.checkMobileNumber);
+
+router.get(
+  "/inpatientreg/checkStockAvailability/:productId/:batchNo/:quantity/:expiryDate",
+  userController.checkStockAvailability
+);
+
+
+
+// router.get("/inpatientreturn", userController.inpatientreturn);
+router.get(
+  "/inpatientreturn/inpatientreturnDetails",
+  userController.inpatientDetails
+);
+router.post("/inpatientreturn", userController.inpatientreturnadd);
+router.put("/inpatientreturnEdit/:id", userController.inpatientreturnEdit);
+router.get(
+  "/inpatientreturn/inpatientreturnids",
+  userController.inpatientreturnids
+);
+router.delete(
+  "/inpatientreturndelete/:id",
+  userController.inpatientreturndelete
+);
+router.delete(
+  "/inpatientreturntransdelete/:id",
+  userController.inpatientreturntransdelete
+);
+
+router.get(
+  "/inpatientreturn/inpatientreturnproductid",
+  userController.inpatientreturnproductid
+);
+router.get("/inpatientreturnregister", userController.inpatientreturnregister);
+
+router.get("/inpatientreturn/customername", userController.customername);
+router.post(
+  "/inpatientreturn/retailbatchDetails/:selectedProductId",
+  userController.retailbatchDetails
+);
+
+router.get(
+  "/inpatientreturn/inpatientreturnDetails",
+  userController.salesretailreturnDetails
+);
+router.get(
+  "/inpatientreturn/inpatientreturnproductid",
+  userController.salesretailreturnproductid
+);
 
 
 

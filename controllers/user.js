@@ -39,26 +39,180 @@ function formatDate(dateString) {
 }
 
 
-
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 
-// Multer Storage Configuration
+// Ensure upload directory exists
+const uploadDir = path.join(__dirname, "../uploads/prescription");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Configure Multer storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./uploads/prescription"); // Store prescription images in this folder
+    cb(null, uploadDir); // Ensure the correct directory
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname)); // Generates a unique filename
+    cb(null, Date.now() + "-" + file.originalname);
   },
 });
 
-// Multer Upload Middleware
-const upload = multer({ storage: storage }).single("prescriptionImage");
+// Set up multer middleware
+const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    console.log("File received:", file); // Debugging
+    cb(null, true);
+  },
+}).array("prescriptionImage", 1);
+
+// Ensure this matches the frontend field name
+
+exports.upload = upload;
 
 
+exports.inpatientadd = async (req, res) => {
+  upload(req, res, async (err) => {
+    if (err) {
+      console.error("Multer error:", err);
+      return res.status(400).json({ success: false, message: err.message });
+    }
+    console.log("Received body:", req.body);
+    console.log("Received file:", req.file);
 
+    const {
+      saledate,
+      ppaymentMode,
+      customerId,
+      doctorname,
+      pamount,
+      pigst,
+      pcgst,
+      psgst,
+      psubtotal,
+      pcess,
+      ptcs,
+      proundOff,
+      pnetAmount,
+      pdiscount,
+      pdiscMode_,
+      isDraft,
+      products: productsString,
+    } = req.body;
+
+    let parsedProducts = [];
+    const formattedSaleDate = saledate || null;
+  const prescriptionImage =
+    req.files && req.files.length ? req.files[0].filename : null;
+
+
+    try {
+      await pool.connect();
+
+      parsedProducts = JSON.parse(productsString);
+
+      // Insert into inpatient_Master
+      const result = await pool
+        .request()
+        .input("saledate", sql.DateTime, formattedSaleDate)
+        .input("ppaymentMode", sql.VarChar, ppaymentMode)
+        .input("customerId", sql.VarChar, customerId)
+        .input("doctorname", sql.VarChar, doctorname)
+        .input("pamount", sql.Decimal, pamount)
+        .input("pcgst", sql.Decimal, pcgst)
+        .input("psgst", sql.Decimal, psgst)
+        .input("pigst", sql.Decimal, pigst)
+        .input("pnetAmount", sql.Decimal, pnetAmount)
+        .input("pcess", sql.Decimal, pcess)
+        .input("ptcs", sql.Decimal, ptcs)
+        .input("pdiscMode_", sql.VarChar, pdiscMode_)
+        .input("pdiscount", sql.Decimal, pdiscount)
+        .input("psubtotal", sql.Decimal, psubtotal)
+        .input("proundOff", sql.Decimal, proundOff)
+        .input("isDraft", sql.Int, isDraft)
+        .input("prescriptionImage", sql.VarChar, prescriptionImage).query(`
+          INSERT INTO inpatient_Master
+          ([saledate], [paymentmode], [customername], [doctorname], [amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft], [prescriptionImage])
+          VALUES
+          (@saledate, @ppaymentMode, @customerId, @doctorname, @pamount, @pcgst, @psgst, @pigst, @pnetAmount, @pcess, @ptcs, @pdiscMode_, @pdiscount, @psubtotal, @proundOff, @isDraft, @prescriptionImage);
+          
+          SELECT SCOPE_IDENTITY() as salesId;
+        `);
+
+      const salesId = result.recordset[0].salesId;
+      console.log("Number of products:", parsedProducts.length);
+
+      for (const product of parsedProducts) {
+        const {
+          productId,
+          batchNo,
+          expiryDate,
+          tax,
+          quantity,
+          free,
+          uom,
+          purcRate,
+          mrp,
+          rate,
+          discMode,
+          discount,
+          amount,
+          cgst,
+          sgst,
+          igst,
+          totalAmount,
+        } = product;
+
+        await pool
+          .request()
+          .input("salesId", sql.Int, salesId)
+          .input("productId", sql.Int, productId)
+          .input("batchNo", sql.VarChar, batchNo)
+          .input("expiryDate", sql.VarChar, expiryDate)
+          .input("tax", sql.Decimal, tax)
+          .input("quantity", sql.Int, quantity)
+          .input("free", sql.Int, free)
+          .input("uom", sql.VarChar, uom)
+          .input("purcRate", sql.Decimal, purcRate)
+          .input("mrp", sql.Decimal, mrp)
+          .input("rate", sql.Decimal, rate)
+          .input("discMode", sql.VarChar, discMode)
+          .input("discount", sql.Decimal, discount)
+          .input("amount", sql.Decimal, amount)
+          .input("cgst", sql.Decimal, cgst)
+          .input("sgst", sql.Decimal, sgst)
+          .input("igst", sql.Decimal, igst)
+          .input("totalAmount", sql.Decimal, totalAmount).query(`
+            INSERT INTO inpatient_Trans
+            ([salesId], [product], [batchNo], [expiryDate], [tax], [quantity], [free], [uom], [purcRate], [mrp], [rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
+            VALUES
+            (@salesId, @productId, @batchNo, @expiryDate, @tax, @quantity, @free, @uom, @purcRate, @mrp, @rate, @discMode, @discount, @amount, @cgst, @sgst, @igst, @totalAmount);
+          `);
+
+        if (Number(isDraft) !== 1) {
+          await reduceretailStock(
+            productId,
+            quantity,
+            free,
+            batchNo,
+            expiryDate
+          );
+        }
+      }
+
+      res
+        .status(200)
+        .json({ success: true, message: "Sales added successfully" });
+    } catch (error) {
+      console.error("Error during processing:", error);
+      res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error" });
+    }
+  });
+};
 
 
 exports.addCustomerClinic = async (req, res) => {
@@ -753,93 +907,6 @@ exports.inpatientDetails = async (req, res) => {
   });
 };
 
-exports.inpatientadd = async (req, res) => {
-  console.log(req.body);
-  const {
-    saledate,
-    ppaymentMode,
-    customerId, // Use customerId received from the client
-    doctorname,
-    pamount,
-    pigst,
-    pcgst,
-    psgst,
-    psubtotal,
-    pcess,
-    ptcs,
-    proundOff,
-    pnetAmount,
-    pdiscount,
-    pdiscMode_,
-    prescriptionImage,
-    isDraft,
-    products: productsString,
-  } = req.body;
-
-  let parsedProducts = [];
-  const formattedSaleDate = saledate ? saledate : null;
-
-  try {
-    await poolConnect();
-
-    parsedProducts = JSON.parse(productsString);
-
-    // Make sure customerId is being used correctly
-    const result = await pool.query`
-      INSERT INTO inpatient_Master
-      ([saledate], [paymentmode], [customername],[doctorname] ,[amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft],[prescriptionImage])
-      VALUES
-      (${formattedSaleDate}, ${ppaymentMode}, ${customerId},${doctorname}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft},${prescriptionImage});
-    
-      SELECT SCOPE_IDENTITY() as salesId;
-    `;
-
-    const salesId = result.recordset[0].salesId;
-    console.log("Number of products:", parsedProducts.length);
-
-    for (const product of parsedProducts) {
-      const {
-        productId,
-        batchNo,
-        expiryDate,
-        tax,
-        quantity,
-        free,
-        uom,
-        purcRate,
-        mrp,
-        rate,
-        discMode,
-        discount,
-        amount,
-        cgst,
-        sgst,
-        igst,
-        totalAmount,
-      } = product;
-
-      await pool.query`
-        INSERT INTO inpatient_Trans
-        ([salesId], [product], [batchNo],[expiryDate], [tax], [quantity],[free], [uom],[purcRate], [mrp],[rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
-        VALUES
-        (${salesId}, ${productId}, ${batchNo},${expiryDate}, ${tax}, ${quantity}, ${free}, ${uom}, ${purcRate}, ${mrp}, ${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
-      `;
-
-      // Only call reduceretailStock if isDraft is 0 (indicating a confirmed sale)
-      if (Number(isDraft) !== 1) {
-        await reduceretailStock(productId, quantity, free, batchNo, expiryDate);
-      }
-    }
-
-    res
-      .status(200)
-      .json({ success: true, message: "salesretail added successfully" });
-  } catch (error) {
-    console.error("Error during salesretail processing:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
-  }
-};
-
 exports.inpatientEdit = async (req, res) => {
   const { id } = req.params;
   const { purchaseDetails, products } = req.body;
@@ -965,7 +1032,6 @@ exports.inpatientEdit = async (req, res) => {
   }
 };
 
-
 async function increaseRetailStock(
   productId,
   quantity,
@@ -1023,7 +1089,6 @@ async function increaseRetailStock(
 }
 
 
-
 // async function reduceStock(productId, quantity,batchNo) {
 //   try {
 //     await pool.query`
@@ -1036,54 +1101,65 @@ async function increaseRetailStock(
 //     throw error;
 //   }
 // };
-
+ 
+const baseImageUrl = "http://localhost:5000/uploads/prescription/"; // Adjust based on your setup
 
 exports.inpatientids = (req, res) => {
   pool.connect((err, connection) => {
     if (err) {
-      console.error("Error getting connection from pool:", err);
+      console.error("Database Connection Error:", err);
       return res.status(500).json({ error: "Internal Server Error" });
     }
 
     const query = `
-            SELECT 
-    sm.[id] ,
-    sm.[saledate],
-    sm.[paymentmode],
-    sm.[customername] as selectcustomer,
-    sm.[doctorname],
-    rc.[customername],
-    rc.[mobileno],
-    sm.[amount],
-    sm.[cdAmount],
-    sm.[igst],
-    sm.[cgst],
-    sm.[sgst],
-    sm.[subtotal],
-    sm.[cess],
-    sm.[tcs],
-    sm.[discMode],
-    sm.[discount],
-    sm.[roundoff],
-    sm.[netAmount],
-    sm.[isDraft]
-FROM 
-    [elite_pos].[dbo].[inpatient_Master] sm
-LEFT JOIN 
-    [elite_pos].[dbo].[retailcustomer] rc ON sm.[customername] = rc.[id] 
-        `;
+      SELECT 
+        sm.[id],
+        sm.[saledate],
+        sm.[paymentmode],
+        sm.[customername] as selectcustomer,
+        sm.[doctorname],
+        rc.[customername],
+        rc.[mobileno],
+        sm.[amount],
+        sm.[cdAmount],
+        sm.[igst],
+        sm.[cgst],
+        sm.[sgst],
+        sm.[subtotal],
+        sm.[cess],
+        sm.[tcs],
+        sm.[discMode],
+        sm.[discount],
+        sm.[roundoff],
+        sm.[netAmount],
+        sm.[isDraft],
+CASE 
+    WHEN sm.[prescriptionimage] IS NOT NULL AND sm.[prescriptionimage] != '' 
+    THEN CONCAT('${baseImageUrl}', sm.[prescriptionimage]) 
+    ELSE NULL 
+END AS prescriptionimage
+
+      FROM 
+        [elite_pos].[dbo].[inpatient_Master] sm
+      LEFT JOIN 
+        [elite_pos].[dbo].[retailcustomer] rc ON sm.[customername] = rc.[id]
+    `;
 
     pool.query(query, (err, result) => {
       connection.release();
       if (err) {
-        console.error("Error in fetching sales retail IDs:", err);
+        console.error("Query Execution Error:", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
-      res.header("Content-Type", "application/json");
+
+      // Debugging: Check if the backend is sending the image URL
+      console.log("Backend Response Data:", result.recordset);
+
       res.json({ data: result.recordset });
     });
   });
 };
+
 
 exports.inpatientproductid = (req, res) => {
   const purchaseId = req.query.purchaseId;

@@ -52,6 +52,9 @@ app.use(
   })
 );
 
+app.use("/uploads", express.static("uploads"));
+
+
 const partialspath = path.join(__dirname, "./views/partials");
 hbs.registerPartials(partialspath);
 

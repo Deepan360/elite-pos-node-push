@@ -287,6 +287,15 @@
                             <label for="prescription">Prescription Image</label>
                         </div>
                     </div>
+                    <div class="col-md-2">
+                <span id="previewBtn" class="btn btn-primary" style="display: none;">
+                   <i class="bi bi-eye"></i>  Prescription
+                </button></div>
+
+
+
+                    {{!-- <img id="prescriptionImages" src="" alt="Prescription Image" style="max-width: 200px; height: auto; display: none;"> --}}
+
 
                         <input type="hidden" id="customerId" name="customerId" value="">
 
@@ -579,6 +588,20 @@
                 </div>
             </div>
         </div>
+                        <!-- Bootstrap Modal -->
+                        <div class="modal fade " id="prescriptionModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered ">
+                                <div class="modal-content">
+                                    <div class="modal-header  bg-dark ">
+                                        <h5 class="modal-title text-white">Prescription Preview</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        <img id="prescriptionImage" src="" alt="Prescription" class="img-fluid rounded shadow">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
     </main>
     {{>color}}
     <script>
@@ -1051,46 +1074,48 @@
                 const updatedProducts = getUpdatedProductsData();
                 console.log('Updated Products:', updatedProducts); // Log to ensure correct data
 
+                // Create FormData for handling file uploads
+                const formData = new FormData();
+
+                // Gather all purchase details
+                formData.append('id', $('#id').val());
+                formData.append('saledate', $('#saledate').val());
+                formData.append('paymentmode', $('#ppaymentMode').val());
+                formData.append('customername', $('#customerSelect').val() || $('#customerId').val());
+                formData.append('doctorname', $('#doctorname').val());
+
+                formData.append('pamount', parseFloat($('#pamount_').val()) || 0);
+                formData.append('pigst', parseFloat($('#pigst_').val()));
+                formData.append('pcgst', parseFloat($('#pcgst_').val()));
+                formData.append('psgst', parseFloat($('#psgst_').val()));
+                formData.append('psubtotal', parseFloat($('#psubtotal_').val()));
+                formData.append('pcess', parseFloat($('#pcess_').val()));
+                formData.append('ptcs', parseFloat($('#ptcs_').val()));
+                formData.append('proundOff', parseFloat($('#proundOff_').val()));
+                formData.append('pnetAmount', parseFloat($('#pnetAmount_').val()));
+                formData.append('pdiscMode_', parseFloat($('#pdiscMode_').val()) || 3);
+                formData.append('pdiscount', parseFloat($('#pdiscount_').val()));
+                formData.append('isDraft', $('#is_Draft').val() || 0);
+
+                // Handle File Upload
+                const fileInput = $('#prescriptionImage')[0].files[0];
+                if (fileInput) {
+                    formData.append('prescriptionImage', fileInput);
+                }
+
+                // Append products as JSON
+                formData.append('products', JSON.stringify(updatedProducts));
+
                 if (isDraft) {
-                    // Skip stock availability checks and proceed directly to update request
+                    // Skip stock checks and proceed with draft update
                     console.log('Draft mode: skipping stock checks.');
 
-                    // Gather all purchase details
-                    const purchaseDetails = {
-                        id: $('#id').val(),
-                        saledate: $('#saledate').val(),
-                        paymentmode: $('#ppaymentMode').val(),
-                        customername: $('#customerSelect').val() || $('#customerId').val(),
-                        doctorname: $('#doctorname').val(),
-                        prescriptionImage: $('#prescriptionImage').val(),
-                        pamount: parseFloat($('#pamount_').val()) || 0,
-                        pigst: parseFloat($('#pigst_').val()),
-                        pcgst: parseFloat($('#pcgst_').val()),
-                        psgst: parseFloat($('#psgst_').val()),
-                        psubtotal: parseFloat($('#psubtotal_').val()),
-                        pcess: parseFloat($('#pcess_').val()),
-                        ptcs: parseFloat($('#ptcs_').val()),
-                        proundOff: parseFloat($('#proundOff_').val()),
-                        pnetAmount: parseFloat($('#pnetAmount_').val()),
-                        pdiscMode_: parseFloat($('#pdiscMode_').val()) || 3,
-                        pdiscount: parseFloat($('#pdiscount_').val()),
-                        isDraft: $('#is_Draft').val() || 0
-                    };
-
-                    console.log('Purchase Details:', purchaseDetails); // Log purchase details
-
-                    const payload = {
-                        purchaseId: purchaseId,
-                        purchaseDetails: purchaseDetails,
-                        products: updatedProducts,
-                    };
-
-                    // Send update request
                     $.ajax({
                         type: 'PUT',
-                        url: '/auth/inpatientEdit/' + purchaseId, // Ensure the correct endpoint
-                        contentType: 'application/json',
-                        data: JSON.stringify(payload),
+                        url: '/auth/inpatientEdit/' + purchaseId, // Ensure correct endpoint
+                        processData: false, // Prevent jQuery from processing FormData
+                        contentType: false, // Let the browser set the Content-Type
+                        data: formData,
                         success: function (response) {
                             hideLoadingOverlay();
                             console.log(response);
@@ -1105,11 +1130,11 @@
                         },
                         error: function (xhr, status, error) {
                             console.error('Error updating purchase:', error);
-                            console.error('Response:', xhr.responseText); // Log response for details
+                            console.error('Response:', xhr.responseText);
                             alert("Failed to update purchase. Check console for details.");
                         }
                     });
-                    return; // Exit the function after processing the draft
+                    return;
                 }
 
                 // Perform stock availability checks
@@ -1120,51 +1145,17 @@
                         .filter((result) => result.status === 'fulfilled' && !result.value.status)
                         .map((result) => result.value);
 
-                    const validProducts = results
-                        .filter((result) => result.status === 'fulfilled' && result.value.status)
-                        .map((result) => result.value);
-
-                    // If insufficient stock, show alert and stop update
                     if (insufficientStock.length > 0) {
                         hideLoadingOverlay();
-                        showStockAlert(insufficientStock); // Display stock alert
+                        showStockAlert(insufficientStock);
                     } else {
-                        // Proceed with update logic (same as draft mode, excluding the "isDraft" handling)
-                        const purchaseDetails = {
-                            id: $('#id').val(),
-                            saledate: $('#saledate').val(),
-                            paymentmode: $('#ppaymentMode').val(),
-                            customername: $('#customerSelect').val() || $('#customerId').val(),
-                            doctorname: $('#doctorname').val(),
-                            prescriptionImage: $('#prescriptionImage').val(),
-                            pamount: parseFloat($('#pamount_').val()) || 0,
-                            pigst: parseFloat($('#pigst_').val()),
-                            pcgst: parseFloat($('#pcgst_').val()),
-                            psgst: parseFloat($('#psgst_').val()),
-                            psubtotal: parseFloat($('#psubtotal_').val()),
-                            pcess: parseFloat($('#pcess_').val()),
-                            ptcs: parseFloat($('#ptcs_').val()),
-                            proundOff: parseFloat($('#proundOff_').val()),
-                            pnetAmount: parseFloat($('#pnetAmount_').val()),
-                            pdiscMode_: parseFloat($('#pdiscMode_').val()) || 3,
-                            pdiscount: parseFloat($('#pdiscount_').val()),
-                            isDraft: $('#is_Draft').val() || 0
-                        };
-
-                        console.log('Purchase Details:', purchaseDetails); // Log purchase details
-
-                        const payload = {
-                            purchaseId: purchaseId,
-                            purchaseDetails: purchaseDetails,
-                            products: updatedProducts,
-                        };
-
-                        // Send update request
+                        // Proceed with update after stock validation
                         $.ajax({
                             type: 'PUT',
-                            url: '/auth/inpatientEdit/' + purchaseId, // Ensure the correct endpoint
-                            contentType: 'application/json',
-                            data: JSON.stringify(payload),
+                            url: '/auth/inpatientEdit/' + purchaseId,
+                            processData: false,
+                            contentType: false,
+                            data: formData,
                             success: function (response) {
                                 hideLoadingOverlay();
                                 console.log(response);
@@ -1179,13 +1170,14 @@
                             },
                             error: function (xhr, status, error) {
                                 console.error('Error updating purchase:', error);
-                                console.error('Response:', xhr.responseText); // Log response for details
+                                console.error('Response:', xhr.responseText);
                                 alert("Failed to update purchase. Check console for details.");
                             }
                         });
                     }
                 });
             });
+
         });
 
 
@@ -1468,7 +1460,7 @@
             let products = [];
             let uniqueId = generateUniqueId();
             calculateTotals();
-            // Open Purchase Form and Add New Row 
+            // Open Purchase Form and Add New Row
             $('#openPurchaseForm').on('click', function () {
                 let purchaseId = generateUniqueId();
                 $('#purchaseId').val(purchaseId);
@@ -1658,35 +1650,76 @@
                     $('#confirmationModal').modal('hide'); // Hide the modal
                 });
 
-                // Form submit logic
-                function submitForm() {
-                    let formData = $('#purchaseDetails').serializeArray();
-                    let products = getProductsData();
-                    // formData.push({ name: 'customerId', value: $('#customerId').val() });
+           {{!-- function submitForm() {
+                    let formData = new FormData(document.getElementById('purchaseDetails')); // Use FormData for full form
+                    let products = getProductsData(); // Get product data
+
                     showLoadingOverlay();
-                    formData.push({ name: 'products', value: JSON.stringify(products) });
-                    formData.push({ name: 'isDraft', value: $('#is_Draft').val() });
-                    formData.push({name:prescriptionImage, value:$('#prescriptionImage').val()});
-                    
-                    console.log("Serialized Form Data:", formData);
-                     console.log("prescriptionImage", $('#prescriptionImage').val());
+
+                    formData.append('products', JSON.stringify(products)); // Ensure product data is sent properly
+                    formData.append('isDraft', $('#is_Draft').val() || '0'); // Ensure isDraft is included
+
+                    // Handle File Upload (Make sure input file exists)
+                    let fileInput = $('input[name="prescriptionImage"]')[0];
+                    if (fileInput && fileInput.files.length > 0) {
+                        formData.append("prescriptionImage", fileInput.files[0]); // Append image to FormData
+                    }
+
                     $.ajax({
                         url: '/auth/inpatient',
                         method: 'POST',
                         data: formData,
+                        processData: false, // Important: Don't process FormData
+                        contentType: false, // Important: Let browser set content type
                         success: function (response) {
                             console.log(response);
                             if (response.success) {
-                                // Check if the response contains a draft value
-                                if ($('#is_Draft').val() === '1') {
-                                    showBootstrapModal('Sale Saved as Draft Successfully 🖋', function () {
-                                        window.location.href = '/salesretaildraft'; // Redirect to draft page
-                                    });
-                                } else {
-                                    showBootstrapModal('Sales Updated Successfully 🖋', function () {
-                                        window.location.href = '/salesretailregister'; // Redirect to sales register
-                                    });
-                                }
+                                let message = $('#is_Draft').val() === '1' ? 'Sale Saved as Draft Successfully 🖋' : 'Sales Updated Successfully 🖋';
+                                let redirectURL = $('#is_Draft').val() === '1' ? '/salesretaildraft' : '/salesretailregister';
+                                showBootstrapModal(message, function () {
+                                    window.location.href = redirectURL;
+                                });
+                            } else {
+                                alert("Failed to update purchase: " + response.message);
+                            }
+                        },
+                        error: function (error) {
+                            console.error("Error submitting form:", error);
+                            alert("Error submitting form: " + (error.responseJSON?.error || error.statusText));
+                        },
+                        complete: function () {
+                            hideLoadingOverlay();
+                        }
+                    });
+                }
+ --}}
+
+
+                function submitForm() {
+                    let formData = new FormData($('#purchaseDetails')[0]); // Use FormData for file upload
+                    let products = getProductsData();
+                    showLoadingOverlay();
+                    formData.append('products', JSON.stringify(products));
+                    formData.append('isDraft', $('#is_Draft').val());
+
+                    $.ajax({
+                        url: '/auth/inpatient',
+                        method: 'POST',
+                        data: formData,
+                        processData: false, // Prevent jQuery from processing FormData
+                        contentType: false, // Prevent jQuery from adding content-type header
+                        success: function (response) {
+                            console.log(response);
+                            if (response.success) {
+                                let message = $('#is_Draft').val() === '1'
+                                    ? 'Sale Saved as Draft Successfully 🖋'
+                                    : 'Sales Updated Successfully 🖋';
+
+                                showBootstrapModal(message, function () {
+                                    window.location.href = $('#is_Draft').val() === '1'
+                                        ? '/inpatientdraft'
+                                        : '/inpatientreg';
+                                });
                             } else {
                                 alert("Failed to update purchase: " + response.message);
                             }
@@ -1696,10 +1729,9 @@
                             alert("Error submitting form: " + error.statusText);
                         },
                         complete: function () {
-                            hideLoadingOverlay(); // Hide loading overlay when request completes
+                            hideLoadingOverlay(); // Hide loading overlay
                         }
                     });
-
                 }
 
 
@@ -1956,15 +1988,15 @@
                             $('#batchDetailsBody').empty();
                             rows.forEach(function (row) {
                                 $('#batchDetailsBody').append(
-                                    `<tr data-uniqueId="${row.uniqueId}" 
-                            data-batchNo="${row.batchNo}" 
-                            data-expiryDate="${row.expiryDate}" 
-                            data-tax="${row.tax}" 
-                            data-quantity="${row.quantity}" 
-                            data-productPackage="${row.productPackage}" 
-                            data-rate="${row.rate}" 
-                            data-mrp="${row.mrp}" 
-                            style="background-color: ${row.backgroundColor}; color: ${row.color};" 
+                                    `<tr data-uniqueId="${row.uniqueId}"
+                            data-batchNo="${row.batchNo}"
+                            data-expiryDate="${row.expiryDate}"
+                            data-tax="${row.tax}"
+                            data-quantity="${row.quantity}"
+                            data-productPackage="${row.productPackage}"
+                            data-rate="${row.rate}"
+                            data-mrp="${row.mrp}"
+                            style="background-color: ${row.backgroundColor}; color: ${row.color};"
                              class="${row.selectable ? '' : 'non-selectable'} ${row.alreadySelected ? 'already-selected' : ''}">
                             <td>${row.batchNo}</td>
                             <td>${row.formattedExpiry}</td>
@@ -2523,94 +2555,87 @@
             }
         });
 
-        $('.dropdown[name="Id"]').change(function () {
-            var selectedOption = $(this).find('option:selected');
-            if (!selectedOption || !selectedOption.val()) {
-                return;
-            }
+    $('.dropdown[name="Id"]').change(function () {
+        var selectedOption = $(this).find('option:selected');
+        if (!selectedOption || !selectedOption.val()) {
+            return;
+        }
 
-            try {
-                var rowDetails = JSON.parse(selectedOption.val());
-                $('#id').val(rowDetails.id);
-                $('#saledate').val(formatDate(rowDetails.saledate));
+        try {
+            var rowDetails = JSON.parse(selectedOption.val());
+                // Debugging: Check if image URL is received
+            console.log("Image URL:", rowDetails.prescriptionimage);
+            $('#id').val(rowDetails.id);
+            $('#saledate').val(formatDate(rowDetails.saledate));
 
-                // Set the customer in the dropdown using selectcustomer from rowDetails
-                console.log('Setting customer ID:', rowDetails.selectcustomer);
-                $('#customerId').val(rowDetails.selectcustomer); // Make sure 'selectcustomer' is the customerId
-                $('#doctorname').val(rowDetails.doctorname);
-             
-                $('#prescriptionImage').attr('src', rowDetails.prescriptionImage);
-                $('#customername').val(rowDetails.customername);
-                $('#mobileno').val(rowDetails.mobileno);
-                // Load existing data into the form
-                $('#paymentmode').val(rowDetails.paymentmode);
-                $('#ppaymentMode').val(rowDetails.paymentmode); // Ensure hidden input is also set
+            console.log('Setting customer ID:', rowDetails.selectcustomer);
+            $('#customerId').val(rowDetails.selectcustomer);
+            $('#doctorname').val(rowDetails.doctorname);
+            $('#customername').val(rowDetails.customername);
+            $('#mobileno').val(rowDetails.mobileno);
+            $('#paymentmode').val(rowDetails.paymentmode);
+            $('#ppaymentMode').val(rowDetails.paymentmode);
 
+            $('#pnetAmount').text(parseFloat(rowDetails.netAmount).toFixed(2));
+            $('#pamount').text(parseFloat(rowDetails.amount).toFixed(2));
+            $('#pigst').text(parseFloat(rowDetails.igst).toFixed(2));
+            $('#pcgst').text(parseFloat(rowDetails.cgst).toFixed(2));
+            $('#psgst').text(parseFloat(rowDetails.sgst).toFixed(2));
+            $('#psubtotal').text(parseFloat(rowDetails.subtotal).toFixed(2));
+            $('#ptcs').text(parseFloat(rowDetails.tcs).toFixed(2));
+            $('#proundOff').text(parseFloat(rowDetails.roundoff).toFixed(2));
+            $('#pdiscMode').val(rowDetails.discMode);
+            $('#pdiscount').val(rowDetails.discount);
+            selectedOption.prop('selected', true);
 
-                // Populate financial details
-                $('#pnetAmount').text(parseFloat(rowDetails.netAmount).toFixed(2));
-                $('#pamount').text(parseFloat(rowDetails.amount).toFixed(2));
-                $('#pigst').text(parseFloat(rowDetails.igst).toFixed(2));
-                $('#pcgst').text(parseFloat(rowDetails.cgst).toFixed(2));
-                $('#psgst').text(parseFloat(rowDetails.sgst).toFixed(2));
-                $('#psubtotal').text(parseFloat(rowDetails.subtotal).toFixed(2));
-                $('#ptcs').text(parseFloat(rowDetails.tcs).toFixed(2));
-                $('#proundOff').text(parseFloat(rowDetails.roundoff).toFixed(2));
-
-                // Set discount mode and value
-                $('#pdiscMode').val(rowDetails.discMode);
-
-                $('#pdiscount').val(rowDetails.discount);
-                selectedOption.prop('selected', true);
-
-
-
-
-                if (rowDetails.isDraft === true) {
-                    $('.editmasbtn').prop('disabled', false);  // Editable
-                    console.log('Editing enabled: isDraft is true');
-                } else {
-                    $('.editmasbtn').prop('disabled', true);   // Not editable
-                    console.log('Editing disabled: isDraft is false');
-                }
-                // Fetch related product data
-                var purchaseId = parseFloat(rowDetails.id);
-                $.ajax({
-                    url: '/auth/inpatient/inpatientproductid',
-                    method: 'GET',
-                    data: { purchaseId: purchaseId },
-                    success: function (response) {
-                        console.log("Full Response Data: ", response.data);
-
-                        // Separate return and customer data
-                        var customerData = response.data; // Full data for customer table
-                        var returnData = response.data.filter(row => row.salesreturnid !== 0); // Only rows with returns
-
-                        console.log("Filtered Return Data: ", returnData);
-
-                        // Update Customer Table
-                        var customerTable = $('#customerTable').DataTable();
-                        customerTable.clear();
-                        customerTable.rows.add(customerData);
-                        customerTable.draw();
-
-                        // Update Return Table
-                        var returnTable = $('#returnTable').DataTable();
-                        returnTable.clear();
-                        returnTable.rows.add(returnData);
-                        returnTable.draw();
-                    },
-                    error: function (error) {
-                        console.error("Error fetching data:", error);
-                    }
+            if (rowDetails.prescriptionimage && rowDetails.prescriptionimage.trim() !== "") {
+                $('#previewBtn').show(); // Show the preview button
+                $('#previewBtn').off('click').on('click', function () {
+                    $('#prescriptionImage').attr('src', rowDetails.prescriptionimage);
+                    let prescriptionModal = new bootstrap.Modal(document.getElementById("prescriptionModal"));
+                    prescriptionModal.show();
                 });
-
-
-            } catch (error) {
-                console.error('Error parsing JSON:', error);
+            } else {
+                $('#previewBtn').hide(); // Hide if no image available
             }
-        });
-        // Initialize the return table only once
+
+            // Enable editing if isDraft is true
+            $('.editmasbtn').prop('disabled', !rowDetails.isDraft);
+
+            // Fetch related product data
+            var purchaseId = parseFloat(rowDetails.id);
+            $.ajax({
+                url: '/auth/inpatient/inpatientproductid',
+                method: 'GET',
+                data: { purchaseId: purchaseId },
+                success: function (response) {
+                    console.log("Full Response Data: ", response.data);
+                    var customerData = response.data;
+                    var returnData = response.data.filter(row => row.salesreturnid !== 0);
+
+                    console.log("Filtered Return Data: ", returnData);
+                    var customerTable = $('#customerTable').DataTable();
+                    customerTable.clear();
+                    customerTable.rows.add(customerData);
+                    customerTable.draw();
+
+                    var returnTable = $('#returnTable').DataTable();
+                    returnTable.clear();
+                    returnTable.rows.add(returnData);
+                    returnTable.draw();
+                },
+                error: function (error) {
+                    console.error("Error fetching data:", error);
+                }
+            });
+
+        } catch (error) {
+            console.error('Error parsing JSON:', error);
+        }
+    });
+
+
+   // Initialize the return table only once
         var returnTable = $("#returnTable").DataTable({
             searching: false,
             paging: false,
@@ -2666,7 +2691,7 @@
 
         $(document).ready(function () {
             $('#new').click(function () {
-                window.location.href = '/inpatient'
+                window.location.href = '/inpatientbilling';
             });
         });
     </script>

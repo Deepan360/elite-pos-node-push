@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userController = require('../controllers/user');
 
-
+const multer = require("multer");
 
 
 router.post('/registration', userController.registration);
@@ -391,6 +391,7 @@ router.delete("/deleteRegCustomer/${regid}", userController.deleteRegCustomer);
 router.get("/inpatient/checkMobileNumber", userController.checkMobileNumber);
 router.get("/inpatient/inpatientDetails", userController.inpatientDetails);
 router.post("/inpatient", userController.inpatientadd);
+
 router.put("/inpatientEdit/:id", userController.inpatientEdit);
 router.get("/inpatient/inpatientids", userController.inpatientids);
 router.delete("/inpatientdelete/:id", userController.inpatientdelete);

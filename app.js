@@ -7,6 +7,8 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const methodOverride = require("method-override");
 const session = require("express-session");
+const { Server } = require("http");
+const uuid= require("crypto").randomUUID;
 
 const app = express();
 dotenv.config({ path: "./.env" });
@@ -19,7 +21,7 @@ const config = {
   database: process.env.DB_DATABASE,
   options: {
     encrypt: false,
-    enableArithAbort: true,
+    enableArithAbort: true, 
   },
 };
 
@@ -95,5 +97,5 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log("Server started @ port 5000 🚀 ");
+  console.log(`Server started @ port 5000 🚀 ${uuid()}`);
 });

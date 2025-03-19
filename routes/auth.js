@@ -459,5 +459,22 @@ router.get(
 
 
 
+router.get(
+  "/inpatientbillprint/productdetails",
+  userController.getSalesProductDetails
+);
+router.get("/inpatientbillprint/salesdetails", userController.salesDetails);
+
+router.get(
+  "/inpatientbillprint/productdetails",
+  userController.getinpatientProductDetails
+);
+router.get(
+  "/inpatientbillprint/salesdetails",
+  userController.inpatientretaildetails
+);
+
+
+
 module.exports = router;
  

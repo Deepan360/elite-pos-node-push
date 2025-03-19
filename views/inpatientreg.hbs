@@ -130,7 +130,7 @@
                                 <th>Profit Amt</th>
                                 <th>Payment</th>
                                 <th class="action">Action</th>
-                                <th>Return</th>
+                                
                                 <th>Print</th>
                             </tr>
                         </thead>
@@ -356,12 +356,6 @@
                         return '<i class="fa-solid fa-file-pen fa-2x text-warning" type="button" data-id="' + data + '"></i>';
                     }
                 },
-                 {
-                    data: 'id',
-                    render: function (data) {
-                        return '<i class="fa-solid fa-reply-all fa-2x text-return" type="button" data-id="' + data + '"></i>';
-                    }
-                },
                 {
                     data: 'id',
                     render: function (data) {
@@ -381,11 +375,11 @@
         }); 
 
 
-        $('#customerTable').on('click', 'i.fa-reply-all', function () {
+        {{!-- $('#customerTable').on('click', 'i.fa-reply-all', function () {
             var salesId = $(this).data('id');
             console.log('sales ID:', salesId); // Debugging
             window.location.href = '/salesreturnretail?id=' + salesId;
-        }); 
+        });  --}}
         // Handle click event for the print icon
         $(document).on('click', '#customerTable i.fa-print', function () {
             var salesId = $(this).closest('tr').data('id');

@@ -798,6 +798,9 @@ router.get("/inpatientreg", (req, res) => {
 router.get("/inpatientdraft", (req, res) => {
   res.render("inpatientdraft");
 });
+router.get("/inpatientbillprint", (req, res) => {
+  res.render("inpatientbillprint");
+});
 
 
 

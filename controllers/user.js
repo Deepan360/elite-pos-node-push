@@ -352,7 +352,57 @@ exports.checkMobileNumberClinic = async (req, res) => {
 };
 
 
+//salesretailprintpage
+exports.getinpatientProductDetails = (req, res) => {
+  const salesId = req.query.salesId; // Extract salesId from query parameter
+
+  // Use parameterized query to prevent SQL injection
+  const request = pool.request();
+  request.input("SalesId", sql.Int, salesId); // Add salesId as a parameter
+
+  request.execute("dbo.getinpatientProductDetails", (err, result) => {
+    if (err) {
+      console.error("Error executing stored procedure:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    // Log the result
+    console.log("Product details:", result.recordset);
+
+    // Send the data as JSON response
+    res.json({ data: result.recordset });
+  });
+};
+
+exports.inpatientretaildetails = (req, res) => {
+  const salesId = req.query.salesId; // Extract salesId from query parameter
+
+  // Use parameterized query to prevent SQL injection
+  const request = pool.request();
+  request.input("SalesId", sql.Int, salesId); // Add salesId as a parameter
+
+  request.execute("dbo.inpatientretaildetails", (err, result) => {
+    if (err) {
+      console.error("Error executing stored procedure:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    // Log the result
+    console.log("Sales details:", result.recordset);
+
+    // Send the data as JSON response
+    res.json({ data: result.recordset });
+  });
+};
+//salesretailprintpage
+
+
 //salesretailreturn retail
+
+
+
+
+
 
 exports.inpatientreturnDetails = async (req, res) => {
   pool.connect((err, connection) => {

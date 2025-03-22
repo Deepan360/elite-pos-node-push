@@ -456,9 +456,6 @@ router.get(
   "/inpatientreturn/inpatientreturnproductid",
   userController.salesretailreturnproductid
 );
-
-
-
 router.get(
   "/inpatientbillprint/productdetails",
   userController.getSalesProductDetails
@@ -466,15 +463,16 @@ router.get(
 router.get("/inpatientbillprint/salesdetails", userController.salesDetails);
 
 router.get(
-  "/inpatientbillprint/productdetails",
+  "/inpatientbillprint/getinpatientProductDetails",
   userController.getinpatientProductDetails
 );
 router.get(
-  "/inpatientbillprint/salesdetails",
+  "/inpatientbillprint/inpatientretaildetails",
   userController.inpatientretaildetails
 );
 
-
+ 
+router.get("/inpatient/Getinpatient", userController.Getinpatient);
 
 module.exports = router;
  

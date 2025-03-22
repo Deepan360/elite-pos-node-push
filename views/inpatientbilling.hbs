@@ -200,8 +200,8 @@
             <div class="form-control card">
                 <div style="display: flex;justify-content: space-between;">
                     <div class="d-flex w-auto align-center align-center gap-2">
-                        <h3>Retailer sale </h3>
-                        <div class=" opener mt-2  bg-success mb-2 px-1 rounded-3 align-center text-white py-1 cursor-pointer newcoustomer"
+                        <h3>In Patient Billing </h3>
+                        {{!-- <div class=" opener mt-2  bg-success mb-2 px-1 rounded-3 align-center text-white py-1 cursor-pointer newcoustomer"
                             type="button" id="newCustomerBtn">
 
                             <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor"
@@ -211,7 +211,7 @@
                                     d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5" />
                             </svg>
                             <label class="text-white">New Customer</label>
-                        </div>
+                        </div> --}}
                     </div>
                     <div class="div" style="align-items: end;">
                         <button type="button" class="btn btn-success" id="new">New</button>
@@ -275,13 +275,18 @@
                                 <label for="saledate">Sale Date</label>
                             </div>
                         </div>
-                        <div class="col-md-2">
-                            <div class="custom-input-container">
-                                <input type="text" placeholder=" " name="doctorname" id="doctorname">
-                                <label for="doctorname">Doctor Name</label>
-                            </div>
-                        </div>
-                    <div class="col-md-2">
+<div class="col-md-2">
+    <div class="custom-input-container">
+        <select name="doctorname" id="doctorname" class="form-control">
+            <option value="" disabled selected>Select Doctor</option>
+            <option value="Dr. Keshava Balaji">Dr. Keshava Balaji</option>
+            <option value="Dr. Remughi">Dr. Remughi</option>
+        </select>
+        <label for="doctorname">Doctor Name</label>
+    </div>
+</div>
+
+                    <div class="col-md-2 insert">
                         <div class="custom-input-container">
                             <input type="file" name="prescriptionImage" accept="image/*" />
                             <label for="prescription">Prescription Image</label>
@@ -687,7 +692,7 @@
             });
             // Fetch customer data and populate dropdown
             $.ajax({
-                url: '/auth/salesretail/customerretail',
+                url: '/auth/inpatient/Getinpatient',
                 method: 'GET',
                 success: function (response) {
                     const customers = response.data;
@@ -695,7 +700,7 @@
                     customers.forEach(function (customer) {
                         $('#customerSelect').append($('<option>', {
                             value: customer.id, // Ensure this is just the ID
-                            text: `${customer.customername} (${customer.mobileno})`
+                            text: `${customer.name} (${customer.mobileno})`
                         }));
                     });
                     // Trigger Select2 update after appending options
@@ -778,7 +783,7 @@
                 salesman: salesman
             };
             $.ajax({
-                url: '/auth/salesretail/customerretail',
+                url: '/auth/inpatient/Getinpatient',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(customerData),
@@ -2428,7 +2433,7 @@
 
             function fetchSupplierNames() {
                 $.ajax({
-                    url: '/auth/inpatient/customername',
+                    url: '/auth/inpatient/Getinpatient',
                     method: 'GET',
                     success: function (response) {
                         var options = response.data;
@@ -2436,7 +2441,7 @@
                             options.forEach(function (option) {
                                 var $option = $('<option>', {
                                     value: option.id,
-                                    text: option.ledgername,
+                                    text: option.name,
                                     'data-mobile': option.mobile
                                 });
                                 $('.dropdown[name="customername"]').append($option);
@@ -2590,10 +2595,12 @@
 
             if (rowDetails.prescriptionimage && rowDetails.prescriptionimage.trim() !== "") {
                 $('#previewBtn').show(); // Show the preview button
+                $('.insert').hide(); // hide the upload file tab
                 $('#previewBtn').off('click').on('click', function () {
                     $('#prescriptionImage').attr('src', rowDetails.prescriptionimage);
                     let prescriptionModal = new bootstrap.Modal(document.getElementById("prescriptionModal"));
                     prescriptionModal.show();
+                    
                 });
             } else {
                 $('#previewBtn').hide(); // Hide if no image available

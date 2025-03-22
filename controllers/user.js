@@ -374,7 +374,7 @@ exports.getinpatientProductDetails = (req, res) => {
   });
 };
 
-exports.inpatientretaildetails = (req, res) => {
+  exports.inpatientretaildetails = (req, res) => {
   const salesId = req.query.salesId; // Extract salesId from query parameter
 
   // Use parameterized query to prevent SQL injection
@@ -393,7 +393,7 @@ exports.inpatientretaildetails = (req, res) => {
     // Send the data as JSON response
     res.json({ data: result.recordset });
   });
-};
+  };
 //salesretailprintpage
 
 
@@ -919,7 +919,7 @@ exports.inpatientDetails = async (req, res) => {
           sm.[saledate],
           sm.[paymentmode],
           sm.[doctorname],
-          rc.[customername],
+          rc.[name] as customername,
           rc.[mobileno],
           sm.[saledate],
           sm.[doctorname],
@@ -939,7 +939,7 @@ exports.inpatientDetails = async (req, res) => {
       FROM 
           [elite_pos].[dbo].[inpatient_Master] sm
       LEFT JOIN 
-          [elite_pos].[dbo].[retailcustomer] rc ON sm.[customername] = rc.[mobileno] -- Change the join condition if needed
+          [elitePOS_MedWell].[dbo].[reg_patient] rc ON sm.[customername] = rc.[mobileno] -- Change the join condition if needed
     `;
 
     pool.query(query, (err, result) => {
@@ -1168,7 +1168,7 @@ exports.inpatientids = (req, res) => {
         sm.[paymentmode],
         sm.[customername] as selectcustomer,
         sm.[doctorname],
-        rc.[customername],
+        rc.[name] as customername,
         rc.[mobileno],
         sm.[amount],
         sm.[cdAmount],
@@ -1192,7 +1192,7 @@ END AS prescriptionimage
       FROM 
         [elite_pos].[dbo].[inpatient_Master] sm
       LEFT JOIN 
-        [elite_pos].[dbo].[retailcustomer] rc ON sm.[customername] = rc.[id]
+        [elitePOS_MedWell].[dbo].[reg_patient] rc ON sm.[customername] = rc.[id]
     `;
 
     pool.query(query, (err, result) => {
@@ -1452,7 +1452,7 @@ exports.inpatientregister = (req, res) => {
     sm.[saledate],
     sm.[paymentmode],
     sm.[doctorname],
-    rc.[customername],
+    rc.[name] as customername,
     rc.[mobileno],
     sm.[amount],
     sm.[cdAmount],
@@ -1471,7 +1471,7 @@ exports.inpatientregister = (req, res) => {
 FROM 
     [elite_pos].[dbo].[inpatient_Master] sm
 LEFT JOIN 
-    [elite_pos].[dbo].[retailcustomer] rc ON sm.[customername] = rc.[id] 
+    [elitePOS_MedWell].[dbo].[reg_patient] rc ON sm.[customername] = rc.[id] 
 
     where  sm.[isDraft]='0';
    ;
@@ -1896,6 +1896,28 @@ exports.customerretail = (req, res) => {
     }
 
     connection.query("EXEC Getcustomerdetail", (err, result) => {
+      connection.release(); // Release the connection back to the pool
+
+      if (err) {
+        console.error("Error in listing data:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      // Send the data as JSON response
+      res.json({ data: result.recordset });
+    });
+  });
+};
+
+
+exports.Getinpatient = (req, res) => {
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    connection.query("EXEC Getinpatient", (err, result) => {
       connection.release(); // Release the connection back to the pool
 
       if (err) {

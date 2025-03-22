@@ -973,6 +973,8 @@ body {
         }
 
 
+
+
         .content table tbody tr td,
         table thead th {
           font-size: 14px !important;
@@ -1027,10 +1029,13 @@ body {
             });
         }
 
+
         function back() {
             // This function can be used to navigate back to a previous page
             window.history.back();
         }
+
+
 
         // Document ready function
         $(document).ready(function () {
@@ -1062,7 +1067,7 @@ body {
             // Function to load table data
             function loadTableData(salesId) {
                 $.ajax({
-                    url: '/auth/inpatientbillprint/productdetails',
+                    url: '/auth/inpatientbillprint/getinpatientProductDetails',
                     method: 'GET',
                     data: { salesId: salesId },
                     success: function (response) {
@@ -1104,7 +1109,7 @@ body {
             // Function to fetch sales details
             function fetchsalesDetails(salesId) {
                 $.ajax({
-                    url: '/auth/inpatientbillprint/salesretaildetails',
+                    url: '/auth/inpatientbillprint/inpatientretaildetails',
                     method: 'GET',
                     data: { salesId: salesId },
                     success: function (response) {

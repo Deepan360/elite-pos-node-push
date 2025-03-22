@@ -474,5 +474,8 @@ router.get(
  
 router.get("/inpatient/Getinpatient", userController.Getinpatient);
 
+
+router.post("/visitEntry", userController.visitEntry);
+
 module.exports = router;
  

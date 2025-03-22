@@ -72,7 +72,6 @@ const upload = multer({
 
 exports.upload = upload;
 
-
 exports.inpatientadd = async (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
@@ -214,6 +213,33 @@ exports.inpatientadd = async (req, res) => {
   });
 };
 
+exports.visitEntry = async (req, res) => {
+  const { customerId, reason, doctorName } = req.body; // Removed visitdate since it will be auto-set
+  console.log("Received Data:", req.body);
+  try {
+    await pool
+      .request()
+      .input("customerId", sql.Int, customerId)
+      .input("reason", sql.VarChar, reason)
+      .input("doctorName", sql.VarChar, doctorName).query(`
+      INSERT INTO [elitePOS_MedWell].[dbo].[visit_entry]
+      ([patientid], [doctorname], [dateofvisit], [reasonofvisit])
+      VALUES
+      (@customerId, @doctorName, GETDATE(), @reason);
+      `);
+
+    const visitid = await pool.request().query(`SELECT SCOPE_IDENTITY() AS visitid`);
+
+    res.status(200).json({
+      success: true,
+      message: "Visit added successfully",
+      visitid: visitid,
+    });
+  } catch (error) {
+    console.error("Error during visit entry:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
 
 exports.addCustomerClinic = async (req, res) => {
   const {

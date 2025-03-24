@@ -821,5 +821,9 @@ router.get("/notaccessed", (req, res) => {
   res.render("notaccessed");
 });
 
+//if page not found then render this page
+// router.use("/pagenotfound ",(req, res) => {
+//   res.status(404).render("pagenotfound");
+// });
 
 module.exports=router;     

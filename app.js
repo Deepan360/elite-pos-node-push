@@ -74,6 +74,7 @@ app.use((req, res, next) => {
 
 const pagesRouter = require("./routes/pages"); // ✅ Ensure this is a router
 const authRouter = require("./routes/auth");   // ✅ Ensure this is a router
+const router = require("./routes/pages");
 
 app.use("/", pagesRouter); // ✅ Use the correct router
 app.use("/auth", authRouter); // ✅ Use the correct router

@@ -4,7 +4,20 @@ const userController = require('../controllers/user');
 
 const multer = require("multer");
 
+router.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Error destroying session:", err);
+      return res.status(500).json({ success: false, message: "Logout failed" });
+    }
 
+    // Clear session cookie
+    res.clearCookie("connect.sid", { path: "/" });
+
+    // Redirect to login page
+    res.redirect("/");
+  });
+});
 router.post('/registration', userController.registration);
 router.post('/login', userController.login);
 router.post('/company', userController.company);

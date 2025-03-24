@@ -213,15 +213,8 @@
   document.addEventListener('DOMContentLoaded', async function () {
     // Function to get the role from session, local storage, or URL
     function getRole() {
-      let role = sessionStorage.getItem('userRole');
-      if (role) {
-        return role;
-      }
-
-      role = localStorage.getItem('userRole');
-      if (role) {
-        return role;
-      }
+      let role = sessionStorage.getItem('userRole') || localStorage.getItem('userRole');
+      if (role) return role;
 
       // Get role from URL query parameter
       const urlParams = new URLSearchParams(window.location.search);
@@ -234,98 +227,91 @@
       localStorage.setItem('userRole', role);
     }
 
-    // Function to fetch and update user role
-    async function fetchAndUpdateUserRole() {
-      try {
-        const userRole = await getUserRole();
-        if (!userRole) {
-          throw new Error('User role not found');
-        }
-        console.log('User Role:', userRole);
-        document.getElementById('roles').innerText = userRole;
-        setRole(userRole); // Ensure the role is set in storage
-      } catch (error) {
-        console.error('Error fetching user role:', error);
-        // Optionally redirect or show an error message here
-      }
-    }
-
     // Function to fetch user role from the server
     async function getUserRole() {
       try {
         const response = await fetch(`/auth/sidebar?role=${getRole()}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
         const data = await response.json();
-        if (data && data.role) {
-          return data.role;
-        } else {
-          throw new Error('Invalid response structure');
-        }
+        return data?.role || null;
       } catch (error) {
         console.error('Error fetching user role from server:', error);
         return null;
       }
     }
 
-    // Function to fetch sidebar items based on the user's role and display links
-    async function fetchSidebarItems() {
+    // Function to fetch and update user role
+    async function fetchAndUpdateUserRole() {
       try {
-        const response = await fetch(`/auth/sidebar?role=${getRole()}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
-        if (!data || !Array.isArray(data.sidebarItems)) {
-          throw new Error('Invalid sidebarItems structure');
-        }
-        const sidebarItems = data.sidebarItems;
+        const userRole = await getUserRole();
+        if (!userRole) throw new Error('User role not found');
 
-        const sidebarLinks = document.querySelectorAll('.sub-menu a');
-        sidebarLinks.forEach(link => {
-          const found = sidebarItems.some(item => item.href === link.getAttribute('href'));
-          link.style.display = found ? 'block' : 'none';
-        });
-
-        const titles = document.querySelectorAll('.title');
-        titles.forEach(title => {
-          const titleText = title.innerText.trim();
-          const foundTitle = sidebarItems.some(item => item.title === titleText);
-          title.style.display = foundTitle ? 'flex' : 'none';
-        });
-
-        const menus = document.querySelectorAll('.menu');
-        menus.forEach(menu => {
-          const menuText = menu.innerText.trim();
-          const foundMenu = sidebarItems.some(item => item.menu === menuText);
-          menu.style.display = foundMenu ? 'flex' : 'none';
-        });
+        console.log('User Role:', userRole);
+        document.getElementById('roles').innerText = userRole;
+        setRole(userRole); // Ensure the role is set in storage
       } catch (error) {
-        console.error('Error fetching sidebar items:', error);
+        console.error('Error fetching user role:', error);
       }
     }
 
-    // Call the function to fetch and update user role
-    await fetchAndUpdateUserRole();
+    // Function to fetch sidebar items based on the user's role
+    async function fetchSidebarItems() {
+      try {
+        const response = await fetch(`/auth/sidebar?role=${getRole()}`);
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
-    // Call the function to fetch and display sidebar items
-    await fetchSidebarItems();
+        const data = await response.json();
+        if (!data || !Array.isArray(data.sidebarItems)) throw new Error('Invalid sidebarItems structure');
+
+        const sidebarItems = data.sidebarItems;
+
+        // Show or hide sidebar links based on role access
+        document.querySelectorAll('.sub-menu a').forEach(link => {
+          link.style.display = sidebarItems.some(item => item.href === link.getAttribute('href')) ? 'block' : 'none';
+        });
+
+        // Show or hide sidebar titles
+        document.querySelectorAll('.title').forEach(title => {
+          title.style.display = sidebarItems.some(item => item.title === title.innerText.trim()) ? 'flex' : 'none';
+        });
+
+        // Show or hide sidebar menus
+        document.querySelectorAll('.menu').forEach(menu => {
+          menu.style.display = sidebarItems.some(item => item.menu === menu.innerText.trim()) ? 'flex' : 'none';
+        });
+
+        return sidebarItems; // Return for use in access enforcement
+      } catch (error) {
+        console.error('Error fetching sidebar items:', error);
+        return [];
+      }
+    }
+
+    // Function to enforce page access based on sidebar permissions
+    async function enforceSidebarAccess() {
+      try {
+        const sidebarItems = await fetchSidebarItems();
+        const currentPath = window.location.pathname;
+        if (currentPath === '/index') {
+          return;
+        }
+        // Redirect if the current page is not in allowed sidebar items
+        if (!sidebarItems.some(item => item.href === currentPath)) {
+          window.location.href = '/notaccessed';
+        }
+      } catch (error) {
+        console.error('Error enforcing sidebar access:', error);
+      }
+    }
+
+    // Execute role fetching and sidebar enforcement
+    await fetchAndUpdateUserRole();
+    await enforceSidebarAccess();
   });
 
   $(document).ready(function () {
-    // Fetch company details and set up the logout functionality
-    fetchCompanyDetails();
-
-    const logoutIcon = document.getElementById('logoutIcon');
-    if (logoutIcon) {
-      logoutIcon.addEventListener('click', function () {
-        localStorage.removeItem('userRole'); // Clear role information upon logout
-        sessionStorage.removeItem('userRole'); // Clear role information upon logout
-        window.location.href = '/logout';
-      });
-    }
-
+    // Function to fetch and display company details
     function fetchCompanyDetails() {
       $.ajax({
         url: '/auth/company/getcompany',
@@ -333,7 +319,7 @@
         dataType: 'json',
         success: function (response) {
           console.log('Company details response:', response);
-          if (response.data && response.data.length > 0) {
+          if (response.data?.length > 0) {
             $('#companyLogo').attr('src', response.data[0].logoSrc);
             $('#companyTitle').text(response.data[0].companyName);
           } else {
@@ -345,8 +331,19 @@
         }
       });
     }
+
+    // Call function to fetch company details
+    fetchCompanyDetails();
+
+    // Logout functionality
+    $('#logoutIcon').on('click', function () {
+      localStorage.removeItem('userRole');
+      sessionStorage.removeItem('userRole');
+      window.location.href = '/logout';
+    });
   });
 </script>
+
 
   </aside>
 

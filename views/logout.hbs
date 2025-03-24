@@ -31,7 +31,6 @@
             justify-content: center;
             text-align: center;
             align-items: center;
-            align-content: center;
             text-wrap: nowrap;
         }
 
@@ -73,22 +72,32 @@
         {{>footer}}
     </div>
 
-<script>
-    // Function to redirect to the login page
-    function redirectToLoginPage() {
-        window.location.href = '/'; // Replace '/' with your login page URL
-    }
-
-     // Prevent back navigation and force redirect
-        function preventBackNavigation() {
-            window.history.pushState(null, null, window.location.href);
-            window.onpopstate = function () {
-                window.history.go(1);
-            };
+    <script>
+        function redirectToLoginPage() {
+            window.location.href = '/'; // Redirect to login page
         }
 
-        preventBackNavigation();
-</script>
+        // ✅ Prevent back button access after logout
+        window.onload = function () {
+            sessionStorage.clear();
+            localStorage.clear();
+
+            // Remove cached pages
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                    for (let registration of registrations) {
+                        registration.unregister();
+                    }
+                });
+            }
+
+            history.pushState(null, null, location.href);
+            window.onpopstate = function () {
+                history.go(1);
+            };
+        };
+
+    </script>
 </body>
 
 </html>

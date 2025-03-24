@@ -50,7 +50,7 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-  
+    cookie: { secure: false },
   })
 );
 
@@ -61,15 +61,23 @@ const partialspath = path.join(__dirname, "./views/partials");
 hbs.registerPartials(partialspath);
 
 app.use((req, res, next) => {
-  if (req.session.user) {
-    req.session._garbage = Date();
-    req.session.touch(); 
-  }
+  res.setHeader(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate, proxy-revalidate"
+  );
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  res.setHeader("Surrogate-Control", "no-store");
   next();
 });
 
-app.use("/", require("./routes/pages"));
-app.use("/auth", require("./routes/auth"));
+
+const pagesRouter = require("./routes/pages"); // ✅ Ensure this is a router
+const authRouter = require("./routes/auth");   // ✅ Ensure this is a router
+
+app.use("/", pagesRouter); // ✅ Use the correct router
+app.use("/auth", authRouter); // ✅ Use the correct router
+
 
 // API endpoint to get user role (example)
 app.get("/api/user/role", (req, res) => {

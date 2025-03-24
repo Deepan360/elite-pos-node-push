@@ -39,3 +39,25 @@
   margin-right: 10px;
 }
 </style>
+<script>
+    document.getElementById("logoutIcon").addEventListener("click", async () => {
+        try {
+          const response = await fetch("/auth/logout", {
+            method: "GET", // You can also use POST if required
+            credentials: "same-origin" // Ensures cookies are sent
+          });
+
+          if (response.redirected) {
+            window.location.href = response.url; // Redirect to login page
+          } else {
+            alert("Logout failed. Please try again.");
+          }
+
+          // Clear client-side storage
+          sessionStorage.clear();
+          localStorage.clear();
+        } catch (error) {
+          console.error("Logout error:", error);
+        }
+      });
+</script>

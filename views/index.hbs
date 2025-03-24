@@ -830,3 +830,13 @@
     },
   });
 </script> --}}
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+      const userRole = sessionStorage.getItem("userRole");
+
+      // If no role found, force redirect to login page
+      if (!userRole && window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+    });
+</script>

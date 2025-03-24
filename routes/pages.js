@@ -2,6 +2,9 @@ const express=require("express");
 const { route } = require("./auth");
 const router=express.Router();
 
+const { isAuthenticated } = require("../middleware/auth"); // ✅ Ensure correct path
+
+
 router.get("/",(req,res)=>{
     res.render("login"); 
 });
@@ -11,8 +14,8 @@ router.get("/logout",(req,res)=>{
 router.get('/registration', (req, res) => {
     res.render('registration'); 
   });
-router.get("/index",(req,res)=>{
-    res.render("index");
+router.get("/index", isAuthenticated, (req, res) => {
+  res.render("index");
 });
 router.get("/sidebar",(req,res)=>{ 
     res.render("sidebar");
@@ -20,26 +23,26 @@ router.get("/sidebar",(req,res)=>{
 router.get("/navbar",(req,res)=>{
   res.render("navbar");
 });
-router.get("/city",(req,res)=>{
+router.get("/city", isAuthenticated, (req, res) => {
   res.render("city");
 });
-router.get("/state",(req,res)=>{
+router.get("/state", isAuthenticated, (req, res) => {
   res.render("state");
 });
 router.get("/color",(req,res)=>{
     res.render("color");
 });
-router.get('/company', (req, res) => {
-    res.render('company'); 
+router.get("/company", isAuthenticated, (req, res) => {
+  res.render("company");
+});
+   router.get("/accountconfiguration", isAuthenticated, (req, res) => {
+     res.render("accountconfiguration");
+   });
+  router.get("/user", isAuthenticated, (req, res) => {
+    res.render("user");
   });
-   router.get('/accountconfiguration', (req, res) => {
-    res.render('accountconfiguration'); 
-  });
-  router.get('/user', (req, res) => {
-    res.render('user'); 
-  });
-  router.get('/customer', (req, res) => {
-    res.render('customer'); 
+  router.get("/customer", isAuthenticated, (req, res) => {
+    res.render("customer");
   });
   router.post("/customer",(req,res)=>{
     res.render("customeradd");
@@ -47,11 +50,11 @@ router.get('/company', (req, res) => {
 router.put("/customer", (req, res) => {
     res.render("customeredit", { id: req.params.id });
 });
-router.get("/customer", (req, res) => {
-    res.render("customerdelete", { id: req.params.id });
+router.get("/customer", isAuthenticated, (req, res) => {
+  res.render("customerdelete", { id: req.params.id });
 });
-router.get('/manufacturer', (req, res) => {
-  res.render('manufacturer'); 
+router.get("/manufacturer", isAuthenticated, (req, res) => {
+  res.render("manufacturer");
 });
 router.post("/manufacturer",(req,res)=>{
   res.render("manufactureradd");
@@ -62,8 +65,8 @@ router.put("/manufacturer", (req, res) => {
 router.get("/manufacturer", (req, res) => {
   res.render("manufacturerdelete", { id: req.params.id });
 });
-router.get('/customerdisc', (req, res) => {
-  res.render('customerdisc'); 
+router.get("/customerdisc", isAuthenticated, (req, res) => {
+  res.render("customerdisc");
 });
 router.post("/customerdisc",(req,res)=>{
   res.render("customerdiscadd");
@@ -74,8 +77,8 @@ router.put("/customerdisc", (req, res) => {
 router.get("/customerdisc", (req, res) => {
   res.render("customerdiscdelete", { id: req.params.id });
 });
-router.get('/product', (req, res) => {
-  res.render('product'); 
+router.get("/product", isAuthenticated, (req, res) => {
+  res.render("product");
 });
 router.get('/product', (req, res) => {
   res.render('getproduct'); 
@@ -89,8 +92,8 @@ router.put("/product", (req, res) => {
 router.get("/product", (req, res) => {
   res.render("productdelete", { id: req.params.id });
 });
-router.get('/producttype', (req, res) => {
-  res.render('producttype'); 
+router.get("/producttype", isAuthenticated, (req, res) => {
+  res.render("producttype");
 });
 router.post("/producttype",(req,res)=>{
   res.render("producttypeadd");
@@ -104,7 +107,7 @@ router.get("/producttype", (req, res) => {
 router.get('/producttype/type', (req, res) => {
   res.render('gettype'); 
 });
-router.get("/drugtype", (req, res) => {
+router.get("/drugtype", isAuthenticated, (req, res) => {
   res.render("drugtype");
 });
 router.post("/drugtype", (req, res) => {
@@ -125,8 +128,8 @@ router.get('/productcategory/category', (req, res) => {
 router.get('/uom/getuom', (req, res) => {
   res.render('getuom'); 
 });
-router.get('/productcategory', (req, res) => {
-  res.render('productcategory'); 
+router.get("/productcategory", isAuthenticated, (req, res) => {
+  res.render("productcategory");
 });
 router.post("/productcategory",(req,res)=>{
   res.render("productcategory");
@@ -137,8 +140,8 @@ router.put("/productcategory", (req, res) => {
 router.get("/productcategory", (req, res) => {
   res.render("productcategorydelete", { id: req.params.id });
 });
-router.get('/uom', (req, res) => {
-  res.render('uom'); 
+router.get("/uom", isAuthenticated, (req, res) => {
+  res.render("uom");
 });
 router.post("/uom",(req,res)=>{
   res.render("uom");
@@ -149,8 +152,8 @@ router.put("/uom", (req, res) => {
 router.get("/uom", (req, res) => {
   res.render("uomdelete", { id: req.params.id });
 });
-router.get('/stockob', (req, res) => {
-  res.render('stockob'); 
+router.get("/stockob", isAuthenticated, (req, res) => {
+  res.render("stockob");
 });
 router.post("/stockob",(req,res)=>{
   res.render("stockob");
@@ -161,8 +164,8 @@ router.put("/stockob", (req, res) => {
 router.get("/stockob", (req, res) => {
   res.render("stockobdelete", { id: req.params.id });
 });
-router.get('/salesman', (req, res) => {
-  res.render('salesman'); 
+router.get("/salesman", isAuthenticated, (req, res) => {
+  res.render("salesman");
 });
 router.post("/salesman",(req,res)=>{
   res.render("salesman");
@@ -173,8 +176,8 @@ router.put("/salesman", (req, res) => {
 router.get("/salesman", (req, res) => {
   res.render("salesmandelete", { id: req.params.id });
 });
-router.get('/supplier', (req, res) => {
-  res.render('supplier'); 
+router.get("/supplier", isAuthenticated, (req, res) => {
+  res.render("supplier");
 });
 router.post("/supplier",(req,res)=>{
   res.render("supplier");
@@ -185,8 +188,8 @@ router.put("/supplier", (req, res) => {
 router.get("/supplier", (req, res) => {
   res.render("supplierdelete", { id: req.params.id });
 });
-router.get('/ledger', (req, res) => {
-  res.render('ledger'); 
+router.get("/ledger", isAuthenticated, (req, res) => {
+  res.render("ledger");
 });
 router.post("/ledger",(req,res)=>{
   res.render("ledger");
@@ -197,8 +200,8 @@ router.put("/ledger", (req, res) => {
 router.get("/ledger", (req, res) => {
   res.render("ledgerdelete", { id: req.params.id });
 });
-router.get('/subgroup', (req, res) => {
-  res.render('subgroup'); 
+router.get("/subgroup", isAuthenticated, (req, res) => {
+  res.render("subgroup");
 });
 router.post("/subgroup",(req,res)=>{
   res.render("subgroup");
@@ -209,8 +212,8 @@ router.put("/subgroup", (req, res) => {
 router.get("/subgroup", (req, res) => {
   res.render("subgroupdelete", { id: req.params.id });
 });
-router.get('/purchaseregister', (req, res) => {
-  res.render('purchaseregister'); 
+router.get("/purchaseregister", isAuthenticated, (req, res) => {
+  res.render("purchaseregister");
 }); 
 router.post("/purchaseregister",(req,res)=>{
   res.render("purchaseregister");
@@ -223,8 +226,8 @@ router.get("/purchaseregister", (req, res) => {
 });
 
 
-router.get('/Purchasereturnregister', (req, res) => {
-  res.render('Purchasereturnregister'); 
+router.get("/Purchasereturnregister", isAuthenticated, (req, res) => {
+  res.render("Purchasereturnregister");
 }); 
 router.post("/Purchasereturnregister",(req,res)=>{
   res.render("Purchasereturnregister");
@@ -235,8 +238,8 @@ router.put("/Purchasereturnregister", (req, res) => {
 router.get("/Purchasereturnregister", (req, res) => {
   res.render("Purchasereturnregisterdelete", { id: req.params.id });
 });
-router.get('/purchasedraftregister', (req, res) => {
-  res.render('purchasedraftregister'); 
+router.get("/purchasedraftregister", isAuthenticated, (req, res) => {
+  res.render("purchasedraftregister");
 }); 
 router.post("/purchasedraftregister",(req,res)=>{
   res.render("purchasedraftregister");
@@ -247,8 +250,8 @@ router.put("/purchasedraftregister", (req, res) => {
 router.get("/purchasedraftregister", (req, res) => {
   res.render("purchasedraftregisterdelete", { id: req.params.id });
 });
-router.get('/purchase', (req, res) => {
-  res.render('purchase'); 
+router.get("/purchase", isAuthenticated, (req, res) => {
+  res.render("purchase");
 });
 router.post("/purchase", (req, res) => {
   res.render("purchaseadd");
@@ -268,8 +271,8 @@ router.get("/purchase", (req, res) => {
 router.get("/purchase", (req, res) => {
   res.render("purchasetransdelete", { id: req.params.id });         
 });
-router.get('/multireceipt', (req, res) => {
-  res.render('multireceipt');
+router.get("/multireceipt", isAuthenticated, (req, res) => {
+  res.render("multireceipt");
 });
 router.post("/multireceipt",(req,res)=>{
   res.render("multireceipt");
@@ -287,8 +290,8 @@ router.get('/multireceipt/dr', (req, res) => {
 router.get('/multireceipt/cr', (req, res) => {
   res.render('getCr'); 
 });
-router.get('/multipayment', (req, res) => {
-  res.render('multipayment'); 
+router.get("/multipayment", isAuthenticated, (req, res) => {
+  res.render("multipayment");
 });
 router.post("/multipayment",(req,res)=>{
   res.render("multipayment");
@@ -305,8 +308,8 @@ router.get('/multipayment/dr', (req, res) => {
 router.get('/multipayment/cr', (req, res) => {
   res.render('getPaymentCr'); 
 });
-router.get('/receipt', (req, res) => {
-  res.render('receipt'); 
+router.get("/receipt", isAuthenticated, (req, res) => {
+  res.render("receipt");
 });
 router.post("/receipt",(req,res)=>{
   res.render("receipt");
@@ -324,8 +327,8 @@ router.get('/recipt/dr', (req, res) => {
 router.get('/recipt/cr', (req, res) => {
   res.render('receiptCr'); 
 });
-router.get('/payment', (req, res) => {
-  res.render('payment'); 
+router.get("/payment", isAuthenticated, (req, res) => {
+  res.render("payment");
 });
 router.post("/payment",(req,res)=>{
   res.render("payment");
@@ -342,14 +345,14 @@ router.get('/payment/dr', (req, res) => {
 router.get('/payment/cr', (req, res) => {
   res.render('paymentCr'); 
 });
-router.get('/ledgerob', (req, res) => {
-  res.render('ledgerob');
+router.get("/ledgerob", isAuthenticated, (req, res) => {
+  res.render("ledgerob");
 });
 router.get('/ledgerob', (req, res) => {
   res.render('ledgerData');
 });
-router.get('/journal', (req, res) => {
-  res.render('journal'); 
+router.get("/journal", isAuthenticated, (req, res) => {
+  res.render("journal");
 });
 router.post("/journal",(req,res)=>{
   res.render("journal");
@@ -363,8 +366,8 @@ router.get("/journal", (req, res) => {
 router.get('/journal/particulars', (req, res) => {
   res.render('journalparticulars'); 
 });
-router.get('/creditnote', (req, res) => {
-  res.render('creditnote'); 
+router.get("/creditnote", isAuthenticated, (req, res) => {
+  res.render("creditnote");
 });
 router.post("/creditnote",(req,res)=>{
   res.render("creditnote");
@@ -378,8 +381,8 @@ router.get("/creditnote", (req, res) => {
 router.get('/creditnote/particulars', (req, res) => {
   res.render('creditnoteparticulars'); 
 });
-router.get('/contra', (req, res) => {
-  res.render('contra'); 
+router.get("/contra", isAuthenticated, (req, res) => {
+  res.render("contra");
 });
 router.post("/contra",(req,res)=>{
   res.render("contra");
@@ -405,8 +408,8 @@ router.post('/purchase',(req,res)=>{
 router.post('/purchase',(req,res)=>{
   res.render('purchaseEdit');
 });
-router.get('/purchase',(req,res)=>{
-  res.render('purchase');
+router.get("/purchase", isAuthenticated, (req, res) => {
+  res.render("purchase");
 });
 router.get('/purchase/suppliername', (req, res) => {
   res.render('suppliername'); 
@@ -461,8 +464,8 @@ router.get('/company/updatecompany',(req,res)=>{
   res.render('updatecompany')
 })
 
-router.get('/purchasereturn', (req, res) => {
-  res.render('purchasereturn'); 
+router.get("/purchasereturn", isAuthenticated, (req, res) => {
+  res.render("purchasereturn");
 });
 router.post("/purchasereturn", (req, res) => {
   res.render("purchasereturnadd");
@@ -483,8 +486,8 @@ router.get("/purchasereturn", (req, res) => {
   res.render("purchasereturntransdelete", { id: req.params.id });         
 });
 
-router.get('/sales', (req, res) => {
-  res.render('sales'); 
+router.get("/sales", isAuthenticated, (req, res) => {
+  res.render("sales");
 });
 router.post("/sales", (req, res) => {
   res.render("salesadd");
@@ -507,14 +510,14 @@ router.get("/sales", (req, res) => {
 router.get("/sales", (req, res) => {
   res.render("salestransdelete", { id: req.params.id });         
 });
-router.get('/salesregister', (req, res) => {
-  res.render('salesregister'); 
+router.get("/salesregister", isAuthenticated, (req, res) => {
+  res.render("salesregister");
 });
 router.get('/sales', (req, res) => {
   res.render('batchDetails', { id:  req.body }); 
 });
-router.get('/salesReturn', (req, res) => {
-  res.render('salesReturn'); 
+router.get("/salesReturn", isAuthenticated, (req, res) => {
+  res.render("salesReturn");
 });
 router.post("/salesReturn", (req, res) => {
   res.render("salesReturnadd");
@@ -543,97 +546,97 @@ router.get('/salesReturn', (req, res) => {
 router.get('/header', (req, res) => {
   res.render('companyTitle'); 
 });
-router.get('/gstpurchase',(req,res) => {
-  res.render('gstpurchase');
+router.get("/gstpurchase", isAuthenticated, (req, res) => {
+  res.render("gstpurchase");
 });
-router.get('/gstsales',(req,res) => {
-  res.render('gstsales');
+router.get("/gstsales", isAuthenticated, (req, res) => {
+  res.render("gstsales");
 });
-router.get('/hsnpurchase',(req,res) => {
-  res.render('hsnpurchase');
+router.get("/hsnpurchase", isAuthenticated, (req, res) => {
+  res.render("hsnpurchase");
 });
-router.get('/hsnsales',(req,res) => { 
-  res.render('hsnsales'); 
+router.get("/hsnsales", isAuthenticated, (req, res) => {
+  res.render("hsnsales");
+});
+router.get("/balancesheet", isAuthenticated, (req, res) => {
+  res.render("balancesheet");
+});
+router.get("/profitandloss", isAuthenticated, (req, res) => {
+  res.render("profitandloss");
+});
+router.get("/trailbalance", isAuthenticated, (req, res) => {
+  res.render("trailbalance");
+});
+router.get("/creditbook", isAuthenticated, (req, res) => {
+  res.render("creditbook");
+});
+  router.get("/journalbook", isAuthenticated, (req, res) => {
+    res.render("journalbook");
   });
-router.get('/balancesheet',(req,res) => {
-  res.render('balancesheet'); 
+router.get("/daybook", isAuthenticated, (req, res) => {
+  res.render("daybook");
 });
-router.get('/profitandloss',(req,res)=>{
-  res.render('profitandloss');
+router.get("/cashbook", isAuthenticated, (req, res) => {
+  res.render("cashbook");
 });
-router.get('/trailbalance',(req,res)=>{
-res.render('trailbalance');
+router.get("/bankbook", isAuthenticated, (req, res) => {
+  res.render("bankbook");
 });
-router.get('/creditbook',(req,res)=>{
-res.render('creditbook');
-  });
-  router.get('/journalbook',(req,res)=>{
-    res.render('journalbook');
-      });
-router.get('/daybook',(req,res)=>{
-  res.render('daybook');
+router.get("/ledgerbook", isAuthenticated, (req, res) => {
+  res.render("ledgerbook");
 });
-router.get('/cashbook',(req,res)=>{
-  res.render('cashbook');
+router.get("/billwise", isAuthenticated, (req, res) => {
+  res.render("billwise");
 });
-router.get('/bankbook',(req,res)=>{
-  res.render('bankbook');
+router.get("/salesoutstanding", isAuthenticated, (req, res) => {
+  res.render("salesoutstanding");
 });
-router.get('/ledgerbook',(req,res)=>{
-  res.render('ledgerbook');
+router.get("/purchaseoutstanding", isAuthenticated, (req, res) => {
+  res.render("purchaseoutstanding");
 });
-router.get('/billwise',(req,res)=>{
-  res.render('billwise');
+router.get("/productwisepurcsale", isAuthenticated, (req, res) => {
+  res.render("productwisepurcsale");
 });
-router.get('/salesoutstanding',(req,res)=>{
-  res.render('salesoutstanding');
+router.get("/productwisepurcsale", isAuthenticated, (req, res) => {
+  res.render("productwisepurcsale");
 });
-router.get('/purchaseoutstanding',(req,res)=>{
-  res.render('purchaseoutstanding');
+router.get("/productwisepurcsale", isAuthenticated, (req, res) => {
+  res.render("productwisepurcsale");
 });
-router.get('/productwisepurcsale',(req,res)=>{
-  res.render('productwisepurcsale');
+router.get("/productwisepurcsale", isAuthenticated, (req, res) => {
+  res.render("productwisepurcsale");
 });
-router.get('/productwisepurcsale',(req,res)=>{
-  res.render('productwisepurcsale');
+router.get("/productwisepurcsale", isAuthenticated, (req, res) => {
+  res.render("productwisepurcsale");
 });
-router.get('/productwisepurcsale',(req,res)=>{
-  res.render('productwisepurcsale');
+router.get("/currentstock", isAuthenticated, (req, res) => {
+  res.render("currentstock");
 });
-router.get('/productwisepurcsale',(req,res)=>{
-  res.render('productwisepurcsale');
-});
-router.get('/productwisepurcsale',(req,res)=>{
-  res.render('productwisepurcsale');
-});
-router.get('/currentstock',(req,res)=>{
-  res.render('currentstock');
-});
-router.get('/stocksummary',(req,res)=>{
-  res.render('stocksummary');
+router.get("/stocksummary", isAuthenticated, (req, res) => {
+  res.render("stocksummary");
 }); 
-router.get('/batchsummary',(req,res)=>{
-  res.render('batchsummary');
+router.get("/batchsummary", isAuthenticated, (req, res) => {
+  res.render("batchsummary");
 });
-router.get('/stockanalysis',(req,res)=>{
-  res.render('stockanalysis');
+router.get("/stockanalysis", isAuthenticated, (req, res) => {
+  res.render("stockanalysis");
 });
-router.get('/purchaseprintpage',(req,res)=>{
-    res.render('purchaseprintpage');
+router.get("/purchaseprintpage", isAuthenticated, (req, res) => {
+  res.render("purchaseprintpage");
 });
-router.get('/salesprintpage',(req,res)=>{
-  res.render('salesprintpage');
+router.get("/salesprintpage", isAuthenticated, (req, res) => {
+  res.render("salesprintpage");
 });
-router.get("/salesretailprint", (req, res) => {
+router.get("/salesretailprint", isAuthenticated, (req, res) => {
   res.render("salesretailprint");
 });
-router.get('/menuaccesscontrol',(req,res)=>{
-  res.render('menuaccesscontrol');  
+router.get("/menuaccesscontrol", isAuthenticated, (req, res) => {
+  res.render("menuaccesscontrol");
 });
-router.get("/salesretail", (req, res) => {
+router.get("/salesretail", isAuthenticated, (req, res) => {
   res.render("salesretail");
 });
-router.get("/salesdraftregister", (req, res) => {
+router.get("/salesdraftregister", isAuthenticated, (req, res) => {
   res.render("salesdraftregister");
 });
 router.get("/restricted", (req, res) => {
@@ -678,7 +681,7 @@ router.get("/sales", (req, res) => {
 router.get("/molecules", (req, res) => {
   res.render("molecules");
 });
-router.post("/molecules", (req, res) => {  
+router.post("/molecules", isAuthenticated, (req, res) => {
   res.render("molecules");
 });
 router.put("/molecules", (req, res) => {
@@ -687,7 +690,7 @@ router.put("/molecules", (req, res) => {
 router.get("/molecules", (req, res) => {
   res.render("moleculesdelete", { id: req.params.id });
 });
-router.get("/combinedmolecules", (req, res) => {
+router.get("/combinedmolecules", isAuthenticated, (req, res) => {
   res.render("combinedmolecules");
 });
 router.post("/combinedmolecules", (req, res) => {
@@ -699,7 +702,7 @@ router.put("/combinedmolecules", (req, res) => {
 router.get("/combinedmolecules", (req, res) => {
   res.render("combinedmoleculesdelete", { id: req.params.id });
 });
-router.get("/package", (req, res) => {
+router.get("/package", isAuthenticated, (req, res) => {
   res.render("package");
 });
 router.post("/package", (req, res) => {
@@ -717,7 +720,7 @@ router.get("/product", (req, res) => {
 router.get("/salesreturnretail", (req, res) => {
   res.render("salesreturnretail");
 });
-router.get("/salesretailreturn", (req, res) => {
+router.get("/salesretailreturn", isAuthenticated, (req, res) => {
   res.render("salesretailreturn");
 });
 router.post("/salesretailreturn", (req, res) => {
@@ -741,7 +744,7 @@ router.get("/salesretailreturn", (req, res) => {
 router.get("/salesretailreturndraft", (req, res) => {
   res.render("salesretailreturndraft");
 });
-router.get("/salesretailreturnregister", (req, res) => {
+router.get("/salesretailreturnregister", isAuthenticated, (req, res) => {
   res.render("salesretailreturnregister");
 });
 router.get("/salesretailreturn", (req, res) => {
@@ -757,10 +760,10 @@ router.get("/salesretail/checkMobileNumber", (req, res) => {
   console.log("Request received to check mobile number:", req.query.mobileNo); // Add this log
  res.render("checkMobileNumber");
 });
-router.get("/producthistory", (req, res) => {
+router.get("/producthistory", isAuthenticated, (req, res) => {
   res.render("producthistory");
 });
-router.get("/drugreport", (req, res) => {
+router.get("/drugreport", isAuthenticated, (req, res) => {
   res.render("drugreport");
 });
 router.get("/checkMobileNumberavini", (req, res) => {
@@ -777,7 +780,7 @@ router.get("/checkMobileNumberClinic", (req, res) => {
 router.post("/addCustomerClinic", (req, res) => {
   res.render("addCustomerClinic");
 });
-  router.get("/regmember", (req, res) => {
+  router.get("/regmember", isAuthenticated, (req, res) => {
     res.render("regmember");
   });
   router.post("/regmember", (req, res) => {
@@ -789,19 +792,34 @@ router.post("/addCustomerClinic", (req, res) => {
   router.get("/regmember", (req, res) => {
     res.render("regmemberdelete", { id: req.params.id });
   });
-router.get("/inpatientbilling", (req, res) => {
+router.get("/inpatientbilling", isAuthenticated, (req, res) => {
   res.render("inpatientbilling");
 });
-router.get("/inpatientreg", (req, res) => {
+router.get("/inpatientreg", isAuthenticated, (req, res) => {
   res.render("inpatientreg");
 });
-router.get("/inpatientdraft", (req, res) => {
+router.get("/inpatientdraft", isAuthenticated, (req, res) => {
   res.render("inpatientdraft");
 });
-router.get("/inpatientbillprint", (req, res) => {
+router.get("/inpatientbillprint", isAuthenticated, (req, res) => {
   res.render("inpatientbillprint");
 });
-
+router.post("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Error destroying session:", err);
+      return res.status(500).json({ success: false, msg: "Logout failed" });
+    }
+    res.clearCookie("connect.sid"); // Clear session cookie
+    res.redirect("/"); // Redirect to login page
+  });
+});
+router.get("/restricted", (req, res) => {
+  res.render("restricted");
+});
+router.get("/notaccessed", (req, res) => {
+  res.render("notaccessed");
+});
 
 
 module.exports=router;     

@@ -1,12 +1,8 @@
 const sql = require("mssql");
 const bcrypt = require("bcrypt");
-
 const jwt = require("jsonwebtoken");
-
 const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
-
-
 
 const config = {
   user: process.env.DB_USER,
@@ -1164,7 +1160,6 @@ async function increaseRetailStock(
   }
 }
 
-
 // async function reduceStock(productId, quantity,batchNo) {
 //   try {
 //     await pool.query`
@@ -1699,9 +1694,6 @@ exports.deleteRegCustomer = async (req, res) => {
   }
 };
 
-
-
-
 ///avinilabs
 
 exports.checkMobileNumberavini = (req, res) => {
@@ -1744,7 +1736,6 @@ exports.checkMobileNumberavini = (req, res) => {
       });
     });
 };
-
 
 exports.addCustomeravini = async (req, res) => {
   const { customername, mobileno, dob, gender, address, city, state } =
@@ -11926,72 +11917,76 @@ async function getSidebarItemsForRole(roleName) {
 
 exports.sidebar = async (req, res) => {
   try {
-    const roleName = req.session.userRole;
-    console.log("Received role name:", roleName);
-    if (!roleName) {
-      throw new Error("Role name is undefined or empty.");
+    if (!req.session.userRole) {
+      return res.status(403).json({ error: "Access denied" });
     }
-    const sidebarItems = await getSidebarItemsForRole(roleName);
-    res.status(200).json({ sidebarItems, role: roleName });
+    const sidebarItems = await getSidebarItemsForRole(req.session.userRole);
+    res.status(200).json({ sidebarItems, role: req.session.userRole });
   } catch (error) {
-    console.error(
-      "An error occurred while fetching sidebar items:",
-      error.message
-    );
-    return res.status(500).json({ error: "Internal server error" });
+    console.error("Error fetching sidebar:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
 exports.login = async (req, res) => {
   try {
     await poolConnect();
-    const emailid = req.body.emailid;
-    const password = req.body.password;
-    console.log("Checking if email is already taken");
-    const emailCheckResult =
+    const { emailid, password } = req.body;
+    console.log("Checking user credentials...");
+
+    // Fetch user details from DB
+    const userQuery =
       await pool.query`SELECT ID, emailid, password, role FROM [elite_pos].[dbo].[registeration] WHERE emailid = ${emailid}`;
-    console.log("Email check result:", emailCheckResult);
-    if (emailCheckResult.recordset.length <= 0) {
-      return res.status(401).render("login", {
-        msg: "Email or password incorrect",
-        msg_type: "error",
-      });
+
+    if (userQuery.recordset.length === 0) {
+      return res
+        .status(401)
+        .json({ msg: "Email or password incorrect", success: false });
     }
-    const user = emailCheckResult.recordset[0];
-    const hashedPasswordFromDB = user.password;
-    console.log("Hashed Password from the Database:", hashedPasswordFromDB);
-    console.log("Given Password:", password);
-    const isPasswordValid = await bcrypt.compare(
-      password,
-      hashedPasswordFromDB
-    );
-    if (!password || !isPasswordValid) {
-      return res.status(401).render("login", {
-        msg: "Email or password incorrect",
-        msg_type: "error",
-      });
+
+    const user = userQuery.recordset[0];
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res
+        .status(401)
+        .json({ msg: "Email or password incorrect", success: false });
     }
-    const roleId = user.role;
-    if (!roleId) {
-      throw new Error("Role ID not found for the user.");
-    }
-    const roleResult = await pool
+
+    // Get role name from role table
+    const roleQuery = await pool
       .request()
-      .input("roleId", sql.Int, roleId)
+      .input("roleId", sql.Int, user.role)
       .query("SELECT role FROM [role] WHERE id = @roleId");
-    const roleName = roleResult.recordset[0].role;
+
+    if (roleQuery.recordset.length === 0) {
+      throw new Error("Role not found for user.");
+    }
+
+    const roleName = roleQuery.recordset[0].role;
     console.log("User Role:", roleName);
+
+    // Store session data
     req.session.userRole = roleName;
-    req.session.save(() => {
-      res.redirect(`/index`);
+    req.session.userId = user.ID;
+
+    // Get sidebar items based on role
+    const sidebarItems = await getSidebarItemsForRole(roleName);
+
+    res.status(200).json({
+      success: true,
+      msg: "Login successful",
+      role: roleName,
+      sidebarItems,
     });
   } catch (error) {
-    console.error("An error occurred:", error.message);
+    console.error("Login error:", error.message);
     return res
       .status(500)
-      .render("login", { msg: "Internal server error", msg_type: "error" });
+      .json({ msg: "Internal server error", success: false });
   }
 };
+
 
 /*login*/
 

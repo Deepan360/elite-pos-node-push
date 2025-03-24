@@ -13,14 +13,12 @@
     font-size: 16px;
   }
 
-  /* Hiding the left side on mobile devices */
   @media (max-width: 991.98px) {
     .col-6 {
       display: none !important;
     }
   }
 
-  /* Styling the login form for smaller screens */
   @media (max-width: 575.98px) {
     .card-plain {
       width: 100%;
@@ -42,7 +40,7 @@
     <div class="page-header min-vh-100">
       <div class="container">
         <div class="row">
-          <!-- Login Form (Visible on all screens) -->
+          <!-- Login Form -->
           <div class="col-xl-4 col-lg-5 col-md-7 d-flex flex-column mx-lg-0 mx-auto order-1 order-lg-2">
             <div class="card-plain card">
               <div class="card-header pb-0 text-start">
@@ -50,14 +48,14 @@
                 <p class="mb-0">Enter your email and password to sign in</p>
               </div>
               <div class="card-body">
-                <form action="/auth/login" method="post">
+                <form id="loginForm">
                   <div class="mb-3">
-                    <input type="text" class="form-control form-control-lg" id="emailid" name="emailid" placeholder="Email"
-                      aria-label="Email">
+                    <input type="text" class="form-control form-control-lg" id="emailid" name="emailid"
+                      placeholder="Email" required>
                   </div>
                   <div class="mb-3 password-container">
                     <input type="password" class="form-control form-control-lg" id="password" name="password"
-                      placeholder="Password" aria-label="Password">
+                      placeholder="Password" required>
                     <i class="far fa-eye" id="togglePassword"></i>
                   </div>
                   <div class="text-center">
@@ -70,11 +68,12 @@
               </div>
             </div>
           </div>
-          <!-- Left Side Design (Visible on larger screens) -->
+
+          <!-- Left Side Image (Hidden on Mobile) -->
           <div
             class="col-6 d-lg-flex d-none h-100 my-auto pe-0 position-absolute top-0 end-0 text-center justify-content-center flex-column">
             <div
-              class="position-relative h-100 m-3 bg-gradient-primary  px-7 border-radius-lg d-flex flex-column justify-content-center overflow-hidden"
+              class="position-relative h-100 m-3 bg-gradient-primary px-7 border-radius-lg d-flex flex-column justify-content-center overflow-hidden"
               style="background-color: #1e1e2d;">
               <div class="content-left">
                 <h4 class="text-white font-weight-bolder mt-5">Welcome to Our Platform</h4>
@@ -84,38 +83,40 @@
             </div>
           </div>
 
-
         </div>
       </div>
     </div>
   </section>
 </main>
-    <script>
-    document.getElementById("login-form").addEventListener("submit", function(event) {
-        event.preventDefault(); // Prevent the default form submission behavior.
 
-        // Get the values entered in the "username" and "password" input fields.
-        const username = document.getElementById("userid").value;
-        const password = document.getElementById("password").value;
-
-        if (username === "user123" && password === "pass@123") {
-            // Redirect to the success page upon successful login.
-            window.location.href = "/index";
-        } else {
-            // Display an error message if login is not successful.
-            const errorMessage = document.getElementById("error-message");
-         errorMessage.innerHTML = "Invalid username or password. Please try again." ;
-         errorMessage.style.display = "block"; 
-        }
-    });
-</script>
+<!-- 🚀 Login Script -->
 <script>
-    document.getElementById('togglePassword').addEventListener('click', function (e) {
-      const password = document.getElementById('password');
-      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-      password.setAttribute('type', type);
-      this.classList.toggle('fa-eye-slash');
-    });
-      // Check if user is logged in
+  document.getElementById("loginForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-  </script>
+    const emailid = document.getElementById("emailid").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    const response = await fetch("/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ emailid, password }),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      sessionStorage.setItem("userRole", result.role);
+      sessionStorage.setItem("sidebarItems", JSON.stringify(result.sidebarItems));
+      window.location.href = "/index"; // ✅ Redirect on success
+    } else {
+      alert(result.msg);
+    }
+  });
+
+  document.getElementById('togglePassword').addEventListener('click', function () {
+    const password = document.getElementById('password');
+    password.type = password.type === "password" ? "text" : "password";
+    this.classList.toggle('fa-eye-slash');
+  });
+</script>

@@ -814,16 +814,27 @@ router.post("/logout", (req, res) => {
     res.redirect("/"); // Redirect to login page
   });
 });
+
 router.get("/restricted", (req, res) => {
   res.render("restricted");
 });
+
 router.get("/notaccessed", (req, res) => {
   res.render("notaccessed");
 });
 
 //if page not found then render this page
-// router.use("/pagenotfound ",(req, res) => {
-//   res.status(404).render("pagenotfound");
+// router.use((req, res, next) => {
+//   if (!res.headersSent) {
+//     if (req.originalUrl === "/index" && !req.isAuthenticated()) {
+//       return res.redirect("/"); // Redirect to login page if not authenticated
+//     }
+//     res.status(404).render("pagenotfound");
+//   } else {
+//     next();
+//   } 
 // });
+
+
 
 module.exports=router;     

@@ -185,7 +185,6 @@
     <!-- Datepicker Initialization -->
     <script>
 
-        
     async function generateGSTReport() {
         const fromDate = $("#fromDate").val();
         const toDate = $("#toDate").val();
@@ -226,7 +225,6 @@
     // Button Click Event
     $("#download-gst-report").on("click", generateGSTReport);
 
-
         $(document).ready(function () {
             $("#fromDate, #toDate").datepicker({
                 dateFormat: "yy-mm-dd", // Format that matches SQL Date format
@@ -234,7 +232,6 @@
                 changeYear: true
             });
         });
-
 
         var table = $("#customerTable").DataTable({
             ajax: {

@@ -889,7 +889,7 @@ div.dt-buttons>div.dt-button-split .dt-button {
   left: 0;
   width: 100%;
   height: 4px;
-  background: linear-gradient(to right, #4e54c8, #5e72e4);
+  background: linear-gradient(to right, #1e1d5e, #529999);
   z-index: 9999;
   animation: loading-animation 2s ease-in-out;
 }

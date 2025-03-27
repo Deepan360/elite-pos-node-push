@@ -1,9 +1,7 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
  {{>header}}
-
     <style>
    #purchaseFormContainer {
     display: none;
@@ -16,8 +14,6 @@
     z-index: 1001; /* Ensure the popup is above the blurred background */
     border-radius: 10px;
 }
-
-
 .new-row {
         display: none;
     }
@@ -30,8 +26,8 @@
     width: 200px; /* Adjust the width as needed */
     padding: 5px; ;
 }
-        .editForm {
-              display: none;
+    .editForm {
+    display: none;
     position: fixed;
     top: 50%;
     left: 50%;
@@ -41,11 +37,9 @@
     z-index: 1001; /* Ensure the popup is above the blurred background */
     border-radius: 10px;
         }
-
         .container {
             margin-left: 20%;
         }
-
         .updateManufacturer {
             background-color: rgba(50, 141, 168) !important;
             color: white !important;
@@ -54,7 +48,6 @@
             width: 80px !important;
             height: 30px;
         }
-
         .closeForm {
             background-color: rgba(50, 141, 168) !important;
             color: white !important;
@@ -67,7 +60,6 @@
         button {
             margin: 1px;
         }
-
         #message {
             display: none;
             position: fixed;
@@ -88,28 +80,24 @@
             border-radius: 8px;
             overflow: hidden;
         }
-
         form input {
             margin: 2px;
         }
-
         form button {
             width: 100px !important;
             padding: 5px;
             margin: 5px;
         }
-
         .col input {
             width: 100%;
         }
-
         input[type=checkbox] {
             width: 100px;
             color: #8f8f8f !important;
         }
         #submitButton {
-    display: none;
-} 
+            display: none;
+     } 
     </style>
     <style>
         .align-right-top {
@@ -118,7 +106,6 @@
             right: 0;
             margin: 10px;
         }
-
     </style>
 </head>
 <body class="g-sidenav-show   bg-gray-100">
@@ -184,7 +171,7 @@
     scrollX: '100px',
     scrollCollapse: true,
     responsive: true,
-     "bInfo": true, // Show information (records, etc.)
+    "bInfo": true, // Show information (records, etc.)
     "bBorders": true, // Show borders
 });
     </script>

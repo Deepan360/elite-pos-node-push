@@ -1,45 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
- {{>header}}
-    <style>
-   #purchaseFormContainer {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #8f8f8f;
-    padding: 20px;
-    z-index: 1001; /* Ensure the popup is above the blurred background */
-    border-radius: 10px;
-}
-.new-row {
-        display: none;
-    }
-.input-field.product-name {
-    width: 200px; /* Adjust the width as needed */
-    padding: 5px; ;
-}
 
-.input-field.disc-mode {
-    width: 200px; /* Adjust the width as needed */
-    padding: 5px; ;
-}
-    .editForm {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #8f8f8f;
-    padding: 20px;
-    z-index: 1001; /* Ensure the popup is above the blurred background */
-    border-radius: 10px;
+<head>
+    {{>header}}
+
+    <style>
+        #purchaseFormContainer {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #8f8f8f;
+            padding: 20px;
+            z-index: 1001;
+            /* Ensure the popup is above the blurred background */
+            border-radius: 10px;
         }
+
+
+        .new-row {
+            display: none;
+        }
+
+        .input-field.product-name {
+            width: 200px;
+            /* Adjust the width as needed */
+            padding: 5px;
+            ;
+        }
+
+        .input-field.disc-mode {
+            width: 200px;
+            /* Adjust the width as needed */
+            padding: 5px;
+            ;
+        }
+
+        .editForm {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #8f8f8f;
+            padding: 20px;
+            z-index: 1001;
+            /* Ensure the popup is above the blurred background */
+            border-radius: 10px;
+        }
+
         .container {
             margin-left: 20%;
         }
+
         .updateManufacturer {
             background-color: rgba(50, 141, 168) !important;
             color: white !important;
@@ -48,6 +62,7 @@
             width: 80px !important;
             height: 30px;
         }
+
         .closeForm {
             background-color: rgba(50, 141, 168) !important;
             color: white !important;
@@ -60,6 +75,7 @@
         button {
             margin: 1px;
         }
+
         #message {
             display: none;
             position: fixed;
@@ -80,24 +96,29 @@
             border-radius: 8px;
             overflow: hidden;
         }
+
         form input {
             margin: 2px;
         }
+
         form button {
             width: 100px !important;
             padding: 5px;
             margin: 5px;
         }
+
         .col input {
             width: 100%;
         }
+
         input[type=checkbox] {
             width: 100px;
             color: #8f8f8f !important;
         }
+
         #submitButton {
             display: none;
-     } 
+        }
     </style>
     <style>
         .align-right-top {
@@ -108,10 +129,11 @@
         }
     </style>
 </head>
+
 <body class="g-sidenav-show   bg-gray-100">
-{{>sidebar}}
-  <main class="main-content position-relative border-radius-lg ">
-{{>navbar}}
+    {{>sidebar}}
+    <main class="main-content position-relative border-radius-lg ">
+        {{>navbar}}
         <div class="table-responsive container-fluid py-4">
             <div class="form-control card">
                 <h3>HSN Sales</h3>
@@ -125,185 +147,156 @@
                         <button class="btn btn-primary" id="clear-button">Clear</button>
                     </div>
                 </div>
+                <div class="fetch-data">
+                    <button id="download-gst-report" class="btn btn-success btn-gst ">Download GST Report</button>
+                
+</div>
                 <form action="/auth/customer" method="get">
-                    <table id="customerTable" class="table-responsive justify-content-between align-items-end" style="width:100% !important">
+                    <table id="customerTable" class="table-responsive justify-content-between align-items-end"
+                        style="width:100% !important">
                         <thead>
-                     <tr>
-                        <th>HSN Code</th>
-                        <th>Product Name</th>
-                        <th>Tax Rate</th>
-                        <th>Discount</th>
-                        <th>Taxable Value</th>
-                        <th>Net Amount</th>
-                    </tr>
-                </thead>
-                <tbody >
-                    <!-- Add your data rows here -->
-                </tbody>
+                            <tr>
+                                <th>HSN Code</th>
+                                <th>Product Name</th>
+                                <th>Customer Name</th>
+                                <th>Bill Id</th>
+                                <th>Bill Date</th>
+                                <th>Quantity</th>
+                                <th>Tax Rate</th>
+                                <th>Discount</th>
+                                <th>CGST</th>
+                                <th>SGST</th>
+                                <th>IGST</th>
+                                <th>Total Taxable Amount</th> 
+                                <th>Total Amount</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Add your data rows here -->
+                        </tbody>
                     </table>
                 </form>
             </div>
         </div>
-  {{>footer}}
-  </main> 
-  {{>color}}
+        {{>footer}}
+    </main>
+    {{>color}}
+    <!-- Datepicker Initialization -->
     <script>
-      var table = $("#customerTable").DataTable({
-         debug: true,
-     ajax: {
-        'url': '/auth/hsnPurchase',
-        'dataType': 'json',
-        'dataSrc': 'data',
-         type: 'GET', // Adjust 'rows' based on your server response structure
-    },
-    columns: [
-        { data: 'hsnCode' },
-        { data: 'productname' },
-        { data: 'tax_Rate' },
-        { data: 'discount' },
-        { data: 'Total_Taxable_Amount' },
-        { data: 'total_net_amount'},
-            ],
-    dom: 'Bfrtip',
-    buttons: ['copy', 'excel', 'pdf', 'csv'],
-    paging: false,
-    scrollY: '550px',
-    scrollX: '100px',
-    scrollCollapse: true,
-    responsive: true,
-    "bInfo": true, // Show information (records, etc.)
-    "bBorders": true, // Show borders
-});
-    </script>
-      <script>
-        document.getElementById("filter-button").addEventListener("click", function() {
-            var fromDate = new Date(document.getElementById("fromDate").value);
-            var toDate = new Date(document.getElementById("toDate").value);
-            var table = document.getElementById("productTable");
-            var rows = table.getElementsByTagName("tr");
 
-            for (var i = 1; i < rows.length; i++) {
-                var cell = rows[i].getElementsByTagName("td")[0];
-                if (cell) {
-                    var cellDate = new Date(cell.innerText);
-                    if (cellDate >= fromDate && cellDate <= toDate) {
-                        rows[i].style.display = "";
-                    } else {
-                        rows[i].style.display = "none";
-                    }
-                }
-            }
-        });
-    </script>
-
-      <script>
-        document.getElementById("filter-button").addEventListener("click", function() {
-            var fromDate = new Date(document.getElementById("fromDate").value);
-            var toDate = new Date(document.getElementById("toDate").value);
-            var table = document.getElementById("contraTable");
-            var rows = table.getElementsByTagName("tr");
-
-            for (var i = 1; i < rows.length; i++) {
-                var cell = rows[i].getElementsByTagName("td")[0];
-                if (cell) {
-                    var cellDate = new Date(cell.innerText);
-                    if (cellDate >= fromDate && cellDate <= toDate) {
-                        rows[i].style.display = "";
-                    } else {
-                        rows[i].style.display = "none";
-                    }
-                }
-            }
-            if (!hasData) {
-                noDataRow.style.display = "block";
-            } else {
-                noDataRow.style.display = "none";
-            }
-        });
         
-    </script>
- <script>
-  $( function() {
-    $( "#fromDate" ).datepicker();
-  } );
-  </script>
- <script>
-  $( function() {
-    $( "#toDate" ).datepicker();
-  } );
-  </script>
-<script>
+    async function generateGSTReport() {
+        const fromDate = $("#fromDate").val();
+        const toDate = $("#toDate").val();
 
- document.getElementById("clear-button").addEventListener("click", function () {
-        clearFilters();
-    });
+        console.log("Generating GST Report for:", fromDate, "to", toDate);
 
-  function clearFilters() {
-        var table = document.getElementById("customerTable");
-        var rows = table.getElementsByTagName("tr");
+        try {
+            // Fetch data from APIs
+            const taxSlabData = await $.get("/auth/GetHSNSales_TaxSlab", { fromDate, toDate });
+            console.log("Tax Slab Data:", taxSlabData);
 
-        for (var i = 1; i < rows.length; i++) {
-            rows[i].style.display = "";
+            const billRangeData = await $.get("/auth/GetHSNSales_BillRange", { fromDate, toDate });
+            console.log("Bill Range Data:", billRangeData);
+
+            const hsnData = await $.get("/auth/GetHSNSales_HSNWise", { fromDate, toDate });
+            console.log("HSN Data:", hsnData);
+
+            // Ensure response format is correct
+            const ws1 = XLSX.utils.json_to_sheet(hsnData.data || hsnData);
+            const ws2 = XLSX.utils.json_to_sheet(billRangeData.data || billRangeData);
+            const ws3 = XLSX.utils.json_to_sheet(taxSlabData.data || taxSlabData);
+
+            // Create a workbook and append sheets
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws1, "HSN-Wise Report");
+            XLSX.utils.book_append_sheet(wb, ws2, "Bill Range Summary");
+            XLSX.utils.book_append_sheet(wb, ws3, "Tax Slab Summary");
+
+            // Export the workbook
+            XLSX.writeFile(wb, `GST_Report_${fromDate}_to_${toDate}.xlsx`);
+
+            console.log("GST Report Generated Successfully!");
+        } catch (error) {
+            console.error("Error generating report:", error);
         }
-
-        // Check if noDataRow is defined before accessing it
-        var noDataRow = document.getElementById("noDataRow");
-        if (noDataRow) {
-            noDataRow.style.display = "none";
-        }
-
-        // Clear the values of the input fields
-        document.getElementById("fromDate").value = "";
-        document.getElementById("toDate").value = "";
     }
 
-    document.getElementById("filter-button").addEventListener("click", function() {
-        var fromDate = new Date(document.getElementById("fromDate").value);
-        var toDate = new Date(document.getElementById("toDate").value);
-        var table = document.getElementById("customerTable");
-        var rows = table.getElementsByTagName("tr");
-        var hasData = false;
+    // Button Click Event
+    $("#download-gst-report").on("click", generateGSTReport);
 
-        console.log('From Date:', fromDate);
-        console.log('To Date:', toDate);
 
-        for (var i = 1; i < rows.length; i++) {
-            var cell = rows[i].getElementsByTagName("td")[1]; // Assuming "Recipt Date" is the second column
-            if (cell) {
-                var cellContent = cell.innerText.trim();
+        $(document).ready(function () {
+            $("#fromDate, #toDate").datepicker({
+                dateFormat: "yy-mm-dd", // Format that matches SQL Date format
+                changeMonth: true,
+                changeYear: true
+            });
+        });
 
-                // Try to extract a valid date using moment.js
-                var cellDate = moment(cellContent, "DD-MM-YYYY");
 
-                // Skip rows with invalid or non-date content
-                if (!cellDate.isValid()) {
-                    console.log('Skipping row with invalid or non-date content:', cellContent);
-                    continue;
-                }
+        var table = $("#customerTable").DataTable({
+            ajax: {
+                url: "http://136.185.14.8:8077/auth/hsnsales",
+                type: "GET",
+                data: function (d) {
+                    d.fromDate = $("#fromDate").val();  // Send selected From Date
+                    d.toDate = $("#toDate").val();      // Send selected To Date
+                },
+                dataSrc: "data",
+            },
+            columns: [
+                { data: "hsnCode" },
+                { data: "productname" },
+                { data: "customername" },
+                { data: "Sale_ID" },
+                {
+                    data: "saledate", render: function (data) {
+                        const formattedDate = moment(data).format("DD-MM-YYYY");
+                        return formattedDate;
+                    }
+                },
+                { data: "quantity" },
+                { data: "tax_rate" },
+                { data: "discount" },
+                { data: "total_cgst" },
+                { data: "total_sgst" },
+                { data: "total_igst" },
+                { data: "Total_Taxable_Amount" },
+                { data: "total_amount" }
+            ],
+            dom: "Bfrtip",
+            buttons: ["copy", "excel", "pdf", "csv"],
+            paging: false,
+            scrollY: "550px",
+            scrollX: true,
+            scrollCollapse: true,
+            responsive: true,
+        });
 
-                console.log('Cell Content:', cellContent);
-                console.log('Parsed Date:', cellDate.format("YYYY-MM-DD"));
+        $("#filter-button").on("click", function () {
+            table.ajax.reload(); // Reload table with filter
+        });
 
-                if (cellDate.isSameOrAfter(fromDate) && cellDate.isSameOrBefore(toDate)) {
-                    rows[i].style.display = "";
-                    hasData = true;
-                } else {
-                    rows[i].style.display = "none";
-                }
-            }
-        }
+        $("#clear-button").on("click", function () {
+            $("#fromDate").val("");
+            $("#toDate").val("");
+            table.ajax.reload(); // Reload table without filter
+        });
 
-        // Check if noDataRow is defined before accessing it
-        var noDataRow = document.getElementById("noDataRow");
-        if (noDataRow) {
-            if (!hasData) {
-                noDataRow.style.display = "block";
-            } else {
-                noDataRow.style.display = "none";
-            }
-        }
-    });
-</script>
+
+        $("#filter-button").click(function () {
+            table.ajax.reload();
+        });
+
+        $("#clear-button").click(function () {
+            $("#fromDate, #toDate").val("");
+            table.ajax.reload();
+        });
+    </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
 </body>
 
-</html> 
+</html>

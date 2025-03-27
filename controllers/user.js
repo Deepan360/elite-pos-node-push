@@ -4729,6 +4729,110 @@ exports.hsnsales = (req, res) => {
     });
   });
 };
+
+
+
+exports.GetHSNSales_TaxSlab = (req, res) => {
+  const { fromDate, toDate } = req.query; // Get dates from request
+
+  console.log("Received Dates:", fromDate, toDate); // Debugging purpose
+
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    let query =
+      "EXEC GetHSNSales_TaxSlab @FromDate = @fromDate, @ToDate = @toDate";
+
+    const request = connection.request();
+    request.input("fromDate", sql.Date, fromDate || null);
+    request.input("toDate", sql.Date, toDate || null);
+
+    request.query(query, (err, result) => {
+      connection.release();
+      if (err) {
+        console.error("Error in listing data:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      console.log("Query Success:", result.recordset); // Debugging purpose
+      res.json({ data: result.recordset });
+    });
+  });
+};
+
+
+
+exports.GetHSNSales_BillRange = (req, res) => {
+  const { fromDate, toDate } = req.query; // Get dates from request
+
+  console.log("Received Dates:", fromDate, toDate); // Debugging purpose
+
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    let query =
+      "EXEC GetHSNSales_BillRange @FromDate = @fromDate, @ToDate = @toDate";
+
+    const request = connection.request();
+    request.input("fromDate", sql.Date, fromDate || null);
+    request.input("toDate", sql.Date, toDate || null);
+
+    request.query(query, (err, result) => {
+      connection.release();
+      if (err) {
+        console.error("Error in listing data:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      console.log("Query Success:", result.recordset); // Debugging purpose
+      res.json({ data: result.recordset });
+    });
+  });
+};
+
+
+
+exports.GetHSNSales_HSNWise = (req, res) => {
+  const { fromDate, toDate } = req.query; // Get dates from request
+
+  console.log("Received Dates:", fromDate, toDate); // Debugging purpose
+
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    let query =
+      "EXEC GetHSNSales_HSNWise @FromDate = @fromDate, @ToDate = @toDate";
+
+    const request = connection.request();
+    request.input("fromDate", sql.Date, fromDate || null);
+    request.input("toDate", sql.Date, toDate || null);
+
+    request.query(query, (err, result) => {
+      connection.release();
+      if (err) {
+        console.error("Error in listing data:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      console.log("Query Success:", result.recordset); // Debugging purpose
+      res.json({ data: result.recordset });
+    });
+  });
+};
+
+
+
+
+
 //reports on gst
 //dashboard
 exports.masterdata = async (req, res) => {

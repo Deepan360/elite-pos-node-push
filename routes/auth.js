@@ -18,6 +18,7 @@ router.get("/logout", (req, res) => {
     res.redirect("/");
   });
 });
+
 router.post('/registration', userController.registration);
 router.post('/login', userController.login);
 router.post('/company', userController.company);
@@ -427,15 +428,17 @@ router.get(
   userController.checkStockAvailability
 );
 
-
-
 // router.get("/inpatientreturn", userController.inpatientreturn);
+
 router.get(
   "/inpatientreturn/inpatientreturnDetails",
   userController.inpatientreturnDetails
 );
+
 router.post("/inpatientreturn", userController.inpatientreturnadd);
+
 router.put("/inpatientreturnEdit/:id", userController.inpatientreturnEdit);
+
 router.get(
   "/inpatientreturn/inpatientreturnids",
   userController.inpatientreturnids
@@ -489,6 +492,13 @@ router.get("/inpatient/Getinpatient", userController.Getinpatient);
 
 
 router.post("/visitEntry", userController.visitEntry);
+
+
+router.get("/GetHSNSales_TaxSlab", userController.GetHSNSales_TaxSlab);    
+router.get("/GetHSNSales_BillRange", userController.GetHSNSales_BillRange);    
+router.get("/GetHSNSales_HSNWise", userController.GetHSNSales_HSNWise);    
+
+
 
 module.exports = router;
  

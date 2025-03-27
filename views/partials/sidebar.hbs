@@ -221,13 +221,13 @@
       return urlParams.get('role');
     }
 
-    // Function to set the role in session and local storage
+      // Function to set the role in session and local storage
     function setRole(role) {
       sessionStorage.setItem('userRole', role);
       localStorage.setItem('userRole', role);
     }
 
-    // Function to fetch user role from the server
+     // Function to fetch user role from the server
     async function getUserRole() {
       try {
         const response = await fetch(`/auth/sidebar?role=${getRole()}`);
@@ -241,7 +241,7 @@
       }
     }
 
-    // Function to fetch and update user role
+      // Function to fetch and update user role
     async function fetchAndUpdateUserRole() {
       try {
         const userRole = await getUserRole();
@@ -255,7 +255,7 @@
       }
     }
 
-    // Function to fetch sidebar items based on the user's role
+      // Function to fetch sidebar items based on the user's role
     async function fetchSidebarItems() {
       try {
         const response = await fetch(`/auth/sidebar?role=${getRole()}`);

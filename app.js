@@ -9,7 +9,7 @@ const methodOverride = require("method-override");
 const session = require("express-session");
 const { Server } = require("http");
 const uuid= require("crypto").randomUUID;
-
+ 
 const app = express();
 dotenv.config({ path: "./.env" });
 
@@ -102,7 +102,14 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Something went wrong!" });
 });
 
-
+app.use((req, res, next) => {
+  if (!res.headersSent) {
+    return req.originalUrl === "/index" && !req.isAuthenticated()
+      ? res.redirect("/")
+      : res.status(404).render("pagenotfound");
+  }
+  next();
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

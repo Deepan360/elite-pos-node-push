@@ -68,6 +68,272 @@ const upload = multer({
 
 exports.upload = upload;
 
+exports.salesretailadd = async (req, res) => {
+  upload(req, res, async (err) => {
+    if (err) {
+      console.error("Multer error:", err);
+      return res.status(400).json({ success: false, message: err.message });
+    }
+    console.log("Received body:", req.body);
+    console.log("Received file:", req.file);
+
+    const {
+      saledate,
+      ppaymentMode,
+      customerId,
+      doctorname,
+      pamount,
+      pigst,
+      pcgst,
+      psgst,
+      psubtotal,
+      pcess,
+      ptcs,
+      proundOff,
+      pnetAmount,
+      pdiscount,
+      pdiscMode_,
+      isDraft,
+      products: productsString,
+    } = req.body;
+
+    let parsedProducts = [];
+    const formattedSaleDate = saledate || null;
+    const prescriptionImage =
+      req.files && req.files.length ? req.files[0].filename : null;
+
+    try {
+      await pool.connect();
+
+      parsedProducts = JSON.parse(productsString);
+
+      // Insert into inpatient_Master
+      const result = await pool
+        .request()
+        .input("saledate", sql.DateTime, formattedSaleDate)
+        .input("ppaymentMode", sql.VarChar, ppaymentMode)
+        .input("customerId", sql.VarChar, customerId)
+        .input("doctorname", sql.VarChar, doctorname)
+        .input("pamount", sql.Decimal, pamount)
+        .input("pcgst", sql.Decimal, pcgst)
+        .input("psgst", sql.Decimal, psgst)
+        .input("pigst", sql.Decimal, pigst)
+        .input("pnetAmount", sql.Decimal, pnetAmount)
+        .input("pcess", sql.Decimal, pcess)
+        .input("ptcs", sql.Decimal, ptcs)
+        .input("pdiscMode_", sql.VarChar, pdiscMode_)
+        .input("pdiscount", sql.Decimal, pdiscount)
+        .input("psubtotal", sql.Decimal, psubtotal)
+        .input("proundOff", sql.Decimal, proundOff)
+        .input("isDraft", sql.Int, isDraft)
+        .input("prescriptionImage", sql.VarChar, prescriptionImage).query(`
+          INSERT INTO salesretail_Master
+          ([saledate], [paymentmode], [customername], [doctorname], [amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft], [prescriptionImage])
+          VALUES
+          (@saledate, @ppaymentMode, @customerId, @doctorname, @pamount, @pcgst, @psgst, @pigst, @pnetAmount, @pcess, @ptcs, @pdiscMode_, @pdiscount, @psubtotal, @proundOff, @isDraft, @prescriptionImage);
+          
+          SELECT SCOPE_IDENTITY() as salesId;
+        `);
+
+      const salesId = result.recordset[0].salesId;
+      console.log("Number of products:", parsedProducts.length);
+
+      for (const product of parsedProducts) {
+        const {
+          productId,
+          batchNo,
+          expiryDate,
+          tax,
+          quantity,
+          free,
+          uom,
+          purcRate,
+          mrp,
+          rate,
+          discMode,
+          discount,
+          amount,
+          cgst,
+          sgst,
+          igst,
+          totalAmount,
+        } = product;
+
+        await pool
+          .request()
+          .input("salesId", sql.Int, salesId)
+          .input("productId", sql.Int, productId)
+          .input("batchNo", sql.VarChar, batchNo)
+          .input("expiryDate", sql.VarChar, expiryDate)
+          .input("tax", sql.Decimal, tax)
+          .input("quantity", sql.Int, quantity)
+          .input("free", sql.Int, free)
+          .input("uom", sql.VarChar, uom)
+          .input("purcRate", sql.Decimal, purcRate)
+          .input("mrp", sql.Decimal, mrp)
+          .input("rate", sql.Decimal, rate)
+          .input("discMode", sql.VarChar, discMode)
+          .input("discount", sql.Decimal, discount)
+          .input("amount", sql.Decimal, amount)
+          .input("cgst", sql.Decimal, cgst)
+          .input("sgst", sql.Decimal, sgst)
+          .input("igst", sql.Decimal, igst)
+          .input("totalAmount", sql.Decimal, totalAmount).query(`
+            INSERT INTO salesretail_Trans
+            ([salesId], [product], [batchNo], [expiryDate], [tax], [quantity], [free], [uom], [purcRate], [mrp], [rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
+            VALUES
+            (@salesId, @productId, @batchNo, @expiryDate, @tax, @quantity, @free, @uom, @purcRate, @mrp, @rate, @discMode, @discount, @amount, @cgst, @sgst, @igst, @totalAmount);
+          `);
+
+        if (Number(isDraft) !== 1) {
+          await reduceretailStock(
+            productId,
+            quantity,
+            free,
+            batchNo,
+            expiryDate
+          );
+        }
+      }
+
+      res
+        .status(200)
+        .json({ success: true, message: "Sales added successfully" });
+    } catch (error) {
+      console.error("Error during processing:", error);
+      res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error" });
+    }
+  });
+};
+
+exports.salesretailEdit = async (req, res) => {
+  const { id } = req.params;
+  const { purchaseDetails, products } = req.body;
+
+  try {
+    console.log("Received request to edit purchase:", req.body);
+
+    // Update salesretail_Master
+    await pool.query`
+      UPDATE salesretail_Master
+      SET
+          [saledate] = ${purchaseDetails.saledate}, 
+          [paymentmode] = ${purchaseDetails.paymentmode},
+          [customername] = ${purchaseDetails.customername},
+          [doctorname] = ${purchaseDetails.doctorname},
+          [amount] = ${purchaseDetails.pamount},
+          [cgst] = ${purchaseDetails.pcgst},
+          [sgst] = ${purchaseDetails.psgst},
+          [igst] = ${purchaseDetails.pigst},
+          [netAmount] = ${purchaseDetails.pnetAmount},
+          [cess] = ${purchaseDetails.pcess},
+          [tcs] = ${purchaseDetails.ptcs},
+          [discMode] = ${purchaseDetails.pdiscMode_},
+          [discount] = ${purchaseDetails.pdiscount},
+          [subtotal] = ${purchaseDetails.psubtotal},
+          [roundoff] = ${purchaseDetails.proundOff},
+          [isDraft] = ${purchaseDetails.isDraft}
+      WHERE
+          [id] = ${id};
+    `;
+
+    // Iterate through each product in the products array
+    for (const product of products) {
+      const {
+        Id,
+        productId,
+        batchNo,
+        expiryDate,
+        tax,
+        quantity,
+        free,
+        uom,
+        purcRate,
+        mrp,
+        rate,
+        discMode,
+        discount,
+        amount,
+        cgst,
+        sgst,
+        igst,
+        totalAmount,
+      } = product;
+
+      // If the product already exists in the database (i.e., it's being updated)
+      if (Id) {
+        await pool.query`
+          UPDATE salesretail_Trans
+          SET
+              [product] = ${productId},
+              [batchNo] = ${batchNo},
+              [expiryDate] = ${expiryDate},
+              [tax] = ${tax},
+              [quantity] = ${quantity},
+              [free] = ${free},
+              [uom] = ${uom},
+              [purcRate] = ${purcRate},
+              [mrp] = ${mrp},
+              [rate] = ${rate},
+              [discMode] = ${discMode},
+              [discount] = ${discount},
+              [amount] = ${amount},
+              [cgst] = ${cgst},
+              [sgst] = ${sgst},
+              [igst] = ${igst},
+              [totalAmount] = ${totalAmount}
+          WHERE
+              [Id] = ${Id};
+        `;
+
+        if (purchaseDetails.isDraft != 1) {
+          // Loose equality check
+          console.log("Attempting to reduce stock for existing product...");
+          await reduceretailStock(
+            productId,
+            quantity,
+            free,
+            batchNo,
+            expiryDate
+          );
+        }
+      } else {
+        // If the product is being added (i.e., it's a new product in the transaction)
+        await pool.query`
+          INSERT INTO salesretail_Trans ([salesId], [product], [batchNo], [expiryDate], [tax], [quantity], [uom], [purcRate], [mrp], [rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
+          VALUES (${purchaseDetails.id}, ${productId}, ${batchNo}, ${expiryDate}, ${tax}, ${quantity}, ${uom}, ${purcRate}, ${mrp}, ${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
+        `;
+
+        if (purchaseDetails.isDraft != 1) {
+          // Loose equality check
+          console.log("Attempting to reduce stock for new product...");
+          await reduceretailStock(
+            productId,
+            quantity,
+            free,
+            batchNo,
+            expiryDate
+          );
+        }
+      }
+    }
+
+    console.log("salesretail edited successfully");
+    res
+      .status(200)
+      .json({ success: true, message: "salesretail edited successfully" });
+  } catch (error) {
+    console.error("Error updating salesretail:", error);
+    res.status(400).json({
+      success: false,
+      message: error.message || "Failed to update salesretail",
+    });
+  }
+};
+
+
 exports.inpatientadd = async (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
@@ -208,6 +474,9 @@ exports.inpatientadd = async (req, res) => {
     }
   });
 };
+
+
+
 
 exports.visitEntry = async (req, res) => {
   const { customerId, reason, doctorName } = req.body; // Removed visitdate since it will be auto-set
@@ -372,7 +641,6 @@ exports.checkMobileNumberClinic = async (req, res) => {
     });
   }
 };
-
 
 //salesretailprintpage
 exports.getinpatientProductDetails = (req, res) => {
@@ -2969,92 +3237,7 @@ exports.salesretailDetails = async (req, res) => {
   });
 };
 
-exports.salesretailadd = async (req, res) => {
-  console.log(req.body);
-  const {
-    saledate,
-    ppaymentMode,
-    customerId, // Use customerId received from the client
-    doctorname,
-    pamount,
-    pigst,
-    pcgst,
-    psgst,
-    psubtotal,
-    pcess,
-    ptcs,
-    proundOff,
-    pnetAmount,
-    pdiscount,
-    pdiscMode_,
-    isDraft,
-    products: productsString,
-  } = req.body;
 
-  let parsedProducts = [];
-  const formattedSaleDate = saledate ? saledate : null;
-
-  try {
-    await poolConnect();
-
-    parsedProducts = JSON.parse(productsString);
-
-    // Make sure customerId is being used correctly
-    const result = await pool.query`
-      INSERT INTO salesretail_Master
-      ([saledate], [paymentmode], [customername],[doctorname] ,[amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft])
-      VALUES
-      (${formattedSaleDate}, ${ppaymentMode}, ${customerId},${doctorname}, ${pamount}, ${pcgst}, ${psgst}, ${pigst}, ${pnetAmount}, ${pcess}, ${ptcs}, ${pdiscMode_}, ${pdiscount}, ${psubtotal}, ${proundOff}, ${isDraft});
-    
-      SELECT SCOPE_IDENTITY() as salesId;
-    `;
-
-    const salesId = result.recordset[0].salesId;
-    console.log("Number of products:", parsedProducts.length);
-
-    for (const product of parsedProducts) {
-      const {
-        productId,
-        batchNo,
-        expiryDate,
-        tax,
-        quantity,
-        free,
-        uom,
-        purcRate,
-        mrp,
-        rate,
-        discMode,
-        discount,
-        amount,
-        cgst,
-        sgst,
-        igst,
-        totalAmount,
-      } = product;
-
-      await pool.query`
-        INSERT INTO salesretail_Trans
-        ([salesId], [product], [batchNo],[expiryDate], [tax], [quantity],[free], [uom],[purcRate], [mrp],[rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
-        VALUES
-        (${salesId}, ${productId}, ${batchNo},${expiryDate}, ${tax}, ${quantity}, ${free}, ${uom}, ${purcRate}, ${mrp}, ${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
-      `;
-
-      // Only call reduceretailStock if isDraft is 0 (indicating a confirmed sale)
-     if (Number(isDraft) !== 1) {
-       await reduceretailStock(productId, quantity, free, batchNo, expiryDate);
-     }
-
-    }
-
-    res
-      .status(200)
-      .json({ success: true, message: "salesretail added successfully" });
-  } catch (error) {
-    console.error("Error during salesretail processing:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
-  }
-};
 
 
 async function reduceretailStock(
@@ -3109,130 +3292,7 @@ async function reduceretailStock(
 }
 
 
-exports.salesretailEdit = async (req, res) => {
-  const { id } = req.params;
-  const { purchaseDetails, products } = req.body;
 
-  try {
-    console.log("Received request to edit purchase:", req.body);
-
-    // Update salesretail_Master
-    await pool.query`
-      UPDATE salesretail_Master
-      SET
-          [saledate] = ${purchaseDetails.saledate}, 
-          [paymentmode] = ${purchaseDetails.paymentmode},
-          [customername] = ${purchaseDetails.customername},
-          [doctorname] = ${purchaseDetails.doctorname},
-          [amount] = ${purchaseDetails.pamount},
-          [cgst] = ${purchaseDetails.pcgst},
-          [sgst] = ${purchaseDetails.psgst},
-          [igst] = ${purchaseDetails.pigst},
-          [netAmount] = ${purchaseDetails.pnetAmount},
-          [cess] = ${purchaseDetails.pcess},
-          [tcs] = ${purchaseDetails.ptcs},
-          [discMode] = ${purchaseDetails.pdiscMode_},
-          [discount] = ${purchaseDetails.pdiscount},
-          [subtotal] = ${purchaseDetails.psubtotal},
-          [roundoff] = ${purchaseDetails.proundOff},
-          [isDraft] = ${purchaseDetails.isDraft}
-      WHERE
-          [id] = ${id};
-    `;
-
-    // Iterate through each product in the products array
-    for (const product of products) {
-      const {
-        Id,
-        productId,
-        batchNo,
-        expiryDate,
-        tax,
-        quantity,
-        free,
-        uom,
-        purcRate,
-        mrp,
-        rate,
-        discMode,
-        discount,
-        amount,
-        cgst,
-        sgst,
-        igst,
-        totalAmount,
-      } = product;
-
-      // If the product already exists in the database (i.e., it's being updated)
-      if (Id) {
-        await pool.query`
-          UPDATE salesretail_Trans
-          SET
-              [product] = ${productId},
-              [batchNo] = ${batchNo},
-              [expiryDate] = ${expiryDate},
-              [tax] = ${tax},
-              [quantity] = ${quantity},
-              [free] = ${free},
-              [uom] = ${uom},
-              [purcRate] = ${purcRate},
-              [mrp] = ${mrp},
-              [rate] = ${rate},
-              [discMode] = ${discMode},
-              [discount] = ${discount},
-              [amount] = ${amount},
-              [cgst] = ${cgst},
-              [sgst] = ${sgst},
-              [igst] = ${igst},
-              [totalAmount] = ${totalAmount}
-          WHERE
-              [Id] = ${Id};
-        `;
-
-        if (purchaseDetails.isDraft != 1) {
-          // Loose equality check
-          console.log("Attempting to reduce stock for existing product...");
-          await reduceretailStock(
-            productId,
-            quantity,
-            free,
-            batchNo,
-            expiryDate
-          );
-        }
-      } else {
-        // If the product is being added (i.e., it's a new product in the transaction)
-        await pool.query`
-          INSERT INTO salesretail_Trans ([salesId], [product], [batchNo], [expiryDate], [tax], [quantity], [uom], [purcRate], [mrp], [rate], [discMode], [discount], [amount], [cgst], [sgst], [igst], [totalAmount])
-          VALUES (${purchaseDetails.id}, ${productId}, ${batchNo}, ${expiryDate}, ${tax}, ${quantity}, ${uom}, ${purcRate}, ${mrp}, ${rate}, ${discMode}, ${discount}, ${amount}, ${cgst}, ${sgst}, ${igst}, ${totalAmount});
-        `;
-
-        if (purchaseDetails.isDraft != 1) {
-          // Loose equality check
-          console.log("Attempting to reduce stock for new product...");
-          await reduceretailStock(
-            productId,
-            quantity,
-            free,
-            batchNo,
-            expiryDate
-          );
-        }
-      }
-    }
-
-    console.log("salesretail edited successfully");
-    res
-      .status(200)
-      .json({ success: true, message: "salesretail edited successfully" });
-  } catch (error) {
-    console.error("Error updating salesretail:", error);
-    res.status(400).json({
-      success: false,
-      message: error.message || "Failed to update salesretail",
-    });
-  }
-};
 
 
 async function increaseRetailStock(
@@ -3335,7 +3395,13 @@ exports.salesretailids = (req, res) => {
     sm.[discount],
     sm.[roundoff],
     sm.[netAmount],
-    sm.[isDraft]
+    sm.[isDraft],
+    CASE 
+    WHEN sm.[prescriptionimage] IS NOT NULL AND sm.[prescriptionimage] != '' 
+    THEN CONCAT('${baseImageUrl}', sm.[prescriptionimage]) 
+    ELSE NULL 
+END AS prescriptionimage
+
 FROM 
     [elite_pos].[dbo].[salesretail_Master] sm
 LEFT JOIN 
@@ -4730,8 +4796,6 @@ exports.hsnsales = (req, res) => {
   });
 };
 
-
-
 exports.GetHSNSales_TaxSlab = (req, res) => {
   const { fromDate, toDate } = req.query; // Get dates from request
 
@@ -4762,8 +4826,6 @@ exports.GetHSNSales_TaxSlab = (req, res) => {
     });
   });
 };
-
-
 
 exports.GetHSNSales_BillRange = (req, res) => {
   const { fromDate, toDate } = req.query; // Get dates from request
@@ -4796,8 +4858,6 @@ exports.GetHSNSales_BillRange = (req, res) => {
   });
 };
 
-
-
 exports.GetHSNSales_HSNWise = (req, res) => {
   const { fromDate, toDate } = req.query; // Get dates from request
 
@@ -4828,10 +4888,6 @@ exports.GetHSNSales_HSNWise = (req, res) => {
     });
   });
 };
-
-
-
-
 
 //reports on gst
 //dashboard
@@ -11846,91 +11902,102 @@ exports.getcompany = (req, res) => {
   });
 };
 
+const util = require("util");
+
+// Configure Multer (for memory storage)
+const storages = multer.memoryStorage();
+const uploads = multer({
+  storage: storages,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+});
+
+// Promisify multer for async usage
+const uploadSingle = util.promisify(uploads.single("logo"));
+
 exports.updatecompany = async (req, res) => {
   try {
-    upload.single("logo")(req, res, async (err) => {
-      if (err instanceof multer.MulterError) {
-        console.error("Multer error:", err);
-        return res.status(400).json({ error: "File upload error" });
-      } else if (err) {
-        console.error("Unknown error:", err);
-        return res.status(500).json({ error: "Internal Server Error" });
-      }
-      const {
-        id,
-        companyName,
-        address,
-        billingName,
-        state,
-        city,
-        pincode,
-        cin,
-        tin,
-        gstin,
-        pan,
-        mobileNo,
-        phoneNo,
-        email,
-        website,
-        cashLedger,
-        bankLedger,
-        bookStartDate,
-        discLedger,
-        quotes,
-        dl1,
-        dl2
-      } = req.body;
+    // Handle file upload
+    await uploadSingle(req, res);
 
-      let logo = null;
+    const {
+      id,
+      companyName,
+      address,
+      billingName,
+      state,
+      city,
+      pincode,
+      cin,
+      tin,
+      gstin,
+      pan,
+      mobileNo,
+      phoneNo,
+      email,
+      website,
+      cashLedger,
+      bankLedger,
+      bookStartDate,
+      discLedger,
+      quotes,
+      dl1,
+      dl2,
+    } = req.body;
 
-      if (req.file) {
-        if (req.file.size > 0) {
-          logo = req.file.buffer;
-        } else {
-          console.log("File is empty.");
-        }
-      } else {
-        console.log("No file received.");
-      }
+    let logo = null;
+    if (req.file && req.file.size > 0) {
+      logo = req.file.buffer;
+    }
 
-      const companyId = parseInt(id, 10);
+    const companyId = parseInt(id, 10);
+    if (isNaN(companyId)) {
+      return res.status(400).json({ error: "Invalid Company ID" });
+    }
 
-      await poolConnect();
+    // Validate Book Start Date
+    let validBookStartDate = null;
+    if (bookStartDate && !isNaN(Date.parse(bookStartDate))) {
+      validBookStartDate = bookStartDate;
+    }
 
-      const request = pool
-        .request()
-        .input("Id", sql.Int, companyId)
-        .input("CompanyName", sql.NVarChar, companyName)
-        .input("Address", sql.NVarChar, address)
-        .input("BillingName", sql.NVarChar, billingName)
-        .input("State", sql.NVarChar, state)
-        .input("City", sql.NVarChar, city)
-        .input("Pincode", sql.NVarChar, pincode)
-        .input("CIN", sql.NVarChar, cin)
-        .input("TIN", sql.NVarChar, tin)
-        .input("GSTIN", sql.NVarChar, gstin)
-        .input("PAN", sql.NVarChar, pan)
-        .input("MobileNo", sql.NVarChar, mobileNo)
-        .input("PhoneNo", sql.NVarChar, phoneNo)
-        .input("Email", sql.NVarChar, email)
-        .input("Website", sql.NVarChar, website)
-        .input("CashLedger", sql.NVarChar, cashLedger)
-        .input("BankLedger", sql.NVarChar, bankLedger)
-        .input("BookStartDate", sql.Date, bookStartDate)
-        .input("DiscLedger", sql.NVarChar, discLedger)
-        .input("quotes", sql.VarChar, quotes)
-        .input("dl1", sql.NVarChar, dl1)
-        .input("dl2", sql.NVarChar, dl2);
-      if (logo !== null) {
-        request.input("Logo", sql.VarBinary, logo);
-      }
+    await poolConnect();
+    const request = pool
+      .request()
+      .input("Id", sql.Int, companyId)
+      .input("CompanyName", sql.NVarChar, companyName)
+      .input("Address", sql.NVarChar, address)
+      .input("BillingName", sql.NVarChar, billingName)
+      .input("State", sql.NVarChar, state)
+      .input("City", sql.NVarChar, city)
+      .input("Pincode", sql.NVarChar, pincode)
+      .input("CIN", sql.NVarChar, cin)
+      .input("TIN", sql.NVarChar, tin)
+      .input("GSTIN", sql.NVarChar, gstin)
+      .input("PAN", sql.NVarChar, pan)
+      .input("MobileNo", sql.NVarChar, mobileNo)
+      .input("PhoneNo", sql.NVarChar, phoneNo)
+      .input("Email", sql.NVarChar, email)
+      .input("Website", sql.NVarChar, website)
+      .input("CashLedger", sql.NVarChar, cashLedger)
+      .input("BankLedger", sql.NVarChar, bankLedger)
+      .input("DiscLedger", sql.NVarChar, discLedger)
+      .input("quotes", sql.VarChar, quotes)
+      .input("dl1", sql.NVarChar, dl1)
+      .input("dl2", sql.NVarChar, dl2);
 
-      const result = await request.execute("UpdateCompanyProcedure");
+    if (validBookStartDate) {
+      request.input("BookStartDate", sql.Date, validBookStartDate);
+    }
 
-      console.log("Update result:", result);
+    if (logo !== null) {
+      request.input("Logo", sql.VarBinary, logo);
+    }
 
-      return res.status(200).json({ message: "Company updated successfully" });
-    });
+    const result = await request.execute("UpdateCompanyProcedure");
+
+    console.log("Update result:", result);
+
+    return res.status(200).json({ message: "Company updated successfully" });
   } catch (error) {
     console.error("Error updating company:", error);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -12118,7 +12185,7 @@ exports.registration = async (req, res) => {
         .status(500)
         .json({ msg: "An unexpected error occurred", msg_type: "error" });
     }
-
+ 
     if (emailCheckResult.recordset.length > 0) {
       return res
         .status(400)

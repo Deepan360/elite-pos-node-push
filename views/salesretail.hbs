@@ -217,89 +217,107 @@
                         <button type="button" class="btn btn-danger deletemasBtn">Delete</button>
                     </div>
                 </div>
-                <form id="purchaseDetails" class="form-control" style="display: block; align-item: start;"
-                    method="post">
-                    <div class="row mt-2">
-                        <div class="col-md-2 d-none">
-                            <div class="custom-input-container">
-                                <select name="Id" class="dropdown" id="Id">
-                                    <option selected>view details</option>
-                                </select>
-                                <label for="purchaseId">Sale Id</label>
-                                <input type="hidden" name="id" id="id">
-                            </div>
-                        </div>
-                        <div class="col-md-2 custom opener">
-                            <div class="custom-input-container">
+<form id="purchaseDetails" class="form-control" enctype="multipart/form-data" style="display: block; align-item: start;"
+    method="post">
+    <div class="row mt-2">
+        <div class="col-md-2 d-none">
+            <div class="custom-input-container">
+                <select name="Id" class="dropdown" id="Id">
+                    <option selected>view details</option>
+                </select>
+                <label for="purchaseId">Sale Id</label>
+                <input type="hidden" name="id" id="id">
+            </div>
+        </div>
+        <div class="col-md-2 custom opener">
+            <div class="custom-input-container">
 
 
-                                <select name="customerSelect" id="customerSelect" required>
-                                    <option value="" disabled selected>Select a customer</option>
-                                    <!-- Options will be dynamically populated -->
-                                </select>
-                                <label for="customerSelect">Select a customer<span class="text-danger text-2x"
-                                        style="font-size: medium !important;">*</span></label>
-                            </div>
-                        </div>
+                <select name="customerSelect" id="customerSelect" required>
+                    <option value="" disabled selected>Select a customer</option>
+                    <!-- Options will be dynamically populated -->
+                </select>
+                <label for="customerSelect">Select a customer<span class="text-danger text-2x"
+                        style="font-size: medium !important;">*</span></label>
+            </div>
+        </div>
 
-                        <div class="col-md-2">
-                            <div class="custom-input-container">
-                                <input type="text" placeholder=" " name="mobileno" id="mobileno" readonly>
-                                <label for="mobileno">Customer Mobile No</label>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="custom-input-container">
-                                <input type="text" placeholder=" " name="customername" id="customername" readonly>
-                                <label for="customername">Customer Name</label>
-                            </div>
-                        </div>
-                        {{!-- <div class="col-md-2 custom">
-                            <div class=" custom-input-container  ">
-                                <label for="paymentmode">Payment Mode<span class="text-danger text-2x "
-                                        style="font-size: medium !important;">*</span></label>
-                                <select name="paymentmode" id="paymentmode">
-                                    <option value="" disabled selected hidden>Choose Payment Mode</option>
-                                    <option value="cash">Cash</option>
-                                    <option value="credit">Credit</option>
-                                    <option value="cash-credit">Cash/Credit</option>
-                                </select>
+        <div class="col-md-2">
+            <div class="custom-input-container">
+                <input type="text" placeholder=" " name="mobileno" id="mobileno" readonly>
+                <label for="mobileno">Customer Mobile No</label>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="custom-input-container">
+                <input type="text" placeholder=" " name="customername" id="customername" readonly>
+                <label for="customername">Customer Name</label>
+            </div>
+        </div>
+        {{!-- <div class="col-md-2 custom">
+            <div class=" custom-input-container  ">
+                <label for="paymentmode">Payment Mode<span class="text-danger text-2x "
+                        style="font-size: medium !important;">*</span></label>
+                <select name="paymentmode" id="paymentmode">
+                    <option value="" disabled selected hidden>Choose Payment Mode</option>
+                    <option value="cash">Cash</option>
+                    <option value="credit">Credit</option>
+                    <option value="cash-credit">Cash/Credit</option>
+                </select>
 
-                            </div>
-                        </div> --}}
-                        <div class="col-md-2">
-                            <div class="custom-input-container">
-                                <input type="date" placeholder=" " name="saledate" id="saledate">
-                                <label for="saledate">Sale Date</label>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="custom-input-container">
-                                <input type="text" placeholder=" " name="doctorname" id="doctorname">
-                                <label for="doctorname">Doctor Name</label>
-                            </div>
-                        </div>
+            </div>
+        </div> --}}
+        <div class="col-md-2">
+            <div class="custom-input-container">
+                <input type="date" placeholder=" " name="saledate" id="saledate">
+                <label for="saledate">Sale Date</label>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="custom-input-container">
+                <select name="doctorname" id="doctorname" class="form-control">
+                    <option value="" disabled selected>Select Doctor</option>
+                    <option value="Dr. Keshava Balaji">Dr. Keshava Balaji</option>
+                    <option value="Dr. Remughi">Dr. Remughi</option>
+                </select>
+                <label for="doctorname">Doctor Name</label>
+            </div>
+        </div>
+        <div class="col-md-2 insert">
+            <div class="custom-input-container">
+                <input type="file" name="prescriptionImage" accept="image/*" />
+                <label for="prescription">Prescription Image</label>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <span id="previewBtn" class="btn btn-primary" style="display: none;">
+                <i class="bi bi-eye"></i> Prescription
+                </button>
+        </div>
 
-                        <input type="hidden" id="customerId" name="customerId" value="">
+        {{!-- <img id="prescriptionImages" src="" alt="Prescription Image"
+            style="max-width: 200px; height: auto; display: none;"> --}}
 
-                    </div>
+        <input type="hidden" id="customerId" name="customerId" value="">
 
-                    <div style="display: none;">
-                        <input type="hidden" id="pamount_" name="pamount" value="0.00">
-                        <input type="hidden" id="pigst_" name="pigst" value="0.00">
-                        <input type="hidden" id="pcgst_" name="pcgst" value="0.00">
-                        <input type="hidden" id="psgst_" name="psgst" value="0.00">
-                        <input type="hidden" id="psubtotal_" name="psubtotal" value="0.00">
-                        <input type="hidden" id="pcess_" name="pcess" value="0.00">
-                        <input type="hidden" id="ptcs_" name="ptcs" value="0.00">
-                        <input type="hidden" id="proundOff_" name="proundOff" value="0.00">
-                        <input type="hidden" id="pnetAmount_" name="pnetAmount" value="0.00">
-                        <input type="hidden" id="pdiscount_" name="pdiscount" value="0.00">
-                        <input type="hidden" id="pdiscMode_" name="pdiscMode_" value="">
-                        <input type="hidden" id="ppaymentMode" name="ppaymentMode" value="">
+    </div>
 
-                    </div>
-                </form>
+    <div style="display: none;">
+        <input type="hidden" id="pamount_" name="pamount" value="0.00">
+        <input type="hidden" id="pigst_" name="pigst" value="0.00">
+        <input type="hidden" id="pcgst_" name="pcgst" value="0.00">
+        <input type="hidden" id="psgst_" name="psgst" value="0.00">
+        <input type="hidden" id="psubtotal_" name="psubtotal" value="0.00">
+        <input type="hidden" id="pcess_" name="pcess" value="0.00">
+        <input type="hidden" id="ptcs_" name="ptcs" value="0.00">
+        <input type="hidden" id="proundOff_" name="proundOff" value="0.00">
+        <input type="hidden" id="pnetAmount_" name="pnetAmount" value="0.00">
+        <input type="hidden" id="pdiscount_" name="pdiscount" value="0.00">
+        <input type="hidden" id="pdiscMode_" name="pdiscMode_" value="">
+        <input type="hidden" id="ppaymentMode" name="ppaymentMode" value="">
+
+    </div>
+</form>
                 <div class="custom-input-container">
                     <a class="opener" id="openPurchaseForm"><i class="fa-solid fa-folder-plus fa-2x"></i></a>
                 </div>
@@ -578,6 +596,20 @@
                 </div>
             </div>
         </div>
+                                <!-- Bootstrap Modal -->
+                                <div class="modal fade " id="prescriptionModal" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered ">
+                                        <div class="modal-content">
+                                            <div class="modal-header  bg-dark ">
+                                                <h5 class="modal-title text-white">Prescription Preview</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body text-center">
+                                                <img id="prescriptionImage" src="" alt="Prescription" class="img-fluid rounded shadow">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
     </main>
     {{>color}}
 
@@ -656,8 +688,6 @@
             checkRequiredFields(); // Initial check
         });
     </script>
-
-
 
     <script>
         $(document).ready(function () {
@@ -1038,10 +1068,10 @@
                     });
                 });
             }
+          
 
 
-
-            // Handle update button click
+                // Handle update button click
             $(document).on('click', '.updateBtn', function (event) {
                 event.preventDefault();
 
@@ -1665,32 +1695,31 @@
                     $('#confirmationModal').modal('hide'); // Hide the modal
                 });
 
-                // Form submit logic
                 function submitForm() {
-                    let formData = $('#purchaseDetails').serializeArray();
+                    let formData = new FormData($('#purchaseDetails')[0]); // Use FormData for file upload
                     let products = getProductsData();
-                    // formData.push({ name: 'customerId', value: $('#customerId').val() });
                     showLoadingOverlay();
-                    formData.push({ name: 'products', value: JSON.stringify(products) });
-                    formData.push({ name: 'isDraft', value: $('#is_Draft').val() });
-                    console.log("Serialized Form Data:", formData);
+                    formData.append('products', JSON.stringify(products));
+                    formData.append('isDraft', $('#is_Draft').val());
+
                     $.ajax({
                         url: '/auth/salesretail',
                         method: 'POST',
                         data: formData,
+                        processData: false, // Prevent jQuery from processing FormData
+                        contentType: false, // Prevent jQuery from adding content-type header
                         success: function (response) {
                             console.log(response);
                             if (response.success) {
-                                // Check if the response contains a draft value
-                                if ($('#is_Draft').val() === '1') {
-                                    showBootstrapModal('Sale Saved as Draft Successfully 🖋', function () {
-                                        window.location.href = '/salesretaildraft'; // Redirect to draft page
-                                    });
-                                } else {
-                                    showBootstrapModal('Sales Updated Successfully 🖋', function () {
-                                        window.location.href = '/salesretailregister'; // Redirect to sales register
-                                    });
-                                }
+                                let message = $('#is_Draft').val() === '1'
+                                    ? 'Sale Saved as Draft Successfully 🖋'
+                                    : 'Sales Updated Successfully 🖋';
+
+                                showBootstrapModal(message, function () {
+                                    window.location.href = $('#is_Draft').val() === '1'
+                                        ? '/salesretaildraft'
+                                        : '/salesretailregister';
+                                });
                             } else {
                                 alert("Failed to update purchase: " + response.message);
                             }
@@ -1700,11 +1729,12 @@
                             alert("Error submitting form: " + error.statusText);
                         },
                         complete: function () {
-                            hideLoadingOverlay(); // Hide loading overlay when request completes
+                            hideLoadingOverlay(); // Hide loading overlay
                         }
                     });
-
                 }
+            
+
 
                 // Attach event listeners to the inputs to trigger validation on change
                 $(document).on('change', '.input-field', function () {
@@ -2564,7 +2594,18 @@
                 selectedOption.prop('selected', true);
 
 
+                if (rowDetails.prescriptionimage && rowDetails.prescriptionimage.trim() !== "") {
+                    $('#previewBtn').show(); // Show the preview button
+                    $('.insert').hide(); // hide the upload file tab
+                    $('#previewBtn').off('click').on('click', function () {
+                        $('#prescriptionImage').attr('src', rowDetails.prescriptionimage);
+                        let prescriptionModal = new bootstrap.Modal(document.getElementById("prescriptionModal"));
+                        prescriptionModal.show();
 
+                    });
+                } else {
+                    $('#previewBtn').hide(); // Hide if no image available
+                }
 
                 if (rowDetails.isDraft === true) {
                     $('.editmasbtn').prop('disabled', false);  // Editable

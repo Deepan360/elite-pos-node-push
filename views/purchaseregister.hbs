@@ -129,8 +129,6 @@
                 <tr id="totalAmountRow" style="display: none;">
                     <td style="text-align: left; font-weight: bold; color: #34495E;">Total Amount:<span id="totalAmountDisplay"
                             style="text-align: left; font-weight: bold; color: #34495E;">0.00</span></td>
-            
-            
                 </tr>
             </tfoot>
                     </table>
@@ -138,10 +136,87 @@
             </div>
         </div>
             {{>footer}}
+<!-- Payment Confirmation Modal -->
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentModalLabel">Confirm Payment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure the payment is completed?</p>
+                <input type="hidden" id="paymentId">
+                <div id="paymentMessage" class="mt-2"></div> <!-- Message Box -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="confirmPayment">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
     </main>
     {{>color}}
 
 <script>
+    $(document).on("click", ".fa-credit-card", function () {
+        let paymentId = $(this).data("id"); // Get purchase ID from icon
+        $("#paymentId").val(paymentId); // Store ID in hidden input
+        $("#paymentModal").modal("show"); // Show confirmation modal
+    });
+
+
+
+    $("#confirmPayment").click(function () {
+        let paymentId = $("#paymentId").val();
+        console.log("🔍 Payment ID:", paymentId); // Debugging
+
+        // Clear previous messages
+        $("#paymentMessage").html("");
+
+        $.ajax({
+            url: "/auth/updatepayment",
+            type: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({ id: paymentId }),
+            success: function (response) {
+                if (response.success) {
+                    // Show success message in modal
+                    $("#paymentMessage").html(
+                        '<div class="alert alert-success">✅ Payment updated successfully!</div>'
+                    );
+
+                    // Refresh DataTable after 1.5 seconds and close modal
+                    setTimeout(() => {
+                        $("#paymentModal").modal("hide");
+                        table.ajax.reload(null, false);
+                    }, 1500);
+                } else {
+                    // Show error message in modal
+                    $("#paymentMessage").html(
+                        '<div class="alert alert-warning">⚠ Failed to update payment: ' + response.message + "</div>"
+                    );
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log("❌ AJAX Error:", xhr);
+                console.log("❌ Response Text:", xhr.responseText);
+                console.log("❌ Status:", status);
+                console.log("❌ Error:", error);
+
+                // Show error message inside modal
+                $("#paymentMessage").html(
+                    '<div class="alert alert-danger">❌ Error updating payment. Try again!</div>'
+                );
+            }
+        });
+    });
+
+
 
      document.getElementById("clear-button").addEventListener("click", function () {
             clearFilters();
@@ -218,6 +293,7 @@
         $("#manufacturerform").show();
         $("#id").val('');
     });
+    
    var table = $("#customerTable").DataTable({
     dom: 'Bfrtip',
     buttons: ['copy', 'excel', 'pdf', 'csv'],

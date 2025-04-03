@@ -35,6 +35,40 @@ function formatDate(dateString) {
 }
 
 
+// **API Route for Updating Payment Mode**
+exports.updatepayment = async (req, res) => {
+  const { id } = req.body; // Get purchase ID from request
+  const paymentCompletedDate = moment().format("YYYY-MM-DD HH:mm:ss"); // Get current timestamp
+
+  if (!id) {
+    return res.status(400).json({ success: false, message: "Missing purchase ID" });
+  }
+
+  try {
+    const pool = await poolConnect();
+    const request = pool.request();
+    request.input("id", sql.Int, id);
+    request.input("paymentmode", sql.VarChar, "cash"); // Update payment mode
+    request.input("paymentcompleteddate", sql.DateTime, paymentCompletedDate);
+
+    const result = await request.query(
+      `UPDATE PurchaseTable_Master 
+       SET paymentmode = @paymentmode, 
+           paymentcompleteddate = @paymentcompleteddate 
+       WHERE id = @id`
+    );
+
+    if (result.rowsAffected[0] > 0) {
+      return res.json({ success: true, message: "Payment updated successfully" });
+    } else {
+      return res.status(404).json({ success: false, message: "Purchase ID not found" });
+    }
+  } catch (error) {
+    console.error("Error updating payment:", error.message);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
@@ -207,6 +241,8 @@ exports.salesretailadd = async (req, res) => {
     }
   });
 };
+
+
 
 exports.salesretailEdit = async (req, res) => {
   const { id } = req.params;

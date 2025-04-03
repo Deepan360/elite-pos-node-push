@@ -498,6 +498,7 @@ router.get("/GetHSNSales_TaxSlab", userController.GetHSNSales_TaxSlab);
 router.get("/GetHSNSales_BillRange", userController.GetHSNSales_BillRange);    
 router.get("/GetHSNSales_HSNWise", userController.GetHSNSales_HSNWise);    
 
+router.put("/updatepayment", userController.updatepayment);
 
 
 module.exports = router;

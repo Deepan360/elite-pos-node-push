@@ -1,11 +1,15 @@
-<nav class="navbar  navbar-main navbar-expand-lg p-2 bg-alter text-white navbar-fixed px-0 mx-4 shadow-none border-radius-xl"   id="navbarBlur" data-scroll="false">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
+<!-- Navbar -->
+<nav
+  class="navbar navbar-main navbar-expand-lg p-2 bg-alter text-white navbar-fixed px-0 mx-4 shadow-none border-radius-xl"
+  id="navbarBlur" data-scroll="false">
   <div class="container-fluid py-1 px-3">
- 
     <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
       <ul class="navbar-nav justify-content-end align-items-center">
+        <!-- Sidebar Toggle -->
         <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
-          <a href="javascript:;" class="nav-link  p-0"  id="iconNavbarSidenav">
+          <a href="javascript:;" class="nav-link p-0" id="iconNavbarSidenav">
             <div class="sidenav-toggler-inner">
               <i class="sidenav-toggler-line bg-white"></i>
               <i class="sidenav-toggler-line bg-white"></i>
@@ -13,51 +17,106 @@
             </div>
           </a>
         </li>
-        <li class=" d-flex align-items-center "> 
-          <img src="" alt="Company Profile Pic" id="companyLogo" class="company-profile-pic"> 
-          <h3 id="companyTitle" class=" text-white mb-0 ml-2   " ></h3> 
+        <!-- Company Logo and Title -->
+        <li class="d-flex align-items-center">
+          <img src="" alt="Company Logo" id="companyLogo" class="company-profile-pic me-2">
+          <h3 id="companyTitle" class="text-white mb-0"></h3>
         </li>
       </ul>
     </div>
-  <bold class=" justify-content-end ms-auto text-white  mb-0 ml-2 text-md bold " >Access : <span  id="roles"></span></bold>
-</div>
+
+    <!-- Right section -->
+    <div class="ms-auto d-flex align-items-center gap-4">
+      <span class="text-white fw-semibold">Access: <span id="roles" class="text-info"></span></span>
+
+      <!-- Network status -->
+      <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" title="Network Status">
+        <i id="networkIcon" class="fas fa-wifi text-success"></i>
+        <span id="networkText" class="text-light small">Online</span>
+      </div>
+
+      <!-- Logout -->
+      <i class="fa-solid fa-right-from-bracket fa-xl text-white" id="logoutIcon" title="Logout" style="cursor: pointer;"
+        data-bs-toggle="tooltip"></i>
+    </div>
   </div>
-  <div class="justify-content-end"  >
-    <i class="fa-solid fa-right-from-bracket fa-xl" data-toggle="tooltip" data-delay="0" data-placement="bottom" id="logoutIcon" title="Logout"></i>
-  </div>
-      <div>
 </nav>
-<body class="bg-main">
-  
-</body>
+
+<!-- Offline Popover Notification -->
+<div id="offlinePopover"
+  class="alert alert-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow"
+  style="z-index: 1001; display: none;" role="alert">
+  <i class="bi bi-wifi-off  me-2"></i><strong>You are offline.</strong> Changes may not be saved.
+  <button type="button" class="btn-close btn-close-white" onclick="hideOfflinePopover()" aria-label="Close"></button>
+</div>
+
+<!-- Styles -->
 <style>
-.company-profile-pic {
-  width: auto;
-  height: 50px;
-  object-fit: cover;
-  
-  margin-right: 10px;
-}
+  .company-profile-pic {
+    height: 50px;
+    width: auto;
+    object-fit: cover;
+  }
 </style>
+
+<!-- Scripts -->
 <script>
-    document.getElementById("logoutIcon").addEventListener("click", async () => {
-        try {
-          const response = await fetch("/auth/logout", {
-            method: "GET", // You can also use POST if required
-            credentials: "same-origin" // Ensures cookies are sent
-          });
+  const networkIcon = document.getElementById('networkIcon');
+  const networkText = document.getElementById('networkText');
+  const offlinePopover = document.getElementById('offlinePopover');
 
-          if (response.redirected) {
-            window.location.href = response.url; // Redirect to login page
-          } else {
-            alert("Logout failed. Please try again.");
-          }
+  function updateNetworkStatus(isOnline) {
+      if (isOnline) {
+        networkIcon.className = 'bi bi-wifi  text-success';
+        networkText.textContent = 'Online';
+        networkText.classList.replace('text-danger', 'text-light');
+        hideOfflinePopover();
+      } else {
+        networkIcon.className = 'bi bi-wifi-off  text-danger';
+        networkText.textContent = 'Offline';
+        networkText.classList.replace('text-light', 'text-danger');
+        showOfflinePopover();
+      }
+    }
 
-          // Clear client-side storage
-          sessionStorage.clear();
-          localStorage.clear();
-        } catch (error) {
-          console.error("Logout error:", error);
-        }
+
+  function showOfflinePopover() {
+    offlinePopover.style.display = 'block';
+  }
+
+  function hideOfflinePopover() {
+    offlinePopover.style.display = 'none';
+  }
+
+  // Initial check
+  updateNetworkStatus(navigator.onLine);
+
+  // Event listeners
+  window.addEventListener('online', () => updateNetworkStatus(true));
+  window.addEventListener('offline', () => updateNetworkStatus(false));
+
+  // Logout functionality
+  document.getElementById("logoutIcon").addEventListener("click", async () => {
+    try {
+      const response = await fetch("/auth/logout", {
+        method: "GET",
+        credentials: "same-origin"
       });
+
+      sessionStorage.clear();
+      localStorage.clear();
+
+      if (response.redirected) {
+        window.location.href = response.url;
+      } else {
+        alert("Logout failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  });
+
+  // Enable Bootstrap tooltips
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.map(el => new bootstrap.Tooltip(el));
 </script>

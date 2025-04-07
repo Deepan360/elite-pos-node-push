@@ -726,10 +726,6 @@ exports.getinpatientProductDetails = (req, res) => {
 //salesretailreturn retail
 
 
-
-
-
-
 exports.inpatientreturnDetails = async (req, res) => {
   pool.connect((err, connection) => {
     if (err) {
@@ -12112,7 +12108,7 @@ async function getSidebarItemsForRole(roleName) {
       .request()
       .input("roleName", sql.NVarChar, roleName).query(`
         SELECT title, href,  menu
-        FROM [elite_pos].[dbo].[menu_access_rights]
+        FROM menu_access_rights
         WHERE [${roleName}] = 1`);
 
     return result.recordset;
@@ -12143,7 +12139,7 @@ exports.login = async (req, res) => {
 
     // Fetch user details from DB
     const userQuery =
-      await pool.query`SELECT ID, emailid, password, role FROM [elite_pos].[dbo].[registeration] WHERE emailid = ${emailid}`;
+      await pool.query`SELECT ID, emailid, password, role FROM registeration WHERE emailid = ${emailid}`;
 
     if (userQuery.recordset.length === 0) {
       return res

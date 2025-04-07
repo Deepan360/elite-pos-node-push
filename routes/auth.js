@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const userController = require('../controllers/user');
 
-const multer = require("multer");
 
 router.get("/logout", (req, res) => {
   req.session.destroy((err) => {

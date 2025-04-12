@@ -124,19 +124,20 @@
            <form action="/auth/manufacturer" method="get">
              <table id="customerTable" class="table-responsive justify-content-between align-items-end" style="width:100% !important">
          
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Payment Date</th>
-                        <th>Cash/Bank Ledger(Cr)</th>
-                        <th>Ledger(Dr)</th>
-                        <th>Bill No</th>
-                        <th>Amount</th>
-                        <th>Discount</th>
-                        <th>Remarks</th>
-                        <th class="action">Action</th>
-                    </tr>
-                </thead>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Payment Date</th>
+                    <th>Cash/Bank Ledger (Cr)</th>
+                    <th>Supplier Name</th>
+                    <th>Bill No</th>
+                    <th>Transaction No</th>
+                    <th>Supplier Invoice No</th>
+                    <th>Supplier Invoice Date</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+
                 <tbody>
                    
                 </tbody>
@@ -225,27 +226,27 @@
         dataSrc: 'data',
         type: 'GET',
     },
-    columns: [
-        { data: 'id' },
-        { data: 'paymentdate',
-         render: function (data) {
-                            const formattedDate = moment(data).format("DD-MM-YYYY");
-                            return formattedDate;
-                        } },
-        { data: 'cash/bankLedger(cr)' },
-        { data: 'ledger(dr)' },
-        { data: 'billno' },
-        { data: 'amount' },
-        { data: 'discount' },
-        { data: 'remarks' },
-        {
-            data: 'id',
-            render: function (data) {
-                return '<i class="fa-regular fa-pen-to-square editBtn" type="button" data-id="' + data + '"></i>' +
-                    ' <i class="fa-solid fa-trash deleteBtn" type="button" data-id="' + data + '"></i>';
-            }
-        }
-    ],
+   columns: [
+             { data: 'payment_id' },
+             {
+                 data: 'paymentdate',
+                 render: function (data) {
+                     return data ? moment(data).format("DD-MM-YYYY") : '';
+                 }
+             },
+             { data: 'cash/bankLedger(cr)' },         // <-- Make sure backend returns alias as 'cashBankLedgerCr'
+             { data: 'ledgername' },               // Supplier name
+             { data: 'billno' },
+             { data: 'transactionno' },
+             { data: 'supplierinvoiceno' },
+             {
+                 data: 'supplierinvoicedate',
+                 render: function (data) {
+                     return data ? moment(data).format("DD-MM-YYYY") : '';
+                 }
+             },
+             { data: 'amount' }
+         ],
     dom: 'Bfrtip',
     buttons: ['copy', 'excel', 'pdf', 'csv'],
     paging: false,

@@ -326,7 +326,7 @@ $('#customerTable').on('click', '.deleteBtn', function() {
                 console.error('Error deleting customer:', error);
                 alert("Failed to delete customer. Check console for details.");
             }
-        });
+        }); 
     } else {
         console.error('Invalid or undefined data:', data);
     }
@@ -349,8 +349,8 @@ $('#customerTable').on('click', '.deleteBtn', function() {
             <!-- First Column -->
             <input type="hidden" placeholder="Id" name="id" id="id">
             <input type="text" placeholder="Code No" name="typecode" id="typecode">
-            <input type="text" placeholder="Product type" name="producttype" id="producttype">
-        <input type="number" placeholder="Product Margin" name="profitMargin" id="profitMargin">
+            <input type="text" placeholder="Product type" name="producttype" id="producttype" required>
+        <input type="number" placeholder="Product Margin" name="profitMargin" id="profitMargin" required>
             
         </div>
     </div>
@@ -364,8 +364,8 @@ $('#customerTable').on('click', '.deleteBtn', function() {
             <!-- First Column -->
             <input type="hidden" placeholder="Id" name="id" id="id">
             <input type="text" placeholder="Code " name="typecode" id="typecode">
-            <input type="text" placeholder="Product type" name="producttype" id="producttype">
-        <input type="number" placeholder="Product Margin" name="profitMargin" id="profitMargin">
+            <input type="text" placeholder="Product type" name="producttype" id="producttype" required>
+        <input type="number" placeholder="Product Margin" name="profitMargin" id="profitMargin" required>
             
         </div>
     </div>

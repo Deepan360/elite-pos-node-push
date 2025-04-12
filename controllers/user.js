@@ -37,35 +37,68 @@ function formatDate(dateString) {
 
 // **API Route for Updating Payment Mode**
 exports.updatepayment = async (req, res) => {
-  const { id } = req.body; // Get purchase ID from request
-  const paymentCompletedDate = moment().format("YYYY-MM-DD HH:mm:ss"); // Get current timestamp
+  const { id, transactionId, paymentDate, amount, bankledger } = req.body;
+  const paymentCompletedDate = moment().format("YYYY-MM-DD HH:mm:ss");
 
-  if (!id) {
-    return res.status(400).json({ success: false, message: "Missing purchase ID" });
+  if (!id || !transactionId || !paymentDate || !amount) {
+    return res.status(400).json({
+      success: false,
+      message:
+        "Missing required fields: id, transactionId, paymentDate, or amount",
+    });
   }
 
   try {
     const pool = await poolConnect();
-    const request = pool.request();
-    request.input("id", sql.Int, id);
-    request.input("paymentmode", sql.VarChar, "cash"); // Update payment mode
-    request.input("paymentcompleteddate", sql.DateTime, paymentCompletedDate);
 
-    const result = await request.query(
-      `UPDATE PurchaseTable_Master 
-       SET paymentmode = @paymentmode, 
-           paymentcompleteddate = @paymentcompleteddate 
-       WHERE id = @id`
+    // 1. Update PurchaseTable_Master
+    const updateRequest = pool.request();
+    updateRequest.input("id", sql.Int, id);
+    updateRequest.input("paymentmode", sql.VarChar, "cash");
+    updateRequest.input(
+      "paymentcompleteddate",
+      sql.DateTime,
+      paymentCompletedDate
     );
 
-    if (result.rowsAffected[0] > 0) {
-      return res.json({ success: true, message: "Payment updated successfully" });
+    const updateResult = await updateRequest.query(`
+      UPDATE PurchaseTable_Master 
+      SET paymentmode = @paymentmode, 
+          paymentcompleteddate = @paymentcompleteddate 
+      WHERE id = @id
+    `);
+
+    // 2. Insert into payment table
+    const insertRequest = pool.request();
+    insertRequest.input("transactionId", sql.VarChar, transactionId);
+    insertRequest.input("paymentDate", sql.Date, paymentDate);
+    insertRequest.input("id", sql.Int, id); // billno
+    insertRequest.input("amount", sql.Decimal(18, 2), amount);
+    insertRequest.input("bankledger", sql.VarChar, bankledger); // Optional field
+
+    const paymentInsertResult = await insertRequest.query(`
+  INSERT INTO payment ([transactionno], [paymentdate], [billno], [amount], [cash/bankLedger(cr)])
+  VALUES (@transactionId, @paymentDate, @id, @amount ,@bankledger)
+`);
+
+
+
+
+    if (updateResult.rowsAffected[0] > 0) {
+      return res.json({
+        success: true,
+        message: "Payment updated successfully",
+      });
     } else {
-      return res.status(404).json({ success: false, message: "Purchase ID not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Purchase ID not found" });
     }
   } catch (error) {
     console.error("Error updating payment:", error.message);
-    return res.status(500).json({ success: false, message: "Internal server error" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -96,7 +129,7 @@ const upload = multer({
     console.log("File received:", file); // Debugging
     cb(null, true);
   },
-}).array("prescriptionImage", 1);
+}).array("prescriptionImage", 5);
 
 // Ensure this matches the frontend field name
 
@@ -133,8 +166,9 @@ exports.salesretailadd = async (req, res) => {
 
     let parsedProducts = [];
     const formattedSaleDate = saledate || null;
-    const prescriptionImage =
-      req.files && req.files.length ? req.files[0].filename : null;
+   const prescriptionImages =
+     req.files?.map((file) => file.filename).join(",") || null;
+
 
     try {
       await pool.connect();
@@ -160,7 +194,7 @@ exports.salesretailadd = async (req, res) => {
         .input("psubtotal", sql.Decimal, psubtotal)
         .input("proundOff", sql.Decimal, proundOff)
         .input("isDraft", sql.Int, isDraft)
-        .input("prescriptionImage", sql.VarChar, prescriptionImage).query(`
+        .input("prescriptionImage", sql.VarChar, prescriptionImages).query(`
           INSERT INTO salesretail_Master
           ([saledate], [paymentmode], [customername], [doctorname], [amount], [cgst], [sgst], [igst], [netAmount], [cess], [tcs], [discMode], [discount], [subtotal], [roundoff], [isDraft], [prescriptionImage])
           VALUES
@@ -241,8 +275,6 @@ exports.salesretailadd = async (req, res) => {
     }
   });
 };
-
-
 
 exports.salesretailEdit = async (req, res) => {
   const { id } = req.params;
@@ -3269,9 +3301,6 @@ exports.salesretailDetails = async (req, res) => {
   });
 };
 
-
-
-
 async function reduceretailStock(
   productId,
   quantity,
@@ -3322,10 +3351,6 @@ async function reduceretailStock(
     throw error;
   }
 }
-
-
-
-
 
 async function increaseRetailStock(
   productId,
@@ -3383,8 +3408,6 @@ async function increaseRetailStock(
   }
 }
 
-
-
 // async function reduceStock(productId, quantity,batchNo) {
 //   try {
 //     await pool.query`
@@ -3397,7 +3420,6 @@ async function increaseRetailStock(
 //     throw error;
 //   }
 // };
-
 
 exports.salesretailids = (req, res) => {
   pool.connect((err, connection) => {
@@ -3428,11 +3450,9 @@ exports.salesretailids = (req, res) => {
     sm.[roundoff],
     sm.[netAmount],
     sm.[isDraft],
-    CASE 
-    WHEN sm.[prescriptionimage] IS NOT NULL AND sm.[prescriptionimage] != '' 
-    THEN CONCAT('${baseImageUrl}', sm.[prescriptionimage]) 
-    ELSE NULL 
-END AS prescriptionimage
+sm.[prescriptionimage]
+
+
 
 FROM 
     [elite_pos].[dbo].[salesretail_Master] sm
@@ -4816,7 +4836,7 @@ exports.hsnsales = (req, res) => {
       console.error("Error getting connection from pool:", err);
       return res.status(500).json({ error: "Internal Server Error" });
     }
-    pool.query("EXEC GetHSNSales", (err, result) => {
+    pool.query("EXEC GetHSNSalesMON", (err, result) => {
       connection.release();
       if (err) {
         console.error("Error in listing data:", err);
@@ -10334,7 +10354,7 @@ exports.productcategoryadd = async (req, res) => {
     console.log(result.toString());
 
     // Redirect to another route after processing
-    return res.redirect("/productCategory");
+    return res.redirect("/Productcategory");
   } catch (error) {
     console.error(error);
     return res.status(500).send("Internal Server Error");
@@ -10592,7 +10612,7 @@ exports.producttypeadd = async (req, res) => {
     console.log(result.toString());
 
     // Redirect to another route after processing
-    return res.redirect("/producttype");
+    return res.redirect("/Producttype");
   } catch (error) {
     console.error(error);
     return res.status(500).send("Internal Server Error");

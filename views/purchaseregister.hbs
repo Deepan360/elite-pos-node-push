@@ -108,6 +108,7 @@
                                 <th>Bill No</th>
                                 <th>Bill Date</th>
                                 <th>Supplier</th>
+                                <th class="d-none">supplier id</th>
                                 <th>Inv NO</th>
                                 <th>Supp Inv Date</th>
                                 <th>Sub Total</th>
@@ -137,85 +138,201 @@
         </div>
             {{>footer}}
 <!-- Payment Confirmation Modal -->
-<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="paymentModalLabel">Confirm Payment</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="modal fade" id="paymentModal"  tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3 shadow-lg border-0">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title d-flex align-items-center gap-2 text-white" id="paymentModalLabel">
+                    <i class="fas fa-credit-card"></i> Confirm Payment
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
+
             <div class="modal-body">
-                <p>Are you sure the payment is completed?</p>
+                <p class="text-muted mb-2">Are you sure the payment is completed?</p>
+                <p class="text-danger small">⚠️ This action cannot be undone.</p>
+
+                <div class="border rounded p-3 bg-light mt-3">
+                    <p><strong>Payment ID:</strong> <span id="paymentIdDetails" class="text-primary"></span></p>
+                    <p><strong>Amount:</strong> ₹<span id="paymentAmountDetails"></span></p>
+                    <p><strong>Date:</strong> <span id="paymentDateDetails"></span></p>
+                    <p><strong>Supplier:</strong> <span id="paymentSupplierDetails"></span></p>
+                    <p><strong>Invoice No:</strong> <span id="paymentInvoiceDetails"></span></p>
+                    <p><strong>Age (Days):</strong> <span id="paymentAgeDaysDetails"></span></p>
+                  
+                <div class="paymentdetails row d-flex">
+                    <div class="col-md-6">
+                        <label for="transactionid">Transaction ID</label>
+                        <input type="text" id="transactionid" class="form-control mt-2" placeholder="Enter Transaction ID">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="paymentdate">Payment Date</label>
+                        <input type="date" id="paymentdate" class="form-control mt-2">
+                    </div>
+                    <div class="col-md-12">
+                        <label for="cashBankLedgerCr">Cash/Bank Ledger (Cr):</label>
+<select id="cr" name="cr" class="form-control mt-2 dropdown">
+    <option value="" disabled selected>Select Cash/Bank Ledger</option>
+</select>
+                    </div>
+                </div>
+                
+
                 <input type="hidden" id="paymentId">
-                <div id="paymentMessage" class="mt-2"></div> <!-- Message Box -->
+                <div id="paymentMessage" class="mt-3"></div>
             </div>
+
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-success" id="confirmPayment">Confirm</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-primary" id="confirmPayment" disabled>
+                    <span id="confirmBtnText"><i class="fas fa-check-circle"></i> Confirm</span>
+                    <span id="confirmLoader" class="spinner-border spinner-border-sm d-none"></span>
+                </button>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 
 
     </main>
     {{>color}}
+<script>
 
+    $.ajax({
+        url: '/auth/recipt/cr',
+        method: 'GET',
+        success: function (response) {
+            console.log('Received response for cash/bank Ledger(dr):', response);
+            var options = response.data;
+
+            if (options && options.length) {
+                options.forEach(function (option) {
+                    $('.dropdown[name="cr"]').append($('<option>', {
+                        value: option.ledgername,
+                        text: option.ledgername
+                    }));
+                });
+            } else {
+                console.error('No options found for cash/bank Ledger(dr)');
+            }
+
+            // Manually append "cash" to the dropdown
+            $('.dropdown[name="cr"]').append($('<option>', {
+                value: 'cash',
+                text: 'cash'
+            }));
+        },
+        error: function (xhr, status, error) {
+            console.error('Error fetching options for cash/bank Ledger(dr):', error);
+        }
+    });
+
+
+    // Enable confirm button only when both Transaction ID and Payment Date are filled
+    document.addEventListener('input', function () {
+        const transactionId = document.getElementById('transactionid').value.trim();
+        const paymentDate = document.getElementById('paymentdate').value.trim();
+        const confirmButton = document.getElementById('confirmPayment');
+
+        if (transactionId && paymentDate) {
+            confirmButton.disabled = false;
+        } else {
+            confirmButton.disabled = true;
+        }
+    });
+</script>
 <script>
     $(document).on("click", ".fa-credit-card", function () {
-        let paymentId = $(this).data("id"); // Get purchase ID from icon
-        $("#paymentId").val(paymentId); // Store ID in hidden input
-        $("#paymentModal").modal("show"); // Show confirmation modal
-    });
+        const paymentId = $(this).data("id");
+        $("#paymentId").val(paymentId);
 
+        const row = $(this).closest("tr");
+        $("#paymentAmountDetails").text(row.find("td").eq(6).text().trim());
+        $("#paymentDateDetails").text(row.find("td").eq(1).text().trim());
+        $("#paymentSupplierDetails").text(row.find("td").eq(2).text().trim());
+        $("#paymentInvoiceDetails").text(row.find("td").eq(4).text().trim());
+        $("#paymentAgeDaysDetails").text(row.find("td").eq(14).text().trim());
+    
 
-
-    $("#confirmPayment").click(function () {
-        let paymentId = $("#paymentId").val();
-        console.log("🔍 Payment ID:", paymentId); // Debugging
-
-        // Clear previous messages
+        $("#paymentIdDetails").text(paymentId);
         $("#paymentMessage").html("");
+        $("#confirmBtnText").removeClass("d-none");
+        $("#confirmLoader").addClass("d-none");
 
-        $.ajax({
-            url: "/auth/updatepayment",
-            type: "PUT",
-            contentType: "application/json",
-            data: JSON.stringify({ id: paymentId }),
-            success: function (response) {
-                if (response.success) {
-                    // Show success message in modal
-                    $("#paymentMessage").html(
-                        '<div class="alert alert-success">✅ Payment updated successfully!</div>'
-                    );
-
-                    // Refresh DataTable after 1.5 seconds and close modal
-                    setTimeout(() => {
-                        $("#paymentModal").modal("hide");
-                        table.ajax.reload(null, false);
-                    }, 1500);
-                } else {
-                    // Show error message in modal
-                    $("#paymentMessage").html(
-                        '<div class="alert alert-warning">⚠ Failed to update payment: ' + response.message + "</div>"
-                    );
-                }
-            },
-            error: function (xhr, status, error) {
-                console.log("❌ AJAX Error:", xhr);
-                console.log("❌ Response Text:", xhr.responseText);
-                console.log("❌ Status:", status);
-                console.log("❌ Error:", error);
-
-                // Show error message inside modal
-                $("#paymentMessage").html(
-                    '<div class="alert alert-danger">❌ Error updating payment. Try again!</div>'
-                );
-            }
-        });
+        $("#paymentModal").modal("show");
     });
 
+        $("#confirmPayment").click(function () {
+            const paymentId = $("#paymentId").val();
+            const transactionId = $("#transactionid").val().trim();
+            const paymentDate = $("#paymentdate").val().trim();
+            const paymentAmountDetails = $("#paymentAmountDetails").text().trim();
+            const cr = $("#cr").val();
+           
+
+            if (!transactionId || !paymentDate || !paymentAmountDetails) {
+                $("#paymentMessage").html(
+                    '<div class="alert alert-warning">⚠ Please fill all required fields.</div>'
+                );
+                return;
+            }
+
+            $("#confirmBtnText").addClass("d-none");
+            $("#confirmLoader").removeClass("d-none");
+            $("#paymentMessage").html("");
+
+            $.ajax({
+                url: "/auth/updatepayment",
+                type: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    id: paymentId,
+                    transactionId: transactionId,
+                    paymentDate: paymentDate,
+                    amount: paymentAmountDetails,
+                    bankledger:cr,
+                }),
+                success: function (response) {
+                    $("#confirmBtnText").removeClass("d-none");
+                    $("#confirmLoader").addClass("d-none");
+
+                    if (response.success) {
+                        $("#paymentMessage").html(
+                            '<div class="alert alert-success">✅ Payment updated successfully!</div>'
+                        );
+                        //modal input empty
+                        $("#transactionid").val("");
+                        $("#paymentdate").val("");
+                        $("#cr").val("");
+                        $("#paymentId").val("");
+                        $("#paymentIdDetails").text("");
+                        
+                        setTimeout(() => {
+                            $("#paymentModal").modal("hide");
+                            table.ajax.reload(null, false);
+                        }, 1200);
+                    } else {
+                        $("#paymentMessage").html(
+                            `<div class="alert alert-warning">⚠ ${response.message}</div>`
+                        );
+                    }
+                },
+                error: function () {
+                    $("#confirmBtnText").removeClass("d-none");
+                    $("#confirmLoader").addClass("d-none");
+
+                    $("#paymentMessage").html(
+                        '<div class="alert alert-danger">❌ Error updating payment. Please try again.</div>'
+                    );
+                },
+            });
+        });
+    
 
 
      document.getElementById("clear-button").addEventListener("click", function () {
@@ -324,6 +441,12 @@
                render: function (data, type, row) {
                    return data[1]; // Return the supplier name if it's an array or object
                }
+           },
+           {
+               data: 'suppliername',
+               render: function (data, type, row) {
+                   return data[0]; // Return the supplier name if it's an array or object
+               }, className: 'd-none' 
            },
            {data:'supplierinvoiceno'},
            {

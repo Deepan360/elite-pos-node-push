@@ -275,17 +275,13 @@
         </div>
         <div class="col-md-2">
             <div class="custom-input-container">
-                <select name="doctorname" id="doctorname" class="form-control">
-                    <option value="" disabled selected>Select Doctor</option>
-                    <option value="Dr. Keshava Balaji">Dr. Keshava Balaji</option>
-                    <option value="Dr. Remughi">Dr. Remughi</option>
-                </select>
+                <input type="text" placeholder=" " name="doctorname" id="doctorname">
                 <label for="doctorname">Doctor Name</label>
             </div>
         </div>
         <div class="col-md-2 insert">
             <div class="custom-input-container">
-                <input type="file" name="prescriptionImage" accept="image/*" />
+                <input type="file" name="prescriptionImage" accept="image/*" multiple />
                 <label for="prescription">Prescription Image</label>
             </div>
         </div>
@@ -605,7 +601,11 @@
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body text-center">
-                                                <img id="prescriptionImage" src="" alt="Prescription" class="img-fluid rounded shadow">
+                                        <div id="prescriptionImageContainer" class="d-flex gap-2 overflow-auto"
+                                            style="max-width: 100%; max-height: 500px; white-space: nowrap;">
+                                        </div>
+
+
                                             </div>
                                         </div>
                                     </div>
@@ -912,7 +912,7 @@
                     "<td><input type='number' name='quantity' class='input-field' value='" + quantity + "'></td>" +
                     "<td class='d-none'><input type='number' name='free' class='input-field' value='" + free + "'></td>" +
                     "<td class='d-none'><input type='text' name='productPackage' class='input-field' value='" + productPackage + "'></td>" +
-                    "<td><input type='number' name='purcRate' class='input-field' value='" + purcRate + "' readonly></td>" +
+                    "<td class='d-none'><input type='number' name='purcRate' class='input-field' value='" + purcRate + "' readonly></td>" +
                     "<td><input type='number' name='mrp' class='input-field' value='" + mrp + "' readonly></td>" + // Fixed line
                     "<td><input type='number' name='rate' class='input-field w-200' value='" + rate + "'></td>" +
                     "<td><select name='discMode' class='input-field disc-mode dropdown' id='discMode_" + id + "'><option selected disabled>Select Disc Mode</option></select></td>" +
@@ -1483,6 +1483,7 @@
                 }
             }
         }
+       
         function showBootstrapModal(message, callback) {
             // Set the message in the modal
             $('#modalMessage').text(message);
@@ -1544,10 +1545,10 @@
                     "<td><input type='number' name='quantity' min='1' class='input-field quantity' id='quantity_" + uniqueId + "' placeholder='Quantity' oninput='this.value = this.value.replace(/[^0-9]/g, \"\")' required></td>" +
                     "<td class='d-none'><input type='number' name='free'min='0' class='input-field' id='free_" + uniqueId + "' placeholder='Free' oninput='this.value = this.value.replace(/[^0-9]/g, \"\")'></td>" +
                     "<td class='d-none'><input type='text' name='productPackage' class='input-field' id='uom_" + uniqueId + "' placeholder='productPackage'></td>" +
-                    "<td><input type='number' name='purcRate' class='input-field' id='purcRate_" + uniqueId + "' placeholder='purcRate' readonly></td>" +
+                    "<td class='d-none'><input type='number' name='purcRate' class='input-field' id='purcRate_" + uniqueId + "' placeholder='purcRate' readonly></td>" +
                     "<td ><input type='number' name='mrp' class='input-field' id='mrp_" + uniqueId + "' placeholder='MRP' readonly></td>" +
                     "<td><input type='number' name='rate' class='input-field' id='rate_" + uniqueId + "' placeholder='Rate' required></td>" +
-                    "<td><select name='discMode' class='input-field product-name dropdown' id='discMode_" + uniqueId + "' placeholder='Disc.Mode' ><option selected disabled>Select Disc Mode</option></select></td>" +
+                    "<td><select name='discMode' class='input-field product-name dropdown' id='discMode_" + uniqueId + "' placeholder='Disc.Mode' ><option value='3' selected>Select Disc Mode</option></select></td>" +
                     "<td><input type='number' name='discount' class='input-field' id='discount_" + uniqueId + "' placeholder='Discount' disabled></td>" +
                     "<td><input type='number' name='amount' class='input-field' id='amount_" + uniqueId + "' placeholder='Amount'></td>" +
                     "<td class='d-none'><input type='number' name='cgst' class='input-field' id='cgst_" + uniqueId + "' placeholder='CGST'></td>" +
@@ -1874,8 +1875,6 @@
                 }
             });
 
-
-
             // Get Product Data
             function getProductsData() {
                 var products = [];
@@ -1908,6 +1907,7 @@
                 });
                 return products;
             }
+        
             function isProductBatchAlreadySelected(selectedProductId, batchNo) {
                 let exists = false;
                 $('#customerTable tbody tr').each(function () {
@@ -2024,6 +2024,7 @@
                     }
                 });
             }
+        
             $('#batchDetailsBody').on('click', 'tr', function () {
                 // Check if the row has the class "non-selectable"
                 if ($(this).hasClass('non-selectable')) {
@@ -2141,6 +2142,7 @@
                 }
             });
         });
+        
         function fetchDiscmodeOptions(uniqueId) {
             $.ajax({
                 url: '/auth/purchase/discmode',
@@ -2173,6 +2175,7 @@
                 }
             });
         }
+      
         function calculateTotals() {
             let totalAmount = 0;
             let totalCGST = 0;
@@ -2263,8 +2266,7 @@
         $('#pdiscMode, #pdiscount').change(function () {
             calculateTotals();
         });
-
-
+        
         $(document).on('click', '#addmanufacturer', function () {
             $("#manufacturerform").show();
             $("#id").val('');
@@ -2284,7 +2286,7 @@
                 { data: 'quantity' },
                 { data: 'free', className: 'd-none' },
                 { data: 'uom', className: 'd-none' },
-                { data: 'purcRate' },
+                { data: 'purcRate', className: 'd-none' },
                 { data: 'mrp' },
                 { data: 'rate' },
                 { data: 'discMode' },
@@ -2310,7 +2312,6 @@
             }
 
         });
-
 
         table.column('.action').visible(false);
 
@@ -2594,18 +2595,29 @@
                 selectedOption.prop('selected', true);
 
 
+                let imageContainer = $('#prescriptionImageContainer');
+                imageContainer.empty(); // clear any old images
+
                 if (rowDetails.prescriptionimage && rowDetails.prescriptionimage.trim() !== "") {
-                    $('#previewBtn').show(); // Show the preview button
-                    $('.insert').hide(); // hide the upload file tab
+                    const baseImageUrl = "/uploads/prescription/";
+                    const imageList = rowDetails.prescriptionimage.split(',').map(img => img.trim());
+
+                    imageList.forEach(img => {
+                     const imgEl = `<img src="${baseImageUrl}${img}" class="rounded shadow" style="height: 300px; max-width: 100%; object-fit: contain;">`;
+
+                        imageContainer.append(imgEl);
+                    });
+
+                    $('#previewBtn').show();
+                    $('.insert').hide();
                     $('#previewBtn').off('click').on('click', function () {
-                        $('#prescriptionImage').attr('src', rowDetails.prescriptionimage);
                         let prescriptionModal = new bootstrap.Modal(document.getElementById("prescriptionModal"));
                         prescriptionModal.show();
-
                     });
                 } else {
-                    $('#previewBtn').hide(); // Hide if no image available
+                    $('#previewBtn').hide();
                 }
+
 
                 if (rowDetails.isDraft === true) {
                     $('.editmasbtn').prop('disabled', false);  // Editable
@@ -2651,6 +2663,9 @@
                 console.error('Error parsing JSON:', error);
             }
         });
+      
+      
+      
         // Initialize the return table only once
         var returnTable = $("#returnTable").DataTable({
             searching: false,

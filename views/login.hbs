@@ -1,4 +1,8 @@
 {{>header}}
+{{! 🚀 Login Page Template }}
+{{! This template is designed for a login page with a form and a left-side image. }}
+{{! The left side is hidden on mobile devices. }}
+{{! 🚀 CSS Styles for the Login Page }}
 <style>
   .content-left {
     text-align: center;
@@ -110,7 +114,26 @@
       sessionStorage.setItem("sidebarItems", JSON.stringify(result.sidebarItems));
       window.location.href = "/index"; // ✅ Redirect on success
     } else {
-      alert(result.msg);
+      const alertPlaceholder = document.createElement('div');
+      alertPlaceholder.className = 'alert alert-light text-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x w-25 shadow-lg rounded';
+      alertPlaceholder.role = 'alert';
+      alertPlaceholder.style.zIndex = '1050'; // Ensure it appears above other elements
+      alertPlaceholder.style.marginTop = '20px'; // Add some spacing from the top
+      alertPlaceholder.style.animation = 'fadeIn 0.5s ease-in-out'; // Smooth fade-in animation
+      alertPlaceholder.innerHTML = `
+      <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+        <use xlink:href="#exclamation-triangle-fill"/>
+      </svg>
+      <strong>Error:</strong> ${result.msg}
+      <button type="button" class="btn-close text-white" data-bs-dismiss="alert" aria-label="Close"></button>
+      `;
+      document.body.prepend(alertPlaceholder);
+
+      // Automatically remove the alert after 5 seconds
+      setTimeout(() => {
+      alertPlaceholder.classList.add('fade-out');
+      setTimeout(() => alertPlaceholder.remove(), 500); // Wait for fade-out animation
+      }, 5000);
     }
   });
 

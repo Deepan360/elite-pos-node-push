@@ -1,0 +1,95 @@
+Server started @ port 5000 🚀 7e337fdb-6080-4591-94db-e91393d86a73
+Connected to the database
+Connected to SQL Server 🚁
+Company details retrieved successfully: {
+  companyName: 'Microsoft',
+  gstin: '136185',
+  mobileNo: '67834308956',
+  address: 'velachery',
+  city: 'Bengaluru',
+  state: 'Karnataka',
+  quotes: 'Thank You For Your business With Us',
+  dl1: 'dets',
+  dl2: 'desd'
+}
+^CServer started @ port 5000 🚀 0ecd7d07-0277-4c19-985c-f1087b1c3c4d
+Connected to SQL Server 🚁
+Connected to the database
+Company details retrieved successfully: {
+  companyName: 'Microsoft',
+  gstin: '136185',
+  mobileNo: '67834308956',
+  address: 'velachery',
+  city: 'Bengaluru',
+  state: 'Karnataka',
+  quotes: 'Thank You For Your business With Us',
+  dl1: 'dets',
+  dl2: 'desd'
+}
+Server started @ port 5000 🚀 3d0319a9-e2f9-44ee-82df-2286898e6d81
+Connected to SQL Server 🚁
+Connected to the database
+Company details retrieved successfully: {
+  companyName: 'Microsoft',
+  gstin: '136185',
+  mobileNo: '67834308956',
+  address: 'velachery',
+  city: 'Bengaluru',
+  state: 'Karnataka',
+  quotes: 'Thank You For Your business With Us',
+  dl1: 'dets',
+  dl2: 'desd'
+}
+Connected to the database 
+Checking user credentials...
+User Role: SuperAdmin
+Role name: SuperAdmin
+Company details retrieved successfully: {
+  companyName: 'Microsoft',
+  gstin: '136185',
+  mobileNo: '67834308956',
+  address: 'velachery',
+  city: 'Bengaluru',
+  state: 'Karnataka',
+  quotes: 'Thank You For Your business With Us',
+  dl1: 'dets',
+  dl2: 'desd'
+}
+Supplier count retrieved successfully: 7
+Customer count retrieved successfully: 3
+Role name: SuperAdmin
+Connected to the database 
+Connected to the database 
+Product count retrieved successfully: 50
+Purchase count retrieved successfully: 178
+Master data retrieved successfully
+Role name: SuperAdmin
+Company details retrieved successfully: {
+  companyName: 'Microsoft',
+  gstin: '136185',
+  mobileNo: '67834308956',
+  address: 'velachery',
+  city: 'Bengaluru',
+  state: 'Karnataka',
+  quotes: 'Thank You For Your business With Us',
+  dl1: 'dets',
+  dl2: 'desd'
+}
+Role name: SuperAdmin
+Role name: SuperAdmin
+Company details retrieved successfully: {
+  companyName: 'Microsoft',
+  gstin: '136185',
+  mobileNo: '67834308956',
+  address: 'velachery',
+  city: 'Bengaluru',
+  state: 'Karnataka',
+  quotes: 'Thank You For Your business With Us',
+  dl1: 'dets',
+  dl2: 'desd'
+}
+Role name: SuperAdmin
+Role name: SuperAdmin
+Server started @ port 5000 🚀 26de9d21-f1b5-4094-ab4a-01ae73a1a68b
+Connected to SQL Server 🚁
+Connected to the database

@@ -104,6 +104,7 @@ router.get("/recipt/dr", userController.receiptDr);
 router.get("/recipt/cr", userController.receiptCr);
 router.get("/payment", userController.payment);
 router.post("/payment", userController.paymentadd);
+router.get("/purchasecreditupdate", userController.purchasecreditupdate);
 router.put("/paymentedit/:id", userController.paymentedit);
 router.delete("/paymentdelete/:id", userController.paymentdelete);
 router.get("/payment/dr", userController.paymentDr);

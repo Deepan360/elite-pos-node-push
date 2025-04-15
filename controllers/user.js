@@ -8741,6 +8741,34 @@ exports.getproduct = async (req, res) => {
 //product//
 
 /*payment*/
+
+exports.purchasecreditupdate = (req, res) => {
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+    pool.query(
+      `SELECT P.*, S.ledgername AS suppliername,DM.discMode AS discModes
+      FROM [PurchaseTable_Master] AS P
+      LEFT JOIN [Supplier] AS S ON P.suppliername = S.id
+       LEFT JOIN 
+        [discmode] AS DM ON P.discMode = DM.id 
+      where isDraft=0 and paymentmode='Credit';
+    `,
+      (err, result) => {
+        connection.release();
+        if (err) {
+          console.error("Error in listing data:", err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+        // Send the data as JSON response
+        res.json({ data: result.recordset });
+      }
+    );
+  });
+};
+
 exports.paymentCr = async (req, res) => {
   try {
     // Ensure the database connection is established before proceeding
@@ -8773,10 +8801,10 @@ exports.paymentDr = async (req, res) => {
 
 exports.paymentadd = async (req, res) => {
   console.log(req.body);
-  const { paymentdate, cr, dr, billno, amount, discount, remarks } = req.body;
+  const { paymentdate, cr, billno, transactionno } = req.body;
 
   // Handle date values
-  const formattedpaymentDate = paymentdate ? paymentdate : null;
+  const formattedPaymentDate = paymentdate ? paymentdate : null;
 
   try {
     // Ensure the database connection is established before proceeding
@@ -8784,26 +8812,38 @@ exports.paymentadd = async (req, res) => {
 
     const result = await pool
       .request()
-      .input("paymentdate", sql.Date, formattedpaymentDate)
+      .input("paymentdate", sql.Date, formattedPaymentDate)
       .input("cr", sql.NVarChar(255), cr)
-      .input("dr", sql.NVarChar(255), dr)
+     
       .input("billno", sql.NVarChar(255), billno)
-      .input("amount", sql.Decimal(18, 2), amount)
-      .input("discount", sql.Decimal(18, 2), discount)
-      .input("remarks", sql.NVarChar(255), remarks)
+      .input("transactionno", sql.NVarChar(255), transactionno)
       .query(
-        "EXEC [dbo].[AddPayment] @paymentdate, @cr, @dr, @billno, @amount, @discount, @remarks"
+        "EXEC [dbo].[AddPayment] @paymentdate, @cr,  @billno, @transactionno"
       );
 
-    console.log("Formatted payment Date:", formattedpaymentDate);
-    console.log("DR Value:", dr);
-    // ... add more log statements
-    console.log(result);
+    // Check if successfully added and update payment mode in PurchaseTable_Master
+    if (result.rowsAffected[0] > 0) {
+      console.log("Payment added successfully");
+
+      try {
+        const updateResult = await pool
+          .request()
+          .input("billno", sql.NVarChar(255), billno)
+          .query(
+            "UPDATE PurchaseTable_Master SET paymentmode = 'Cash' WHERE id = @billno"
+          );
+        console.log("Payment mode updated successfully:", updateResult);
+      } catch (updateError) {
+        console.error("Error updating payment mode:", updateError);
+      }
+    }
+
+    console.log("Formatted payment Date:", formattedPaymentDate);
 
     // Redirect to another route after processing
-    return res.redirect("/payment");
+    return res.redirect("/Payment");
   } catch (error) {
-    console.error(error);
+    console.error("Error adding payment:", error);
     return res.status(500).send("Internal Server Error");
   }
 };

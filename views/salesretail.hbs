@@ -2556,6 +2556,8 @@
             }
         });
 
+
+
         $('.dropdown[name="Id"]').change(function () {
             var selectedOption = $(this).find('option:selected');
             if (!selectedOption || !selectedOption.val()) {
@@ -2726,6 +2728,17 @@
             });
         });
     </script>
+    {{!-- function orderdataintheflow(){
+    // Ensure buttons are in the correct order on page load
+    $(document).ready(function () {
+    // Move the edit button before the submit button
+    var $editBtn = $('.editmasbtn');
+    var $submitBtn = $('#submitFormBtn');
+    if ($editBtn.length && $submitBtn.length) {
+    $editBtn.insertBefore($submitBtn);
+    }
+    });
+    } --}}
 </body>
 
 </html>

@@ -160,9 +160,7 @@
 {{>footer}}
   
   </main>
- 
   {{>color}}
-
 <script>
     document.getElementById("filter-button").addEventListener("click", function() {
         var fromDate = new Date(document.getElementById("fromDate").value);
@@ -211,7 +209,6 @@
         }
     });
 </script>
-
 
     <script>
         // Add form button click event
@@ -474,7 +471,7 @@ $.ajax({
                     options.forEach(option => {
                         dropdown.append($('<option>', {
                             value: option.id,
-                            text: option.supplierinvoiceno
+                            text: option.supplierinvoiceno && option.supplierinvoiceno.length > 0 ? option.supplierinvoiceno : 'N/A'
                         }));
                     });
 
@@ -533,6 +530,7 @@ $.ajax({
 </html>
 <form id="manufacturerform" style="display: none;" method="post" action="/auth/payment"
     class="p-4 border rounded shadow bg-white border-primary">
+    <h4>Supplier Payment</h4>
     <div class="row mb-3">
         <div class="col-md-4">
             <label for="paymentdate" class="form-label">Payment Date:</label>
@@ -542,8 +540,8 @@ $.ajax({
             <label for="cr" class="form-label">Cash/Bank Ledger (Cr):</label>
             <select id="cr" name="cr" class="dropdown form-control" r></select>
         </div>
-        <div class="col-md-6">
-            <label for="billno" class="form-label">Bill No:</label>
+        <div class="col-md-4">
+            <label for="billno" class="form-label">Invoice No:</label>
             <select id="billno" name="billno" class="dropdown form-control" required>
                 <option value="">-- Select Bill --</option>
             </select>
@@ -569,8 +567,6 @@ $.ajax({
     </div>
 </form>
 
-
-
 <form class="editForm" method="put" action="/auth/paymentedit/:id">
   <div class="row">
         <div class="col">
@@ -593,7 +589,6 @@ $.ajax({
     <button type="submit" class="btn btn-primary">Update</button>
     <button type="button" class="btn btn-primary" id="closeEditForm">Close</button>
 </form>
-
 
  <script>
   $( function() {

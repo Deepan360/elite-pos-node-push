@@ -464,8 +464,8 @@
            {
                data: 'paymentmode',
                render: function (data) {
-                   // If payment mode is 'credit', show 'Unpaid', otherwise 'Paid'
-                   return data === 'credit' ? 'Unpaid' : 'Paid';
+                   // If payment mode is 'credit', show 'Unpaid' with text-danger style, otherwise 'Paid'
+                   return data === 'credit' ? '<span class="text-danger ">Unpaid</span>' : '<span class="text-success">Paid</span>';
                }
            },
            {

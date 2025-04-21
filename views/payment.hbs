@@ -135,6 +135,8 @@
                     <th>Supplier Invoice No</th>
                     <th>Supplier Invoice Date</th>
                     <th>Amount</th>
+                    <th>Refer no</th>
+                    <th>Remarks</th>
                 </tr>
             </thead>
 
@@ -242,7 +244,9 @@
                      return data ? moment(data).format("DD-MM-YYYY") : '';
                  }
              },
-             { data: 'amount' }
+             { data: 'amount' },
+                { data: 'referno' },
+                { data: 'remarks' }
          ],
     dom: 'Bfrtip',
     buttons: ['copy', 'excel', 'pdf', 'csv'],
@@ -471,7 +475,7 @@ $.ajax({
                     options.forEach(option => {
                         dropdown.append($('<option>', {
                             value: option.id,
-                            text: option.supplierinvoiceno && option.supplierinvoiceno.length > 0 ? option.supplierinvoiceno : 'N/A'
+                            text: `${option.suppliername[1]} - ${option.supplierinvoiceno}  `
                         }));
                     });
 
@@ -559,6 +563,14 @@ $.ajax({
             <label for="tn" class="form-label">Transaction No </label>
             <input type="text" placeholder="Transaction no" name="transactionno" id="transactionno" class="form-control" required >
         </div>
+        <div class="col-md-4">
+<label for="tn" class="form-label">refer No </label>
+<input type="text" placeholder="Refer no" name="referno" id="referno" class="form-control" >
+        </div>
+            <div class="col-md-4">
+                <label for="tn" class="form-label">Remarks</label>
+                <input type="text" placeholder="Remarks" name="remarks" id="remarks" class="form-control" >
+            </div>
     </div>
 
     <div class="d-flex justify-content-end">

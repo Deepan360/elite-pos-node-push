@@ -401,6 +401,112 @@ exports.salesretailEdit = async (req, res) => {
   }
 };
 
+exports.suppliermultipaymentlist = async (req, res) => {
+  const { supplierId } = req.query; // Get the supplier ID
+  console.log("Received supplier name:", supplierId); // Log the received supplier name
+  if (!supplierId) {
+    return res.status(400).json({
+      success: false,
+      message: "Supplier name is required",
+    });
+  }
+
+  try {
+    await pool.connect();
+
+    const result = await pool
+      .request()
+      .input("supplierId", sql.VarChar, supplierId).query(`
+            SELECT * FROM PurchaseTable_Master
+            WHERE paymentmode = 'credit' AND suppliername = @supplierId
+        `);
+
+    res.status(200).json({
+      success: true,
+      data: result.recordset,
+    });
+  } catch (error) {
+    console.error("Error in suppliermultipaymentlist:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+exports.multipaymentinsert = async (req, res) => {
+  const {
+    payment_date,
+    cash_bank_ledger,
+    supplier_ledger,
+    transactionno,
+    referno,
+    remarks,
+    amount,
+    billnos, // Array of bill numbers
+  } = req.body;
+
+  console.log("Received request to insert multipayment:", req.body);
+
+  if (!Array.isArray(billnos) || billnos.length === 0) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Bill numbers are required." });
+  }
+
+  let transaction;
+
+  try {
+    const pool = await poolConnect();
+    transaction = new sql.Transaction(pool);
+    await transaction.begin();
+
+    for (const billno of billnos) {
+      const request = new sql.Request(transaction); // Move inside loop
+
+      await request
+        .input("payment_date", sql.Date, payment_date)
+        .input("cash_bank_ledger", sql.VarChar(100), cash_bank_ledger)
+        .input("supplier_ledger", sql.VarChar(100), supplier_ledger)
+        .input("transactionno", sql.VarChar(100), transactionno)
+        .input("referno", sql.VarChar(100), referno)
+        .input("remarks", sql.VarChar(255), remarks)
+        .input("amount", sql.Decimal(18, 2), amount)
+        .input("billno", sql.Int, billno).query(`
+          INSERT INTO SupplierMultiPayments 
+          (payment_date, cash_bank_ledger, supplier_ledger, transactionno, referno, remarks, amount, bill_no)
+          VALUES (@payment_date, @cash_bank_ledger, @supplier_ledger, @transactionno, @referno, @remarks, @amount, @billno)
+        `);
+    }
+
+    await transaction.commit();
+
+    res
+      .status(200)
+      .json({ success: true, message: "Payments inserted successfully." });
+  } catch (error) {
+    console.error("Error during multipayment insert:", error);
+
+    // Rollback on error
+    if (transaction) {
+      try {
+        await transaction.rollback();
+      } catch (rollbackError) {
+        console.error("Rollback failed:", rollbackError);
+      }
+    }
+
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Failed to insert payments.",
+        error: error.message,
+      });
+  }
+};
+
+
 
 exports.inpatientadd = async (req, res) => {
   upload(req, res, async (err) => {
@@ -8801,7 +8907,7 @@ exports.paymentDr = async (req, res) => {
 
 exports.paymentadd = async (req, res) => {
   console.log(req.body);
-  const { paymentdate, cr, billno, transactionno } = req.body;
+  const { paymentdate, cr, billno, transactionno,remarks,referno } = req.body;
 
   // Handle date values
   const formattedPaymentDate = paymentdate ? paymentdate : null;
@@ -8817,8 +8923,10 @@ exports.paymentadd = async (req, res) => {
      
       .input("billno", sql.NVarChar(255), billno)
       .input("transactionno", sql.NVarChar(255), transactionno)
+      .input("remarks", sql.NVarChar(255), remarks)
+      .input("referno", sql.NVarChar(255), referno)
       .query(
-        "EXEC [dbo].[AddPayment] @paymentdate, @cr,  @billno, @transactionno"
+        "EXEC [dbo].[AddPayment] @paymentdate, @cr,  @billno, @transactionno ,@remarks,@referno"
       );
 
     // Check if successfully added and update payment mode in PurchaseTable_Master

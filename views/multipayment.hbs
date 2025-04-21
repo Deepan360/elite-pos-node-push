@@ -137,35 +137,53 @@
     <button type="button" class="btn btn-danger deletemasBtn">Delete</button>
 </div>
             </div>
-<form id="purchaseDetails" class="custom-form" method="post">
-<div class="form-group">
-  <label for="id">Select payment:</label>
-  <select class="form-control" id="id" name="id">
-    <option value="view details">View Details</option>
-  </select>
-</div>
+<form id="purchaseDetails" class="custom-form row d-flex" method="post" auth="/auth/multipaymentinsert" >
 
 
-    <div class="form-group">
+    <div class="form-group col-md-2">
         <label for="payment_date">payment Date:</label>
         <input type="date" class="form-control" id="payment_date" name="payment_date">
     </div>
-<div class="form-group">
+<div class="form-group col-md-2">
     <label for="cash_bank_ledger">Cash/Bank Ledger(Dr):</label>
     <select class="form-control" id="cash_bank_ledger" name="cash_bank_ledger">
       <option value="cash/bank select" disabled selected>cash/bank select</option>
 
     </select>
 </div>
-<div class="form-group">
-    <label for="customer_ledger">supplier Ledger(cr):</label>
-    <select class="form-control" id="customer_ledger" name="customer_ledger">
-        <option value="Customer Ledger" disabled selected>Customer Ledger</option>
+<div class="form-group col-md-2">
+    <label for="transactionno">Transaction No:</label>
+    <input type="text" class="form-control" id="transactionno" name="transactionno">
+</div>
+<div class="form-group col-md-2">
+    <label for="referno">Refer No:</label>
+    <input type="text" class="form-control" id="referno" name="referno">
+</div>
+<div class="form-group col-md-2">
+    <label for="remarks">Remarks:</label>
+    <input type="text" class="form-control" id="remarks" name="remarks">
+</div>
+<!-- Supplier Dropdown -->
+<div class="form-group col-md-2">
+    <label for="supplier_ledger">Supplier Ledger (cr):</label>
+    <select class="form-control" id="supplier_ledger" name="supplier_ledger">
+        <option value="" disabled selected>Select Supplier</option>
     </select>
 </div>
-    <div class="form-group">
+
+    <div class="form-group col-md-2">
         <label for="amount">Amount:</label>
         <input type="text" class="form-control" id="amount" name="amount">
+    </div>
+    <div class="form-group col-md-2 d-none">
+        <label for="billno">Bill No:</label>
+        <input type="hidden" id="billnos" name="billnos[]">
+
+        <input type="text" class="form-control" id="billno" name="billno" readonly>
+    </div>
+    <div class="form-group col-md-2 ">
+        
+<button class="btn btn-primary" type="submit">Submit</button>
     </div>
 </form>
                 <div class="custom-input-container">
@@ -200,36 +218,212 @@
             <div id="selectedRowDetails"></div>
             {{>footer}}
         </div>
-    </main>
+        <!-- Bootstrap Modal -->
+<!-- Modal Structure -->
+<!-- Modal Structure -->
+<div class="modal fade" id="purchaseDetailsModal" tabindex="-1" aria-labelledby="purchaseDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="purchaseDetailsModalLabel">Credit Purchases</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="paidamount">Paid Amount:</label>
+                    <input type="number" class="form-control" id="paidamount" name="paidamount" placeholder="Enter Paid Amount">
+                    </div>
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-bordered table-hover" id="purchaseDetailsTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Select</th>
+                                <th>Purchase ID</th>
+                                <th>Date</th>
+                                <th>Invoice No</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="purchaseDetailsBody"></tbody>
+                    </table>
+                </div>
+                <div class="form-group mt-3">
+                    <label for="amount" class="form-label">Total Amount:</label>
+                <!-- In Modal -->
+                <input type="text" class="form-control" id="modal_total_amount" name="modal_total_amount" readonly>
+
+                </div>  
+                <div class="d-flex justify-content-end mt-3">
+                    <button type="button" class="btn btn-primary" id="submitSelectedAmounts">Submit Selected Amounts</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {{>color}}
 
 <script>
 
-function populateDropdown(data, dropdownId) {
-    const dropdown = $(`#${dropdownId}`);
-    dropdown.empty(); 
-    
+    $('#purchaseDetails').on('submit', function (e) {
+        e.preventDefault();
 
-    dropdown.append($('<option disabled selected></option>').attr('value', '').text('Select an option'));
+        const formData = $(this).serializeArray();
+        const billnosRaw = $('#billnos').val();
+        const billnos = billnosRaw ? billnosRaw.split(',') : [];
 
-    // Populate the dropdown with actual options
-    data.forEach(option => {
-        dropdown.append($('<option></option>').attr('value', option.ledgername).text(option.ledgername));
+        // Now you have everything you need
+        console.log("Form values:", formData);
+        console.log("Bill numbers:", billnos);
+
+        // You can send it like this:
+        const payload = {
+            payment_date: $('#payment_date').val(),
+            cash_bank_ledger: $('#cash_bank_ledger').val(),
+            supplier_ledger: $('#supplier_ledger').val(),
+            transactionno: $('#transactionno').val(),
+            referno: $('#referno').val(),
+            remarks: $('#remarks').val(),
+            amount: $('#amount').val(),
+            billnos: billnos
+        };
+
+        $.ajax({
+            url: '/auth/multipaymentinsert',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            success: function (res) {
+                console.log('Insert success:', res);
+            },
+            error: function (xhr) {
+                console.error('Insert failed:', xhr);
+            }
+        });
     });
-}
 
-    // AJAX request to get Cash/Bank Ledger(Dr) options
+
     $.ajax({
         type: 'GET',
         url: '/auth/multipayment/dr',
-        success: function(response) {
-            populateDropdown(response.data, 'customer_ledger');
+        success: function (response) {
+            populateDropdown(response.data, 'supplier_ledger');
+            console.log(response.data); // Log the response data to check the format of `id` and `ledgername`
         },
-        error: function(xhr, status, error) {
-            console.error('Error fetching Cash/Bank Ledger(Dr) options:', error);
-            // Handle error
+        error: function (xhr, status, error) {
+            console.error('Error fetching supplier (Dr) options:', error);
         }
     });
+
+    function populateDropdown(data, dropdownId) {
+        const $dropdown = $('#' + dropdownId);
+        $dropdown.empty().append('<option disabled selected>Select Supplier</option>');
+
+        data.forEach(option => {
+            $dropdown.append(
+                $('<option>', {
+                    value: option.id, // Correctly set the value to the supplier's ID
+                    text: option.ledgername // Display the supplier's name in the dropdown
+                })
+            );
+        });
+    }
+
+
+    // When supplier changes, fetch data and open modal
+    $('#supplier_ledger').on('change', function () {
+        const supplierId = $(this).val();
+
+        if (!supplierId) return;
+
+        $.ajax({
+            url: '/auth/suppliermultipaymentlist',
+            method: 'GET',
+            data: { supplierId: supplierId },
+            success: function (response) {
+                if (response.success && response.data.length > 0) {
+                    const rows = response.data.map(purchase => `
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="purchase-checkbox" 
+                                   data-id="${purchase.id}" 
+                                   data-amount="${purchase.supplierinvoiceamount}">
+                        </td>
+                        <td>${purchase.id}</td>
+                        <td>${new Date(purchase.supplierinvoicedate).toLocaleDateString()}</td>
+                        <td>${purchase.supplierinvoiceno || '-'}</td>
+                        <td>${purchase.supplierinvoiceamount}</td>
+                    </tr>
+                `).join('');
+                    $('#purchaseDetailsBody').html(rows);
+                } else {
+                    $('#purchaseDetailsBody').html('<tr><td colspan="5">No credit purchases found.</td></tr>');
+                }
+
+                // Reset modal values
+                $('#amount').val('');
+                $('#paidamount').val('');
+                $('#submitSelectedAmounts').prop('disabled', true);
+
+                // Show modal
+                const modal = new bootstrap.Modal(document.getElementById('purchaseDetailsModal'));
+                modal.show();
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching credit purchases:', error);
+            }
+        });
+    });
+
+    // 🔁 Live update total amount when checkbox changes
+    $(document).on('change', '.purchase-checkbox', function () {
+        updateTotalAndCompare();
+    });
+
+    // 🔁 Live check if paid amount equals total
+    $('#paidamount').on('input', function () {
+        updateTotalAndCompare();
+    });
+
+    function updateTotalAndCompare() {
+        let totalAmount = 0;
+
+        $('.purchase-checkbox:checked').each(function () {
+            const amount = parseFloat($(this).data('amount')) || 0;
+            totalAmount += amount;
+        });
+
+        // 💡 Use the modal field ID here
+        $('#modal_total_amount').val(totalAmount.toFixed(2));
+
+        const paidAmount = parseFloat($('#paidamount').val()) || 0;
+
+        // Enable button only if matched
+        if (totalAmount > 0 && paidAmount === totalAmount) {
+            $('#submitSelectedAmounts').prop('disabled', false);
+        } else {
+            $('#submitSelectedAmounts').prop('disabled', true);
+        }
+    }
+
+    $('#submitSelectedAmounts').on('click', function () {
+        const selectedIds = [];
+
+        $('.purchase-checkbox:checked').each(function () {
+            selectedIds.push($(this).data('id'));
+        });
+
+        // ✅ Set total amount
+        const totalAmount = $('#modal_total_amount').val();
+        $('#amount').val(totalAmount);
+
+        // ✅ Store selected bill numbers in hidden input as a comma-separated string
+        $('#billnos').val(selectedIds.join(','));
+
+        // ✅ Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('purchaseDetailsModal'));
+        modal.hide();
+    });
+
 
 $.ajax({
     url: '/auth/multipayment/cr',
@@ -266,6 +460,8 @@ $.ajax({
         console.error('Error fetching options for Ledger(dr):', error);
     }
 });
+
+
 
 $(document).on('click', '.editmasbtn', function() {
     $('.opener').show();
@@ -306,7 +502,7 @@ if (!purchaseId) {
     var masterData = {
         payment_date: $('#payment_date').val(),
         cash_bank_ledger: $('#cash_bank_ledger').val(),
-        customer_ledger: $('#customer_ledger').val(),
+        supplier_ledger: $('#supplier_ledger').val(),
         amount: $('#amount').val()
     };
 
@@ -433,7 +629,7 @@ dropdown.addEventListener('change', (event) => {
             const master = masterData[0]; // Assuming only one master data row is returned
             document.getElementById('payment_date').value = formatDate(master.paymentdate);
             document.getElementById('cash_bank_ledger').value = master['cash/bankLedger(dr)'];
-            document.getElementById('customer_ledger').value = master['ledger(dr)'];
+            document.getElementById('supplier_ledger').value = master['ledger(dr)'];
             document.getElementById('amount').value = master.amount;
 
             // Update table with transaction details
@@ -508,61 +704,7 @@ $(document).ready(function () {
     }
   });
 
-  $('#submitFormBtn').on('click', function () {
-    let formData = {
-      // Retrieve values from the form fields
-      payment_date: $('#payment_date').val(),
-      cash_bank_ledger: $('#cash_bank_ledger').val(),
-      customer_ledger: $('#customer_ledger').val(),
-      amount: $('#amount').val(),
-      payments: getProductsData() // Get products data directly
-    };
 
-    console.log('Data being sent to the server:', formData);
-
-    // Send AJAX request to the server
-    $.ajax({
-      url: '/auth/multipayment',
-      method: 'POST',
-      contentType: 'application/json', // Specify content type as JSON
-      data: JSON.stringify(formData), // Convert form data to JSON string
-      success: function (response) {
-        console.log(response);
-        location.reload();
-        alert('Successfully Submitted purchase');
-      },
-      error: function (error) {
-        console.error("Error submitting form:", error);
-      }
-    });
-  });
-
-  function getProductsData() {
-    var products = [];
-
-    // Iterate through each row of the table
-    $('#customerTable tbody tr').each(function () {
-      var uniqueId = $(this).find('input[name="billno"]').attr('id');
-      if (uniqueId) {
-        uniqueId = uniqueId.split('_')[1];
-
-        var product = {
-          billno: $('#billno_' + uniqueId).val() || "",
-          billdate: $('#billdate_' + uniqueId).val() || "", // Correctly fetch the value of billdate
-          billamount: $('#billamount_' + uniqueId).val() || "", // Correctly fetch the value of billamount
-          recdamount: $('#recdamount_' + uniqueId).val() || "",
-          discamount: $('#discamount_' + uniqueId).val() || "",
-          balance: $('#balance_' + uniqueId).val() || ""
-        };
-        console.log('Product Details:', product);
-        products.push(product);
-      } else {
-        console.error('UniqueId attribute not found for this row:', this);
-      }
-    });
-
-    return { payments: products }; // Wrap products in an object with key 'payments'
-  }
 
   function generateUniqueId() {
     return uuidv4();
@@ -641,3 +783,4 @@ $(document).ready(function() {
 
 </body>      
 </html>
+    

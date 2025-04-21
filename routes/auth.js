@@ -499,7 +499,11 @@ router.get("/GetHSNSales_BillRange", userController.GetHSNSales_BillRange);
 router.get("/GetHSNSales_HSNWise", userController.GetHSNSales_HSNWise);    
 
 router.put("/updatepayment", userController.updatepayment);
-
+router.get(
+  "/suppliermultipaymentlist",
+  userController.suppliermultipaymentlist
+);
+router.post("/multipaymentinsert", userController.multipaymentinsert);
 
 module.exports = router;
  

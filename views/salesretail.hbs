@@ -883,6 +883,7 @@
         $(document).on('click', '.editmasbtn', function () {
             showBootstrapModal('IF YOU GONNA EDIT IN QUANTITY OF SALES PRODUCT,DELETE THE TRANSACTION AND ADD  CORRECT QUANTITY 🖋');
             $('.opener').show();
+            //$('.editmasbtn').prop('disabled', true);
             $('#customerTable tbody tr').each(function () {
                 var row = $(this);
                 var id = row.find('td:eq(0)').text();
@@ -1380,47 +1381,56 @@
             }
         });
 
-        $(document).ready(function () {
-            // Cache jQuery selectors for reuse and performance
-            var $div = $('.div'),
-                $add = $('.add'),
-                $opener = $('.opener'),
-                $updateBtn = $('.updateBtn'),
-                $draftBtn = $('.draftBtn'),
-                $dropdown = $('.dropdown[name="Id"]'),
-                $editBtn = $('.editmasbtn');
+    $(document).ready(function () {
+        // Cache jQuery selectors for reuse and performance
+        var $div = $('.div'),
+            $add = $('.add'),
+            $opener = $('.opener'),
+            $updateBtn = $('.updateBtn'),
+            $draftBtn = $('.draftBtn'),
+            $dropdown = $('.dropdown[name="Id"]'),
+            $editBtn = $('.editmasbtn');
 
-            // Initial state
-            $div.hide();
-            $add.show();
-            $updateBtn.add($draftBtn).addClass('disabled').prop('disabled', true);
+        // Initial state
+        $div.hide();
+        $add.show();
+        $updateBtn.add($draftBtn).addClass('disabled').prop('disabled', true);
 
-            // Handle dropdown change event
-            $dropdown.on('change', function () {
-                var selectedOption = $(this).find('option:selected').val();
+        // Handle dropdown change event
+        $dropdown.on('change', function () {
+            var selectedOption = $(this).find('option:selected').val();
 
-                // Check for valid selected option
-                if (selectedOption && selectedOption !== 'view details') {
-                    $div.show();
-                    $opener.hide();
-                    $add.hide();
-                } else {
-                    $div.hide();
-                    $add.show();
-                }
-            });
-
-            // Handle edit button click event
-            $editBtn.on('click', function () {
-                // Enable all buttons inside the div
-                $div.find('button').prop('disabled', false);
-                // Enable and style the update and draft buttons
-                $updateBtn.add($draftBtn)
-                    .removeClass('disabled')
-                    .addClass('btn-info')
-                    .prop('disabled', false);
-            });
+            // Check for valid selected option
+            if (selectedOption && selectedOption !== 'view details') {
+                $div.show();
+                $opener && $opener.hide(); // only if $opener exists
+                $add.hide();
+            } else {
+                $div.hide();
+                $add.show();
+            }
         });
+
+        // Trigger the change manually on page load if value already exists
+        setTimeout(function () {
+            var initialValue = $dropdown.find('option:selected').val();
+            if (initialValue && initialValue !== 'view details') {
+                $dropdown.trigger('change');
+            }
+        }, 300); // 300ms delay helps ensure all content is ready
+
+        // Handle edit button click event
+        $editBtn.on('click', function () {
+            // Enable all buttons inside the div
+            $div.find('button').prop('disabled', false);
+            // Enable and style the update and draft buttons
+            $updateBtn.add($draftBtn)
+                .removeClass('disabled')
+                .addClass('btn-info')
+                .prop('disabled', false);
+        });
+    });
+
 
         // Add an event listener to validate the quantity field on input
         document.addEventListener('input', function (event) {
@@ -2558,115 +2568,101 @@
 
 
 
-        $('.dropdown[name="Id"]').change(function () {
-            var selectedOption = $(this).find('option:selected');
-            if (!selectedOption || !selectedOption.val()) {
-                return;
-            }
+    $('.dropdown[name="Id"]').change(function () {
+        var selectedOption = $(this).find('option:selected');
+        if (!selectedOption || !selectedOption.val()) {
+            return;
+        }
 
-            try {
-                var rowDetails = JSON.parse(selectedOption.val());
-                $('#id').val(rowDetails.id);
-                $('#saledate').val(formatDate(rowDetails.saledate));
+        try {
+            var rowDetails = JSON.parse(selectedOption.val());
+            $('#id').val(rowDetails.id);
+            $('#saledate').val(formatDate(rowDetails.saledate));
+            $('#customerId').val(rowDetails.selectcustomer);
+            $('#doctorname').val(rowDetails.doctorname);
+            $('#customername').val(rowDetails.customername);
+            $('#mobileno').val(rowDetails.mobileno);
+            $('#paymentmode').val(rowDetails.paymentmode);
+            $('#ppaymentMode').val(rowDetails.paymentmode);
+            $('#pnetAmount').text(parseFloat(rowDetails.netAmount).toFixed(2));
+            $('#pamount').text(parseFloat(rowDetails.amount).toFixed(2));
+            $('#pigst').text(parseFloat(rowDetails.igst).toFixed(2));
+            $('#pcgst').text(parseFloat(rowDetails.cgst).toFixed(2));
+            $('#psgst').text(parseFloat(rowDetails.sgst).toFixed(2));
+            $('#psubtotal').text(parseFloat(rowDetails.subtotal).toFixed(2));
+            $('#ptcs').text(parseFloat(rowDetails.tcs).toFixed(2));
+            $('#proundOff').text(parseFloat(rowDetails.roundoff).toFixed(2));
+            $('#pdiscMode').val(rowDetails.discMode);
+            $('#pdiscount').val(rowDetails.discount);
+            selectedOption.prop('selected', true);
 
-                // Set the customer in the dropdown using selectcustomer from rowDetails
-                console.log('Setting customer ID:', rowDetails.selectcustomer);
-                $('#customerId').val(rowDetails.selectcustomer); // Make sure 'selectcustomer' is the customerId
-                $('#doctorname').val(rowDetails.doctorname);
-                $('#customername').val(rowDetails.customername);
-                $('#mobileno').val(rowDetails.mobileno);
-                // Load existing data into the form
-                $('#paymentmode').val(rowDetails.paymentmode);
-                $('#ppaymentMode').val(rowDetails.paymentmode); // Ensure hidden input is also set
+            // Handle prescription image
+            let imageContainer = $('#prescriptionImageContainer');
+            imageContainer.empty();
 
-
-                // Populate financial details
-                $('#pnetAmount').text(parseFloat(rowDetails.netAmount).toFixed(2));
-                $('#pamount').text(parseFloat(rowDetails.amount).toFixed(2));
-                $('#pigst').text(parseFloat(rowDetails.igst).toFixed(2));
-                $('#pcgst').text(parseFloat(rowDetails.cgst).toFixed(2));
-                $('#psgst').text(parseFloat(rowDetails.sgst).toFixed(2));
-                $('#psubtotal').text(parseFloat(rowDetails.subtotal).toFixed(2));
-                $('#ptcs').text(parseFloat(rowDetails.tcs).toFixed(2));
-                $('#proundOff').text(parseFloat(rowDetails.roundoff).toFixed(2));
-
-                // Set discount mode and value
-                $('#pdiscMode').val(rowDetails.discMode);
-
-                $('#pdiscount').val(rowDetails.discount);
-                selectedOption.prop('selected', true);
-
-
-                let imageContainer = $('#prescriptionImageContainer');
-                imageContainer.empty(); // clear any old images
-
-                if (rowDetails.prescriptionimage && rowDetails.prescriptionimage.trim() !== "") {
-                    const baseImageUrl = "/uploads/prescription/";
-                    const imageList = rowDetails.prescriptionimage.split(',').map(img => img.trim());
-
-                    imageList.forEach(img => {
-                     const imgEl = `<img src="${baseImageUrl}${img}" class="rounded shadow" style="height: 300px; max-width: 100%; object-fit: contain;">`;
-
-                        imageContainer.append(imgEl);
-                    });
-
-                    $('#previewBtn').show();
-                    $('.insert').hide();
-                    $('#previewBtn').off('click').on('click', function () {
-                        let prescriptionModal = new bootstrap.Modal(document.getElementById("prescriptionModal"));
-                        prescriptionModal.show();
-                    });
-                } else {
-                    $('#previewBtn').hide();
-                }
-
-
-                if (rowDetails.isDraft === true) {
-                    $('.editmasbtn').prop('disabled', false);  // Editable
-                    console.log('Editing enabled: isDraft is true');
-                } else {
-                    $('.editmasbtn').prop('disabled', true);   // Not editable
-                    console.log('Editing disabled: isDraft is false');
-                }
-                // Fetch related product data
-                var purchaseId = parseFloat(rowDetails.id);
-                $.ajax({
-                    url: '/auth/salesretail/salesretailproductid',
-                    method: 'GET',
-                    data: { purchaseId: purchaseId },
-                    success: function (response) {
-                        console.log("Full Response Data: ", response.data);
-
-                        // Separate return and customer data
-                        var customerData = response.data; // Full data for customer table
-                        var returnData = response.data.filter(row => row.salesreturnid !== 0); // Only rows with returns
-
-                        console.log("Filtered Return Data: ", returnData);
-
-                        // Update Customer Table
-                        var customerTable = $('#customerTable').DataTable();
-                        customerTable.clear();
-                        customerTable.rows.add(customerData);
-                        customerTable.draw();
-
-                        // Update Return Table
-                        var returnTable = $('#returnTable').DataTable();
-                        returnTable.clear();
-                        returnTable.rows.add(returnData);
-                        returnTable.draw();
-                    },
-                    error: function (error) {
-                        console.error("Error fetching data:", error);
-                    }
+            if (rowDetails.prescriptionimage && rowDetails.prescriptionimage.trim() !== "") {
+                const baseImageUrl = "/uploads/prescription/";
+                const imageList = rowDetails.prescriptionimage.split(',').map(img => img.trim());
+                imageList.forEach(img => {
+                    const imgEl = `<img src="${baseImageUrl}${img}" class="rounded shadow" style="height: 300px; max-width: 100%; object-fit: contain;">`;
+                    imageContainer.append(imgEl);
                 });
 
-
-            } catch (error) {
-                console.error('Error parsing JSON:', error);
+                $('#previewBtn').show();
+                $('.insert').hide();
+                $('#previewBtn').off('click').on('click', function () {
+                    let prescriptionModal = new bootstrap.Modal(document.getElementById("prescriptionModal"));
+                    prescriptionModal.show();
+                });
+            } else {
+                $('#previewBtn').hide();
             }
-        });
-      
-      
+
+            // Safely determine isDraft
+            const isDraft = String(rowDetails.isDraft).trim().toLowerCase() === "true" || rowDetails.isDraft === true || rowDetails.isDraft === 1;
+
+            // Enable or disable Edit button safely
+            const $editBtn = $('.editmasbtn');
+            if ($editBtn.length > 0) {
+                $editBtn.prop('disabled', !isDraft);
+                console.log(`Editing ${isDraft ? 'enabled' : 'disabled'} | isDraft =`, rowDetails.isDraft);
+            } else {
+                console.warn("Edit button not found.");
+            }
+
+            // Fetch related product data
+            var purchaseId = parseFloat(rowDetails.id);
+            $.ajax({
+                url: '/auth/salesretail/salesretailproductid',
+                method: 'GET',
+                data: { purchaseId: purchaseId },
+                success: function (response) {
+                    console.log("Full Response Data: ", response.data);
+                    var customerData = response.data;
+                    var returnData = response.data.filter(row => row.salesreturnid !== 0);
+
+                    // Update Customer Table
+                    var customerTable = $('#customerTable').DataTable();
+                    customerTable.clear();
+                    customerTable.rows.add(customerData);
+                    customerTable.draw();
+
+                    // Update Return Table
+                    var returnTable = $('#returnTable').DataTable();
+                    returnTable.clear();
+                    returnTable.rows.add(returnData);
+                    returnTable.draw();
+                },
+                error: function (error) {
+                    console.error("Error fetching data:", error);
+                }
+            });
+
+        } catch (error) {
+            console.error('Error parsing JSON:', error);
+        }
+    });
+
       
         // Initialize the return table only once
         var returnTable = $("#returnTable").DataTable({

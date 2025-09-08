@@ -231,12 +231,17 @@
         $(document).on('click', '.editBtn', function () {
             // Get the data associated with the clicked row
             var data = table.row($(this).parents('tr')).data();
+
             console.log('Data:', data);
+
             // Check if the data is valid and an object
             if (data && typeof data === 'object' && !Array.isArray(data)) {
                 // Populate the edit form fields with the data
                 $(".editForm #id").val(data.id);
                 $(".editForm #packagename").val(data.packagename);
+
+
+
                 // Show the edit form
                 $(".editForm").show();
             } else {
@@ -259,6 +264,7 @@
                 data: formData,
                 success: function (response) {
                     console.log(response);
+
                     if (response.success) {
                         // Update the table row with the new data
                         var tableRow = table.row('#' + customerId); // Assuming each row has a unique ID
@@ -308,14 +314,16 @@
             if (data && data.id) {
                 var deleteUrl = '/auth/packagedelete/' + data.id;
                 console.log('Data:', data);
+
                 $.ajax({
                     type: 'DELETE',
                     url: deleteUrl,
                     success: function (response) {
                         console.log(response);
                         if (response.success) {
-                        showBootstrapModal('Deleted Successfully 🖋');
-                        table.ajax.reload();
+                                                        showBootstrapModal('Deleted Successfully 🖋');
+
+                            table.ajax.reload();
                         } else {
                             alert("Failed to delete customer: " + response.error);
                         }

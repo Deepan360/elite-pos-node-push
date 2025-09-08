@@ -317,7 +317,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <script type="text/javascript">
   (function () {
     var idleTime = 0;
-    var idleInterval = setInterval(timerIncrement, 6000); 
+    var idleInterval = setInterval(timerIncrement, 6000); // 1 minute
 
     document.onmousemove = resetTimer;
     document.onkeypress = resetTimer;
@@ -331,7 +331,7 @@ document.addEventListener("DOMContentLoaded", function() {
     function timerIncrement() {
       idleTime++;
        console.log('Idle time (minutes):', idleTime);
-      if (idleTime >= 14400) { 
+      if (idleTime >= 6000) { // 60 minutes
         window.location.href = '/logout';
       }
     }

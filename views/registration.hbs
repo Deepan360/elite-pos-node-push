@@ -54,7 +54,7 @@
 
       $.ajax({
         type: 'POST',
-        url: 'http://localhost:5000/auth/registration',
+        url: '/auth/registration',
         data: JSON.stringify(formData),
         contentType: 'application/json',
         success: function(response) {

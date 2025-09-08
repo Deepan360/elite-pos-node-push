@@ -3,6 +3,8 @@
 
 <head>
     {{>header}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
     <style>
         #purchaseFormContainer {
@@ -129,7 +131,7 @@
         }
     </style>
 </head>
- 
+
 <body class="g-sidenav-show   bg-gray-100">
     {{>sidebar}}
     <main class="main-content position-relative border-radius-lg ">
@@ -149,8 +151,8 @@
                 </div>
                 <div class="fetch-data">
                     <button id="download-gst-report" class="btn btn-success btn-gst ">Download GST Report</button>
-                
-</div>
+
+                </div>
                 <form action="/auth/customer" method="get">
                     <table id="customerTable" class="table-responsive justify-content-between align-items-end"
                         style="width:100% !important">
@@ -167,7 +169,7 @@
                                 <th>CGST</th>
                                 <th>SGST</th>
                                 <th>IGST</th>
-                                <th>Total Taxable Amount</th> 
+                                <th>Total Taxable Amount</th>
                                 <th>Total Amount</th>
 
                             </tr>
@@ -185,45 +187,81 @@
     <!-- Datepicker Initialization -->
     <script>
 
-    async function generateGSTReport() {
-        const fromDate = $("#fromDate").val();
-        const toDate = $("#toDate").val();
+        async function generateGSTReport() {
+            const fromDate = $("#fromDate").val();
+            const toDate = $("#toDate").val();
 
-        console.log("Generating GST Report for:", fromDate, "to", toDate);
+            try {
+                // Fetch Data
+                const taxSlabData = await $.get("/auth/GetHSNSales_TaxSlab", { fromDate, toDate });
+                const billRangeData = await $.get("/auth/GetHSNSales_BillRange", { fromDate, toDate });
+                const hsnData = await $.get("/auth/GetHSNSales_HSNWise", { fromDate, toDate });
+                const purchaseTaxSlabData = await $.get("/auth/GetPurchase_TaxSlabSummary", { fromDate, toDate });
+                // Create workbook
+                const workbook = new ExcelJS.Workbook();
 
-        try {
-            // Fetch data from APIs
-            const taxSlabData = await $.get("/auth/GetHSNSales_TaxSlab", { fromDate, toDate });
-            console.log("Tax Slab Data:", taxSlabData);
+                // Utility function for sheet creation
+                function createSheet(sheetName, jsonData) {
+                    const sheet = workbook.addWorksheet(sheetName);
 
-            const billRangeData = await $.get("/auth/GetHSNSales_BillRange", { fromDate, toDate });
-            console.log("Bill Range Data:", billRangeData);
+                    if (!jsonData || jsonData.length === 0) return sheet;
 
-            const hsnData = await $.get("/auth/GetHSNSales_HSNWise", { fromDate, toDate });
-            console.log("HSN Data:", hsnData);
+                    // Add header row
+                    const header = Object.keys(jsonData[0]);
+                    const headerRow = sheet.addRow(header);
 
-            // Ensure response format is correct
-            const ws1 = XLSX.utils.json_to_sheet(hsnData.data || hsnData);
-            const ws2 = XLSX.utils.json_to_sheet(billRangeData.data || billRangeData);
-            const ws3 = XLSX.utils.json_to_sheet(taxSlabData.data || taxSlabData);
+                    // Style header
+                    headerRow.eachCell((cell) => {
+                        cell.fill = {
+                            type: "pattern",
+                            pattern: "solid",
+                            fgColor: { argb: "FF1F497D" }, // Dark Blue
+                        };
+                        cell.font = { color: { argb: "FFFFFFFF" }, bold: true };
+                        cell.alignment = { vertical: "middle", horizontal: "center" };
+                        cell.border = {
+                            top: { style: "thin" },
+                            left: { style: "thin" },
+                            bottom: { style: "thin" },
+                            right: { style: "thin" },
+                        };
+                    });
 
-            // Create a workbook and append sheets
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws1, "HSN-Wise Report");
-            XLSX.utils.book_append_sheet(wb, ws2, "Bill Range Summary");
-            XLSX.utils.book_append_sheet(wb, ws3, "Tax Slab Summary");
+                    // Add data rows
+                    jsonData.forEach((row) => {
+                        sheet.addRow(Object.values(row));
+                    });
 
-            // Export the workbook
-            XLSX.writeFile(wb, `GST_Report_${fromDate}_to_${toDate}.xlsx`);
+                    // Auto column width
+                    sheet.columns.forEach((col) => {
+                        let maxLength = 0;
+                        col.eachCell({ includeEmpty: true }, (cell) => {
+                            const columnLength = cell.value ? cell.value.toString().length : 10;
+                            if (columnLength > maxLength) {
+                                maxLength = columnLength;
+                            }
+                        });
+                        col.width = maxLength < 15 ? 15 : maxLength;
+                    });
 
-            console.log("GST Report Generated Successfully!");
-        } catch (error) {
-            console.error("Error generating report:", error);
+                    return sheet;
+                }
+
+                // Create sheets
+                createSheet("HSN-Wise Report", hsnData.data || hsnData);
+                createSheet("Bill Range Summary", billRangeData.data || billRangeData);
+                createSheet("Tax Slab Summary", taxSlabData.data || taxSlabData);
+                createSheet("Purchase Tax Slab Summary", purchaseTaxSlabData.data || purchaseTaxSlabData);
+                // Export
+                const buffer = await workbook.xlsx.writeBuffer();
+                saveAs(new Blob([buffer]), `GST_Report_${fromDate}_to_${toDate}.xlsx`);
+                console.log("GST Report Generated Successfully!");
+            } catch (error) {
+                console.error("Error generating report:", error);
+            }
         }
-    }
-
-    // Button Click Event
-    $("#download-gst-report").on("click", generateGSTReport);
+        // Button Click Event
+        $("#download-gst-report").on("click", generateGSTReport);
 
         $(document).ready(function () {
             $("#fromDate, #toDate").datepicker({
@@ -292,7 +330,7 @@
             table.ajax.reload();
         });
     </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 </body>
 

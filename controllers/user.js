@@ -34,6 +34,30 @@ function formatDate(dateString) {
   return dateString;
 }
 
+exports.registeredakilammember = async (req, res) => {
+  try {
+    await poolConnect;
+
+    const result = await pool.request().query(`
+      SELECT TOP (1000) [id], [firstName], [lastName], [email], [mobileno],
+        [dob], [dor], [fromweb], [message], [course]
+      FROM [AkilamWebsite].[dbo].[registration]
+    `);
+
+    res.status(200).json({
+      success: true,
+      data: result.recordset,
+    });
+  } catch (error) {
+    console.error("Error in registeredakilammember:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch registration data",
+    });
+  }
+};
+
+
 
 // **API Route for Updating Payment Mode**
 exports.updatepayment = async (req, res) => {
@@ -462,8 +486,9 @@ exports.multipaymentinsert = async (req, res) => {
     await transaction.begin();
 
     for (const billno of billnos) {
-      const request = new sql.Request(transaction); // Move inside loop
+      const request = new sql.Request(transaction);
 
+      // Insert payment entry
       await request
         .input("payment_date", sql.Date, payment_date)
         .input("cash_bank_ledger", sql.VarChar(100), cash_bank_ledger)
@@ -477,17 +502,26 @@ exports.multipaymentinsert = async (req, res) => {
           (payment_date, cash_bank_ledger, supplier_ledger, transactionno, referno, remarks, amount, bill_no)
           VALUES (@payment_date, @cash_bank_ledger, @supplier_ledger, @transactionno, @referno, @remarks, @amount, @billno)
         `);
+
+      // Update payment mode in PurchaseTable_Master
+      await request.input("update_billno", sql.Int, billno).query(`
+          UPDATE PurchaseTable_Master
+          SET paymentmode = 'Credit into Cash'
+          WHERE id = @update_billno
+        `);
     }
 
     await transaction.commit();
 
     res
       .status(200)
-      .json({ success: true, message: "Payments inserted successfully." });
+      .json({
+        success: true,
+        message: "Payments inserted and updated successfully.",
+      });
   } catch (error) {
     console.error("Error during multipayment insert:", error);
 
-    // Rollback on error
     if (transaction) {
       try {
         await transaction.rollback();
@@ -496,15 +530,14 @@ exports.multipaymentinsert = async (req, res) => {
       }
     }
 
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Failed to insert payments.",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Failed to insert or update payments.",
+      error: error.message,
+    });
   }
 };
+
 
 
 
@@ -648,6 +681,55 @@ exports.inpatientadd = async (req, res) => {
     }
   });
 };
+
+
+// Add in your controller
+exports.getVisitHistory = async (req, res) => {
+  const { name, date } = req.query;
+
+  try {
+    const request = pool.request();
+
+    let query = `
+ SELECT 
+        ve.id AS id,
+        rp.name AS name,
+        CONVERT(varchar, ve.dateofvisit, 23) AS date,
+        ve.reasonofvisit AS reason,
+        ve.doctorname AS doctor,
+        rp.mobileno,
+        rp.age,
+        rp.gender
+      FROM [elitePOS_MedWell].[dbo].[visit_entry] ve
+     JOIN [elitePOS_MedWell].[dbo].[reg_patient] rp ON rp.id = ve.patientid
+    `;
+
+    const filters = [];
+
+    if (name?.trim()) {
+      filters.push("rp.name LIKE @name");
+      request.input("name", sql.VarChar, `%${name.trim()}%`);
+    }
+
+    if (date?.trim()) {
+      filters.push("CAST(ve.dateofvisit AS date) = @date");
+      request.input("date", sql.Date, date.trim());
+    }
+
+    if (filters.length) {
+      query += " WHERE " + filters.join(" AND ");
+    }
+
+    query += " ORDER BY ve.dateofvisit DESC";
+
+    const result = await request.query(query);
+    res.status(200).json(result.recordset);
+  } catch (error) {
+    console.error("Error fetching visit history:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
 
 
 
@@ -4967,6 +5049,37 @@ exports.GetHSNSales_TaxSlab = (req, res) => {
 
     let query =
       "EXEC GetHSNSales_TaxSlab @FromDate = @fromDate, @ToDate = @toDate";
+
+    const request = connection.request();
+    request.input("fromDate", sql.Date, fromDate || null);
+    request.input("toDate", sql.Date, toDate || null);
+
+    request.query(query, (err, result) => {
+      connection.release();
+      if (err) {
+        console.error("Error in listing data:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      console.log("Query Success:", result.recordset); // Debugging purpose
+      res.json({ data: result.recordset });
+    });
+  });
+};
+
+exports.GetPurchase_TaxSlabSummary = (req, res) => {
+  const { fromDate, toDate } = req.query; // Get dates from request
+
+  console.log("Received Dates:", fromDate, toDate); // Debugging purpose
+
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    let query =
+      "EXEC GetPurchase_TaxSlabSummary @FromDate = @fromDate, @ToDate = @toDate ";
 
     const request = connection.request();
     request.input("fromDate", sql.Date, fromDate || null);
@@ -9414,19 +9527,25 @@ exports.multipaymentdelete = async (req, res) => {
 };
 
 exports.multipayment = (req, res) => {
-  pool.query("EXEC GetPaymentDropdownOptions", (err, result) => {
+  // Connect to the database pool
+  pool.connect((err, connection) => {
     if (err) {
-      console.error("Error in listing data:", err);
+      console.error("Error getting connection from pool:", err);
       return res.status(500).json({ error: "Internal Server Error" });
     }
 
-    // Extract the result and send it as JSON response
-    const options = result.recordset.map((row) => ({
-      value: row.id.toString(),
-      label: row.label,
-    }));
+    // Execute the stored procedure
+    connection.query("EXEC [dbo].[GetmultiPayments]", (err, result) => {
+      connection.release(); // Release the connection back to the pool
 
-    res.json({ options });
+      if (err) {
+        console.error("Error in listing data:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      // Send the data as JSON response
+      res.json({ data: result.recordset });
+    });
   });
 };
 
@@ -12308,7 +12427,7 @@ exports.login = async (req, res) => {
     // Fetch user details from DB
     const userQuery =
       await pool.query`SELECT ID, emailid, password, role FROM registeration WHERE emailid = ${emailid}`;
-
+      console.log("User query result:", userQuery);
     if (userQuery.recordset.length === 0) {
       return res
         .status(401)

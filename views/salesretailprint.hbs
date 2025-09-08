@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,32 +8,30 @@
     <title>
         elite POS
     </title>
- 
-    <!-- CSS Files -->
-    <link id="pagestyle" href="/assets/css/argon-dashboard.css?v=2.0.4" rel="stylesheet" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <style>
-        @page {
-            size: 10in 12in;
-            /* Define custom page size */
-            margin: 0;
-            /* Remove default margins */
-            font-size: 14px !important;
-            font-weight: 800 !important;
-            font-family: 'Courier New', Courier, monospace !important;
+      @page {
+    size: A5 Potrait; /* A5 size in landscape orientation */
+    margin: 10mm; /* Adjust margins for better content fit */
+    font-size: 14px !important;
+    font-family: 'Courier New', Courier, monospace !important;
+}
 
-        }
-
-        body {
-            font-family: 'Courier New', Courier, monospace !important;
-            font-size: 14px !important;
-            font-weight: 800 !important;
-            line-height: 1.2;
-            margin: 0;
-            padding: 0;
-        }
+body {
+    font-family: 'Courier New', Courier, monospace !important;
+    font-size: 14px !important;
+    line-height: 1.2;
+    margin: 0;
+    padding: 0;
+    transform: none; /* Remove rotation */
+    width: 148mm; /* Portrait width (height in landscape) */
+    height: 210mm; /* Portrait height (width in landscape) */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
 
         * {
             font-family: 'Courier New', Courier, monospace !important;
@@ -84,15 +81,16 @@
                 margin: 0;
                 padding: 0;
                 height: auto;
-
+ transform-origin: top left;
+        transform: rotate(90deg); /* Keep rotated for print */
                 font-size: 14px !important;
                 line-height: normal !important;
             }
 
             .content {
-                margin-left: 10mm;
-                margin-right: 10mm;
-                margin-top: 140px !important;
+                margin-left: 5mm;
+                margin-right: 5mm;
+                margin-top: 100px !important;
                 margin-bottom: 5mm;
                 padding: 0;
                 font-size: 14px !important;
@@ -170,36 +168,8 @@
                 /* Avoid breaking rows */
             }
 
-            /* Product name column styles */
-            #productDetailsTable th:nth-child(1),
-            #productDetailsTable td:nth-child(1) {
-                width: 40% !important;
-                font-size: 14px;
-                text-align: left;
-                white-space: nowrap;
-                /* Prevent text wrapping */
-                overflow: hidden;
-                /* Hide overflowed content */
-                text-overflow: ellipsis;
-                /* Show '...' for overflowed text */
-                max-width: 40%;
-                /* Ensure the product name does not take more than 40% of the table */
-            }
 
-            /* Additional styles for the table */
-            table.dataTable td {
-                white-space: normal !important;
-                /* Allow wrapping of content for other columns */
-                font-size: 14px !important;
-                font-weight: 800 !important;
-                word-wrap: break-word;
-                font-weight: 800 !important;
-                /* Break long words if needed */
-                max-width: 350px !important;
-                /* Set a reasonable maximum width */
-                width: auto;
-                /* Set to auto to allow flexibility */
-            }
+
 
             .content table tbody tr td,
             table thead th {
@@ -359,7 +329,7 @@
 
         .company-info,
         .customer-info {
-            padding: 10px;
+            padding: 2px;
             border-radius: 10px;
             font-size: 14px;
             font-weight: 800;
@@ -387,35 +357,34 @@
         }
 
 
-        /* Set first column to 40%, prevent wrapping, and handle overflow */
-        #productDetailsTable th:nth-child(1),
-        #productDetailsTable td:nth-child(1) {
-            width: 40% !important;
-            font-size: 14px;
-            text-align: left;
-            white-space: nowrap;
-            /* Prevent text wrapping */
-            overflow: hidden;
-            font-weight: 800 !important;
-            /* Hide overflow */
-            text-overflow: ellipsis;
-            /* Show '...' for overflowed text */
-            max-width: 40%;
-            /* Ensure the product name does not take more than 40% of the table */
-        }
+/* Ensure the first column takes 40% */
+#productDetailsTable th:nth-child(1),
+#productDetailsTable td:nth-child(1) {
+    width: 40% !important;
+    max-width: 40% !important;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-weight: 800;
+}
+
+/* Allow other columns to size based on their content */
+#productDetailsTable th,
+#productDetailsTable td {
+    width: auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-align: left;
+}
+
+/* Ensure the table respects defined widths */
+#productDetailsTable {
+    width: 100%;
+    table-layout: auto;
+    border-collapse: collapse;
+}
 
 
-        /* Additional styles for the table */
-        table.dataTable td {
-            white-space: normal !important;
-            /* Allow wrapping of content for other columns */
-            word-wrap: break-word;
-            /* Break long words if needed */
-            max-width: 350px !important;
-            /* Set a reasonable maximum width */
-            width: auto;
-            /* Set to auto to allow flexibility */
-        }
 
         .content table tbody tr td,
         table thead th {
@@ -472,17 +441,17 @@
             <div class="invoice-details mb-0 mt-0"
                 style="display: flex; justify-content: space-between;font-size:12px !important;font-weight:bold !important;">
                 <!-- Company Info -->
-                <div class="company-info" style="padding: 2px; border-radius: 8px; flex-basis: 48%;">
+                <div class="company-info" style="padding: 2px; border-radius: 8px; flex-basis: 50%;">
                     <table style="width: 100%; border-collapse: collapse; color: rgb(0, 0, 0);">
                         <tr style="border: 1px solid #000;">
                             <td style=" padding: 10px; color: #000;font-size:14px;font-weight:800;">
-                                <span> Bill No:</span> <span id="id" class="company-detail"></span>
+                                <span>Bill:</span> <span id="id" class="company-detail"></span>
                             </td>
                             <td style=" padding: 10px; color: #000;font-size:14px;font-weight:800;">
-                                <span> GSTIN:</span> <span id="gstin" class="company-detail"></span>
+                                <span>GSTIN:</span> <span id="gstin" class="company-detail"></span>
                             </td>
                             <td style=" padding: 10px; color: #000;font-size:14px;font-weight:800;">
-                                <span> Mobile: </span><span id="mobileNo" class="company-detail"></span>
+                                <span>Mobile: </span><span id="mobileNo" class="company-detail"></span>
                             </td>
                         </tr>
                         <tr style="">
@@ -497,10 +466,10 @@
                     </table>
                 </div>
                 <!-- Customer Info -->
-                <div class="customer-info" style="padding: 2px; border-radius: 8px; flex-basis: 48%;">
+                <div class="customer-info" style="padding: 2px; border-radius: 8px; flex-basis: 50%;">
                     <table style="width: 100%; border-collapse: collapse; color: white;">
                         <tr style="">
-                            <td style="padding: 10px; color: #000;font-size:14px;font-weight:800;">
+                            <td colspan="1" style="padding: 10px; color: #000;font-size:14px;font-weight:800;">
                                 <span>Customer:</span> <span id="customername"></span>
                             </td>
                             <td style=" padding: 10px; color: #000;font-size:14px;font-weight:800;">
@@ -510,7 +479,7 @@
                         <tr style=" padding: 10px; color: #000;">
                             <!-- Make sure to match border and font styling here -->
                             <td colspan="1" style=" padding: 10px; color: #000; font-size:14px;font-weight:800;">
-                                <span>Sale Date:</span> <span id="saledate"></span>
+                                <span>Sale:</span> <span id="saledate"></span>
                             </td>
                             <td colspan="2" style=" padding: 10px; color: #000; font-size:14px;font-weight:800;">
                                 <span> Doctor:</span> <span id="doctorname"></span>
@@ -523,8 +492,8 @@
         </div>
 
         <!-- Content Section (Scroll) -->
-        <div class="content">
-            <table id="productDetailsTable">
+        <div class="content" >
+            <table id="productDetailsTable" style="width: 100vw;">
                 <thead>
                     <tr>
                         <th>Particulars</th>
@@ -544,47 +513,47 @@
 
         <!-- Footer Section -->
         <div class="invoice-summary footer"
-            style="position: fixed; bottom: 0; width: 100%; background-color: #000; color: #fff;">
+            style="position: fixed; bottom: 0; width: 100vw; background-color: #000; color: #fff;">
             <table style="width: 100%; border-collapse: collapse; color: rgb(0, 0, 0);">
                 <tr>
                     <td
-                        style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%; background-color: #ffffff;">
+                        style="border: 1px solid #ccc; padding: 10px; text-align: right;  background-color: #ffffff;">
                         <strong>Amount:</strong>
                     </td>
                     <td
-                        style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%; background-color: #ffffff;">
+                        style="border: 1px solid #ccc; padding: 10px; text-align: right;  background-color: #ffffff;">
                         <span id="invoiceAmount"></span>
                     </td>
                     <td
-                        style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%; background-color: #ffffff;">
+                        style="border: 1px solid #ccc; padding: 10px; text-align: right;  background-color: #ffffff;">
                         <strong>Discount:</strong>
                     </td>
                     <td
-                        style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%; background-color: #ffffff;">
+                        style="border: 1px solid #ccc; padding: 10px; text-align: right;  background-color: #ffffff;">
                         <span id="discount"></span> - <span id="discountMode"></span>
                     </td>
                     <td
-                        style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%; background-color: #ffffff;">
+                        style="border: 1px solid #ccc; padding: 10px; text-align: right;  background-color: #ffffff;">
                         <strong>SGST:</strong>
                     </td>
                     <td
-                        style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%; background-color: #ffffff;">
+                        style="border: 1px solid #ccc; padding: 10px; text-align: right;  background-color: #ffffff;">
                         <span id="sgst"></span>
                     </td>
                     <td
-                        style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%; background-color: #ffffff;">
+                        style="border: 1px solid #ccc; padding: 10px; text-align: right;  background-color: #ffffff;">
                         <strong>CGST:</strong>
                     </td>
                     <td
-                        style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%; background-color: #ffffff;">
+                        style="border: 1px solid #ccc; padding: 10px; text-align: right; background-color: #ffffff;">
                         <span id="cgst"></span>
                     </td>
                     <td
-                        style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 10%; background-color: #ffffff;">
+                        style="border: 1px solid #ccc; padding: 10px; text-align: right;  background-color: #ffffff;">
                         <strong>Total Amount:</strong>
                     </td>
                     <td
-                        style="border: 1px solid #ccc; padding: 10px; text-align: right; width: 30%; background-color: #ffffff;">
+                        style="border: 1px solid #ccc; padding: 10px; text-align: right;  background-color: #ffffff;">
                         <span id="subtotal"></span>
                     </td>
                 </tr>
@@ -621,7 +590,7 @@
             var printWindow = window.open('', '_blank');
             printWindow.document.open();
             printWindow.document.write(`
-        <!DOCTYPE html>
+        <!DOCTYPE html>S
         <html>
         <head>
             <title>Print Invoice</title>
@@ -629,22 +598,28 @@
             .invoices {
         page-break-after: always !important; /* Allow the invoice content to break before next content */
     }
-        @page {
-            size: 10in 12in;
-            /* Define custom page size */
-            margin: 2;
-            /* Remove default margins */
-          font-size: 14px !important;
-            font-family: 'Courier New', Courier, monospace !important;
-        }
 
-        body {
-            font-family: 'Courier New', Courier, monospace !important;
-          font-size: 14px !important;
-            line-height: 1.2;
-            margin: 2;
-            padding: 0;
-        }
+
+@page {
+    size: A5 Potrait; /* A5 size in landscape orientation */
+    margin: 10mm; /* Adjust margins for better content fit */
+    font-size: 14px !important;
+    font-family: 'Courier New', Courier, monospace !important;
+}
+
+body {
+    font-family: 'Courier New', Courier, monospace !important;
+    font-size: 14px !important;
+    line-height: 1.2;
+    margin: 0;
+    padding: 0;
+    transform: none; /* Remove rotation */
+    width: 148mm; /* Portrait width (height in landscape) */
+    height: 210mm; /* Portrait height (width in landscape) */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
 
         * {
             font-family: 'Courier New', Courier, monospace !important;
@@ -675,6 +650,9 @@
         }
 
         @media print {
+            .footer table{
+            
+            width:100%;}
                     .invoices {
         page-break-after: always !important; /* Allow the invoice content to break before next content */
     }
@@ -698,18 +676,20 @@
                 line-height: normal !important;
             }
 
-            .content {
-                margin-left: 10mm;
-                margin-right: 10mm;
-                margin-top: 160px !important;
-                margin-bottom: 5mm;
+        .content {
+                margin-left: 5mm;
+                margin-right: 5mm;
+                margin-top: 150px !important;
+                margin-bottom: 7mm;
                 padding: 0;
+                font-size: 14px !important;
+                font-weight: 800 !important;
                 page-break-after: avoid;
                 overflow: visible;
             }
-
             table {
-                width: 100%;
+                width: 100vw;
+                
                 border-collapse: collapse;
 
             }
@@ -744,10 +724,12 @@
             }
 
             .footer {
+    width: 100%;
                 position: relative !important;
                 bottom: 0;
                 color: #000000 !important;
             }
+        
 
             .company-info td,
             .customer-info td {
@@ -775,36 +757,33 @@
                 /* Avoid breaking rows */
             }
 
-            /* Product name column styles */
-            #productDetailsTable th:nth-child(1),
-            #productDetailsTable td:nth-child(1) {
-                width: 40% !important;
-              font-size: 14px !important;
-              font-weight: 800 !important;
-                text-align: left;
-                white-space: nowrap;
-                /* Prevent text wrapping */
-                overflow: hidden;
-                /* Hide overflowed content */
-                text-overflow: ellipsis;
-                /* Show '...' for overflowed text */
-                max-width: 40%;
-                /* Ensure the product name does not take more than 40% of the table */
-            }
+/* Ensure the first column takes 40% */
+#productDetailsTable th:nth-child(1),
+#productDetailsTable td:nth-child(1) {
+    width: 40% !important;
+    max-width: 40% !important;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-weight: 800;
+}
 
-            /* Additional styles for the table */
-            table.dataTable td {
-                white-space: normal !important;
-                    font-size: 14px !important;
-              font-weight: 800 !important;
-                /* Allow wrapping of content for other columns */
-                word-wrap: break-word;
-                /* Break long words if needed */
-                max-width: 350px !important;
-                /* Set a reasonable maximum width */
-                width: auto;
-                /* Set to auto to allow flexibility */
-            }
+/* Allow other columns to size based on their content */
+#productDetailsTable th,
+#productDetailsTable td {
+    width: auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-align: left;
+}
+
+/* Ensure the table respects defined widths */
+#productDetailsTable {
+    width: 100%;
+    table-layout: auto;
+    border-collapse: collapse;
+}
+
 
             .content table tbody tr td,
             table thead th {
@@ -937,12 +916,7 @@
             background-color: #f9f9f9;
         }
 
-        .content {
-            margin-top: 200px;
-            /* Adjust to the height of the header */
-            padding: 0px !important;
-
-        }
+    
 
         /* Header Styles */
         .invoice {
@@ -974,7 +948,7 @@
 
         .company-info,
         .customer-info {
-            padding: 10px;
+            padding: 2px;
             border-radius: 10px;
           font-size: 14px;
             font-weight: 800;
@@ -1002,49 +976,7 @@
         }
 
 
-        /* Set first column to 40%, prevent wrapping, and handle overflow */
-        #productDetailsTable th:nth-child(1),
-        #productDetailsTable td:nth-child(1) {
-            width: 40% !important;
-          font-size: 14px;
-            text-align: left;
-            white-space: nowrap;
-            /* Prevent text wrapping */
-            overflow: hidden;
-            /* Hide overflow */
-            text-overflow: ellipsis;
-            /* Show '...' for overflowed text */
-            max-width: 40%;
-            /* Ensure the product name does not take more than 40% of the table */
-        }
 
-        /* Product name column styles */
-        #productDetailsTable th:nth-child(1),
-        #productDetailsTable td:nth-child(1) {
-            width: 40% !important;
-          font-size: 14px;
-            text-align: left;
-            white-space: nowrap;
-            /* Prevent text wrapping */
-            overflow: hidden;
-            /* Hide overflowed content */
-            text-overflow: ellipsis;
-            /* Show '...' for overflowed text */
-            max-width: 40%;
-            /* Ensure the product name does not take more than 40% of the table */
-        }
-
-        /* Additional styles for the table */
-        table.dataTable td {
-            white-space: normal !important;
-            /* Allow wrapping of content for other columns */
-            word-wrap: break-word;
-            /* Break long words if needed */
-            max-width: 350px !important;
-            /* Set a reasonable maximum width */
-            width: auto;
-            /* Set to auto to allow flexibility */
-        }
 
         .content table tbody tr td,
         table thead th {

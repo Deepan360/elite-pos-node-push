@@ -186,34 +186,32 @@
 <button class="btn btn-primary" type="submit">Submit</button>
     </div>
 </form>
-                <div class="custom-input-container">
-                    <a class="opener" id="openPurchaseForm"><i class="fa-solid fa-folder-plus fa-2x"></i></a>
-                </div>
+           
 
                 <table id="customerTable" class="table-responsive justify-content-between align-items-end" style="width:100% !important">
-                    <thead>
-                        <tr>
-                            <th>Bill No</th>
-                            <th>Bill Date</th>
-                            <th>Bill Amount</th>
-                            <th>Recd Amount</th>
-                            <th>Disc. Amount</th>
-                            <th>Balance</th>
-                            <th class="action">Action</th>
-                        </tr>
-                    </thead>
+<thead>
+    <tr>
+        <th>Payment ID</th> <!-- payment_id -->
+        <th>Payment Date</th> <!-- paymentdate -->
+        <th>Payment Ledger</th> <!-- cashbankledger -->
+        <th>Supplier Name</th> <!-- suppliername -->
+        <th>Bill No</th> <!-- billno -->
+        <th>Transaction No</th> <!-- transactionno -->
+        <th>Invoice No</th> <!-- supplierinvoiceno -->
+        <th>Invoice Date</th> <!-- supplierinvoicedate -->
+        <th>Amount</th> <!-- amount -->
+        <th>Refer No</th> <!-- referno -->
+        <th>Remarks</th> <!-- remarks -->
+    </tr>
+</thead>
+
+
                     <tbody>
                         <!-- Table body rows will be dynamically added here -->
                     </tbody>
                 </table>
                 
-                <div class="row">
-                    <div class="col d-flex justify-content-end ms-auto">
-                        <button type="button" class="btn btn-info updateBtn opener" style="display: none;">Update</button>
-
-                        <button type="button" id="submitFormBtn" class="btn btn-primary custom-btn add">Submit</button>
-                    </div>
-                </div>
+         
             </div>
             <div id="selectedRowDetails"></div>
             {{>footer}}
@@ -294,6 +292,8 @@
             data: JSON.stringify(payload),
             success: function (res) {
                 console.log('Insert success:', res);
+            location.reload();
+           
             },
             error: function (xhr) {
                 console.error('Insert failed:', xhr);
@@ -463,30 +463,6 @@ $.ajax({
 
 
 
-$(document).on('click', '.editmasbtn', function() {
-    $('.opener').show();
-    $('.updateBtn').show();
-    $('#customerTable tbody tr').each(function() {
-        var row = $(this);
-        var billNo = row.find('td:eq(0)').text();
-        var billDate = row.find('td:eq(1)').text();
-        var billAmount = row.find('td:eq(2)').text();
-        var recdAmount = row.find('td:eq(3)').text();
-        var discAmount = row.find('td:eq(4)').text();
-        var balance = row.find('td:eq(5)').text();
-        
-         var trans_Id = row.find('i.deletetransBtn').data('transid');
-        
-        row.html("<td><input type='text' name='billno' class='input-field' value='" + billNo + "'></td>" +
-            "<td><input type='date' name='billdate' class='input-field' value='" + billDate + "'></td>" +
-            "<td><input type='number' name='billamount' class='input-field' value='" + billAmount + "'></td>" +
-            "<td><input type='number' name='recdamount' class='input-field' value='" + recdAmount + "'></td>" +
-            "<td><input type='number' name='discamount' class='input-field' value='" + discAmount + "'></td>" +
-            "<td><input type='number' name='balance' class='input-field' value='" + balance + "'></td>" +
-            "<td><i class='fa-solid fa-trash deletetransBtn' type='button' data-transid='" + trans_Id + "'></i></td>");
-    });
-});
-
 
 $(document).on('click', '.updateBtn', function(event) {
     event.preventDefault();
@@ -536,33 +512,6 @@ if (!purchaseId) {
         }
     });
 });
-
-function getUpdatedTransactionData() {
-    var transactionData = [];
-
-    $('#customerTable tbody tr').each(function() {
-        var row = $(this);
-        var billNo = row.find('input[name="billno"]').val();
-        var billDate = row.find('input[name="billdate"]').val();
-        var billAmount = row.find('input[name="billamount"]').val();
-        var recdAmount = row.find('input[name="recdamount"]').val();
-        var discAmount = row.find('input[name="discamount"]').val();
-        var balance = row.find('input[name="balance"]').val();
-
-        var data = {
-            billno: billNo,
-            billdate: billDate,
-            billamount: billAmount,
-            recdamount: recdAmount,
-            discamount: discAmount,
-            balance: balance
-        };
-
-        transactionData.push(data);
-    });
-
-    return transactionData;
-}
 
 
 
@@ -619,40 +568,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .catch(error => console.error('Error fetching data:', error));
 
-dropdown.addEventListener('change', (event) => {
-    const selectedId = event.target.value;
-    fetch(`/auth/multipaymentselect/${selectedId}`)
-        .then(response => response.json())
-        .then(data => {
-            // Update form fields with selected payment details
-            const { masterData, transData } = data;
-            const master = masterData[0]; // Assuming only one master data row is returned
-            document.getElementById('payment_date').value = formatDate(master.paymentdate);
-            document.getElementById('cash_bank_ledger').value = master['cash/bankLedger(dr)'];
-            document.getElementById('supplier_ledger').value = master['ledger(dr)'];
-            document.getElementById('amount').value = master.amount;
 
-            // Update table with transaction details
-            const table = $('#customerTable').DataTable();
-            table.clear().draw(); // Clear existing rows
-            transData.forEach(transaction => {
-                table.row.add([
-                    transaction.billno,
-                    formatDate(transaction.billdate),
-                    transaction.billamount,
-                    transaction.recdamount,
-                    transaction.discamount,
-                    transaction.balance,
-                    `<i class="fa-solid fa-trash deletetransBtn" type="button"  data-transid="${transaction.trans_Id}"></i>`
-                ]).draw();
-            });
-        })
-        .catch(error => console.error('Error fetching selected payment details:', error));
-});
-
-
-
-  
   // Function to format date as dd-mm-yyyy
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -664,91 +580,47 @@ function formatDate(dateString) {
 
 });
 
-$(document).ready(function () {
-  $('#customerTable').DataTable({
-    searching: false,
-    paging: false,
-    scrollY: '400px',
-    scrollX: true,
-    scrollCollapse: false,
-    responsive: true,
-    bInfo: true,
-    bBorders: true,
-    fixedColumns: {
-      leftColumns: 0
-    }
-  });
-
-  let products = [];
-
-  $(document).on('click', '#openPurchaseForm', function () {
-    console.log("Button clicked!");
-    let uniqueId = generateUniqueId();
-    let newRow = $("<tr>" +
-      "<td><input type='text' name='billno' class='input-field' id='billno_" + uniqueId + "' placeholder='Bill No'></td>" +
-      "<td><input type='date' name='billdate' class='input-field' id='billdate_" + uniqueId + "'></td>" +
-      "<td><input type='number' name='billamount' class='input-field' id='billamount_" + uniqueId + "' placeholder='Bill Amount'></td>" +
-      "<td><input type='number' name='recdamount' class='input-field' id='recdamount_" + uniqueId + "' placeholder='Recd Amount'></td>" +
-      "<td><input type='number' name='discamount' class='input-field' id='discamount_" + uniqueId + "' placeholder='Disc. Amount'></td>" +
-      "<td><input type='number' name='balance' class='input-field' id='balance_" + uniqueId + "' placeholder='Balance'></td>" +
-      "<td class='action new-row'><button class='btn btn-danger deleteRowBtn'>Delete Row</button></td>" +
-      "</tr>");
-
-    $('#customerTable tbody').append(newRow);
-  });
-
-  $('#customerTable tbody').on('click', 'button.deleteRowBtn', function () {
-    let row = $(this).closest("tr");
-    if (row) {
-      row.remove();
-    }
-  });
-
-
-
-  function generateUniqueId() {
-    return uuidv4();
-  }
-});
-
-$(document).ready(function() {
-    // Function to handle delete button click
-    $(document).on('click', '.deletemasBtn', function() {
-        // Get the selected ID directly from the dropdown value
-        const selectedId = $('#id').val();
-        
-        // Check if a valid ID is selected
-        if (!selectedId) {
-            console.error('No purchase ID found');
-            return;
-        }
-        
-        // Construct the delete URL
-        var deleteUrl = '/auth/multipaymentdelete/' + selectedId; 
-        
-        // Send DELETE request
-        $.ajax({
-            type: 'DELETE',
-            url: deleteUrl,
-            success: function(response) {
-                console.log(response);
-                if (response.success) {
-                    alert('Successfully Deleted 🗑');
-                    // Reload the page after successful deletion
-                    location.reload();
-                } else {
-                    alert("Failed to delete purchase: " + response.error);
-                }
+        var table = $("#customerTable").DataTable({
+            ajax: {
+                url: '/auth/multipayment',
+                dataType: 'json',
+                dataSrc: 'data',
+                type: 'GET',
             },
-            error: function(error) {
-                console.error('Error deleting purchase:', error);
-                alert("Failed to delete purchase. Check console for details.");
-            }
+            columns: [
+                { data: 'payment_id' },
+                {
+                    data: 'paymentdate',
+                    render: function (data) {
+                        console.log('Payment Date:', data);
+                        return data && moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : '';
+                    }
+                },
+                { data: 'cashbankledger' },
+                { data: 'suppliername' },
+                { data: 'billno' },
+                { data: 'transactionno' },
+                { data: 'supplierinvoiceno' },
+                {
+                    data: 'supplierinvoicedate',
+                    render: function (data) {
+                        console.log('Invoice Date:', data);
+                        return data && moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : '';
+                    }
+                },
+                { data: 'amount' },
+                { data: 'referno' },
+                { data: 'remarks' }
+            ],
+            dom: 'Bfrtip',
+            buttons: ['copy', 'excel', 'pdf', 'csv'],
+            paging: false,
+            scrollY: '480px',
+            scrollCollapse: true,
+            scrollX: '50px',
+            responsive: true,
         });
-    }); 
-});
-
-
+    
 
 $(document).ready(function () {
     $('.div').hide();

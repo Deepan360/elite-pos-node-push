@@ -543,6 +543,9 @@ z-index: 1050 !important;
     </div>
 </div>
 
+
+
+
     </main>
     {{>color}}
 
@@ -688,6 +691,7 @@ z-index: 1050 !important;
         $(document).on('click', '.editmasbtn', function () {
             $('.opener').show();
             showBootstrapModal('IF YOU GONNA EDIT IN QUANTITY OF PURCHASE PRODUCT,DELETE THE TRANSACTION AND ADD  CORRECT QUANTITY 🖋');
+           $('.editmasbtn').prop('disabled', true);
             $('#customerTable tbody tr').each(function () {
                 var row = $(this);
                 var id = row.find('td:eq(0)').text();
@@ -784,6 +788,7 @@ z-index: 1050 !important;
         });
 
     });
+
 
     $(document).ready(function () {
         // Draft Button Handler
@@ -896,6 +901,9 @@ z-index: 1050 !important;
    
     });
 
+
+
+
         function showLoadingOverlay() {
             $('body').append('<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;"><img src="/assets/img/6Gl.gif" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>');
         }
@@ -964,6 +972,8 @@ z-index: 1050 !important;
 
             return products;
         }
+
+
 
         // Function to fetch product options and populate dropdown
         async function fetchProductOptions(id, selectedProduct) {
@@ -1661,7 +1671,6 @@ z-index: 1050 !important;
                 $('#pdiscMode_').val(discMode);   // Send discount mode as-is
                 $('#pdiscount_').val($('#pdiscount').val());  // Send the raw input value
             }
-  
     $('#purchaseDetails').on('input', 'input[name="supplierinvoiceamount"]', function () {
         calculateTotals();
     });

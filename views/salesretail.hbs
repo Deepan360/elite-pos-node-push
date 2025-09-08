@@ -210,6 +210,18 @@
                             </svg>
                             <label class="text-white">New Customer</label>
                         </div>
+                       <div class="opener mt-2 bg-success mb-2 px-1 rounded-3 align-center text-white py-1 cursor-pointer newcoustomer" 
+     role="button" 
+     id="todayPatient" 
+     style="cursor: pointer;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor"
+        class="bi bi-person-plus-fill" viewBox="0 0 16 16">
+        <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+        <path fill-rule="evenodd"
+            d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5" />
+    </svg>
+    <label class="text-white">Today Patient</label>
+</div>
                     </div>
                     <div class="div" style="align-items: end;">
                         <button type="button" class="btn btn-success" id="new">New</button>
@@ -237,7 +249,7 @@
                     <option value="" disabled selected>Select a customer</option>
                     <!-- Options will be dynamically populated -->
                 </select>
-                <label for="customerSelect">Select a customer<span class="text-danger text-2x"
+                <label for="customerSelect">Select customer<span class="text-danger text-2x"
                         style="font-size: medium !important;">*</span></label>
             </div>
         </div>
@@ -254,48 +266,56 @@
                 <label for="customername">Customer Name</label>
             </div>
         </div>
-        {{!-- <div class="col-md-2 custom">
-            <div class=" custom-input-container  ">
-                <label for="paymentmode">Payment Mode<span class="text-danger text-2x "
-                        style="font-size: medium !important;">*</span></label>
-                <select name="paymentmode" id="paymentmode">
-                    <option value="" disabled selected hidden>Choose Payment Mode</option>
-                    <option value="cash">Cash</option>
-                    <option value="credit">Credit</option>
-                    <option value="cash-credit">Cash/Credit</option>
-                </select>
-
-            </div>
-        </div> --}}
+       
         <div class="col-md-2">
             <div class="custom-input-container">
                 <input type="date" placeholder=" " name="saledate" id="saledate">
                 <label for="saledate">Sale Date</label>
             </div>
         </div>
-        <div class="col-md-2">
+         <div class="col-md-2">
             <div class="custom-input-container">
-                <input type="text" placeholder=" " name="doctorname" id="doctorname">
+                <select name="doctorname" id="doctorname" class="form-control">
+                    <option value="" disabled selected>Select Doctor</option>
+                    <option value="Dr. Keshava Balaji">Dr. Keshava Balaji</option>
+                    <option value="Dr. Remughi">Dr. Remughi</option>
+                </select>
                 <label for="doctorname">Doctor Name</label>
             </div>
         </div>
-        <div class="col-md-2 insert">
+        {{!-- <div class="col-md-2 insert">
             <div class="custom-input-container">
                 <input type="file" name="prescriptionImage" accept="image/*" multiple />
                 <label for="prescription">Prescription Image</label>
             </div>
+             <div id="imagePreviewContainer" class="mt-2" style="max-width: 200px;"></div>
+        </div> --}}
+                <div class="col-md-2 insert">
+                       <div class="custom-input-container">
+                <input type="file" 
+                    name="prescriptionImage" 
+                    id="prescriptionImageInput" 
+                    accept="image/*,.pdf" 
+                    multiple />
+                <label for="prescription">Prescription Image/PDF</label>
+            </div>
+            <div id="imagePreviewContainer" class="mt-2" style="max-width: 200px; display: flex; flex-wrap: wrap; gap: 5px;"></div>
         </div>
-        <div class="col-md-2">
-            <span id="previewBtn" class="btn btn-primary" style="display: none;">
-                <i class="bi bi-eye"></i> Prescription
-                </button>
-        </div>
+       <div class="col-md-2">
+    {{!-- <button id="previewBtn" class="btn btn-primary" style="display: none; ">
+        <i class="bi bi-eye"></i>Preview
+    </button>   --}}
+    <button id="previewBtn" class="btn btn-primary " style="display: none;">
+    <i class="bi bi-eye"></i> Preview 
+</button>
+</div>
 
         {{!-- <img id="prescriptionImages" src="" alt="Prescription Image"
             style="max-width: 200px; height: auto; display: none;"> --}}
 
         <input type="hidden" id="customerId" name="customerId" value="">
-
+          <input type="hidden" id="visitId" name="visitId">
+            <input type="hidden" id="oldprescriptionImg" name="oldprescriptionImg" > 
     </div>
 
     <div style="display: none;">
@@ -558,7 +578,7 @@
                             oninput="checkMobileNumber()" required>
                         <span id="mobileValidationMessage"></span> <!-- Display validation messages here -->
                     </div>
-
+                 
 
                     <div class="mb-3">
                         <label for="salesmannameSelect" class="form-label">Salesman</label>
@@ -610,15 +630,46 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Today's Patients Modal -->
+<div class="modal fade" id="todayPatientsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Today's Patients</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <input type="text" id="patientSearch" class="form-control" placeholder="Search by name or mobile number">
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover" id="todayPatientsTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Mobile No</th>
+                                <th>Doctor</th>
+                                <th>Visit Time</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
     </main>
     {{>color}}
 
     <script>
         async function checkMobileNumber() {
             const mobileNo = document.getElementById('cmobileno').value;
-
+            const customer = document.getElementById('customer').value;
+            console.log(customer);
             // Check if the mobile number is exactly 10 digits
-            if (mobileNo.length !== 10 || isNaN(mobileNo)) {
+            if (mobileNo.length !== 10 || isNaN(mobileNo) || !customer || customer.trim().length < 3) {
                 document.getElementById('mobileValidationMessage').innerHTML = '<span style="color: red;">Please enter a valid 10-digit mobile number</span>';
                 return;
             } else {
@@ -627,12 +678,12 @@
 
             try {
                 // Send request to check if the mobile number exists in the database
-                const response = await fetch(`/auth/salesretail/checkMobileNumber?mobileNo=${mobileNo}`);
+                const response = await fetch(`/auth/salesretail/checkMobileNumber?mobileNo=${mobileNo}&customername=${encodeURIComponent(customer)}`);
                 const data = await response.json();
 
                 if (data.exists) {
                     // If the number exists, show an error message and prevent further action
-                    document.getElementById('mobileValidationMessage').innerHTML = '<span style="color: red;">Mobile number already exists</span>';
+                    document.getElementById('mobileValidationMessage').innerHTML = '<span style="color: red;">Customer already exists with this mobile number and name</span>';
                     // You can also disable the submit button if needed
                     document.getElementById('saveCustomerBtn').disabled = true;
                 } else {
@@ -652,29 +703,31 @@
 
 
     <script>
-        $(document).ready(function () {
-            // Initially hide the opener
+      $(document).ready(function () {
+    // Initially hide the opener
+    $('#openPurchaseForm').hide();
+
+    function checkRequiredFields() {
+        const mobileNo = $('#mobileno').val().trim();
+        const customerName = $('#customername').val().trim();
+        const doctorName = $('#doctorname').val().trim();
+       //   console.log("doc",mobileNo,customerName,doctorName);
+        // Show the opener if all required fields have values
+        if (mobileNo && customerName) {
+            $('#openPurchaseForm').show();
+        } else {
             $('#openPurchaseForm').hide();
-            function checkRequiredFields() {
-                let isValid = true;
-                // Iterate over all required fields and check their validity
-                $('#purchaseDetails').find('input[required], select[required]').each(function () {
-                    if ($(this).val() === '' || $(this).val() === null) {
-                        isValid = false;
-                    }
-                });
-                // Show the opener if all fields are valid, else hide it
-                if (isValid) {
-                    $('#openPurchaseForm').show();
-                } else {
-                    $('#openPurchaseForm').hide();
-                }
-            }
-            // Bind input and change events to validate on the fly
-            $('#purchaseDetails').find('input, select').on('input change', function () {
-                checkRequiredFields();
-            });
-        });
+        }
+    }
+
+    // Bind input and change events to validate on the fly
+    $('#mobileno, #customername').on('input change', function () {
+        checkRequiredFields();
+    });
+
+    // Initial check when page loads
+    checkRequiredFields();
+});
 
 
 
@@ -688,7 +741,243 @@
             checkRequiredFields(); // Initial check
         });
     </script>
+<script>
+    // Today's Patients functionality
+// Replace or add this script
+$(document).ready(function() {
+    $('#prescriptionImageInput').on('change', function(e) {
+        const container = $('#imagePreviewContainer');
+        container.empty();
+        
+        const files = e.target.files;
+        if (files.length > 0) {
+            container.show();
+            
+            for(let i = 0; i < files.length; i++) {
+                const file = files[i];
+                
+                if(file.type === 'application/pdf') {
+                    // Create PDF preview thumbnail
+                    const pdfThumb = $('<div>', {
+                        class: 'pdf-thumbnail',
+                        style: 'width: 95px; height: 100px; background-color: #f8f9fa; border: 1px solid #dee2e6; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-right: 5px; border-radius: 4px;'
+                    }).append(
+                        $('<i>', {
+                            class: 'fas fa-file-pdf',
+                            style: 'font-size: 24px; color: #dc3545;'
+                        })
+                    );
+                    
+                    pdfThumb.click(function() {
+                        $('#prescriptionModal').modal('show');
+                        $('#prescriptionImageContainer').html(
+                            $('<embed>', {
+                                src: URL.createObjectURL(file),
+                                type: 'application/pdf',
+                                style: 'width: 100%; height: 80vh;'
+                            })
+                        );
+                    });
+                    
+                    container.append(pdfThumb);
+                } else {
+                    // Existing image preview code
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = $('<img>', {
+                            src: e.target.result,
+                            class: 'img-fluid mb-2',
+                            style: 'max-height: 100px; max-width: 95px; cursor: pointer; object-fit: cover; border-radius: 4px;'
+                        });
+                        
+                        img.click(function() {
+                            $('#prescriptionModal').modal('show');
+                            $('#prescriptionImageContainer').html($('<img>', {
+                                src: this.src,
+                                class: 'img-fluid',
+                                style: 'max-height: 80vh; max-width: 100%;'
+                            }));
+                        });
+                        
+                        container.append(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        } else {
+            container.hide();
+        }
+    });
+});
 
+// Replace or add this script
+$(document).ready(function() {
+    // Initialize the Bootstrap modal
+    const todayPatientsModal = new bootstrap.Modal(document.getElementById('todayPatientsModal'));
+    
+    // Add click event listener
+    $('#todayPatient').on('click', function() {
+        console.log('Today Patient button clicked');
+        try {
+              $('#customerSelect').val('').trigger('change');
+        // Clear related fields
+        $('#customername').val('');
+        $('#mobileno').val('');
+        $('#customerId').val('');
+        $('#doctorname').val('');
+        $('input[name="prescriptionImage"]').val('');
+        $('#imagePreviewContainer').hide();
+        $('#updatePrescriptionBtn').hide();
+         $('#prescriptionImageContainer').empty();
+            loadTodayPatients();
+            todayPatientsModal.show();
+        } catch (error) {
+            console.error('Error showing modal:', error);
+        }
+    });
+ console.log("loaded")
+    function loadTodayPatients() {
+        $.ajax({
+            url: '/auth/salesretail/getTodaypatientretail',
+            method: 'GET',
+            success: function(response) {
+                console.log('Patients data:', response);
+                const patients = response.data;
+                const tbody = $('#todayPatientsTable tbody');
+                tbody.empty();
+
+                patients.forEach(function(patient) {
+                    const visitTime = patient.dateofvisit ? new Date(patient.dateofvisit).toLocaleString() : '-';
+                    const row = `
+                        <tr>
+                            <td>${patient.customername || patient.name}</td>
+                            <td>${patient.mobileno}</td>
+                            <td>${patient.doctorname || '-'}</td>
+                           <td>${patient.dateofvisit}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary select-patient" 
+                                    data-id="${patient.regid}"
+                                    data-visitid="${patient.id}"
+                                    data-name="${patient.customername || patient.name}"
+                                    data-doctor="${patient.doctorname || '-'}"
+                                    data-img="${patient.prescriptionimg}"
+                                    data-mobile="${patient.mobileno}"
+                                    data-regid="${patient.regid || ''}">
+                                    Select
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.append(row);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching today\'s patients:', error);
+                alert('Failed to load today\'s patients data.');
+            }
+        });
+    }
+});
+// Update patient selection handler
+$(document).on('click', '.select-patient', function() {
+    const patientId = $(this).data('id');
+    const visitId = $(this).data('visitid');
+    const patientName = $(this).data('name');
+    const patientMobile = $(this).data('mobile');
+    const regId = $(this).data('regid');
+    const prescriptionImg = $(this).data('img');
+    const doctorName = $(this).data('doctor');
+  //   alert('Patient selected:', patientId, patientName, patientMobile, regId, prescriptionImg, doctorName);
+    // Set the values in the main form
+ 
+    $('#customerSelect').val(patientId);
+    $('#customername').val(patientName);
+    $('#mobileno').val(patientMobile);
+    $('#customerId').val(patientId);
+    $('#visitId').val(visitId);
+    $('#regId').val(regId);
+    $('#doctorname').val(doctorName);
+    $('#oldprescriptionImg').val(prescriptionImg);
+    $('#isTodaypatient').val('1');
+     console.log('Patient selected:', typeof patientId,patientId, patientName, patientMobile, regId, prescriptionImg, doctorName,visitId);
+    // Handle prescription preview
+ if (prescriptionImg) {
+    $('#previewBtn').show();
+    const updateBtn = `<button id="updatePrescriptionBtn" class="btn btn-warning ms-2">
+        <i class="bi bi-pencil"></i> Update
+    </button>`;
+    $('#previewBtn').after(updateBtn);
+    $('.insert').hide();
+    const imageContainer = $('#prescriptionImageContainer');
+    imageContainer.empty();
+    
+    const baseUrl = 'http://136.185.14.8:8077/uploads/prescription/';
+    const fileUrl = baseUrl + prescriptionImg;
+    
+    // Check if the file is a PDF based on extension
+    if (prescriptionImg.toLowerCase().endsWith('.pdf')) {
+        // Create PDF embed element
+        const pdfElement = $(`<embed src="${fileUrl}" type="application/pdf" style="width: 100%; height: 80vh;">`);
+        imageContainer.append(pdfElement);
+    } else {
+        // Handle image as before
+        const imgElement = $(`<img src="${fileUrl}" class="prescription-img" style="max-width: 100%; height: auto; cursor: pointer;">`);
+        imageContainer.append(imgElement);
+        
+        // Add click handler for the image (fullscreen only for images)
+        imgElement.off('click').on('click', function(e) {
+            e.preventDefault();
+            const imgSrc = $(this).attr('src');
+            
+            if ($('#fullScreenModal').length) {
+                $('#fullScreenModal img').attr('src', imgSrc);
+                $('#fullScreenModal').modal('show');
+            } else {
+                const fullScreenModal = `
+                    <div class="modal fade" id="fullScreenModal" tabindex="-1">
+                        <div class="modal-dialog modal-fullscreen">
+                            <div class="modal-content">
+                                <div class="modal-header bg-dark text-white">
+                                    <h5 class="modal-title">Prescription Image</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body d-flex align-items-center justify-content-center bg-dark">
+                                    <img src="${imgSrc}" style="max-width: 100%; max-height: 90vh; object-fit: contain;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                $('body').append(fullScreenModal);
+                $('#fullScreenModal').modal('show');
+            }
+        });
+    }
+    
+    // Common button handlers
+    $('#previewBtn').off('click').on('click', function(e) {
+        e.preventDefault();
+        $('#prescriptionModal').modal('show');
+    });
+    
+    $('#updatePrescriptionBtn').off('click').on('click', function(e) {
+        e.preventDefault();
+        $('.insert').show();
+        $(this).hide();
+    });
+} else {
+    $('#previewBtn').hide();
+    $('.insert').show();
+}
+
+    // Close the modal
+    $('#todayPatientsModal').modal('hide');
+    $('#openPurchaseForm').show();
+});
+
+ 
+
+</script>
     <script>
         $(document).ready(function () {
             $('#paymentmode').change(function () {
@@ -696,11 +985,15 @@
             });
         });
         $(document).ready(function () {
+         
+            //  $('#todayPatientsModal').modal('hide');
             // Initialize Select2 for customerSelect
             $('#customerSelect').select2({
                 placeholder: "Search by name or mobile number",
                 allowClear: true
             });
+             // Handle Select2 clear event
+  
             // Fetch customer data and populate dropdown
             $.ajax({
                 url: '/auth/salesretail/customerretail',
@@ -729,17 +1022,21 @@
                 const customerName = selectedOption.text().split(" (")[0]; // Extracting name if needed
                 const customerMobile = selectedOption.text().split(" (")[1].replace(')', ''); // Extracting mobile number
                 console.log("Customer ID:", customerId);
+                
+                
+                $('#previewBtn').hide();
+                   $('.insert').show();
+                    $('#updatePrescriptionBtn').hide();
                 // Set selected customer details in input fields
                 $('#customername').val(customerName); // This is for display purposes
                 $('#mobileno').val(customerMobile); // This is for display purposes
                 $('#customerId').val(customerId); // Ensure this is just the ID
+                  $('#openPurchaseForm').show();
+                  $('#oldprescriptionImg').val(null);
+                 $('#isTodaypatient').val(null);
             });
 
-            $('#customerSelect').on('select2:unselect', function () {
-                $('#customername').val(""); // Clear customer name input
-                $('#mobileno').val(""); // Clear mobile number input
-                $('#customerId').val(""); // Clear customer ID
-            });
+          
         });
 
 
@@ -803,17 +1100,23 @@
                     $('#newCustomerFormOverlay').hide();
                     location.reload();
                 },
-                error: function (xhr, status, error) {
-                    console.error("Error adding customer:", xhr, status, error);
-                    if (xhr.status === 400) {
-                        let errorMessage = JSON.parse(xhr.responseText).message;
-                        alert('Failed to add customer: ' + errorMessage);
-                    } else if (xhr.status === 500) {
-                        alert('Failed to add customer. Please try again later.');
-                    } else {
-                        alert('Failed to add customer. Please try again.');
-                    }
-                }
+              showerror: function (xhr, status, error) {
+    console.error("Error adding customer:", xhr, status, error);
+
+    if (xhr.status === 400) {
+        try {
+            let errorMessage = JSON.parse(xhr.responseText).message;
+            alert('Failed to add customer: ' + errorMessage);
+        } catch (e) {
+            alert('Failed to add customer: Customer already exists.');
+        }
+    } else if (xhr.status === 500) {
+        alert('Failed to add customer. Please try again later.');
+    } else {
+        alert('Failed to add customer. Please try again.');
+    }
+}
+
             });
         });
         // Optionally, hide overlay when clicking outside the form
@@ -883,7 +1186,7 @@
         $(document).on('click', '.editmasbtn', function () {
             showBootstrapModal('IF YOU GONNA EDIT IN QUANTITY OF SALES PRODUCT,DELETE THE TRANSACTION AND ADD  CORRECT QUANTITY 🖋');
             $('.opener').show();
-            //$('.editmasbtn').prop('disabled', true);
+             $('.editmasbtn').prop('disabled', true);
             $('#customerTable tbody tr').each(function () {
                 var row = $(this);
                 var id = row.find('td:eq(0)').text();
@@ -1683,6 +1986,7 @@
                     $('#alertMessage').text(message);
                     $('#alertBox').show();
                 }
+                
                 // Event listener for Submit Button
                 $('#submitFormBtn').on('click', function () {
                     if (!validateRows()) {
@@ -1705,15 +2009,27 @@
                     submitForm(); // Submit form
                     $('#confirmationModal').modal('hide'); // Hide the modal
                 });
-
+ if (!$('#isTodaypatient').length) {
+        $('body').append('<input type="hidden" id="isTodaypatient" value="0">');
+    }
                 function submitForm() {
                     let formData = new FormData($('#purchaseDetails')[0]); // Use FormData for file upload
                     let products = getProductsData();
                     showLoadingOverlay();
                     formData.append('products', JSON.stringify(products));
                     formData.append('isDraft', $('#is_Draft').val());
-
-                    $.ajax({
+                    const isTodaypatient = $('#isTodaypatient').val() || '0';
+                    const isTodaypatientId =  $('#visitId').val();
+                   formData.append('isTodaypatientId', isTodaypatientId); 
+                    formData.append('isTodaypatient', isTodaypatient);
+                  //  formData.append('isTodaypatient', $('#isTodaypatient').val());
+                    console.log(isTodaypatientId);
+                    console.log(formData);
+                   // console.log(products);
+                 //   console.log($('#isTodaypatient').val());
+                 //   console.log(formData.get('isDraft'));
+                    //console.log(formData.get('isTodaypatient'));
+                      $.ajax({
                         url: '/auth/salesretail',
                         method: 'POST',
                         data: formData,
@@ -1743,6 +2059,8 @@
                             hideLoadingOverlay(); // Hide loading overlay
                         }
                     });
+					
+                  
                 }
             
 

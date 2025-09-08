@@ -493,10 +493,16 @@ router.get("/inpatient/Getinpatient", userController.Getinpatient);
 
 router.post("/visitEntry", userController.visitEntry);
 
+router.get("/getVisitHistory", userController.getVisitHistory);
+
 
 router.get("/GetHSNSales_TaxSlab", userController.GetHSNSales_TaxSlab);    
 router.get("/GetHSNSales_BillRange", userController.GetHSNSales_BillRange);    
 router.get("/GetHSNSales_HSNWise", userController.GetHSNSales_HSNWise);    
+router.get(
+  "/GetPurchase_TaxSlabSummary",
+  userController.GetPurchase_TaxSlabSummary
+);
 
 router.put("/updatepayment", userController.updatepayment);
 router.get(
@@ -504,6 +510,9 @@ router.get(
   userController.suppliermultipaymentlist
 );
 router.post("/multipaymentinsert", userController.multipaymentinsert);
+
+
+router.get("/registeredakilammember", userController.registeredakilammember);
 
 module.exports = router;
  

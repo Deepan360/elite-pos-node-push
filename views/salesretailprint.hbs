@@ -1107,8 +1107,10 @@ body {
             }
 
             function truncateText(text, maxLength) {
+                if (!text) return ""; // if null, undefined, or empty
                 return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
             }
+
             // Function to fetch sales details
             function fetchsalesDetails(salesId) {
                 $.ajax({
@@ -1116,6 +1118,8 @@ body {
                     method: 'GET',
                     data: { salesId: salesId },
                     success: function (response) {
+                        console.log("Sales details response:", responseData);
+
                         if (response && response.data && response.data.length > 0) {
                             var responseData = response.data[0];
                             $('#id').text(responseData.id);

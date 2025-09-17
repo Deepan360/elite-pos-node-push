@@ -281,99 +281,60 @@
             $("#id").val('');
         });
         // Initialize DataTable with specified options
-        var table = $("#customerTable").DataTable({
-            dom: 'Bfrtip',
-            buttons: ['copy', 'excel', 'pdf', 'csv'],
-            paging: false,
-            scrollY: '480px',
-            scrollX: '100px',
-            scrollCollapse: true,
-            responsive: true,
-            "bInfo": true,
-            "bBorders": true,
-            ajax: {
-                url: '/auth/salesretailregister',
-                type: 'GET',
-                dataType: 'json',
-                dataSrc: 'data'
+    var table = $("#customerTable").DataTable({
+        dom: "Bfrtip",
+        processing: true,
+        serverSide: true,   // ✅ enable server-side mode
+        buttons: ["copy", "excel", "pdf", "csv"],
+        pageLength: 50,
+        scrollY: "480px",
+        scrollCollapse: true,
+        ajax: {
+            url: "/auth/salesretailregister",
+            type: "GET"
+        },
+        order: [[0, "desc"]],
+        columns: [
+            { data: "id" },
+            {
+                data: "saledate",
+                render: d => d ? moment(d).format("DD-MM-YYYY") : "null"
             },
-             order: [[0, 'desc']],
-            columns: [
-                { data: 'id' },
-                {
-                    data: 'saledate',
-                    render: function (data) {
-                        return data ? moment(data).format("DD-MM-YYYY") : 'null';
-                    }
-                },
-                {
-                    data: 'customername',
-                    render: function (data) {
-                        return data ? data : 'null';
-                    }
-                },
-                {
-                    data: 'mobileno',
-                    render: function (data) {
-                        return data ? data : 'null';
-                    }
-                },
-                {
-                    data: 'paymentmode',
-                    render: function (data) {
-                        return data ? data : 'null';
-                    }
-                },
-                {
-                    data: 'subtotal',
-                    render: function (data) {
-                        return data ? data : 'null';
-                    }
-                },
-                 
-                {
-                    data: 'paymentmode',
-                    render: function (data, type, row) {
-                        // Check if the paymentmode is 'COD', mark as 'Unpaid'; otherwise 'Paid'
-                        return data === 'COD' ? 'Unpaid' : 'Paid';
-                    }
-                },
-                {
-                    data: 'billmargin',
-                    render: function (data) {
-                        return data ? data : 'null';
-                    }
-                },
-                 {
-                    data: 'id',
-                    render: function (data, type, row) {
-                        // If payment mode is 'credit', show a credit card icon; otherwise, show the id
-                        return row.paymentmode === 'credit' ? '<i class="fa-solid fa-credit-card text-danger fa-2x" type="button" data-id="' + data + '"></i>' : '<i class="fa-solid fa-clipboard-check text-success fa-2x"></i>';
-                    }
-                },
-                {
-                    data: 'id',
-                    render: function (data) {
-                        return '<i class="fa-solid fa-file-pen fa-2x text-warning" type="button" data-id="' + data + '"></i>';
-                    }
-                },
-                 {
-                    data: 'id',
-                    render: function (data) {
-                        return '<i class="fa-solid fa-reply-all fa-2x text-return" type="button" data-id="' + data + '"></i>';
-                    }
-                },
-                {
-                    data: 'id',
-                    render: function (data) {
-                        return '<i class="fa-solid fa-print fa-2x text-info" type="button" data-id="' + data + '"></i>';
-                    }
-                }
-            ],
-            "createdRow": function (row, data, dataIndex) {
-                $(row).attr('data-id', data.id);
+            { data: "customername", render: d => d || "null" },
+            { data: "mobileno", render: d => d || "null" },
+            { data: "paymentmode", render: d => d || "null" },
+            { data: "subtotal", render: d => d || "null" },
+            {
+                data: "paymentmode",
+                render: d => d === "COD" ? "Unpaid" : "Paid"
+            },
+            { data: "billmargin", render: d => d || "null" },
+            {
+                data: "id",
+                render: (d, t, row) =>
+                    row.paymentmode === "credit"
+                        ? `<i class="fa-solid fa-credit-card text-danger fa-2x" data-id="${d}"></i>`
+                        : `<i class="fa-solid fa-clipboard-check text-success fa-2x"></i>`
+            },
+            {
+                data: "id",
+                render: d => `<i class="fa-solid fa-file-pen fa-2x text-warning" data-id="${d}"></i>`
+            },
+            {
+                data: "id",
+                render: d => `<i class="fa-solid fa-reply-all fa-2x text-return" data-id="${d}"></i>`
+            },
+            {
+                data: "id",
+                render: d => `<i class="fa-solid fa-print fa-2x text-info" data-id="${d}"></i>`
             }
-        });
+        ],
+        createdRow: function (row, data) {
+            $(row).attr("data-id", data.id);
+        }
+    });
+
+       
         // Handle click event for the edit icon
         $('#customerTable').on('click', 'i.fa-file-pen', function () {
             var salesId = $(this).data('id');

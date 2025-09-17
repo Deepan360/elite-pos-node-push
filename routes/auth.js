@@ -503,6 +503,16 @@ router.get(
   "/GetPurchase_TaxSlabSummary",
   userController.GetPurchase_TaxSlabSummary
 );
+router.get("/GetPurchase_CDNR", userController.GetPurchase_CDNR);
+router.get("/GetPurchase_B2BINV", userController.GetPurchase_B2BINV);
+router.get("/GetPurchase_B2BPURC", userController.GetPurchase_B2BPURC);
+
+
+
+
+
+
+
 
 router.put("/updatepayment", userController.updatepayment);
 router.get(

@@ -196,7 +196,10 @@
                 const taxSlabData = await $.get("/auth/GetHSNSales_TaxSlab", { fromDate, toDate });
                 const billRangeData = await $.get("/auth/GetHSNSales_BillRange", { fromDate, toDate });
                 const hsnData = await $.get("/auth/GetHSNSales_HSNWise", { fromDate, toDate });
-                const purchaseTaxSlabData = await $.get("/auth/GetPurchase_TaxSlabSummary", { fromDate, toDate });
+                const GetPurchase_CDNR = await $.get("/auth/GetPurchase_CDNR", { fromDate, toDate });
+                const GetPurchase_B2BINV = await $.get("/auth/GetPurchase_B2BINV", { fromDate, toDate });
+                const GetPurchase_B2BPURC = await $.get("/auth/GetPurchase_B2BPURC", { fromDate, toDate });  
+
                 // Create workbook
                 const workbook = new ExcelJS.Workbook();
 
@@ -210,7 +213,7 @@
                     const header = Object.keys(jsonData[0]);
                     const headerRow = sheet.addRow(header);
 
-                    // Style header
+                    // Style header 
                     headerRow.eachCell((cell) => {
                         cell.fill = {
                             type: "pattern",
@@ -251,7 +254,11 @@
                 createSheet("HSN-Wise Report", hsnData.data || hsnData);
                 createSheet("Bill Range Summary", billRangeData.data || billRangeData);
                 createSheet("Tax Slab Summary", taxSlabData.data || taxSlabData);
-                createSheet("Purchase Tax Slab Summary", purchaseTaxSlabData.data || purchaseTaxSlabData);
+                createSheet("Purchase CDNR", GetPurchase_CDNR.data || GetPurchase_CDNR);
+                createSheet("Purchase B2BINV", GetPurchase_B2BINV.data || GetPurchase_B2BINV);
+                createSheet("Purchase B2BPURC", GetPurchase_B2BPURC.data || GetPurchase_B2BPURC);
+               
+               
                 // Export
                 const buffer = await workbook.xlsx.writeBuffer();
                 saveAs(new Blob([buffer]), `GST_Report_${fromDate}_to_${toDate}.xlsx`);

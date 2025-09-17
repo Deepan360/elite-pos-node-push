@@ -34,7 +34,9 @@
         <i id="networkIcon" class="fas fa-wifi text-success"></i>
         <span id="networkText" class="text-light small">Online</span>
       </div>
-
+<div class="d-flex align-items-center text-white" >
+  <i class="bi bi-fullscreen text-white fullscreen" data-bs-toggle="tooltip" title="Full Screen" style="cursor: pointer;"></i>
+</div>
       <!-- Logout -->
       <i class="fa-solid fa-right-from-bracket fa-xl text-white" id="logoutIcon" title="Logout" style="cursor: pointer;"
         data-bs-toggle="tooltip"></i>
@@ -57,10 +59,31 @@
     width: auto;
     object-fit: cover;
   }
+  .bi-fullscreen {
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s;  
+  }
+  .bi-fullscreen:hover {
+    color: #0d6efd; 
+  }
 </style>
 
 <!-- Scripts -->
 <script>
+
+  //class full screen icon enable f11 btn to toggle full screen
+  document.querySelector('.bi-fullscreen').addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  });
+
+
   const networkIcon = document.getElementById('networkIcon');
   const networkText = document.getElementById('networkText');
   const offlinePopover = document.getElementById('offlinePopover');

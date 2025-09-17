@@ -3881,56 +3881,62 @@ exports.salesretailtransdelete = async (req, res) => {
   }
 };
 
-exports.salesretailregister = (req, res) => {
-  pool.connect((err, connection) => {
-    if (err) {
-      console.error("Error getting connection from pool:", err);
-      return res.status(500).json({ error: "Internal Server Error" });
-    }
+exports.salesretailregister = async (req, res) => {
+  try {
+    const start = parseInt(req.query.start) || 0;
+    const length = parseInt(req.query.length) || 50;
+    const draw = parseInt(req.query.draw) || 1;
 
-    pool.query(
-      `
- SELECT 
-    sm.[id] ,
-    sm.[saledate],
-    sm.[paymentmode],
-    sm.[doctorname],
-    rc.[customername],
-    rc.[mobileno],
-    sm.[amount],
-    sm.[cdAmount],
-    sm.[igst],
-    sm.[cgst],
-    sm.[sgst],
-    sm.[subtotal],
-    sm.[cess],
-    sm.[tcs],
-    sm.[discMode],
-    sm.[discount],
-    sm.[roundoff],
-    sm.[netAmount],
-    sm.[isDraft],
-     dbo.GetBillMargin(sm.id) as billmargin
-FROM 
-    [elite_pos].[dbo].[salesretail_Master] sm
-LEFT JOIN 
-    [elite_pos].[dbo].[retailcustomer] rc ON sm.[customername] = rc.[id] 
+    const request = pool.request();
+    request.input("start", sql.Int, start);
+    request.input("length", sql.Int, length);
 
-    where  sm.[isDraft]='0';
-   ;
-    `,
-      (err, result) => {
-        connection.release();
-        if (err) {
-          console.error("Error in listing data:", err);
-          return res.status(500).json({ error: "Internal Server Error" });
-        }
-        // Send the data as JSON response
-        res.json({ data: result.recordset });
-      }
+    const totalResult = await request.query(
+      `SELECT COUNT(*) AS total FROM [elite_pos].[dbo].[salesretail_Master] WHERE isDraft='0'`
     );
-  });
+    const total = totalResult.recordset[0].total;
+
+    const dataResult = await request.query(`
+      SELECT 
+          sm.id,
+          sm.saledate,
+          sm.paymentmode,
+          sm.doctorname,
+          rc.customername,
+          rc.mobileno,
+          sm.amount,
+          sm.cdAmount,
+          sm.igst,
+          sm.cgst,
+          sm.sgst,
+          sm.subtotal,
+          sm.cess,
+          sm.tcs,
+          sm.discMode,
+          sm.discount,
+          sm.roundoff,
+          sm.netAmount,
+          sm.isDraft,
+          dbo.GetBillMargin(sm.id) AS billmargin
+      FROM [elite_pos].[dbo].[salesretail_Master] sm
+      LEFT JOIN [elite_pos].[dbo].[retailcustomer] rc ON sm.customername = rc.id
+      WHERE sm.isDraft='0'
+      ORDER BY sm.id DESC
+      OFFSET @start ROWS FETCH NEXT @length ROWS ONLY
+    `);
+
+    res.json({
+      draw,
+      recordsTotal: total,
+      recordsFiltered: total,
+      data: dataResult.recordset,
+    });
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 };
+
 
 exports.salesretailreturn = (req, res) => {
   pool.connect((err, connection) => {
@@ -5160,6 +5166,101 @@ exports.GetHSNSales_HSNWise = (req, res) => {
   });
 };
 
+exports.GetPurchase_CDNR = (req, res) => {
+  const { fromDate, toDate } = req.query; // Get dates from request
+
+  console.log("Received Dates:", fromDate, toDate); // Debugging purpose
+
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    let query =
+      "EXEC GetPurchase_CDNR @FromDate = @fromDate, @ToDate = @toDate ";
+
+    const request = connection.request();
+    request.input("fromDate", sql.Date, fromDate || null);
+    request.input("toDate", sql.Date, toDate || null);
+
+    request.query(query, (err, result) => {
+      connection.release();
+      if (err) {
+        console.error("Error in listing data:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      console.log("Query Success:", result.recordset); // Debugging purpose
+      res.json({ data: result.recordset });
+    });
+  });
+};
+
+
+exports.GetPurchase_B2BINV = (req, res) => {
+  const { fromDate, toDate } = req.query; // Get dates from request
+
+  console.log("Received Dates:", fromDate, toDate); // Debugging purpose
+
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    let query =
+      "EXEC GetPurchase_B2BINV @FromDate = @fromDate, @ToDate = @toDate ";
+
+    const request = connection.request();
+    request.input("fromDate", sql.Date, fromDate || null);
+    request.input("toDate", sql.Date, toDate || null);
+
+    request.query(query, (err, result) => {
+      connection.release();
+      if (err) {
+        console.error("Error in listing data:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      console.log("Query Success:", result.recordset); // Debugging purpose
+      res.json({ data: result.recordset });
+    });
+  });
+};
+
+
+exports.GetPurchase_B2BPURC = (req, res) => {
+  const { fromDate, toDate } = req.query; // Get dates from request
+
+  console.log("Received Dates:", fromDate, toDate); // Debugging purpose
+
+  pool.connect((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    let query =
+      "EXEC GetPurchase_B2BPURC @FromDate = @fromDate, @ToDate = @toDate ";
+
+    const request = connection.request();
+    request.input("fromDate", sql.Date, fromDate || null);
+    request.input("toDate", sql.Date, toDate || null);
+
+    request.query(query, (err, result) => {
+      connection.release();
+      if (err) {
+        console.error("Error in listing data:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      console.log("Query Success:", result.recordset); // Debugging purpose
+      res.json({ data: result.recordset });
+    });
+  });
+};
+
 //reports on gst
 //dashboard
 exports.masterdata = async (req, res) => {
@@ -6164,7 +6265,7 @@ exports.salesproductname = async (req, res) => {
     }
 
     const query =
-      " SELECT  DISTINCT p.productname,p.id FROM product p JOIN stock_Ob s ON p.id = s.product";
+      " SELECT  DISTINCT p.productname,p.id FROM product p JOIN stock_Ob s ON p.id = s.product where s.isActive='1' ";
 
     pool.query(query, (err, result) => {
       connection.release(); // Release the connection back to the pool
@@ -6300,7 +6401,7 @@ exports.salesadd = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
-
+ 
 exports.salesEdit = async (req, res) => {
   const { purchaseId } = req.params;
   const { purchaseDetails, products } = req.body;
